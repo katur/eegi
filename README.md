@@ -1,7 +1,8 @@
-Genome-Wide Genetic Interactions Web Interface
-==============================================
+Genome-Wide Genetic Interactions Project
+========================================
+Web interface and programs
+--------------------------
 
-Django site for a genomics project, which used millions of pairwise gene knockdown experiments to uncover
-genetic interactions in *C. elegans*.
-
-Find more programs to process data in `programs`.
+Programs and Django site for genome-wide genetic interactions screen,
+which used millions of pairwise gene knockdown experiments to uncover
+suppressor and enhancer interactions in *C. elegans*.
