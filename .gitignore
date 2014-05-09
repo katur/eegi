@@ -1,0 +1,51 @@
+# Database connection and other secret settings
+*secret_settings.py
+
+# Compiled source
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.pyc
+
+# Temporary files #
+*.swp
+
+# OS generated files #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+thumbs.db
+Thumbs.db
+
+# Packages (better to unpack and commit the raw source
+# since git has its own compression methods)
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+*.log
+*.sql
+*.sqlite
+*.csv
+
+# Photoshop files
+*.psd
+
+# Videos #
+*.avi
+*.mp4
+*.ogg
+*.ogv
+*.webm
