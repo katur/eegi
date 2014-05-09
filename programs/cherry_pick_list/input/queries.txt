@@ -1,0 +1,56 @@
+PrimaryPlates.csv
+    SELECT DISTINCT RNAiPlateID
+    FROM RNAiPlate
+    WHERE RNAiPlateID!="L4440"
+
+PrimaryClones.csv
+    SELECT clone, node_primary_name, RNAiPlateID, 96well
+    FROM RNAiPlate
+    WHERE clone!="L4440";
+
+// duplicates rows where clone name is not distinct, but this is fine,
+// since huey-ling included all anyway
+ActualSecondaryClones.csv
+    SELECT R.clone, R.RNAiPlateID, R.96well, C.mutant
+    FROM CherryPickRNAiPlate AS C
+    RIGHT JOIN RNAiPlate AS R ON C.clone=R.clone
+    WHERE C.clone!="L4440";
+
+ActualSecondaryClones_NoGrow.csv
+    SELECT R.clone, R.RNAiPlateID, R.96well, T.mutant
+    FROM CherryPickTemplate AS T
+    LEFT JOIN CherryPickRNAiPlate AS P
+        ON P.RNAiPlateID=T.finalRNAiPlateID AND P.96well=T.final96well
+    LEFT JOIN RNAiPlate AS R
+        ON T.RNAiPlateID=R.RNAiPlateID AND T.96well=R.96well
+    WHERE P.clone IS NULL AND (R.clone LIKE "sjj%" OR R.clone
+        LIKE "mv%");
+
+
+AllNonJunkSupPrimaryScores.csv
+    SELECT clone, P.RNAiPlateID, 96well,
+    mutant, temperature, S.expID,
+    score, scoreBy, recordDate
+    FROM ManualScore AS S, RawData AS D, RNAiPlate AS P
+    WHERE S.expID=D.expID AND D.RNAiPlateID=P.RNAiPlateID
+    AND P.ImgName=S.ImgName AND isJunk=0 AND S.expID<40000 AND screenFor="SUP";
+
+AllSecondaryClonesWithJoin.csv
+    SELECT clone, T.mutant, T.RNAiPlateID, T.96well, T.finalRNAiPlateID,
+        P.RNAiPlateID, T.final96well, P.96well
+    FROM CherryPickTemplate AS T, CherryPickRNAiPlate AS P
+    WHERE T.finalRNAiPlateID=P.RNAiPlateID AND T.final96well=P.96well
+    AND (finalRNAiPlateID, final96well) IN (
+        SELECT RNAiPlateID, 96well from CherryPickRNAiPlate)
+    AND clone!="L4440"
+    ORDER BY finalRNAiPlateID;
+
+AlreadyShouldBeUniversalClones.csv (must go through manually to see which
+actually qualify, because some are mysteriously picked twice for same mutant)
+    SELECT clone
+    FROM CherryPickRNAiPlate
+    WHERE clone NOT IN (
+        SELECT clone
+        FROM CherryPickRNAiPlate
+        WHERE RNAiPlateID LIKE ("universal%"))
+    GROUP BY clone HAVING count(*)>2;
