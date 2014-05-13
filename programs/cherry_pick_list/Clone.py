@@ -33,7 +33,15 @@ class Clone:
                 return 1
         else:
             assert self.plate != other.plate
-            if self.plate < other.plate:
-                return -1
+            if self.plate.isdigit() and other.plate.isdigit():
+                if int(self.plate) < int(other.plate):
+                    return -1
+                else:
+                    return 1
+
+            # if either is a string, use string comparison
             else:
-                return 1
+                if self.plate < other.plate:
+                    return -1
+                else:
+                    return 1
