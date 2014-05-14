@@ -29,10 +29,7 @@ class ExperimentScoreData:
 
     def __str__(self):
         return 'Scored {0}, by {1}, experiment dates: {2}'.format(
-                str(self.scores),
-                str(self.scorers),
-                str(self.dates)
-        )
+            str(self.scores), str(self.scorers), str(self.dates))
 
     def __repr__(self):
         return self.__str__()
@@ -53,10 +50,11 @@ class CloneScoreData:
 
     def is_accepted(self, mutant):
         return mutant.accept(self.get_best_two_scores_as_string(),
-                self.scorers, self.dates)
+                             self.scorers, self.dates)
 
     def get_best_two_scores_as_string(self):
-        scores = self.scores[:] # copy the list
+        # copy the list
+        scores = self.scores[:]
         if len(scores) == 0:
             scores.append(0.25)
         if len(scores) == 1:
@@ -72,10 +70,7 @@ class CloneScoreData:
 
     def __str__(self):
         return 'Scored {0}, by {1}, experiment dates: {2}'.format(
-                str(self.scores),
-                str(self.scorers),
-                str(self.dates)
-        )
+            str(self.scores), str(self.scorers), str(self.dates))
 
     def __repr__(self):
         return self.__str__()

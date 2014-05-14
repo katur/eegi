@@ -1,9 +1,9 @@
 import csv
 import math
-from Clone import *
-from Mutant import *
-from ScoreData import *
-from Well import *
+from Clone import Clone
+from Mutant import get_mutant
+from ScoreData import ExperimentScoreData, CloneScoreData
+from Well import ten_wells, nine_wells
 
 
 def get_other_clones(clone):
