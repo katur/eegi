@@ -1,8 +1,9 @@
 import csv
 import math
-from Clone import *
-from Mutant import *
-from ScoreData import *
+from Clone import Clone
+from Mutant import get_mutant
+from ScoreData import ExperimentScoreData, CloneScoreData
+
 
 def get_other_clones(clone):
     mapping = clone_to_mapping[clone]
@@ -168,7 +169,8 @@ for clone, mutants in secondary_clones.iteritems():
             missing_clones[clone].append('universal')
             missing_universal.add(clone)
 
-    else: # need not be in universal plate
+    # need not in be in universal plate
+    else:
         for mutant in mutants:
             if ('universal' not in mutants_tested) and (
                     mutant not in mutants_tested):
@@ -189,13 +191,13 @@ with open('input/AlreadyShouldBeUniversalClones.csv', 'rb') as csvfile:
         for clone in missing_universal:
             if clone.name != clone_name:
                 found = True
-        assert found == True
+        assert found is True
 
 ###############################################################################
 print "======================================================================="
 ###############################################################################
 print '\n{0} total clones in primary (mapping to {1} genes)\n'.format(
-        str(len(clone_to_mapping)), str(len(mapping_to_clones)))
+    str(len(clone_to_mapping)), str(len(mapping_to_clones)))
 
 for k, v in all_scores.iteritems():
     print 'Example of item in all_scores:'
@@ -210,10 +212,12 @@ for k, v in secondary_clones.iteritems():
     break
 
 print 'Number of clones missing from secondary: {0}'.format(
-        str(len(missing_clones)))
+    str(len(missing_clones)))
+
 
 def get_number_of_columns(x):
     return int(math.ceil(x / 8.0))
+
 
 wells = len(missing_universal)
 columns = get_number_of_columns(wells)
@@ -226,7 +230,7 @@ for k, v in missing_unique.iteritems():
     mutlist.append((wells, columns, k))
 
 for item in sorted(mutlist, reverse=True):
-  print '{2}: {0} clones, {1} columns'.format(item[0], item[1], item[2])
+    print '{2}: {0} clones, {1} columns'.format(item[0], item[1], item[2])
 
 i = 0
 print '\nExamples of missing clones:'
