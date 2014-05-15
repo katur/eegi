@@ -3,7 +3,8 @@ import math
 from Clone import Clone
 from Mutant import get_mutant
 from ScoreData import ExperimentScoreData, CloneScoreData
-from Well import ten_wells, nine_wells
+from Plate import (get_destination_wells,
+                   get_destination_plates_and_start)
 
 
 def get_other_clones(clone):
@@ -152,7 +153,7 @@ for clone in tested_secondary_clones:
 print 'Finding which secondary clones must be cherry picked...\n'
 ###############################################################################
 missing_clones = {}
-missing_by_strain = {}
+missing_by_mutant = {}
 plates_to_stamp = set()
 
 do_not_grow_clones = [
@@ -187,9 +188,9 @@ for clone, mutants in secondary_clones.iteritems():
             if clone not in missing_clones:
                 missing_clones[clone] = []
             missing_clones[clone].append('universal')
-            if 'universal' not in missing_by_strain:
-                missing_by_strain['universal'] = []
-            missing_by_strain['universal'].append(clone)
+            if 'universal' not in missing_by_mutant:
+                missing_by_mutant['universal'] = []
+            missing_by_mutant['universal'].append(clone)
 
     # need not in be in universal plate
     else:
@@ -200,9 +201,9 @@ for clone, mutants in secondary_clones.iteritems():
                 if clone not in missing_clones:
                     missing_clones[clone] = []
                 missing_clones[clone].append(mutant)
-                if mutant not in missing_by_strain:
-                    missing_by_strain[mutant] = []
-                missing_by_strain[mutant].append(clone)
+                if mutant not in missing_by_mutant:
+                    missing_by_mutant[mutant] = []
+                missing_by_mutant[mutant].append(clone)
 
 # Check that all clones already in three unique plates are in new universal
 with open('input/AlreadyShouldBeUniversalClones.csv', 'rb') as csvfile:
@@ -210,7 +211,7 @@ with open('input/AlreadyShouldBeUniversalClones.csv', 'rb') as csvfile:
     for row in csvreader:
         clone_name = row[0]
         found = False
-        for clone in missing_by_strain['universal']:
+        for clone in missing_by_mutant['universal']:
             if clone.name != clone_name:
                 found = True
         assert found is True
@@ -251,14 +252,20 @@ def get_number_of_columns(x):
     return int(math.ceil(x / 8.0))
 
 
+def get_remainder(x):
+    return x % 8
+
+
 mutlist = []
-for k, v in missing_by_strain.iteritems():
+for k, v in missing_by_mutant.iteritems():
     wells = len(v)
     columns = get_number_of_columns(wells)
-    mutlist.append((wells, columns, k))
+    remainder = get_remainder(wells)
+    mutlist.append((wells, columns, k, remainder))
 
 for item in sorted(mutlist, reverse=True):
-    print '{2}: {0} clones, {1} columns'.format(item[0], item[1], item[2])
+    print '{2}: {0} clones, {1} columns, {3} remainder'.format(
+        item[0], item[1], item[2], item[3])
 
 print '\nnumber of plates to stamp: {0}'.format(str(len(plates_to_stamp)))
 no_need_to_stamp_plates = primary_plates - plates_to_stamp
@@ -275,43 +282,41 @@ with open('output/clone_stamp_list.csv', 'wb') as csvfile:
         writer.writerow([k.plate, k.well, k.name, str(v)])
 
 
-def get_plates(strain):
-    if strain == 'universal':
-        return ['universal']
-    else:
-        return strain.plates
+with open('output/cherry_picking_list.csv', 'wb') as cp_file, open(
+        'output/database_list.csv', 'wb') as db_file:
+    cp_writer = csv.writer(cp_file, delimiter=',')
+    db_writer = csv.writer(db_file, delimiter=',')
 
+    cp_writer.writerow(['clone', 'source plate', 'source well', 'mutant',
+                        'destination plate', 'destination well'])
 
-def get_wells(strain):
-    if strain == 'universal':
-        return ten_wells
-    else:
-        return nine_wells
-
-
-def get_first_well(strain):
-    if strain == 'universal':
-        return 'A01'
-    else:
-        return strain.first_well
-
-
-with open('output/cherry_picking_list.csv', 'wb') as csvfile:
-    writer = csv.writer(csvfile, delimiter=',')
-    writer.writerow(['clone', 'source plate', 'source well', 'mutant',
-                     'destination plate', 'destination well'])
-    for strain, clones in sorted(missing_by_strain.iteritems()):
-        plates = get_plates(strain)
-        plate_index = 0
-        wells = get_wells(strain)
-        well_index = wells.index(get_first_well(strain))
+    for mutant, clones in sorted(missing_by_mutant.iteritems()):
+        destination_plates, starting_well = get_destination_plates_and_start(
+            mutant)
+        destination_plate_index = 0
+        destination_wells = get_destination_wells(mutant)
+        destination_well_index = destination_wells.index(starting_well)
 
         for clone in sorted(clones):
-            plate = plates[plate_index]
-            well = wells[well_index]
-            writer.writerow([clone.name, clone.plate, clone.well, strain,
-                             plate, well])
-            well_index = well_index + 1
-            if well_index == len(wells):
-                plate_index += 1
-                well_index = 0
+            destination_plate = destination_plates[destination_plate_index]
+            destination_well = destination_wells[destination_well_index]
+            tile = 'Tile0000{0}.bmp'.format(
+                str(destination_well_index + 1).zfill(2))
+
+            cp_writer.writerow([
+                clone.name, clone.plate, clone.well, mutant,
+                destination_plate, destination_well
+            ])
+
+            # CherryPickRNAiPlate table in GenomeWideGI database expects:
+            # mutant, mutantAllele, RNAiPlateID, 96well, ImgName, clone,
+            # node_primary_name, seq_node_primary_name
+            db_writer.writerow([
+                destination_plate.db_mutant, destination_plate.db_mutantAllele,
+                destination_plate.db_RNAiPlateID, destination_well, tile,
+                clone.name
+            ])
+            destination_well_index += 1
+            if destination_well_index == len(destination_wells):
+                destination_plate_index += 1
+                destination_well_index = 0
