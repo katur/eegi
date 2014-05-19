@@ -10,10 +10,10 @@
 *.so
 *.pyc
 
-# Temporary files #
+# Temporary files
 *.swp
 
-# OS generated files #
+# OS generated files
 .DS_Store
 .DS_Store?
 ._*
@@ -34,7 +34,7 @@ Thumbs.db
 *.tar
 *.zip
 
-# Logs and databases #
+# Logs and databases
 *.log
 *.sql
 *.sqlite
@@ -43,7 +43,7 @@ Thumbs.db
 # Photoshop files
 *.psd
 
-# Videos #
+# Videos
 *.avi
 *.mp4
 *.ogg
