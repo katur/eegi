@@ -1,25 +1,23 @@
 {% load staticfiles %}
-<div id="footer">
-  <a href="http://www.nyu.edu/">
-    <img alt="NYU logo" src="{% static "website/img/nyu-logo.png" %}"/></a>
+<a href="http://www.nyu.edu/">
+  <img alt="NYU logo" src="{% static "website/img/nyu-logo.png" %}"/></a>
 
-  <a href="http://cgsb.as.nyu.edu/">
-    <img alt="NYU CGSB logo" src="{% static "website/img/cgsb-logo.png" %}"/></a>
+<a href="http://cgsb.as.nyu.edu/">
+  <img alt="NYU CGSB logo" src="{% static "website/img/cgsb-logo.png" %}"/></a>
 
-  Copyright
-  <a href="http://cgsb.as.nyu.edu/">
-    Center for Genomics and Systems Biology</a>,
-  <a href="http://www.nyu.edu/">
-    NYU</a>,
-  <!-- print current year -->
-  {% now "Y" %}.
+Copyright
+<a href="http://cgsb.as.nyu.edu/">
+  Center for Genomics and Systems Biology</a>,
+<a href="http://www.nyu.edu/">
+  NYU</a>,
+<!-- print current year -->
+{% now "Y" %}.
 
-  Website by
-  <a href="http://www.katherineerickson.com/">
-    Katherine Erickson</a>,
+Website by
+<a href="http://www.katherineerickson.com/">
+  Katherine Erickson</a>,
 
-  code on
-  <a href="https://github.com/katur/eegi">
-    GitHub</a>,
-  {% now "Y" %}.
-</div>
+code on
+<a href="https://github.com/katur/eegi">
+  GitHub</a>,
+{% now "Y" %}.
