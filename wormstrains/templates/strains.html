@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Worm Strains{% endblock %}
+
+{% block content %}
+<table>
+  <thead>
+    <tr>
+      <th>Strain</th>
+      <th>Genotype</th>
+      <th>Permissive Temperature</th>
+      <th>Restrictive Temperature</th>
+    </tr>
+  </thead>
+
+  {% for strain in strains %}
+  <tr>
+    <td><a href="{{ strain.url }}">{{ strain }}</a></td>
+    <td>{{ strain.genotype }}</td>
+    <td>{{ strain.permissive_temperature }}</td>
+    <td>{{ strain.restrictive_temperature }}</td>
+  </tr>
+  {% endfor %}
+
+</table>
+{% endblock %}
