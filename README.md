@@ -1,5 +1,5 @@
-Genome-Wide Genetic Interactions Project
-========================================
+Genome-Wide Early Embryogenesis Genetic Interactions Project
+============================================================
 Web interface and programs
 --------------------------
 
