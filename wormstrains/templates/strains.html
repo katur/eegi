@@ -13,22 +13,23 @@
     </tr>
   </thead>
 
-  {% for strain in strains %}
-  <tr>
-    <td>
-      {% if strain.on_wormbase %}
-        <a href="{{ strain.url }}">
-      {% endif %}
-      {{ strain }}
-      {% if strain.on_wormbase %}
-        </a>
-      {% endif %}
-    </td>
-    <td>{{ strain.genotype }}</td>
-    <td>{{ strain.permissive_temperature }}</td>
-    <td>{{ strain.restrictive_temperature }}</td>
-  </tr>
-  {% endfor %}
-
+  <tbody>
+    {% for strain in strains %}
+    <tr>
+      <td>
+        {% if strain.on_wormbase %}
+          <a href="{{ strain.url }}">
+        {% endif %}
+        {{ strain }}
+        {% if strain.on_wormbase %}
+          </a>
+        {% endif %}
+      </td>
+      <td>{{ strain.genotype }}</td>
+      <td>{{ strain.permissive_temperature }}</td>
+      <td>{{ strain.restrictive_temperature }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% endblock %}

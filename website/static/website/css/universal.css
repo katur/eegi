@@ -44,7 +44,7 @@ table {
   border-spacing: 0;
 }
 
-/********** fonts / links / background **********/
+/********** Fonts / links / background **********/
 body {
   font-family: Helvetica, sans-serif;
   color: #333;
@@ -91,6 +91,25 @@ a.active {
   cursor: default;
 }
 
+thead tr {
+  background: #ccc;
+}
+
+tbody tr:nth-child(even) {
+  background: #ddd;
+}
+
+tbody tr:nth-child(odd) {
+  background: #eee;
+}
+
+th {
+  font-weight: bold;
+}
+
+th, td {
+  padding: 10px
+}
 
 /********** Layout ***************/
 body {
@@ -106,4 +125,3 @@ body {
   float: bottom;
   margin-top: 200px;
 }
-
