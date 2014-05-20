@@ -1,5 +1,5 @@
-Genome-Wide Early Embryogenesis Genetic Interactions Project
-============================================================
+Genome-Wide EEGI (Early Embryogenesis Genetic Interactions) Project
+===================================================================
 Web interface and programs
 --------------------------
 
