@@ -1,5 +1,5 @@
 """
-Django settings for genetic_interactions project.
+Django settings for Early Embryo Genetic Interactions project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/dev/topics/settings/
@@ -49,9 +49,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'genetic_interactions.urls'
+ROOT_URLCONF = 'eegi.urls'
 
-WSGI_APPLICATION = 'genetic_interactions.wsgi.application'
+WSGI_APPLICATION = 'eegi.wsgi.application'
 
 
 # Database
