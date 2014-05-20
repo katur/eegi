@@ -1,0 +1,34 @@
+<h1>
+  <a href="{% url 'home_url' %}">
+    Early Embryo Genetic Interactions project
+  </a>
+</h1>
+
+<div id="login">
+  {% if user.is_authenticated %}
+  <a href="{% url 'logout_url' %}">Logout</a>
+  <a href="{% url 'admin:index' %}">Admin</a>
+
+  {% else %}
+  {% url 'login_url' as login_url %}
+  <a href="{{ login_url }}"
+      {% ifequal request.path login_url %}
+      class="active"
+      {% endifequal %}>
+    Login
+  </a>
+
+  {% endif %}
+</div>
+
+<!-- Menu -->
+<div id="menu">
+  {% url 'strains_url' as strains_url %}
+
+  <a href="{{ strains_url }}"
+      {% ifequal request.path strains_url %}
+      class="active"
+      {% endifequal %}>
+    Strains
+  </a>
+</div>
