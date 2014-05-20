@@ -83,8 +83,7 @@ a {
 }
 
 a:hover, a.active {
-  /* purple */
-  color: #937AA9;
+  color: #777;
 }
 
 a.active {
@@ -92,16 +91,16 @@ a.active {
 }
 
 table.striped thead tr {
-  background: #ccc;
+  background: #e0e0e0;
   font-weight: bold;
 }
 
 table.striped tbody tr:nth-child(even) {
-  background: #ddd;
+  background: #eee;
 }
 
 table.striped tbody tr:nth-child(odd) {
-  background: #eee;
+  background: #f8f8f8;
 }
 
 table.striped th, td {
