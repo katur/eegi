@@ -91,23 +91,20 @@ a.active {
   cursor: default;
 }
 
-thead tr {
+table.striped thead tr {
   background: #ccc;
-}
-
-tbody tr:nth-child(even) {
-  background: #ddd;
-}
-
-tbody tr:nth-child(odd) {
-  background: #eee;
-}
-
-th {
   font-weight: bold;
 }
 
-th, td {
+table.striped tbody tr:nth-child(even) {
+  background: #ddd;
+}
+
+table.striped tbody tr:nth-child(odd) {
+  background: #eee;
+}
+
+table.striped th, td {
   padding: 10px
 }
 
