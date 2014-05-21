@@ -29,6 +29,7 @@
   <a href="{% url 'admin:index' %}">Admin</a>
 
   {% else %}
+
   {% url 'login_url' as login_url %}
   <a href="{{ login_url }}"
       {% ifequal request.path login_url %}
@@ -36,7 +37,6 @@
       {% endifequal %}>
     Login
   </a>
-
   {% endif %}
 </div>
 

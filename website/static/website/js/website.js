@@ -1,7 +1,7 @@
 $(document).ready(function() {
   removePageTitleStyleIfEmpty();
-  // setResizeHandler();
-  // positionFooter();
+  setResizeHandler();
+  positionFooter();
 })
 
 removePageTitleStyleIfEmpty = function() {
@@ -20,6 +20,7 @@ setResizeHandler = function() {
 positionFooter = function() {
   footer = $("#footer");
   footerHeight = footer.outerHeight();
+  footerWidth= footer.width();
   windowHeight = $(window).height();
   contentHeight = $("html").height();
 
@@ -33,8 +34,9 @@ positionFooter = function() {
   footer.css(
     (contentHeight < windowHeight) ? {
       position: "absolute",
-      bottom: "0",
-      left: "0"
+      bottom: parseInt($("body").css("paddingBottom"), 10),
+      left: parseInt($("body").css("paddingLeft"), 10),
+      width: footerWidth
     } : {
       position: "static"
     }
