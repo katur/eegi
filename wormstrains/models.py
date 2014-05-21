@@ -37,14 +37,22 @@ class WormStrain(models.Model):
     def get_permissive_string(self):
         return temperature_to_string(self.permissive_temperature)
 
-    def __hash__(self):
-        return 31 * hash(self.gene) * hash(self.allele)
-
     def __str__(self):
         return self.name
 
     def __repr__(self):
         return self.__str__()
+
+    def __hash__(self):
+        return 31 * hash(self.gene) * hash(self.allele)
+
+    def __cmp__(self, other):
+        if self.genotype < other.genotype:
+            return -1
+        elif self.genotype > other.genotype:
+            return 1
+        else:
+            return 0
 
 
 def temperature_to_string(temperature):
