@@ -1,25 +1,37 @@
 {% load staticfiles %}
-<a href="http://www.nyu.edu/">
-  <img alt="NYU logo" src="{% static "website/images/nyu-logo.png" %}"/>
-</a>
 
-<a href="http://cgsb.as.nyu.edu/">
-  <img alt="NYU CGSB logo" src="{% static "website/images/cgsb-logo.png" %}"/>
-</a>
+<div id="logos">
+  <a href="http://www.nyu.edu/">
+    <img alt="NYU logo" src="{% static "website/images/nyu-logo.png" %}"/>
+  </a>
 
-Copyright
-<a href="http://cgsb.as.nyu.edu/">
-  Center for Genomics and Systems Biology</a>,
-<a href="http://www.nyu.edu/">
-  NYU</a>,
-<!-- print current year -->
-{% now "Y" %}.
+  <a href="http://cgsb.as.nyu.edu/">
+    <img alt="NYU CGSB logo" src="{% static "website/images/cgsb-logo.png" %}"/>
+  </a>
+</div>
 
-Website by
-<a href="http://www.katherineerickson.com/">
-  Katherine Erickson</a>,
+<div id="copyright">
+  <span>
+    Data copyright
+    <a href="http://cgsb.as.nyu.edu/">
+      Center for Genomics and Systems Biology</a>,
 
-code on
-<a href="https://github.com/katur/eegi">
-  GitHub</a>,
-{% now "Y" %}.
+    <a href="http://www.nyu.edu/">
+      NYU</a>,
+
+    <!-- print current year -->
+    {% now "Y" %}
+  </span>
+
+  <span>
+    Website by
+    <a href="http://www.katherineerickson.com/">
+      Katherine Erickson</a>,
+
+    code on
+    <a href="https://github.com/katur/eegi">
+      GitHub</a>,
+
+    {% now "Y" %}
+  </span>
+</div>

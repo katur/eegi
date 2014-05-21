@@ -4,10 +4,28 @@
   </a>
 </h1>
 
+<div id="menu">
+  {% url 'strains_url' as strains_url %}
+  {% url 'home_url' as home_url %}
+
+  <a href="{{ home_url }}"
+      {% ifequal request.path home_url %}
+      class="active"
+      {% endifequal %}>
+    Home
+  </a>
+
+  <a href="{{ strains_url }}"
+      {% ifequal request.path strains_url %}
+      class="active"
+      {% endifequal %}>
+    Strains
+  </a>
+</div>
+
 <div id="login">
   {% if user.is_authenticated %}
   <a href="{% url 'logout_url' %}">Logout</a>
-  <br>
   <a href="{% url 'admin:index' %}">Admin</a>
 
   {% else %}
@@ -22,14 +40,3 @@
   {% endif %}
 </div>
 
-<!-- Menu -->
-<div id="menu">
-  {% url 'strains_url' as strains_url %}
-
-  <a href="{{ strains_url }}"
-      {% ifequal request.path strains_url %}
-      class="active"
-      {% endifequal %}>
-    Strains
-  </a>
-</div>
