@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block page_title %}RNAi Clone Plates{% endblock %}
+
+{% block content %}
+<table class="striped">
+  <thead>
+    <tr>
+      <th>Plate Name</th>
+      <th>Screen Stage</th>
+      <th>Number of Wells</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for plate in clone_plates %}
+    <tr>
+      <td>{{ plate }}</td>
+      <td>{{ plate.screen_stage }}</td>
+      <td>{{ plate.number_of_wells }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

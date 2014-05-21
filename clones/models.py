@@ -43,7 +43,7 @@ class ClonePlate(models.Model):
             elif (self_parts[0] == other_parts[0]
                   and len(self_parts) > 1 and len(other_parts) > 1
                   and self_parts[1].isdigit() and other_parts[1].isdigit()):
-                return cmp(int(self_parts[2]), int(other_parts[1]))
+                return cmp(int(self_parts[1]), int(other_parts[1]))
 
             # All other situations, simply order alphabetically
             else:
