@@ -2,15 +2,26 @@ from django.db import models
 
 
 class WormStrain(models.Model):
+    """
+    A worm strain used in this experiment, including both mutant and
+    control strains.
+    """
+    # The name of this strain on Wormbase.org
     name = models.CharField(max_length=10, primary_key=True)
+
+    # Whether the strain is on Wormbase.org
+    on_wormbase = models.BooleanField(default=False)
+
+    # Gene and allele causing temperature-sensitivity in this strain
     gene = models.CharField(max_length=10, blank=True)
     allele = models.CharField(max_length=10, blank=True, unique=True)
     genotype = models.CharField(max_length=20, blank=True, unique=True)
+
+    # Temperatures in Celsius used for screening
     permissive_temperature = models.DecimalField(
         max_digits=3, decimal_places=1, null=True, blank=True)
     restrictive_temperature = models.DecimalField(
         max_digits=3, decimal_places=1, null=True, blank=True)
-    on_wormbase = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['genotype']
