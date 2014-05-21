@@ -7,15 +7,11 @@
       {% include "header.html" %}
     </div>
 
-    <!-- Page Title -->
-    <h2 id="page-title">
-      {% block page_title %}{% endblock %}
-    </h2>
+    <div id="content">
+      <h2 id="page-title">{% block page_title %}{% endblock %}</h2>
+      {% block content %}{% endblock %}
+    </div>
 
-    <!-- Remainder of Content -->
-    {% block content %}{% endblock %}
-
-    <!-- Footer -->
     <div id="footer">
       {% include "footer.html" %}
     </div>
