@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block page_title %}Experiment Plates{% endblock %}
+
+{% block content %}
+<table class="striped">
+  <thead>
+    <tr>
+      <th>Experiment ID</th>
+      <th>Worm Strain</th>
+      <th>Worm Genotype</th>
+      <th>RNAi Clone Plate</th>
+      <th>Temperature</th>
+      <th>Date</th>
+      <th>Is Junk</th>
+      <th>Comment</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for experiment in experiments %}
+    <tr>
+      <td>{{ experiment.id }}</td>
+      <td>{{ experiment.worm_strain }}</td>
+      <td>{{ experiment.worm_strain__genotype }}</td>
+      <td>{{ experiment.clone_plate }}</td>
+      <td>{{ experiment.temperature }}</td>
+      <td>{{ experiment.date }}</td>
+      <td>{{ experiment.is_junk }}</td>
+      <td>{{ experiment.comment }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -8,6 +8,7 @@
   {% url 'home_url' as home_url %}
   {% url 'strains_url' as strains_url %}
   {% url 'clone_plates_url' as clone_plates_url %}
+  {% url 'experiments_url' as experiments_url %}
 
   <a href="{{ home_url }}"
       {% ifequal request.path home_url %}
@@ -30,6 +31,12 @@
     RNAi Clone Plates
   </a>
 
+  <a href="/experiments/0/1000"
+      {% ifequal request.path experiments_url %}
+      class="active"
+      {% endifequal %}>
+    Experiments
+  </a>
 </div>
 
 <div id="login">

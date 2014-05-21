@@ -17,3 +17,12 @@ class Experiment(models.Model):
     date = models.DateField()
     is_junk = models.BooleanField(default=False)
     comment = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['id']
+
+    def __str__(self):
+        return str(self.id)
+
+    def __repr__(self):
+        return self.__str__()
