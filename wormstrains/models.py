@@ -18,6 +18,12 @@ class WormStrain(models.Model):
     def get_wormbase_url(self):
         return 'http://www.wormbase.org/species/c_elegans/strain/' + self.name
 
+    def get_restrictive_string(self):
+        return temperature_to_string(self.restrictive_temperature)
+
+    def get_permissive_string(self):
+        return temperature_to_string(self.permissive_temperature)
+
     def __hash__(self):
         return 31 * hash(self.gene) * hash(self.allele)
 
@@ -26,3 +32,10 @@ class WormStrain(models.Model):
 
     def __repr__(self):
         return self.__str__()
+
+
+def temperature_to_string(temperature):
+    if temperature:
+        return str(temperature) + 'C'
+    else:
+        return None
