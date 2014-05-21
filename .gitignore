@@ -11,6 +11,8 @@
 *.pyc
 
 # Temporary files
+*.sassc
+*.scssc
 *.swp
 
 # OS generated files

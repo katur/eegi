@@ -1,4 +1,4 @@
-/******* Get rid of native browser styles ****************/
+/********** Get rid of native browser styles **********/
 /* http://meyerweb.com/eric/tools/css/reset/
    v2.0 | 20110126
    License: none (public domain)
@@ -42,82 +42,4 @@ q:before, q:after {
 table {
   border-collapse: collapse;
   border-spacing: 0;
-}
-
-/********** Fonts / links / background **********/
-body {
-  font-family: Helvetica, sans-serif;
-  color: #333;
-  font-size: 16px;
-  line-height: 130%;
-}
-
-i, em {
-  font-style: italic;
-}
-
-b, strong {
-  font-weight: bold;
-}
-
-h1, h2, h3, h4 {
-  font-weight: normal;
-}
-
-h1 {
-  font-size: 36px;
-  margin-bottom: 20px;
-}
-
-h2 {
-  font-size: 24px;
-}
-
-h2 {
-  margin-bottom: 30px;
-}
-
-a {
-  text-decoration: none;
-  color: #663399;
-}
-
-a:hover, a.active {
-  color: #777;
-}
-
-a.active {
-  cursor: default;
-}
-
-table.striped thead tr {
-  background: #e0e0e0;
-  font-weight: bold;
-}
-
-table.striped tbody tr:nth-child(even) {
-  background: #eee;
-}
-
-table.striped tbody tr:nth-child(odd) {
-  background: #f8f8f8;
-}
-
-table.striped th, td {
-  padding: 10px
-}
-
-/********** Layout ***************/
-body {
-  padding: 40px;
-}
-
-#header {
-  float: top;
-  margin-bottom: 40px;
-}
-
-#footer {
-  float: bottom;
-  margin-top: 200px;
 }
