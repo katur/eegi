@@ -16,8 +16,8 @@ class WormStrain(models.Model):
 
     # Gene and allele causing temperature-sensitivity in this strain
     gene = models.CharField(max_length=10, blank=True)
-    allele = models.CharField(max_length=10, blank=True, unique=True)
-    genotype = models.CharField(max_length=20, blank=True, unique=True)
+    allele = models.CharField(max_length=10, blank=True)
+    genotype = models.CharField(max_length=20, blank=True)
 
     # Temperatures in Celsius used for screening
     permissive_temperature = models.DecimalField(

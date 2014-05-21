@@ -13,5 +13,5 @@ class ClonePlate(models.Model):
     GenomeWideGI's CherryPickRNAiPlate table for distinct RNAiPlateID values.
     """
     name = models.CharField(max_length=20, primary_key=True)
-    number_of_wells = models.PositiveSmallIntegerField()
     screen_stage = models.PositiveSmallIntegerField(null=True, blank=True)
+    number_of_wells = models.PositiveSmallIntegerField()
