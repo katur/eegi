@@ -5,6 +5,8 @@ class WormStrain(models.Model):
     """
     A worm strain used in this experiment, including both mutant and
     control strains.
+
+    This table is not in the GenomeWideGI database. Rows were added manually.
     """
     # The name of this strain on Wormbase.org
     name = models.CharField(max_length=10, primary_key=True)
