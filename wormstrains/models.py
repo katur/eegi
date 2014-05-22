@@ -7,7 +7,7 @@ class WormStrain(models.Model):
     control strains.
     """
     # The name of this strain on Wormbase.org
-    name = models.CharField(max_length=10, primary_key=True)
+    id = models.CharField(max_length=10, primary_key=True)
 
     # Whether the strain is on Wormbase.org
     on_wormbase = models.BooleanField(default=False)
@@ -27,7 +27,7 @@ class WormStrain(models.Model):
         ordering = ['genotype']
 
     def get_wormbase_url(self):
-        return 'http://www.wormbase.org/species/c_elegans/strain/' + self.name
+        return 'http://www.wormbase.org/species/c_elegans/strain/' + self.id
 
     def get_restrictive_string(self):
         return temperature_to_string(self.restrictive_temperature)
@@ -36,7 +36,7 @@ class WormStrain(models.Model):
         return temperature_to_string(self.permissive_temperature)
 
     def __str__(self):
-        return self.name
+        return self.id
 
     def __repr__(self):
         return self.__str__()

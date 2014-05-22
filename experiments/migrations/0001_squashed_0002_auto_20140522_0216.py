@@ -6,9 +6,9 @@ from django.db import models, migrations
 
 class Migration(migrations.Migration):
 
+    replaces = [(b'experiments', '0001_initial'), (b'experiments', '0002_auto_20140522_0216')]
+
     dependencies = [
-        ('wormstrains', '__first__'),
-        ('clones', '__first__'),
     ]
 
     operations = [
@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
             name='Experiment',
             fields=[
                 ('id', models.PositiveIntegerField(serialize=False, primary_key=True)),
-                ('worm_strain', models.ForeignKey(to='wormstrains.WormStrain', to_field=b'name')),
-                ('clone_plate', models.ForeignKey(to='clones.ClonePlate', to_field=b'name')),
+                ('worm_strain', models.ForeignKey(to='wormstrains.WormStrain', to_field=b'id')),
+                ('clone_plate', models.ForeignKey(to='clones.ClonePlate', to_field=b'id')),
                 ('temperature', models.DecimalField(max_digits=3, decimal_places=1)),
                 ('date', models.DateField()),
                 ('is_junk', models.BooleanField(default=False)),
