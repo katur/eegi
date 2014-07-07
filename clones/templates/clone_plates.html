@@ -3,21 +3,55 @@
 {% block page_title %}RNAi Clone Plates{% endblock %}
 
 {% block content %}
+<div class="filters">
+  <a href="{% url 'clone_plates_url' %}"
+    {% ifequal request.GET.screen_stage None %}
+    class="active"
+    {% endifequal %}
+  >All</a>
 
-<div class="pagination">
-  <span class="step-links">
-    {% if clone_plates.has_previous %}
-    <a href="?page={{ clone_plates.previous_page_number }}">previous</a>
+  <a href="{% url 'clone_plates_url' %}?screen_stage=1"
+    {% ifequal request.GET.screen_stage "1" %}
+    class="active"
+    {% endifequal %}
+  >Primary</a>
+
+  <a href="{% url 'clone_plates_url' %}?screen_stage=2"
+    {% ifequal request.GET.screen_stage "2" %}
+    class="active"
+    {% endifequal %}
+  >Secondary</a>
+
+  <a href="{% url 'clone_plates_url' %}?screen_stage=0"
+    {% ifequal request.GET.screen_stage "0" %}
+    class="active"
+    {% endifequal %}
+  >Not used for screening</a>
+</div>
+
+<div>
+  <span id="total">
+    {{ plates|length }} total plates.
+  </span>
+
+  <div class="pagination">
+    {% if plates_to_display.has_previous %}
+    <a href="?page={{ plates_to_display.previous_page_number }}">
+      previous
+    </a>
     {% endif %}
 
     <span class="current">
-      Page {{ clone_plates.number }} of {{ clone_plates.paginator.num_pages }}.
+      Page {{ plates_to_display.number }}
+      of {{ plates_to_display.paginator.num_pages }}.
     </span>
 
-    {% if clone_plates.has_next %}
-    <a href="?page={{ clone_plates.next_page_number }}">next</a>
+    {% if plates_to_display.has_next %}
+    <a href="?page={{ plates_to_display.next_page_number }}">
+      next
+    </a>
     {% endif %}
-  </span>
+  </div>
 </div>
 
 <table class="striped">
@@ -30,7 +64,7 @@
   </thead>
 
   <tbody>
-    {% for plate in clone_plates %}
+    {% for plate in plates_to_display %}
     <tr>
       <td>{{ plate }}</td>
       <td>{{ plate.screen_stage }}</td>

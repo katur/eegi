@@ -5,16 +5,24 @@ from clones.models import ClonePlate
 
 
 def clone_plates(request):
-    clone_plates = sorted(ClonePlate.objects.all())
-    paginator = Paginator(clone_plates, 25)
+    screen_stage = request.GET.get('screen_stage')
+    if screen_stage:
+        plates = sorted(ClonePlate.objects.filter(
+            screen_stage=screen_stage))
+    else:
+        plates = sorted(ClonePlate.objects.all())
 
+    paginator = Paginator(plates, 50)
     page = request.GET.get('page')
     try:
-        clone_plates = paginator.page(page)
+        plates_to_display = paginator.page(page)
     except PageNotAnInteger:
-        clone_plates = paginator.page(1)
+        plates_to_display = paginator.page(1)
     except EmptyPage:
-        clone_plates = paginator.page(paginator.num_pages)
+        plates_to_display = paginator.page(paginator.num_pages)
 
-    context = {'clone_plates': clone_plates}
+    context = {
+        'plates': plates,
+        'plates_to_display': plates_to_display,
+    }
     return render(request, 'clone_plates.html', context)
