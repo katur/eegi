@@ -1,3 +1,14 @@
 from django.contrib import admin
+from clones.models import ClonePlate
 
-# Register your models here.
+
+class ClonePlateAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'screen_stage',
+        'number_of_wells',
+    )
+
+    list_filter = ('screen_stage', 'number_of_wells')
+
+admin.site.register(ClonePlate, ClonePlateAdmin)

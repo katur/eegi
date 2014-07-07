@@ -12,6 +12,7 @@ class ClonePlate(models.Model):
 
     class Meta:
         db_table = 'cloneplate'
+        ordering = ['id']
 
     def __str__(self):
         return self.id
