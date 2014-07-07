@@ -4,7 +4,7 @@ the eegi MySQL database for this Django project.
 eegi.WormStrain
 ---------------
 This table did not exist in GenomeWideGI.
-Simply populat by hand referencing the Google Doc (few total rows).
+Simply populate by hand referencing the Google Doc (few total rows).
 
 eegi.ClonePlate
 ---------------
@@ -21,6 +21,7 @@ Correct a misspelled allele in eegi.RawData:
   UPDATE RawData SET mutantAllele='zu310' WHERE mutantAllele='zc310';
 
 Temporarily set eegi.WormStrain.gene to 'N2' for N2, in order for join to work
+(the old database had N2 listed as a mutation).
 
 Select the fields needed for eegi.Experiment:
   INSERT INTO experiments.experiment
