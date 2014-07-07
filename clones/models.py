@@ -10,6 +10,9 @@ class ClonePlate(models.Model):
     screen_stage = models.PositiveSmallIntegerField(null=True, blank=True)
     number_of_wells = models.PositiveSmallIntegerField()
 
+    class Meta:
+        db_table = 'cloneplate'
+
     def __str__(self):
         return self.id
 

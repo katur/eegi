@@ -19,6 +19,7 @@ class Experiment(models.Model):
     comment = models.TextField(blank=True)
 
     class Meta:
+        db_table = 'experiment'
         ordering = ['id']
 
     def __str__(self):
