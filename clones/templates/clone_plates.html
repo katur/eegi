@@ -3,6 +3,23 @@
 {% block page_title %}RNAi Clone Plates{% endblock %}
 
 {% block content %}
+
+<div class="pagination">
+  <span class="step-links">
+    {% if clone_plates.has_previous %}
+    <a href="?page={{ clone_plates.previous_page_number }}">previous</a>
+    {% endif %}
+
+    <span class="current">
+      Page {{ clone_plates.number }} of {{ clone_plates.paginator.num_pages }}.
+    </span>
+
+    {% if clone_plates.has_next %}
+    <a href="?page={{ clone_plates.next_page_number }}">next</a>
+    {% endif %}
+  </span>
+</div>
+
 <table class="striped">
   <thead>
     <tr>
