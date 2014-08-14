@@ -5,6 +5,7 @@ from Mutant import get_mutant
 from ScoreData import ExperimentScoreData, CloneScoreData
 from Plate import (get_destination_wells,
                    get_destination_plates_and_start)
+from WellToTile import get_tile
 
 
 def get_other_clones(clone):
@@ -303,8 +304,7 @@ with open('output/cherry_picking_list.csv', 'wb') as cp_file, open(
         for clone in sorted(clones):
             destination_plate = destination_plates[destination_plate_index]
             destination_well = destination_wells[destination_well_index]
-            tile = 'Tile0000{0}.bmp'.format(
-                str(destination_well_index + 1).zfill(2))
+            destination_tile = get_tile(destination_well)
 
             cp_writer.writerow([
                 clone.name, clone.plate, clone.well, mutant,
@@ -316,8 +316,8 @@ with open('output/cherry_picking_list.csv', 'wb') as cp_file, open(
             # node_primary_name, seq_node_primary_name
             db_writer.writerow([
                 destination_plate.db_mutant, destination_plate.db_mutantAllele,
-                destination_plate.db_RNAiPlateID, destination_well, tile,
-                clone.name, clone_to_mapping[clone], 'X'
+                destination_plate.db_RNAiPlateID, destination_well,
+                destination_tile, clone.name, clone_to_mapping[clone], 'X'
             ])
             destination_well_index += 1
             if destination_well_index == len(destination_wells):
