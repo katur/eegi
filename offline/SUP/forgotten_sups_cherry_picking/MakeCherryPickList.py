@@ -289,6 +289,9 @@ with open('output/cherry_picking_list.csv', 'wb') as cp_file, open(
 
     cp_writer.writerow(['clone', 'source plate', 'source well', 'mutant',
                         'destination plate', 'destination well'])
+    db_writer.writerow(['mutant', 'mutantAllele', 'RNAiPlateID', '96well',
+                        'ImgName', 'clone', 'node_primary_name',
+                        'seq_node_primary_name'])
 
     for mutant, clones in sorted(missing_by_mutant.iteritems()):
         destination_plates, starting_well = get_destination_plates_and_start(
@@ -314,7 +317,7 @@ with open('output/cherry_picking_list.csv', 'wb') as cp_file, open(
             db_writer.writerow([
                 destination_plate.db_mutant, destination_plate.db_mutantAllele,
                 destination_plate.db_RNAiPlateID, destination_well, tile,
-                clone.name
+                clone.name, clone_to_mapping[clone], 'X'
             ])
             destination_well_index += 1
             if destination_well_index == len(destination_wells):
