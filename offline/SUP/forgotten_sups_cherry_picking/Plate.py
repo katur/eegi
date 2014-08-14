@@ -26,7 +26,7 @@ class Plate:
 plates = {
     'universal': Plate('universal', 'universal_F5', 'universal'),
     'tba-1 1': Plate('tba-1 1', 'or346_F6', get_mutant('tba-1')),
-    'tba-1 2': Plate('tba-1 1', 'or346_F7', get_mutant('tba-1')),
+    'tba-1 2': Plate('tba-1 2', 'or346_F7', get_mutant('tba-1')),
     'hcp-6': Plate('hcp-6', 'mr17_F3', get_mutant('hcp-6')),
     'hybrid 1': Plate('hybrid 1', 'hybrid_F1', 'hybrid'),
     'hybrid 2': Plate('hybrid 2', 'hybrid_F2', 'hybrid'),
