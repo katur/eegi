@@ -4,7 +4,8 @@ from Clone import Clone
 from Mutant import get_mutant
 from ScoreData import ExperimentScoreData, CloneScoreData
 from Plate import (get_destination_wells,
-                   get_destination_plates_and_start)
+                   get_destination_plates_and_start,
+                   plates)
 from WellToTile import get_tile
 
 
@@ -323,3 +324,19 @@ with open('output/cherry_picking_list.csv', 'wb') as cp_file, open(
             if destination_well_index == len(destination_wells):
                 destination_plate_index += 1
                 destination_well_index = 0
+
+    for k in plates:
+        destination_plate = plates[k]
+        for column in ['02', '07', '11']:
+            if destination_plate.deep_well == "universal" and column == '07':
+                continue
+            for row in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']:
+                destination_well = row + column
+                destination_tile = get_tile(destination_well)
+                db_writer.writerow([
+                    destination_plate.db_mutant,
+                    destination_plate.db_mutantAllele,
+                    destination_plate.db_RNAiPlateID,
+                    destination_well, destination_tile,
+                    'L4440', 'L4440', 'X'
+                ])
