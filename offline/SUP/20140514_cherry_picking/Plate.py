@@ -37,6 +37,20 @@ plates = {
 }
 
 
+skipped_wells = {
+    'universal': ['B02', 'G11'],
+    'tba-1 1': ['E02', 'G07', 'G11'],
+    'tba-1 2': ['H02', 'C07', 'A11'],
+    'hcp-6': ['B02', 'C07', 'C11'],
+    'hybrid 1': ['E02', 'D07', 'H11'],
+    'hybrid 2': ['C02', 'B07', 'H11'],
+    'hybrid 3': ['D02', 'D07', 'D11'],
+    'hybrid 4': ['E02', 'F07', 'E11'],
+    'hybrid 5': ['F02', 'H07', 'D11'],
+    'hybrid 6': ['A02', 'G07', 'D11'],
+}
+
+
 def get_destination_plates_and_start(mutant):
     if mutant == 'universal':
         return ([plates['universal']], 'A01')
