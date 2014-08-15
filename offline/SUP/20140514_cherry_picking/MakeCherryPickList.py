@@ -285,7 +285,7 @@ with open('output/clone_stamp_list.csv', 'wb') as csvfile:
 
 
 with open('output/cherry_picking_list.csv', 'wb') as cp_file, open(
-        'output/database_list.csv', 'wb') as db_file:
+        'output/20140514_CherryPickRNAiPlate.csv', 'wb') as db_file:
     cp_writer = csv.writer(cp_file, delimiter=',')
     db_writer = csv.writer(db_file, delimiter=',')
 
@@ -296,6 +296,12 @@ with open('output/cherry_picking_list.csv', 'wb') as cp_file, open(
                         'seq_node_primary_name'])
 
     for mutant, clones in sorted(missing_by_mutant.iteritems()):
+        if mutant != 'universal':
+            gene = mutant.gene
+            allele = mutant.allele
+        else:
+            gene = 'universal'
+            allele = 'universal'
         destination_plates, starting_well = get_destination_plates_and_start(
             mutant)
         destination_plate_index = 0
@@ -316,7 +322,7 @@ with open('output/cherry_picking_list.csv', 'wb') as cp_file, open(
             # mutant, mutantAllele, RNAiPlateID, 96well, ImgName, clone,
             # node_primary_name, seq_node_primary_name
             db_writer.writerow([
-                destination_plate.db_mutant, destination_plate.db_mutantAllele,
+                gene, allele,
                 destination_plate.db_RNAiPlateID, destination_well,
                 destination_tile, clone.name, clone_to_mapping[clone], 'X'
             ])
