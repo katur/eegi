@@ -71,6 +71,7 @@ to compile.
 
 Javascript is in [jQuery](http://jquery.com/).
 
-Purely offline, managerial scripts (e.g. to process data)
+Purely offline scripts to be run by the project maintainer
+(e.g. to migrate data from the old database)
 live in the standard location: `appname/management/commands/scriptname.py`,
-in order to be run as `./manage.py scriptname`.
+to be run with `./manage.py scriptname`.
