@@ -5,16 +5,9 @@ which used millions of pairwise gene knockdown experiments to uncover
 suppressor and enhancer phenotypes to reveal genetic interactions.
 
 
-## Dependencies
-
-Python version is listed in `runtime.txt`.
-
-Package dependencies are listed in `requirements.txt`.
-
-
 ## Database
 
-The database is MySQL, named eegi.
+The database is MySQL, and is named `eegi`.
 
 [Here](https://www.lucidchart.com/documents/view/4eb4bac8-5339-ae33-8c00-5ccd0a0085f4)
 is a web view of the database schema on Lucidchart.
@@ -26,17 +19,39 @@ Notes on migrating the data from Huey-Ling's MySQL database
 (`GenomeWideGI` on pleiades)
 are in `database_migration_notes.md`.
 
+
+## Dependencies
+
+Python version is listed in `runtime.txt`.
+
+Package dependencies are listed in `requirements.txt`.
+These should be [pip](https://pypi.python.org/pypi/pip)-installed into a fresh
+[Python virtual environment](http://virtualenv.readthedocs.org/)
+wherever the project is served,
+either for development or production.
+I use
+[virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/)
+to make working with Python virtual environments easier.
+
+In a nutshell (assuming pip, virtualenv, and virtualenvwrapper already
+installed):
+
+    mkvirtualenv eegi
+    workon eegi
+    pip install -r requirements.txt
+
+
 ## Apps
 
 The project is organized into four apps.
 
 `worms` captures the *C. elegans* strains used in the screen.
 
-`library` captures the physical RNAi stocks used in the screen,
-including sequencing results off these plates.
-
 `clones` captures the theoretical identity of the RNAi clones,
 including mapping information.
+
+`library` captures the physical RNAi stocks used in the screen,
+including sequencing results off these plates.
 
 `experiments` captures the experiments (each a worm combined with an RNAi
 library plate),
