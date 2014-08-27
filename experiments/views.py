@@ -7,7 +7,7 @@ def experiments(request, start, end):
         Experiment.objects
         .filter(id__gte=start).filter(id__lt=end)
         .values('id', 'worm_strain', 'worm_strain__genotype',
-                'clone_plate', 'temperature', 'date', 'is_junk',
+                'library_plate', 'temperature', 'date', 'is_junk',
                 'comment')
     )
     context = {'experiments': experiments}

@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class ClonePlate(models.Model):
+class LibraryPlate(models.Model):
     """
     A library plate of RNAi feeding clones. This plate is meant to represent
     the theoretical plate, not an individual frozen stock of the plate.
@@ -11,7 +11,7 @@ class ClonePlate(models.Model):
     number_of_wells = models.PositiveSmallIntegerField()
 
     class Meta:
-        db_table = 'cloneplate'
+        db_table = 'LibraryPlate'
         ordering = ['id']
 
     def __str__(self):

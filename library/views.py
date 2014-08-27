@@ -1,16 +1,16 @@
 from django.shortcuts import render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from clones.models import ClonePlate
+from library.models import LibraryPlate
 
 
-def clone_plates(request):
+def library_plates(request):
     screen_stage = request.GET.get('screen_stage')
     if screen_stage:
-        plates = sorted(ClonePlate.objects.filter(
+        plates = sorted(LibraryPlate.objects.filter(
             screen_stage=screen_stage))
     else:
-        plates = sorted(ClonePlate.objects.all())
+        plates = sorted(LibraryPlate.objects.all())
 
     paginator = Paginator(plates, 50)
     page = request.GET.get('page')
@@ -25,4 +25,4 @@ def clone_plates(request):
         'plates': plates,
         'plates_to_display': plates_to_display,
     }
-    return render(request, 'clone_plates.html', context)
+    return render(request, 'library_plates.html', context)

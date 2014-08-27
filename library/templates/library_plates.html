@@ -1,28 +1,28 @@
 {% extends "base.html" %}
 
-{% block page_title %}RNAi Clone Plates{% endblock %}
+{% block page_title %}RNAi Library Plates{% endblock %}
 
 {% block content %}
 <div class="filters">
-  <a href="{% url 'clone_plates_url' %}"
+  <a href="{% url 'library_plates_url' %}"
     {% ifequal request.GET.screen_stage None %}
     class="active"
     {% endifequal %}
   >All</a>
 
-  <a href="{% url 'clone_plates_url' %}?screen_stage=1"
+  <a href="{% url 'library_plates_url' %}?screen_stage=1"
     {% ifequal request.GET.screen_stage "1" %}
     class="active"
     {% endifequal %}
   >Primary</a>
 
-  <a href="{% url 'clone_plates_url' %}?screen_stage=2"
+  <a href="{% url 'library_plates_url' %}?screen_stage=2"
     {% ifequal request.GET.screen_stage "2" %}
     class="active"
     {% endifequal %}
   >Secondary</a>
 
-  <a href="{% url 'clone_plates_url' %}?screen_stage=0"
+  <a href="{% url 'library_plates_url' %}?screen_stage=0"
     {% ifequal request.GET.screen_stage "0" %}
     class="active"
     {% endifequal %}

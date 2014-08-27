@@ -6,7 +6,7 @@ class ExperimentAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'worm_strain',
-        'clone_plate',
+        'library_plate',
         'temperature',
         'date',
         'is_junk',
@@ -18,13 +18,13 @@ class ExperimentAdmin(admin.ModelAdmin):
         'date',
         'temperature',
         'worm_strain',
-        'clone_plate',
+        'library_plate',
     )
 
     search_fields = (
         'id',
-        'clone_plate__id',
         'worm_strain__id',
+        'library_plate__id',
     )
 
 

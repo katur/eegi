@@ -24,7 +24,7 @@ class WormStrain(models.Model):
         max_digits=3, decimal_places=1, null=True, blank=True)
 
     class Meta:
-        db_table = 'wormstrain'
+        db_table = 'WormStrain'
         ordering = ['genotype']
 
     def get_wormbase_url(self):

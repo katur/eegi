@@ -1,8 +1,8 @@
 from django.contrib import admin
-from clones.models import ClonePlate
+from library.models import LibraryPlate
 
 
-class ClonePlateAdmin(admin.ModelAdmin):
+class LibraryPlateAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'screen_stage',
@@ -15,4 +15,4 @@ class ClonePlateAdmin(admin.ModelAdmin):
         'id',
     )
 
-admin.site.register(ClonePlate, ClonePlateAdmin)
+admin.site.register(LibraryPlate, LibraryPlateAdmin)

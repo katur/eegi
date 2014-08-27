@@ -9,20 +9,6 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 from local_settings import DEBUG, DATABASES, SECRET_KEY
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = ''
-
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-
-# Database
-# https://docs.djangoproject.com/en/dev/ref/settings/#databases
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
@@ -47,9 +33,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'website',
+    'worms',
+    'library',
     'experiments',
-    'wormstrains',
-    'clones',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -57,7 +43,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -72,7 +57,7 @@ WSGI_APPLICATION = 'eegi.wsgi.application'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 

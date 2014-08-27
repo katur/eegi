@@ -1,6 +1,6 @@
 from django.db import models
-from wormstrains.models import WormStrain
-from clones.models import ClonePlate
+from worms.models import WormStrain
+from library.models import LibraryPlate
 
 
 class Experiment(models.Model):
@@ -12,14 +12,14 @@ class Experiment(models.Model):
     """
     id = models.PositiveIntegerField(primary_key=True)
     worm_strain = models.ForeignKey(WormStrain)
-    clone_plate = models.ForeignKey(ClonePlate)
+    library_plate = models.ForeignKey(LibraryPlate)
     temperature = models.DecimalField(max_digits=3, decimal_places=1)
     date = models.DateField()
     is_junk = models.BooleanField(default=False)
     comment = models.TextField(blank=True)
 
     class Meta:
-        db_table = 'experiment'
+        db_table = 'Experiment'
         ordering = ['id']
 
     def __str__(self):

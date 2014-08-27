@@ -1,5 +1,5 @@
 from django.contrib import admin
-from wormstrains.models import WormStrain
+from worms.models import WormStrain
 
 
 class WormStrainAdmin(admin.ModelAdmin):
