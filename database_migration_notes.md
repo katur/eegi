@@ -17,9 +17,11 @@ This table also did not exist in GenomeWideGI.
 There are very few 384-well plates, so I added these by hand.
 
 Insert Primary 96-well plates:
+
     SELECT DISTINCT RNAiPlateID FROM RNAiPlate;
 
 Insert Secondary 96-well plates:
+
     SELECT DISTINCT RNAiPlateID FROM CherryPickRNAiPlate;
 
 
@@ -28,12 +30,14 @@ eegi.Experiment
 First, copy GenomeWideGI.RawData to eegi.RawData.
 
 Correct misspelled allele in eegi.RawData:
+
     UPDATE RawData SET mutantAllele='zu310' WHERE mutantAllele='zc310';
 
 Temporarily set eegi.WormStrain.gene to 'N2' for N2, in order for join to work
 (the old database had N2 listed as a mutation).
 
 Then:
+
     INSERT INTO experiments.experiment
     SELECT expID, worms.name, plates.name,
         CAST(SUBSTRING_INDEX(temperature, 'C', 1) AS DECIMAL(3,1)),
