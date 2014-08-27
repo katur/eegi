@@ -20,10 +20,10 @@ The database is MySQL, named eegi.
 is a web view of the database schema on Lucidchart.
 
 [Here](https://www.lucidchart.com/publicSegments/view/53f3c896-8854-49cc-8c3a-69d30a005381)
-is a the same view as a pdf.
+is a the same schema view as a pdf.
 
 Notes on migrating the data from Huey-Ling's MySQL database
-(`GenomeWideGI` on `pleiades.bio.nyu.edu`)
+(`GenomeWideGI` on pleiades)
 are in `database_migration_notes.md`.
 
 
