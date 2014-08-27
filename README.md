@@ -51,10 +51,9 @@ The project is organized into four apps.
 including mapping information.
 
 `library` captures the physical RNAi stocks used in the screen,
-including sequencing results off these plates.
+including sequencing results.
 
-`experiments` captures the experiments (each a worm combined with an RNAi
-library plate),
+`experiments` captures the actual experiments,
 including human and machine scores derived from these experiments.
 
 
