@@ -6,8 +6,8 @@
 
 <div id="menu">
   {% url 'home_url' as home_url %}
-  {% url 'strains_url' as strains_url %}
-  {% url 'clone_plates_url' as clone_plates_url %}
+  {% url 'worm_strains_url' as worm_strains_url %}
+  {% url 'library_plates_url' as library_plates_url %}
   {% url 'experiments_url' as experiments_url %}
 
   <a href="{{ home_url }}"
@@ -17,15 +17,15 @@
     Home
   </a>
 
-  <a href="{{ strains_url }}"
-      {% ifequal request.path strains_url %}
+  <a href="{{ worm_strains_url }}"
+      {% ifequal request.path worm_strains_url %}
       class="active"
       {% endifequal %}>
     Worm Strains
   </a>
 
-  <a href="{{ clone_plates_url }}"
-      {% ifequal request.path clone_plates_url %}
+  <a href="{{ library_plates_url }}"
+      {% ifequal request.path library_plates_url %}
       class="active"
       {% endifequal %}>
     RNAi Clone Plates
@@ -55,4 +55,3 @@
   </a>
   {% endif %}
 </div>
-
