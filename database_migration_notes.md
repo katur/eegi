@@ -2,7 +2,7 @@ Notes about how to migrate the data from the GenomeWideGI MySQL database into
 the eegi MySQL database for this Django project.
 
 
-eegi.WormStrain
+WormStrain
 ---------------
 This table did not exist in GenomeWideGI.
 
@@ -10,7 +10,7 @@ Since it is less than 30 rows, I simply populated by hand,
 referencing the Google Doc "GWGI worm strains and temperatures".
 
 
-eegi.ClonePlate
+ClonePlate
 ---------------
 This table also did not exist in GenomeWideGI.
 
@@ -25,7 +25,7 @@ Insert Secondary 96-well plates:
     SELECT DISTINCT RNAiPlateID FROM CherryPickRNAiPlate;
 
 
-eegi.Experiment
+Experiment
 ---------------
 First, copy GenomeWideGI.RawData to eegi.RawData.
 
