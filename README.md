@@ -28,8 +28,7 @@ Package dependencies, including Django itself,
 are listed in `requirements.txt`.
 These should be [pip](https://pypi.python.org/pypi/pip)-installed into a fresh
 [Python virtual environment](http://virtualenv.readthedocs.org/)
-wherever the project is served,
-either for development or production.
+wherever the project runs (for development or production).
 I use
 [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/)
 to make working with Python virtual environments easier.
