@@ -54,7 +54,7 @@ including mapping information.
 including sequencing results.
 
 `experiments` captures the actual experiments,
-including human and machine scores derived from these experiments.
+including human and machine scores of results.
 
 
 ## Code
