@@ -11,4 +11,8 @@ class ClonePlateAdmin(admin.ModelAdmin):
 
     list_filter = ('screen_stage', 'number_of_wells')
 
+    search_fields = (
+        'id',
+    )
+
 admin.site.register(ClonePlate, ClonePlateAdmin)

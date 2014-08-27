@@ -14,11 +14,17 @@ class ExperimentAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
+        'is_junk',
+        'date',
+        'temperature',
         'worm_strain',
         'clone_plate',
-        'temperature',
-        'date',
-        'is_junk'
+    )
+
+    search_fields = (
+        'id',
+        'clone_plate__id',
+        'worm_strain__id',
     )
 
 
