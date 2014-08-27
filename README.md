@@ -24,7 +24,8 @@ are in `database_migration_notes.md`.
 
 Python version is listed in `runtime.txt`.
 
-Package dependencies are listed in `requirements.txt`.
+Package dependencies, including Django itself,
+are listed in `requirements.txt`.
 These should be [pip](https://pypi.python.org/pypi/pip)-installed into a fresh
 [Python virtual environment](http://virtualenv.readthedocs.org/)
 wherever the project is served,
