@@ -10,19 +10,14 @@ Since it is less than 30 rows, I simply populated by hand,
 referencing the Google Doc "GWGI worm strains and temperatures".
 
 
-ClonePlate
+LibraryPlate
 ---------------
 This table also did not exist in GenomeWideGI.
 
-There are very few 384-well plates, so I added these by hand.
+There are very few 384-well plates, so I just added these by hand.
 
-Insert Primary 96-well plates:
-
-    SELECT DISTINCT RNAiPlateID FROM RNAiPlate;
-
-Insert Secondary 96-well plates:
-
-    SELECT DISTINCT RNAiPlateID FROM CherryPickRNAiPlate;
+Use `.manage.py migrate_data_LibraryPlate` to add all 96-well plates
+(both primary and secondary).
 
 
 Experiment
