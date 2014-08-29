@@ -10,5 +10,6 @@ def experiments(request, start, end):
                 'library_plate', 'temperature', 'date', 'is_junk',
                 'comment')
     )
+
     context = {'experiments': experiments}
     return render(request, 'experiments.html', context)

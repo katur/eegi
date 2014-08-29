@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load extra_template_tags %}
 
 {% block page_title %}Experiment Plates{% endblock %}
 
@@ -24,7 +25,7 @@
       <td>{{ experiment.worm_strain }}</td>
       <td>{{ experiment.worm_strain__genotype }}</td>
       <td>{{ experiment.library_plate }}</td>
-      <td>{{ experiment.temperature }}</td>
+      <td>{{ experiment.temperature|get_celsius_string }}</td>
       <td>{{ experiment.date }}</td>
       <td>{{ experiment.is_junk }}</td>
       <td>{{ experiment.comment }}</td>

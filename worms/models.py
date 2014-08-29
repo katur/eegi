@@ -33,12 +33,6 @@ class WormStrain(models.Model):
     def get_lab_website_url(self):
         return 'http://gunsiano.webfactional.com/strain/' + self.id
 
-    def get_restrictive_string(self):
-        return temperature_to_string(self.restrictive_temperature)
-
-    def get_permissive_string(self):
-        return temperature_to_string(self.permissive_temperature)
-
     def __str__(self):
         return self.id
 
@@ -55,10 +49,3 @@ class WormStrain(models.Model):
             return 1
         else:
             return 0
-
-
-def temperature_to_string(temperature):
-    if temperature:
-        return unicode(temperature) + u'\xb0' + 'C'
-    else:
-        return None
