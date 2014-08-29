@@ -22,7 +22,7 @@ class Command(BaseCommand):
     }
 
     To run program:
-    ./manage.py migrate_LibraryPlate_data
+    ./manage.py migrate_data_LibraryPlate
     """
     help = ('Update rows in LibraryPlate table according to legacy database')
 
