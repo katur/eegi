@@ -136,21 +136,19 @@ def sync_Experiment_table(cursor):
             return worm_strain
 
         except WormStrain.DoesNotExist:
-            sys.stdout.write('Strain with mutant: ' + row[1] +
-                             ', mutantAllele: ' + row[2] +
-                             ' in the legacy database does not match any '
-                             'worm strain in the new database\n')
-            sys.exit(1)
+            sys.exit('Strain with mutant: ' + row[1] +
+                     ', mutantAllele: ' + row[2] +
+                     ' in the legacy database does not match any '
+                     'worm strain in the new database\n')
 
     def get_library_plate(library_plate_as_string):
         try:
             return library_plates.get(id=row[3])
 
         except LibraryPlate.DoesNotExist:
-            sys.stdout.write('RNAiPlateID ' + row[3] + ' in the legacy '
-                             'database does not match any library plate '
-                             'in the new database')
-            sys.exit(1)
+            sys.exit('RNAiPlateID ' + row[3] + ' in the legacy '
+                     'database does not match any library plate '
+                     'in the new database')
 
     cursor.execute('SELECT '
                    'expID, mutant, mutantAllele, RNAiPlateID, '

@@ -43,7 +43,7 @@ installed):
 
 ## Apps
 
-The project is organized into four apps.
+The project is organized into four data-oriented apps.
 
 `worms` captures the *C. elegans* strains used in the screen.
 
@@ -55,6 +55,11 @@ including sequencing results.
 
 `experiments` captures the actual experiments,
 including human and machine scores of results.
+
+There is also an app `website` for aspects of the website that are common
+between apps.
+
+There is also an app `utils` for utilities shared by all apps.
 
 
 ## Code
