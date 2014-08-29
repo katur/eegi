@@ -1,5 +1,5 @@
 from django.db import models
-from worms.models import WormStrain
+from worms.models import WormStrain, temperature_to_string
 from library.models import LibraryPlate
 
 
@@ -21,6 +21,9 @@ class Experiment(models.Model):
     class Meta:
         db_table = 'Experiment'
         ordering = ['id']
+
+    def get_display_temperature(self):
+        return temperature_to_string(self.temperature)
 
     def __str__(self):
         return str(self.id)

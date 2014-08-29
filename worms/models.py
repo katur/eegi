@@ -59,6 +59,6 @@ class WormStrain(models.Model):
 
 def temperature_to_string(temperature):
     if temperature:
-        return str(temperature) + 'C'
+        return unicode(temperature) + u'\xb0' + 'C'
     else:
         return None
