@@ -87,19 +87,23 @@ def sync_LibraryPlate_table(cursor):
                                  '{}: {}\n'
                                  .format(plate_name,
                                          [d for d in differences]))
+            return True
+
         except LibraryPlate.DoesNotExist:
             new_plate.save()
             sys.stdout.write('Added new plate {} '
                              'to the database\n'
                              .format(plate_name))
+            return False
 
-    def sync_all_rows(cursor, screen_stage, legacy_table_name):
+    def sync_all_rows(legacy_table_name, screen_stage):
         cursor.execute('SELECT DISTINCT RNAiPlateID FROM ' + legacy_table_name)
         plates = cursor.fetchall()
         all_plates_present = True
 
         for row in plates:
-            sync_row(row, screen_stage)
+            present = sync_row(row, screen_stage)
+            all_plates_present |= present
 
         if all_plates_present:
             sys.stdout.write('LibraryPlate contained all plates from ' +
@@ -122,8 +126,8 @@ def sync_LibraryPlate_table(cursor):
 
     sync_row(['Eliana_ReArray_1'], 1)
     sync_row(['Eliana_ReArray_2'], 1)
-    sync_all_rows(cursor, 1, 'RNAiPlate')
-    sync_all_rows(cursor, 2, 'CherryPickRNAiPlate')
+    sync_all_rows('RNAiPlate', 1)
+    sync_all_rows('CherryPickRNAiPlate', 2)
 
 
 def sync_Experiment_table(cursor):
@@ -133,9 +137,6 @@ def sync_Experiment_table(cursor):
     Specifically, makes sure all experiments in RawData are included
     and synced in the new database.
     """
-    worm_strains = WormStrain.objects.all()
-    library_plates = LibraryPlate.objects.all()
-
     def get_worm_strain(mutant, mutantAllele):
         try:
             if mutant == 'N2':
@@ -143,42 +144,29 @@ def sync_Experiment_table(cursor):
                 allele = None
                 worm_strain = worm_strains.get(id='N2')
             else:
-                gene = row[1]
-                allele = row[2]
+                gene = mutant
+                allele = mutantAllele
                 if allele == 'zc310':
                     allele = 'zu310'
                 worm_strain = worm_strains.get(gene=gene, allele=allele)
             return worm_strain
 
         except WormStrain.DoesNotExist:
-            sys.exit('Strain with mutant: ' + row[1] +
-                     ', mutantAllele: ' + row[2] +
+            sys.exit('Strain with mutant: ' + mutant +
+                     ', mutantAllele: ' + mutantAllele +
                      ' in the legacy database does not match any '
                      'worm strain in the new database\n')
 
     def get_library_plate(library_plate_as_string):
         try:
-            return library_plates.get(id=row[3])
+            return library_plates.get(id=library_plate_as_string)
 
         except LibraryPlate.DoesNotExist:
-            sys.exit('RNAiPlateID ' + row[3] + ' in the legacy '
-                     'database does not match any library plate '
-                     'in the new database')
+            sys.exit('RNAiPlateID ' + library_plate_as_string +
+                     ' in the legacy database does not match any library '
+                     'plate in the new database')
 
-    cursor.execute('SELECT '
-                   'expID, mutant, mutantAllele, RNAiPlateID, '
-                   'CAST(SUBSTRING_INDEX(temperature, "C", 1) '
-                   'AS DECIMAL(3,1)), '
-                   'CAST(recordDate AS DATE), '
-                   'ABS(isJunk), '
-                   'comment FROM RawData '
-                   'WHERE (expID < 40000 OR expID>=50000) '
-                   'AND RNAiPlateID NOT LIKE "Julie%"')
-    experiments = cursor.fetchall()
-    recorded_experiments = Experiment.objects.all()
-    all_experiments_present = True
-
-    for row in experiments:
+    def sync_row(row):
         id = row[0]
         worm_strain = get_worm_strain(row[1], row[2])
         library_plate = get_library_plate(row[3])
@@ -206,13 +194,35 @@ def sync_Experiment_table(cursor):
             if differences:
                 sys.stdout.write('Updates to library plate {}: {}\n'
                                  .format(id, [d for d in differences]))
+            return True
 
         except Experiment.DoesNotExist:
             new_experiment.save()
             sys.stdout.write('Added new experiment {} to the database\n'
                              .format(new_experiment))
-            all_experiments_present = False
+            return False
 
-    if all_experiments_present:
-        sys.stdout.write('Experiment contained all experiments from '
-                         'legacy database\n')
+    def sync_all_rows():
+        all_experiments_present = True
+        cursor.execute('SELECT '
+                       'expID, mutant, mutantAllele, RNAiPlateID, '
+                       'CAST(SUBSTRING_INDEX(temperature, "C", 1) '
+                       'AS DECIMAL(3,1)), '
+                       'CAST(recordDate AS DATE), '
+                       'ABS(isJunk), '
+                       'comment FROM RawData '
+                       'WHERE (expID < 40000 OR expID>=50000) '
+                       'AND RNAiPlateID NOT LIKE "Julie%"')
+        experiments = cursor.fetchall()
+        for row in experiments:
+            present = sync_row(row)
+            all_experiments_present |= present
+
+        if all_experiments_present:
+            sys.stdout.write('Experiment contained all experiments from '
+                             'legacy database\n')
+
+    worm_strains = WormStrain.objects.all()
+    library_plates = LibraryPlate.objects.all()
+    recorded_experiments = Experiment.objects.all()
+    sync_all_rows()
