@@ -39,9 +39,6 @@ class WormStrain(models.Model):
     def __repr__(self):
         return self.__str__()
 
-    def __hash__(self):
-        return 31 * hash(self.gene) * hash(self.allele)
-
     def __cmp__(self, other):
         if self.genotype < other.genotype:
             return -1

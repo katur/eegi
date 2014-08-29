@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'south',
 
     'website',
+    'utils',
     'worms',
     'library',
     'experiments',
