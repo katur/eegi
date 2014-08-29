@@ -71,44 +71,59 @@ def sync_LibraryPlate_table(cursor):
     Specifically, makes sure all distinct RNAiPlateID from
     RNAiPlate and CherryPickRNAiPlate tables are included in the new database.
     """
-    def sync_screen_plates(cursor, screen_stage, screen_stage_string,
-                           legacy_table):
-        cursor.execute('SELECT DISTINCT RNAiPlateID FROM ' + legacy_table)
+    def sync_row(row, screen_stage, number_of_wells=96):
+        plate_name = row[0]
+        new_plate = LibraryPlate(id=plate_name,
+                                 screen_stage=screen_stage,
+                                 number_of_wells=number_of_wells)
+        try:
+            recorded_plate = recorded_plates.get(id=plate_name)
+            fields_to_compare = ('screen_stage', 'number_of_wells')
+            differences = compare_fields(recorded_plate, new_plate,
+                                         fields_to_compare,
+                                         update=False)
+            if differences:
+                sys.stdout.write('Updates to library plate ' +
+                                 '{}: {}\n'
+                                 .format(plate_name,
+                                         [d for d in differences]))
+        except LibraryPlate.DoesNotExist:
+            new_plate.save()
+            sys.stdout.write('Added new plate {} '
+                             'to the database\n'
+                             .format(plate_name))
+
+    def sync_all_rows(cursor, screen_stage, legacy_table_name):
+        cursor.execute('SELECT DISTINCT RNAiPlateID FROM ' + legacy_table_name)
         plates = cursor.fetchall()
-        recorded_plates = LibraryPlate.objects.filter(
-            screen_stage=screen_stage)
         all_plates_present = True
 
         for row in plates:
-            plate_name = row[0]
-            new_plate = LibraryPlate(id=plate_name,
-                                     screen_stage=screen_stage,
-                                     number_of_wells=96)
-            try:
-                recorded_plate = recorded_plates.get(id=plate_name)
-                fields_to_compare = ('screen_stage', 'number_of_wells')
-                differences = compare_fields(recorded_plate, new_plate,
-                                             fields_to_compare,
-                                             update=False)
-                if differences:
-                    sys.stdout.write('Updates to library plate ' +
-                                     '{}: {}\n'
-                                     .format(plate_name,
-                                             [d for d in differences]))
-            except LibraryPlate.DoesNotExist:
-                sys.stdout.write('Adding new plate {} '
-                                 'to the database\n'
-                                 .format(plate_name))
-                new_plate.save()
-                all_plates_present = False
+            sync_row(row, screen_stage)
 
         if all_plates_present:
-            sys.stdout.write('LibraryPlate contained all {} plates from '
-                             'legacy database\n'
-                             .format(screen_stage_string))
+            sys.stdout.write('LibraryPlate contained all plates from ' +
+                             'table {} in the legacy database\n'
+                             .format(legacy_table_name))
 
-    sync_screen_plates(cursor, 1, 'primary', 'RNAiPlate')
-    sync_screen_plates(cursor, 2, 'secondary', 'CherryPickRNAiPlate')
+    recorded_plates = LibraryPlate.objects.all()
+    original_384_plates = {
+        'I': 8,
+        'II': 9,
+        'III': 7,
+        'IV': 8,
+        'V': 13,
+        'X': 7,
+    }
+    for chromosome in original_384_plates:
+        number = original_384_plates[chromosome]
+        for i in range(number):
+            sync_row(['{}-{}'.format(chromosome, str(number))], 0, 384)
+
+    sync_row(['Eliana_ReArray_1'], 1)
+    sync_row(['Eliana_ReArray_2'], 1)
+    sync_all_rows(cursor, 1, 'RNAiPlate')
+    sync_all_rows(cursor, 2, 'CherryPickRNAiPlate')
 
 
 def sync_Experiment_table(cursor):
@@ -193,9 +208,9 @@ def sync_Experiment_table(cursor):
                                  .format(id, [d for d in differences]))
 
         except Experiment.DoesNotExist:
-            sys.stdout.write('Adding new experiment {} to the database'
-                             .format(new_experiment))
             new_experiment.save()
+            sys.stdout.write('Added new experiment {} to the database\n'
+                             .format(new_experiment))
             all_experiments_present = False
 
     if all_experiments_present:
