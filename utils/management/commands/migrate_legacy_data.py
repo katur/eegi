@@ -1,5 +1,6 @@
 import MySQLdb
 import sys
+import datetime
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,7 +9,8 @@ from eegi.local_settings import LEGACY_DATABASE
 
 from worms.models import WormStrain
 from library.models import LibraryPlate
-from experiments.models import Experiment, ManualScoreCode
+from experiments.models import Experiment, ManualScoreCode, ManualScore
+from utils import well_tile_conversion
 
 
 class Command(BaseCommand):
@@ -219,7 +221,27 @@ def update_ManualScoreCode_table(cursor):
 
 
 def update_ManualScore_table(cursor):
-    pass
+    """
+    Requires that ScoreYear, ScoreMonth, ScoreDate, and ScoreTime
+    are valid fields for a python datetime.datetime.
+    """
+    recorded_scores = ManualScore.objects.all()
+    cursor.execute('SELECT expID, ImgName, score, scoreBy, scoreYMD, '
+                   'ScoreYear, ScoreMonth, ScoreDate, ScoreTime '
+                   'FROM ManualScore')
+    legacy_rows = cursor.fetchall()
+    for legacy_row in legacy_rows:
+        experiment = get_experiment(legacy_row[0])
+        well = well_tile_conversion.get_well(legacy_row[1])
+        print well
+        score = legacy_row[2]
+        scorer = legacy_row[3]
+        date = get_date(legacy_row[5], legacy_row[6], legacy_row[7],
+                        legacy_row[8], legacy_row[4])
+        if not date:
+            sys.exit('ERROR: score of experiment {}, '
+                     'image {} could not be converted to a proper '
+                     'datetime'.format(legacy_row[0], legacy_row[1]))
 
 
 def update_DevstarScore_table(cursor):
@@ -345,6 +367,47 @@ def get_library_plate(library_plate_as_string):
         sys.exit('ERROR: RNAiPlateID ' + library_plate_as_string +
                  ' in the legacy database does not match any library '
                  'plate in the new database\n')
+
+
+def get_experiment(id):
+    try:
+        return Experiment.objects.get(id=id)
+    except ObjectDoesNotExist:
+        sys.exit('ERROR: Experiment ' + str(id) +
+                 'not found in the new database\n')
+
+
+def get_date(year, month, day, time, ymd):
+    """
+    Return a datetime.datetime object from an int year,
+    a 3-letter-string month (e.g. 'Jan'), an int day,
+    and a string time in format '00:00:00'.
+
+    If a ymd is passed in, it is simply confirmed to match the date derived
+    from the year/month/day/time.
+
+    If the year/month/day/time or ymd are not in the expected format,
+    or if both exist and are in the expected format yet they do not match
+    each other, returns None.
+    """
+    try:
+        string = '{}-{}-{}::{}'.format(year, month, day, time)
+        date = datetime.datetime.strptime(string, '%Y-%b-%d::%H:%M:%S')
+    except Exception:
+        return None
+    if ymd:
+        try:
+            hour, minute, second = time.split(':')
+            date_from_ymd = datetime.datetime(ymd.year, ymd.month, ymd.day,
+                                              int(hour), int(minute),
+                                              int(second))
+            if date != date_from_ymd:
+                return None
+
+        except Exception:
+            return None
+
+    return date
 
 
 def report_table_sync_outcome(all_match, legacy_table_name):
