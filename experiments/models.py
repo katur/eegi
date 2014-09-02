@@ -28,3 +28,20 @@ class Experiment(models.Model):
 
     def __repr__(self):
         return self.__str__()
+
+
+class ManualScoreCode(models.Model):
+    id = models.IntegerField(primary_key=True)
+    description = models.CharField(max_length=100, blank=True)
+    legacy_description = models.CharField(max_length=100, blank=True)
+
+    class Meta:
+        db_table = 'ManualScoreCode'
+        ordering = ['id']
+
+"""
+class ManualScore(models.Model):
+    experiment = models.ForeignKey(Experiment)
+    well = models.CharField(max_length=3)
+    score_code = models.ForeignKey(ManualScoreCode)
+"""

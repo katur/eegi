@@ -8,7 +8,7 @@ from eegi.local_settings import LEGACY_DATABASE
 
 from worms.models import WormStrain
 from library.models import LibraryPlate
-from experiments.models import Experiment
+from experiments.models import Experiment, ManualScoreCode
 
 
 class Command(BaseCommand):
@@ -171,7 +171,7 @@ def update_Experiment_table(cursor):
         )
 
         fields_to_compare = ('worm_strain', 'library_plate',
-                             'temperature', 'date', 'is_junk', 'comment')
+                             'temperature', 'date', 'is_junk', 'comment',)
         return update_or_save_object(legacy_experiment, recorded_experiments,
                                      fields_to_compare)
 
@@ -193,7 +193,29 @@ def update_Experiment_table(cursor):
 
 
 def update_ManualScoreCode_table(cursor):
-    pass
+    """
+    Update the ManualScoreCode table, against the legacy table of the same
+    name.
+    """
+    def sync_legacy_code(legacy_row):
+        legacy_code = ManualScoreCode(
+            id=legacy_row[0],
+            legacy_description=legacy_row[1].decode('utf8'),
+        )
+
+        fields_to_compare = ('legacy_description',)
+        return update_or_save_object(legacy_code, recorded_codes,
+                                     fields_to_compare)
+
+    recorded_codes = ManualScoreCode.objects.all()
+    cursor.execute('SELECT code, definition FROM ManualScoreCode')
+    legacy_rows = cursor.fetchall()
+    all_match = True
+    for legacy_row in legacy_rows:
+        match = sync_legacy_code(legacy_row)
+        all_match &= match
+
+    report_table_sync_outcome(all_match, 'ManualScoreCode')
 
 
 def update_ManualScore_table(cursor):
@@ -213,7 +235,7 @@ def update_LibraryWell_table(cursor):
 
 
 def update_LibrarySequencing_table(cursor):
-    print 'finish'
+    pass
 
 
 def update_or_save_object(legacy_object, recorded_objects, fields_to_compare):
