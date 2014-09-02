@@ -33,6 +33,7 @@ class Experiment(models.Model):
 class ManualScoreCode(models.Model):
     id = models.IntegerField(primary_key=True)
     description = models.CharField(max_length=100, blank=True)
+    short_description = models.CharField(max_length=50, blank=True)
     legacy_description = models.CharField(max_length=100, blank=True)
 
     class Meta:
