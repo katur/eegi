@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 from worms.models import WormStrain
 from library.models import LibraryPlate
@@ -40,9 +41,13 @@ class ManualScoreCode(models.Model):
         db_table = 'ManualScoreCode'
         ordering = ['id']
 
-"""
+
 class ManualScore(models.Model):
     experiment = models.ForeignKey(Experiment)
     well = models.CharField(max_length=3)
     score_code = models.ForeignKey(ManualScoreCode)
-"""
+    scorer = models.ForeignKey(User, null=True, blank=True)
+    timestamp = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'ManualScore'
