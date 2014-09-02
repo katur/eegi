@@ -23,8 +23,21 @@ class Command(BaseCommand):
         'PASSWORD': 'my_password',
     }
 
-    To run this command, from the project root:
+    To update all tables, execute as so (from the project root):
     ./manage.py migrate_legacy_data
+
+    To update just a range of tables, execute as so:
+    ./manage.py migrate_legacy_data start_step end_step
+
+    Where 'steps' are listed below (dependencies in parentheses):
+    1: LibraryPlate
+    2: Experiment (WormStrain, 1)
+    3: ManualScoreCode
+    4: ManualScore (2, 3)
+    5: DevstarScore (2)
+    6: Clone
+    7: LibraryWell (1, 6)
+    8: LibrarySequencing (7)
     """
     help = ('Update this database according to legacy database')
 
