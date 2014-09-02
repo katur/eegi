@@ -27,17 +27,19 @@ class Command(BaseCommand):
     ./manage.py migrate_legacy_data
 
     To update just a range of tables, execute as so:
-    ./manage.py migrate_legacy_data start_step end_step
+    ./manage.py migrate_legacy_data start end
 
-    Where 'steps' are listed below (dependencies in parentheses):
-    1: LibraryPlate
-    2: Experiment (WormStrain, 1)
-    3: ManualScoreCode
-    4: ManualScore (2, 3)
-    5: DevstarScore (2)
-    6: Clone
-    7: LibraryWell (1, 6)
-    8: LibrarySequencing (7)
+    Where start is inclusive, end is exclusive,
+    and the values for start and end reference the steps below
+    (dependencies in parentheses):
+    0: LibraryPlate
+    1: Experiment (WormStrain, 0)
+    2: ManualScoreCode
+    3: ManualScore (1, 2)
+    4: DevstarScore (1)
+    5: Clone
+    6: LibraryWell (0, 5)
+    7: LibrarySequencing (6)
     """
     help = ('Update this database according to legacy database')
 
@@ -45,6 +47,41 @@ class Command(BaseCommand):
         """
         Main script to update the database according to the legacy database.
         """
+        if len(args) != 0 and len(args) != 2:
+            sys.exit(
+                'Usage:\n'
+                './manage.py migrate_legacy_data\n'
+                'OR\n'
+                './manage.py migrate_legacy_data start end\n'
+                '(where start is inclusive and end is exclusive)\n'
+            )
+
+        steps = (
+            update_LibraryPlate_table,
+            update_Experiment_table,
+            update_ManualScoreCode_table,
+            update_ManualScore_table,
+            update_DevstarScore_table,
+            update_Clone_table,
+            update_LibraryWell_table,
+            update_LibrarySequencing_table,
+        )
+
+        if args:
+            try:
+                start = int(args[0])
+                end = int(args[1])
+            except ValueError:
+                sys.exit('Start and endpoints must be integers')
+            if start >= end:
+                sys.exit('Start must be less than end')
+            if (start < 0) or (end > len(steps)):
+                sys.exit('Start and end must be in range 0-{}'
+                         .format(str(len(steps))))
+        else:
+            start = 0
+            end = len(steps)
+
         proceed = False
         while not proceed:
             sys.stdout.write('This script modifies the database. '
@@ -65,8 +102,9 @@ class Command(BaseCommand):
                                     passwd=LEGACY_DATABASE['PASSWORD'],
                                     db=LEGACY_DATABASE['NAME'])
         cursor = legacy_db.cursor()
-        update_LibraryPlate_table(cursor)
-        update_Experiment_table(cursor)
+
+        for step in range(start, end):
+            steps[step](cursor)
 
 
 def update_LibraryPlate_table(cursor):
@@ -152,6 +190,30 @@ def update_Experiment_table(cursor):
         all_match &= match
 
     report_table_sync_outcome(all_match, 'RNAiPlateID')
+
+
+def update_ManualScoreCode_table(cursor):
+    pass
+
+
+def update_ManualScore_table(cursor):
+    pass
+
+
+def update_DevstarScore_table(cursor):
+    pass
+
+
+def update_Clone_table(cursor):
+    pass
+
+
+def update_LibraryWell_table(cursor):
+    pass
+
+
+def update_LibrarySequencing_table(cursor):
+    print 'finish'
 
 
 def update_or_save_object(legacy_object, recorded_objects, fields_to_compare):
