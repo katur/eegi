@@ -1,5 +1,5 @@
 from django.contrib import admin
-from experiments.models import Experiment
+from experiments.models import Experiment, ManualScoreCode, ManualScore
 
 
 class ExperimentAdmin(admin.ModelAdmin):
@@ -28,4 +28,39 @@ class ExperimentAdmin(admin.ModelAdmin):
     )
 
 
+class ManualScoreCodeAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'short_description',
+        'description',
+    )
+
+    search_fields = (
+        'short_description',
+        'description',
+    )
+
+
+class ManualScoreAdmin(admin.ModelAdmin):
+    list_display = (
+        'score_code',
+        'scorer',
+        'experiment',
+        'well',
+    )
+
+    list_filter = (
+        'experiment__worm_strain',
+        'score_code',
+        'scorer',
+    )
+
+    search_fields = (
+        'experiment__id',
+        'experiment__worm_strain',
+    )
+
+
 admin.site.register(Experiment, ExperimentAdmin)
+admin.site.register(ManualScoreCode, ManualScoreCodeAdmin)
+admin.site.register(ManualScore, ManualScoreAdmin)

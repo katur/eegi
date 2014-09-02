@@ -41,6 +41,19 @@ class ManualScoreCode(models.Model):
         db_table = 'ManualScoreCode'
         ordering = ['id']
 
+    def __str__(self):
+        if self.short_description:
+            return self.short_description
+        elif self.description:
+            return self.description
+        elif self.legacy_description:
+            return self.legacy_description
+        else:
+            return str(self.id)
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class ManualScore(models.Model):
     experiment = models.ForeignKey(Experiment)
