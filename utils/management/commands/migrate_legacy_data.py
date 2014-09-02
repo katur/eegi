@@ -2,6 +2,7 @@ import MySQLdb
 import sys
 
 from django.core.management.base import BaseCommand, CommandError
+from django.core.exceptions import ObjectDoesNotExist
 
 from eegi.local_settings import LEGACY_DATABASE
 
@@ -23,7 +24,7 @@ class Command(BaseCommand):
     }
 
     To run program:
-    ./manage.py sync_legacy_data
+    ./manage.py migrate_legacy_data
     """
     help = ('Update this database according to legacy database')
 
@@ -49,7 +50,7 @@ class Command(BaseCommand):
                                     db=LEGACY_DATABASE['NAME'])
         cursor = legacy_db.cursor()
         sync_LibraryPlate_table(cursor)
-        sync_Experiment_table(cursor)
+        # sync_Experiment_table(cursor)
 
 
 def compare_fields(recorded, new, fields, update=False):
@@ -73,25 +74,29 @@ def sync_LibraryPlate_table(cursor):
     """
     def sync_row(row, screen_stage, number_of_wells=96):
         plate_name = row[0]
-        new_plate = LibraryPlate(id=plate_name,
+        new_entry = LibraryPlate(id=plate_name,
                                  screen_stage=screen_stage,
                                  number_of_wells=number_of_wells)
+        pk = new_entry.pk
+
         try:
-            recorded_plate = recorded_plates.get(id=plate_name)
+            recorded_entry = recorded_plates.get(pk=pk)
             fields_to_compare = ('screen_stage', 'number_of_wells')
-            differences = compare_fields(recorded_plate, new_plate,
+            differences = compare_fields(recorded_entry, new_entry,
                                          fields_to_compare,
-                                         update=False)
+                                         update=True)
             if differences:
-                sys.stdout.write('Updates to library plate ' +
-                                 '{}: {}\n'
+                sys.stderr.write('WARNING: These updates to library plate ' +
+                                 '{} occurred: {}\n'
                                  .format(plate_name,
                                          [d for d in differences]))
-            return True
+                return False
+            else:
+                return True
 
-        except LibraryPlate.DoesNotExist:
-            new_plate.save()
-            sys.stdout.write('Added new plate {} '
+        except ObjectDoesNotExist:
+            new_entry.save()
+            sys.stderr.write('WARNING: Added new plate {} '
                              'to the database\n'
                              .format(plate_name))
             return False
@@ -99,15 +104,19 @@ def sync_LibraryPlate_table(cursor):
     def sync_all_rows(legacy_table_name, screen_stage):
         cursor.execute('SELECT DISTINCT RNAiPlateID FROM ' + legacy_table_name)
         plates = cursor.fetchall()
-        all_plates_present = True
+        all_plates_present_and_match = True
 
         for row in plates:
-            present = sync_row(row, screen_stage)
-            all_plates_present |= present
+            present_and_matches = sync_row(row, screen_stage)
+            all_plates_present_and_match &= present_and_matches
 
-        if all_plates_present:
+        if all_plates_present_and_match:
             sys.stdout.write('LibraryPlate contained all plates from ' +
                              'table {} in the legacy database\n'
+                             .format(legacy_table_name))
+        else:
+            sys.stdout.write('Some library plates added or updated from {}. '
+                             '(Printed changes to sys.stderr.)\n'
                              .format(legacy_table_name))
 
     recorded_plates = LibraryPlate.objects.all()
@@ -119,10 +128,11 @@ def sync_LibraryPlate_table(cursor):
         'V': 13,
         'X': 7,
     }
+
     for chromosome in original_384_plates:
         number = original_384_plates[chromosome]
-        for i in range(number):
-            sync_row(['{}-{}'.format(chromosome, str(number))], 0, 384)
+        for i in range(1, number+1):
+            sync_row(['{}-{}'.format(chromosome, str(i))], 0, 384)
 
     sync_row(['Eliana_ReArray_1'], 1)
     sync_row(['Eliana_ReArray_2'], 1)
@@ -190,11 +200,13 @@ def sync_Experiment_table(cursor):
             fields_to_compare = ('worm_strain', 'library_plate',
                                  'temperature', 'date', 'is_junk', 'comment')
             differences = compare_fields(recorded_experiment, new_experiment,
-                                         fields_to_compare, update=False)
+                                         fields_to_compare, update=True)
             if differences:
                 sys.stdout.write('Updates to library plate {}: {}\n'
                                  .format(id, [d for d in differences]))
-            return True
+                return False
+            else:
+                return True
 
         except Experiment.DoesNotExist:
             new_experiment.save()
@@ -203,7 +215,7 @@ def sync_Experiment_table(cursor):
             return False
 
     def sync_all_rows():
-        all_experiments_present = True
+        all_experiments_present_and_match = True
         cursor.execute('SELECT '
                        'expID, mutant, mutantAllele, RNAiPlateID, '
                        'CAST(SUBSTRING_INDEX(temperature, "C", 1) '
@@ -215,12 +227,14 @@ def sync_Experiment_table(cursor):
                        'AND RNAiPlateID NOT LIKE "Julie%"')
         experiments = cursor.fetchall()
         for row in experiments:
-            present = sync_row(row)
-            all_experiments_present |= present
+            present_and_matches = sync_row(row)
+            all_experiments_present_and_match &= present_and_matches
 
-        if all_experiments_present:
+        if all_experiments_present_and_match:
             sys.stdout.write('Experiment contained all experiments from '
                              'legacy database\n')
+        else:
+            sys.stdout.write('Some experiments added or updated.\n')
 
     worm_strains = WormStrain.objects.all()
     library_plates = LibraryPlate.objects.all()
