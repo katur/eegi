@@ -4,6 +4,7 @@ import datetime
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User
 
 from eegi.local_settings import LEGACY_DATABASE
 
@@ -199,22 +200,22 @@ def update_ManualScoreCode_table(cursor):
     Update the ManualScoreCode table, against the legacy table of the same
     name.
     """
-    def sync_legacy_code(legacy_row):
-        legacy_code = ManualScoreCode(
+    def sync_legacy_score_code(legacy_row):
+        legacy_score_code = ManualScoreCode(
             id=legacy_row[0],
             legacy_description=legacy_row[1].decode('utf8'),
         )
 
         fields_to_compare = ('legacy_description',)
-        return update_or_save_object(legacy_code, recorded_codes,
+        return update_or_save_object(legacy_score_code, recorded_score_codes,
                                      fields_to_compare)
 
-    recorded_codes = ManualScoreCode.objects.all()
+    recorded_score_codes = ManualScoreCode.objects.all()
     cursor.execute('SELECT code, definition FROM ManualScoreCode')
     legacy_rows = cursor.fetchall()
     all_match = True
     for legacy_row in legacy_rows:
-        match = sync_legacy_code(legacy_row)
+        match = sync_legacy_score_code(legacy_row)
         all_match &= match
 
     report_table_sync_outcome(all_match, 'ManualScoreCode')
@@ -225,23 +226,38 @@ def update_ManualScore_table(cursor):
     Requires that ScoreYear, ScoreMonth, ScoreDate, and ScoreTime
     are valid fields for a python datetime.datetime.
     """
+
+    def sync_legacy_score(legacy_row):
+        scorer = get_user(legacy_row[3])
+        if not scorer:
+            sys.stderr.write('WARNING: skipping a score by scorer {}'
+                             .format(legacy_row[3]))
+            return
+
+        timestamp = get_timestamp(legacy_row[5], legacy_row[6], legacy_row[7],
+                                  legacy_row[8], legacy_row[4])
+        if not timestamp:
+            sys.exit('ERROR: score of experiment {}, '
+                     'image {} could not be converted to a proper '
+                     'datetime'.format(legacy_row[0], legacy_row[1]))
+        legacy_score = ManualScore(
+            experiment=get_experiment(legacy_row[0]),
+            well=well_tile_conversion.get_well(legacy_row[1]),
+            score_code=get_score_code(legacy_row[2]),
+            scorer=scorer,
+            timestamp=timestamp,
+        )
+
     recorded_scores = ManualScore.objects.all()
     cursor.execute('SELECT expID, ImgName, score, scoreBy, scoreYMD, '
                    'ScoreYear, ScoreMonth, ScoreDate, ScoreTime '
                    'FROM ManualScore')
     legacy_rows = cursor.fetchall()
+    i = 0
     for legacy_row in legacy_rows:
-        experiment = get_experiment(legacy_row[0])
-        well = well_tile_conversion.get_well(legacy_row[1])
-        print well
-        score = legacy_row[2]
-        scorer = legacy_row[3]
-        date = get_date(legacy_row[5], legacy_row[6], legacy_row[7],
-                        legacy_row[8], legacy_row[4])
-        if not date:
-            sys.exit('ERROR: score of experiment {}, '
-                     'image {} could not be converted to a proper '
-                     'datetime'.format(legacy_row[0], legacy_row[1]))
+        sync_legacy_score(legacy_row)
+        i += 1
+        print i
 
 
 def update_DevstarScore_table(cursor):
@@ -377,7 +393,30 @@ def get_experiment(id):
                  'not found in the new database\n')
 
 
-def get_date(year, month, day, time, ymd):
+def get_score_code(id):
+    try:
+        return ManualScoreCode.objects.get(id=id)
+    except ObjectDoesNotExist:
+        sys.exit('ERROR: ManualScoreCode with id ' + str(id) +
+                 'not found in the new database\n')
+
+
+def get_user(username):
+    if username == 'Julie':
+        username = 'julie'
+    if username == 'patricia':
+        username = 'giselle'
+    if username == 'katy' or username == 'expPeople':
+        return None
+
+    try:
+        return User.objects.get(username=username)
+    except ObjectDoesNotExist:
+        sys.exit('ERROR: User with username ' + str(username) +
+                 'not found in the new database\n')
+
+
+def get_timestamp(year, month, day, time, ymd):
     """
     Return a datetime.datetime object from an int year,
     a 3-letter-string month (e.g. 'Jan'), an int day,
