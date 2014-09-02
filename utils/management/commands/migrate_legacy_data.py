@@ -10,7 +10,7 @@ from eegi.local_settings import LEGACY_DATABASE
 from worms.models import WormStrain
 from library.models import LibraryPlate
 from experiments.models import Experiment, ManualScoreCode, ManualScore
-from utils import well_tile_conversion
+from utils.helpers import well_tile_conversion
 
 
 class Command(BaseCommand):
