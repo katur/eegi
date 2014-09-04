@@ -140,14 +140,7 @@ def update_LibraryPlate_table(cursor):
 
     recorded_plates = LibraryPlate.objects.all()
 
-    original_384_plates = {
-        'I': 8,
-        'II': 9,
-        'III': 7,
-        'IV': 8,
-        'V': 13,
-        'X': 7,
-    }
+    original_384_plates = {'I': 8, 'II': 9, 'III': 7, 'IV': 8, 'V': 13, 'X': 7}
 
     for chromosome in original_384_plates:
         number = original_384_plates[chromosome]
