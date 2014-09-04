@@ -2,9 +2,12 @@ import MySQLdb
 import sys
 import datetime
 
+
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
+from django.db import transaction
+from django.utils import timezone
 
 from eegi.local_settings import LEGACY_DATABASE
 
@@ -230,15 +233,16 @@ def update_ManualScore_table(cursor):
     def sync_legacy_score(legacy_row):
         scorer = get_user(legacy_row[3])
         if not scorer:
-            sys.stderr.write('WARNING: skipping a score by scorer {}'
+            sys.stderr.write('WARNING: skipping a score '
+                             'scored by non-User {}\n'
                              .format(legacy_row[3]))
-            return
+            return True
 
         timestamp = get_timestamp(legacy_row[5], legacy_row[6], legacy_row[7],
                                   legacy_row[8], legacy_row[4])
         if not timestamp:
-            sys.exit('ERROR: score of experiment {}, '
-                     'image {} could not be converted to a proper '
+            sys.exit('ERROR: score of {}({}), '
+                     'could not be converted to a proper '
                      'datetime'.format(legacy_row[0], legacy_row[1]))
         legacy_score = ManualScore(
             experiment=get_experiment(legacy_row[0]),
@@ -248,16 +252,24 @@ def update_ManualScore_table(cursor):
             timestamp=timestamp,
         )
 
+        return update_or_save_object(
+            legacy_score, recorded_scores, None,
+            alternate_pk={'experiment': legacy_score.experiment,
+                          'well': legacy_score.well,
+                          'score_code': legacy_score.score_code,
+                          'scorer': legacy_score.scorer,
+                          'timestamp': timestamp}
+        )
+
     recorded_scores = ManualScore.objects.all()
     cursor.execute('SELECT expID, ImgName, score, scoreBy, scoreYMD, '
                    'ScoreYear, ScoreMonth, ScoreDate, ScoreTime '
                    'FROM ManualScore')
     legacy_rows = cursor.fetchall()
-    i = 0
+    all_match = True
     for legacy_row in legacy_rows:
-        sync_legacy_score(legacy_row)
-        i += 1
-        print i
+        match = sync_legacy_score(legacy_row)
+        all_match &= match
 
 
 def update_DevstarScore_table(cursor):
@@ -276,7 +288,8 @@ def update_LibrarySequencing_table(cursor):
     pass
 
 
-def update_or_save_object(legacy_object, recorded_objects, fields_to_compare):
+def update_or_save_object(legacy_object, recorded_objects, fields_to_compare,
+                          alternate_pk=False):
     """
     Bring the new database up to speed regarding a particular legacy object.
     If the legacy object is not present, add it (and print to syserr).
@@ -287,22 +300,18 @@ def update_or_save_object(legacy_object, recorded_objects, fields_to_compare):
     on all provided fields. Returns False otherwise.
     """
     try:
-        recorded_object = recorded_objects.get(pk=legacy_object.pk)
-        return compare_fields(recorded_object, legacy_object,
-                              fields_to_compare, update=True)
+        if alternate_pk:
+            recorded_object = recorded_objects.get(**alternate_pk)
+        else:
+            recorded_object = recorded_objects.get(pk=legacy_object.pk)
+        if fields_to_compare:
+            return compare_fields(recorded_object, legacy_object,
+                                  fields_to_compare, update=True)
+        else:
+            return True
     except ObjectDoesNotExist:
         save_object(legacy_object)
         return False
-
-
-def save_object(object):
-    """
-    Save an object to the database, printing a warning to syserr.
-    """
-    object.save()
-    sys.stderr.write('WARNING: Added new object {} '
-                     'to the database\n'
-                     .format(str(object)))
 
 
 def compare_fields(object, legacy_object, fields, update=False):
@@ -341,6 +350,18 @@ def compare_fields(object, legacy_object, fields, update=False):
         return False
     else:
         return True
+
+
+def save_object(object):
+    """
+    Save an object to the database, printing a warning to syserr.
+    """
+    object.save()
+    '''
+    sys.stderr.write('WARNING: Added new object {} '
+                     'to the database\n'
+                     .format(str(object)))
+    '''
 
 
 def get_worm_strain(mutant, mutantAllele):
@@ -431,22 +452,27 @@ def get_timestamp(year, month, day, time, ymd):
     """
     try:
         string = '{}-{}-{}::{}'.format(year, month, day, time)
-        date = datetime.datetime.strptime(string, '%Y-%b-%d::%H:%M:%S')
+        timestamp = timezone.make_aware(
+            datetime.datetime.strptime(string, '%Y-%b-%d::%H:%M:%S'),
+            timezone.get_default_timezone())
     except Exception:
         return None
+
     if ymd:
         try:
             hour, minute, second = time.split(':')
-            date_from_ymd = datetime.datetime(ymd.year, ymd.month, ymd.day,
-                                              int(hour), int(minute),
-                                              int(second))
-            if date != date_from_ymd:
+            timestamp_from_ymd = timezone.make_aware(
+                datetime.datetime(ymd.year, ymd.month, ymd.day,
+                                  int(hour), int(minute), int(second)),
+                timezone.get_default_timezone())
+
+            if timestamp != timestamp_from_ymd:
                 return None
 
         except Exception:
             return None
 
-    return date
+    return timestamp
 
 
 def report_table_sync_outcome(all_match, legacy_table_name):

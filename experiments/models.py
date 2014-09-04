@@ -64,3 +64,11 @@ class ManualScore(models.Model):
 
     class Meta:
         db_table = 'ManualScore'
+
+    def __str__(self):
+        return ('{}:{} scored {} by {}'
+                .format(str(self.experiment), self.well,
+                        str(self.score_code), str(self.scorer)))
+
+    def __repr__(self):
+        return self.__str__()
