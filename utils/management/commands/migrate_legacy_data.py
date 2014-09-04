@@ -1,20 +1,17 @@
+import datetime
 import MySQLdb
 import sys
-import datetime
-
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
-from django.db import transaction
 from django.utils import timezone
 
 from eegi.local_settings import LEGACY_DATABASE
-
-from worms.models import WormStrain
-from library.models import LibraryPlate
 from experiments.models import Experiment, ManualScoreCode, ManualScore
+from library.models import LibraryPlate
 from utils.helpers import well_tile_conversion
+from worms.models import WormStrain
 
 
 class Command(BaseCommand):
@@ -118,47 +115,50 @@ def update_LibraryPlate_table(cursor):
     Update the LibraryPlate table, primarily against distinct RNAiPlateID in
     legacy tables RNAiPlate and CherryPickRNAiPlate.
     """
-    def sync_legacy_library_plate_table(legacy_table_name, screen_stage):
-        cursor.execute('SELECT DISTINCT RNAiPlateID FROM ' + legacy_table_name)
-        legacy_rows = cursor.fetchall()
-        all_match = True
+    legacy_query = 'SELECT DISTINCT RNAiPlateID FROM {}'
+    recorded_plates = LibraryPlate.objects.all()
+    fields_to_compare = ('screen_stage', 'number_of_wells')
 
-        for legacy_row in legacy_rows:
-            matches = sync_legacy_library_plate(legacy_row, screen_stage)
-            all_match &= matches
-
-        report_table_sync_outcome(all_match, legacy_table_name)
-
-    def sync_legacy_library_plate(legacy_row, screen_stage,
-                                  number_of_wells=96):
+    def sync_library_plate_row(legacy_row, screen_stage, number_of_wells=96):
         legacy_plate = LibraryPlate(id=legacy_row[0],
                                     screen_stage=screen_stage,
                                     number_of_wells=number_of_wells)
-        fields_to_compare = ('screen_stage', 'number_of_wells')
         return update_or_save_object(legacy_plate, recorded_plates,
                                      fields_to_compare)
-
-    recorded_plates = LibraryPlate.objects.all()
 
     original_384_plates = {'I': 8, 'II': 9, 'III': 7, 'IV': 8, 'V': 13, 'X': 7}
 
     for chromosome in original_384_plates:
         number = original_384_plates[chromosome]
         for i in range(1, number+1):
-            sync_legacy_library_plate(['{}-{}'.format(chromosome, str(i))], 0,
-                                      384)
+            sync_library_plate_row(['{}-{}'.format(chromosome, str(i))],
+                                   0, 384)
 
-    sync_legacy_library_plate(['Eliana_ReArray_1'], 1)
-    sync_legacy_library_plate(['Eliana_ReArray_2'], 1)
-    sync_legacy_library_plate_table('RNAiPlate', 1)
-    sync_legacy_library_plate_table('CherryPickRNAiPlate', 2)
+    sync_library_plate_row(['Eliana_ReArray_1'], 1)
+    sync_library_plate_row(['Eliana_ReArray_2'], 1)
+
+    sync_rows(cursor, legacy_query.format('RNAiPlate'),
+              sync_library_plate_row, screen_stage=1)
+    sync_rows(cursor, legacy_query.format('CherryPickRNAiPlate'),
+              sync_library_plate_row, screen_stage=2)
 
 
 def update_Experiment_table(cursor):
     """
     Update the Experiment table, primary against legacy table RawData.
     """
-    def sync_legacy_experiment(legacy_row):
+    legacy_query = ('SELECT expID, mutant, mutantAllele, RNAiPlateID, '
+                    'CAST(SUBSTRING_INDEX(temperature, "C", 1) '
+                    'AS DECIMAL(3,1)), '
+                    'CAST(recordDate AS DATE), ABS(isJunk), comment '
+                    'FROM RawData '
+                    'WHERE (expID < 40000 OR expID>=50000) '
+                    'AND RNAiPlateID NOT LIKE "Julie%"')
+    recorded_experiments = Experiment.objects.all()
+    fields_to_compare = ('worm_strain', 'library_plate',
+                         'temperature', 'date', 'is_junk', 'comment',)
+
+    def sync_experiment_row(legacy_row):
         legacy_experiment = Experiment(
             id=legacy_row[0],
             worm_strain=get_worm_strain(legacy_row[1], legacy_row[2]),
@@ -168,27 +168,10 @@ def update_Experiment_table(cursor):
             is_junk=legacy_row[6],
             comment=legacy_row[7]
         )
-
-        fields_to_compare = ('worm_strain', 'library_plate',
-                             'temperature', 'date', 'is_junk', 'comment',)
         return update_or_save_object(legacy_experiment, recorded_experiments,
                                      fields_to_compare)
 
-    recorded_experiments = Experiment.objects.all()
-    cursor.execute('SELECT expID, mutant, mutantAllele, RNAiPlateID, '
-                   'CAST(SUBSTRING_INDEX(temperature, "C", 1) '
-                   'AS DECIMAL(3,1)), '
-                   'CAST(recordDate AS DATE), ABS(isJunk), comment '
-                   'FROM RawData '
-                   'WHERE (expID < 40000 OR expID>=50000) '
-                   'AND RNAiPlateID NOT LIKE "Julie%"')
-    legacy_rows = cursor.fetchall()
-    all_match = True
-    for legacy_row in legacy_rows:
-        match = sync_legacy_experiment(legacy_row)
-        all_match &= match
-
-    report_table_sync_outcome(all_match, 'RNAiPlateID')
+    sync_rows(cursor, legacy_query, sync_experiment_row)
 
 
 def update_ManualScoreCode_table(cursor):
@@ -196,25 +179,20 @@ def update_ManualScoreCode_table(cursor):
     Update the ManualScoreCode table, against the legacy table of the same
     name.
     """
-    def sync_legacy_score_code(legacy_row):
+    legacy_query = 'SELECT code, definition FROM ManualScoreCode'
+    recorded_score_codes = ManualScoreCode.objects.all()
+    fields_to_compare = ('legacy_description',)
+
+    def sync_score_code_row(legacy_row):
         legacy_score_code = ManualScoreCode(
             id=legacy_row[0],
             legacy_description=legacy_row[1].decode('utf8'),
         )
 
-        fields_to_compare = ('legacy_description',)
         return update_or_save_object(legacy_score_code, recorded_score_codes,
                                      fields_to_compare)
 
-    recorded_score_codes = ManualScoreCode.objects.all()
-    cursor.execute('SELECT code, definition FROM ManualScoreCode')
-    legacy_rows = cursor.fetchall()
-    all_match = True
-    for legacy_row in legacy_rows:
-        match = sync_legacy_score_code(legacy_row)
-        all_match &= match
-
-    report_table_sync_outcome(all_match, 'ManualScoreCode')
+    sync_rows(cursor, legacy_query, sync_score_code_row)
 
 
 def update_ManualScore_table(cursor):
@@ -222,8 +200,13 @@ def update_ManualScore_table(cursor):
     Requires that ScoreYear, ScoreMonth, ScoreDate, and ScoreTime
     are valid fields for a python datetime.datetime.
     """
+    legacy_query = ('SELECT expID, ImgName, score, scoreBy, scoreYMD, '
+                    'ScoreYear, ScoreMonth, ScoreDate, ScoreTime '
+                    'FROM ManualScore')
+    recorded_scores = ManualScore.objects.all()
+    fields_to_compare = None
 
-    def sync_legacy_score(legacy_row):
+    def sync_score_row(legacy_row):
         scorer = get_user(legacy_row[3])
         if not scorer:
             sys.stderr.write('WARNING: skipping a score '
@@ -246,7 +229,7 @@ def update_ManualScore_table(cursor):
         )
 
         return update_or_save_object(
-            legacy_score, recorded_scores, None,
+            legacy_score, recorded_scores, fields_to_compare,
             alternate_pk={'experiment': legacy_score.experiment,
                           'well': legacy_score.well,
                           'score_code': legacy_score.score_code,
@@ -254,15 +237,7 @@ def update_ManualScore_table(cursor):
                           'timestamp': timestamp}
         )
 
-    recorded_scores = ManualScore.objects.all()
-    cursor.execute('SELECT expID, ImgName, score, scoreBy, scoreYMD, '
-                   'ScoreYear, ScoreMonth, ScoreDate, ScoreTime '
-                   'FROM ManualScore')
-    legacy_rows = cursor.fetchall()
-    all_match = True
-    for legacy_row in legacy_rows:
-        match = sync_legacy_score(legacy_row)
-        all_match &= match
+    sync_rows(cursor, legacy_query, sync_score_row)
 
 
 def update_DevstarScore_table(cursor):
@@ -281,11 +256,38 @@ def update_LibrarySequencing_table(cursor):
     pass
 
 
+def sync_rows(cursor, legacy_query, sync_row_function, **kwargs):
+    """
+    Sync the rows resulting from a query to the legacy database
+    to the current database, according to
+    sync_row_function(legacy_row, **kwargs).
+    """
+    cursor.execute(legacy_query)
+    legacy_rows = cursor.fetchall()
+    all_match = True
+
+    for legacy_row in legacy_rows:
+        matches = sync_row_function(legacy_row, **kwargs)
+        all_match &= matches
+
+    if all_match:
+        sys.stdout.write('All objects from legacy query:\n\n\t{}\n\n'
+                         'were already represented in new database.\n\n'
+                         .format(legacy_query))
+    else:
+        sys.stdout.write('Some objects from legacy query:\n\n\t{}\n\n'
+                         'were just added or updated in new database'
+                         '(individual changes printed to sys.stderr.)\n\n'
+                         .format(legacy_query))
+
+
 def update_or_save_object(legacy_object, recorded_objects, fields_to_compare,
                           alternate_pk=False):
     """
-    Bring the new database up to speed regarding a particular legacy object.
+    Bring the new database up to speed with a particular legacy object.
+
     If the legacy object is not present, add it (and print to syserr).
+
     If the legacy object is present, confirm the provided fields match.
     If any fields do not match, update them (and print updates to syserr).
 
@@ -302,8 +304,12 @@ def update_or_save_object(legacy_object, recorded_objects, fields_to_compare,
                                   fields_to_compare, update=True)
         else:
             return True
+
     except ObjectDoesNotExist:
-        save_object(legacy_object)
+        legacy_object.save()
+        sys.stderr.write('WARNING: Added new object {} '
+                         'to the database\n'
+                         .format(str(object)))
         return False
 
 
@@ -343,18 +349,6 @@ def compare_fields(object, legacy_object, fields, update=False):
         return False
     else:
         return True
-
-
-def save_object(object):
-    """
-    Save an object to the database, printing a warning to syserr.
-    """
-    object.save()
-    '''
-    sys.stderr.write('WARNING: Added new object {} '
-                     'to the database\n'
-                     .format(str(object)))
-    '''
 
 
 def get_worm_strain(mutant, mutantAllele):
@@ -466,17 +460,3 @@ def get_timestamp(year, month, day, time, ymd):
             return None
 
     return timestamp
-
-
-def report_table_sync_outcome(all_match, legacy_table_name):
-    """
-    Print to stdout whether all legacy objects from a particular table
-    were already present and match the new database.
-    """
-    if all_match:
-        sys.stdout.write('All objects from legacy table {} already present\n'
-                         .format(legacy_table_name))
-    else:
-        sys.stdout.write('Some objects added or updated from legacy table {} '
-                         '(individual changes printed to sys.stderr.)\n'
-                         .format(legacy_table_name))
