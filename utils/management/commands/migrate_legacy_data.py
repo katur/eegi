@@ -75,12 +75,12 @@ class Command(BaseCommand):
                 start = int(args[0])
                 end = int(args[1])
             except ValueError:
-                sys.exit('Start and endpoints must be integers')
+                raise CommandError('Start and endpoints must be integers')
             if start >= end:
-                sys.exit('Start must be less than end')
+                raise CommandError('Start must be less than end')
             if (start < 0) or (end > len(steps)):
-                sys.exit('Start and end must be in range 0-{}'
-                         .format(str(len(steps))))
+                raise CommandError('Start and end must be in range 0-{}'
+                                   .format(str(len(steps))))
         else:
             start = 0
             end = len(steps)
