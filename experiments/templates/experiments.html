@@ -20,24 +20,20 @@ Find an experiment by exact id:
   <input type="submit" value="Submit">
 </form>
 
-
 <hr>
 
 Or use filters:
+
+{% if form.errors %}
+<span class="error-message">
+  Please correct the error{{ form.errors|pluralize }} below.
+</span>
+{% endif %}
+
 <form action="" method="get">
-  <p>Min id: <input type="text" name="min_id"></p>
-  <p>Max id: <input type="text" name="max_id"></p>
-  <p>Worm strain: <input type="text" name="worm_strain">
-  Gene: <input type="text" name="gene">
-  Allele: <input type="text" name="allele"></p>
-  <p>Library plate: <input type="text" name="library_plate"></p>
-  <p>Temperature: <input type="text" name="temperature"></p>
-  <p>Date: <input type="text" name="date"></p>
-  <p>Junk (True or False): <input type="text" name="is_junk"></p>
-  <!--
-  Restrictive: <input type="radio" name="screen" value="restrictive">
-  Permissive: <input type="radio" name="screen" value="permissive">
-  -->
+  <table>
+    {{ form.as_table }}
+  </table>
   <input type="submit" value="Submit">
 </form>
 
