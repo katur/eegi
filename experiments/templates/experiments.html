@@ -5,29 +5,75 @@
 
 {% block content %}
 
-Enter an experiment:
-<form action={% url 'experiments_url' %} method="get">
-  <input type="text" name="id">
-  <input type="submit" value="Submit">
-</form>
-
-{% if id_error_message %}
-<span class="error-message">{{ id_error_message }}</span>
+{% if errors %}
+<span class="error-message">
+  {% for error in errors %}
+    {{ error }}<br>
+  {% endfor %}
+</span>
+<br><br>
 {% endif %}
 
-<br><br>
-or
-<br><br>
-
-Enter an experiment range:
-<form action={% url 'experiments_url' %} method="get">
-  <input type="text" name="start">
-  <input type="text" name="end">
+Find an experiment by exact id:
+<form action="" method="get">
+  <input type="text" name="exact_id">
   <input type="submit" value="Submit">
 </form>
 
-{% if range_error_message %}
-<span class="error-message">{{ range_error_message }}</span>
+
+<hr>
+
+Or use filters:
+<form action="" method="get">
+  <p>Min id: <input type="text" name="min_id"></p>
+  <p>Max id: <input type="text" name="max_id"></p>
+  <p>Worm strain: <input type="text" name="worm_strain">
+  Gene: <input type="text" name="gene">
+  Allele: <input type="text" name="allele"></p>
+  <p>Library plate: <input type="text" name="library_plate"></p>
+  <p>Temperature: <input type="text" name="temperature"></p>
+  <p>Date: <input type="text" name="date"></p>
+  <p>Junk (True or False): <input type="text" name="is_junk"></p>
+  <!--
+  Restrictive: <input type="radio" name="screen" value="restrictive">
+  Permissive: <input type="radio" name="screen" value="permissive">
+  -->
+  <input type="submit" value="Submit">
+</form>
+
+{% if experiments %}
+{{ experiments|length }} results
+<table class="striped">
+  <thead>
+    <tr>
+      <th>Experiment ID</th>
+      <th>Worm Strain</th>
+      <th>Worm Genotype</th>
+      <th>RNAi Library Plate</th>
+      <th>Temperature</th>
+      <th>Date</th>
+      <th>Is Junk</th>
+      <th>Comment</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for experiment in experiments %}
+    <tr>
+      <td>
+        <a href="{% url 'experiment_url' id=experiment.id %}">{{ experiment.id }}</a>
+      </td>
+      <td>{{ experiment.worm_strain }}</td>
+      <td>{{ experiment.worm_strain__genotype }}</td>
+      <td>{{ experiment.library_plate }}</td>
+      <td>{{ experiment.temperature|get_celsius_string }}</td>
+      <td>{{ experiment.date }}</td>
+      <td>{{ experiment.is_junk }}</td>
+      <td>{{ experiment.comment }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endif %}
 
 {% endblock %}

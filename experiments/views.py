@@ -3,61 +3,52 @@ from experiments.models import Experiment
 
 
 def experiments(request, context=None):
-    if 'id' in request.GET:
+    errors = []
+    if 'exact_id' in request.GET:
         try:
-            id = int(request.GET['id'])
-            if (id < 1):
-                error_message = 'Experiment id must be positive'
-            else:
+            id = int(request.GET['exact_id'])
+            if (id > 0):
                 return redirect(experiment, id=id)
-
-        except ValueError:
-            error_message = 'Experiment id must be a positive integer'
-
-        context = {'id_error_message': error_message}
-        return render(request, 'experiments.html', context)
-
-    elif 'start' in request.GET and 'end' in request.GET:
-        try:
-            start = int(request.GET['start'])
-            end = int(request.GET['end'])
-
-            if (start < 1) or (end < 1):
-                error_message = ('Start and end experiment ids '
-                                 'must be positive')
-            elif start > end:
-                error_message = ('Start must be greater than '
-                                 'or equal to end')
-            elif (end - start) > 1001:
-                error_message = ('Range must be 1000 items or less')
             else:
-                return redirect(experiment_range, start=start, end=end)
+                errors.append('Experiment id must be positive')
 
         except ValueError:
-            error_message = ('Start and end experiment ids '
-                             'must be positive integers')
+            errors.append('Experiment id must be a positive integer')
 
-        context = {'range_error_message': error_message}
-        return render(request, 'experiments.html', context)
+    filters = {
+        'id__gte': request.GET.get('min_id', None),
+        'id__lte': request.GET.get('max_id', None),
+        'worm_strain': request.GET.get('worm_strain', None),
+        'worm_strain__gene': request.GET.get('gene', None),
+        'worm_strain__allele': request.GET.get('allele', None),
+        'library_plate': request.GET.get('library_plate', None),
+        'temperature': request.GET.get('temperature', None),
+        'permissive': request.GET.get('permissive', None),
+        'restrictive': request.GET.get('restrictive', None),
+        'date': request.GET.get('date', None),
+        'is_junk': request.GET.get('is_junk', None),
+    }
+
+    for k, v in filters.items():
+        if not v:
+            del filters[k]
+
+    if filters:
+        experiments = (
+            Experiment.objects.filter(**filters)
+            .values('id', 'worm_strain', 'worm_strain__genotype',
+                    'library_plate', 'temperature', 'date', 'is_junk',
+                    'comment')
+        )
 
     else:
-        return render(request, 'experiments.html', context)
+        experiments = None
+
+    context = {'experiments': experiments, 'errors': errors}
+    return render(request, 'experiments.html', context)
 
 
 def experiment(request, id):
     experiment = get_object_or_404(Experiment, pk=id)
     context = {'experiment': experiment}
     return render(request, 'experiment.html', context)
-
-
-def experiment_range(request, start, end):
-    experiments = (
-        Experiment.objects
-        .filter(id__gte=start).filter(id__lte=end)
-        .values('id', 'worm_strain', 'worm_strain__genotype',
-                'library_plate', 'temperature', 'date', 'is_junk',
-                'comment')
-    )
-
-    context = {'experiments': experiments, 'start': start, 'end': end}
-    return render(request, 'experiments_range.html', context)

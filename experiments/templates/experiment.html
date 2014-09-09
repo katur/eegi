@@ -5,9 +5,13 @@
 
 {% block content %}
 Worm strain:
-{{ experiment.worm_strain.genotype }}
 <a href="{{ experiment.worm_strain.get_lab_website_url }}">
-  ({{ experiment.worm_strain }})</a>
+  {{ experiment.worm_strain }}</a>
+
+{% if experiment.worm_strain.genotype %}
+<br>
+Worm genotype: {{ experiment.worm_strain.genotype }}
+{% endif %}
 
 <br><br>
 Library plate: {{ experiment.library_plate }}
@@ -19,13 +23,13 @@ Temperature: {{ experiment.temperature|get_celsius_string }}
 Date: {{ experiment.date }}
 
 {% if experiment.is_junk %}
-  <br><br>
-  JUNK
+<br><br>
+JUNK
 {% endif %}
 
 {% if experiment.comment %}
-  <br><br>
-  Comment: {{ experiment.comment }}
+<br><br>
+Comment: {{ experiment.comment }}
 {% endif %}
 
 {% endblock %}
