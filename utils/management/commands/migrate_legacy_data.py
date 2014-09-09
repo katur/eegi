@@ -53,9 +53,9 @@ class Command(BaseCommand):
         if len(args) != 0 and len(args) != 2:
             sys.exit(
                 'Usage:\n'
-                './manage.py migrate_legacy_data\n'
-                'OR\n'
-                './manage.py migrate_legacy_data start end\n'
+                '\t./manage.py migrate_legacy_data\n'
+                'or\n'
+                '\t./manage.py migrate_legacy_data start end\n'
                 '(where start is inclusive and end is exclusive)\n'
             )
 
@@ -342,7 +342,6 @@ def compare_fields(object, legacy_object, fields, update=False):
         if update:
             sys.stderr.write('The new database was updated to reflect '
                              'the changes\n\n')
-
         else:
             sys.stderr.write('The new database was NOT updated to reflect '
                              'the changes\n\n')
