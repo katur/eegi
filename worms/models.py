@@ -33,11 +33,8 @@ class WormStrain(models.Model):
     def get_lab_website_url(self):
         return 'http://gunsiano.webfactional.com/strain/' + self.id
 
-    def __str__(self):
+    def __unicode__(self):
         return self.id
-
-    def __repr__(self):
-        return self.__str__()
 
     def __cmp__(self, other):
         if self.genotype < other.genotype:

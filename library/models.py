@@ -14,11 +14,8 @@ class LibraryPlate(models.Model):
         db_table = 'LibraryPlate'
         ordering = ['id']
 
-    def __str__(self):
+    def __unicode__(self):
         return self.id
-
-    def __repr__(self):
-        return self.__str__()
 
     def __hash__(self):
         return 31 * hash(self.id)

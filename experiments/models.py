@@ -24,11 +24,8 @@ class Experiment(models.Model):
         db_table = 'Experiment'
         ordering = ['id']
 
-    def __str__(self):
+    def __unicode__(self):
         return str(self.id)
-
-    def __repr__(self):
-        return self.__str__()
 
 
 class ManualScoreCode(models.Model):
@@ -41,7 +38,7 @@ class ManualScoreCode(models.Model):
         db_table = 'ManualScoreCode'
         ordering = ['id']
 
-    def __str__(self):
+    def __unicode__(self):
         if self.short_description:
             return self.short_description
         elif self.description:
@@ -50,9 +47,6 @@ class ManualScoreCode(models.Model):
             return self.legacy_description
         else:
             return str(self.id)
-
-    def __repr__(self):
-        return self.__str__()
 
 
 class ManualScore(models.Model):
@@ -65,10 +59,7 @@ class ManualScore(models.Model):
     class Meta:
         db_table = 'ManualScore'
 
-    def __str__(self):
+    def __unicode__(self):
         return ('{}:{} scored {} by {}'
                 .format(str(self.experiment), self.well,
                         str(self.score_code), str(self.scorer)))
-
-    def __repr__(self):
-        return self.__str__()
