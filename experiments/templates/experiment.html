@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load extra_template_tags %}
+
+{% block page_title %}Experiment {{ experiment.id }}{% endblock %}
+
+{% block content %}
+Worm strain:
+{{ experiment.worm_strain.genotype }}
+<a href="{{ experiment.worm_strain.get_lab_website_url }}">
+  ({{ experiment.worm_strain }})</a>
+
+<br><br>
+Library plate: {{ experiment.library_plate }}
+
+<br><br>
+Temperature: {{ experiment.temperature|get_celsius_string }}
+
+<br><br>
+Date: {{ experiment.date }}
+
+{% if experiment.is_junk %}
+  <br><br>
+  JUNK
+{% endif %}
+
+{% if experiment.comment %}
+  <br><br>
+  Comment: {{ experiment.comment }}
+{% endif %}
+
+{% endblock %}
