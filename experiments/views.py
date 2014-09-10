@@ -18,7 +18,7 @@ def experiments(request, context=None):
         except ValueError:
             errors.append('Experiment id must be a positive integer')
 
-    if request.method == 'GET' and len(request.GET):
+    if len(request.GET):
         form = ExperimentFilterForm(request.GET)
         if form.is_valid():
             filters = form.cleaned_data

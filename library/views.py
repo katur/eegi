@@ -15,14 +15,14 @@ def library_plates(request):
     paginator = Paginator(plates, 50)
     page = request.GET.get('page')
     try:
-        plates_to_display = paginator.page(page)
+        display_plates = paginator.page(page)
     except PageNotAnInteger:
-        plates_to_display = paginator.page(1)
+        display_plates = paginator.page(1)
     except EmptyPage:
-        plates_to_display = paginator.page(paginator.num_pages)
+        display_plates = paginator.page(paginator.num_pages)
 
     context = {
         'plates': plates,
-        'plates_to_display': plates_to_display,
+        'display_plates': display_plates,
     }
     return render(request, 'library_plates.html', context)

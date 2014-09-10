@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load extra_template_tags %}
 
 {% block page_title %}RNAi Library Plates{% endblock %}
 
@@ -35,19 +36,19 @@
   </span>
 
   <div class="pagination">
-    {% if plates_to_display.has_previous %}
-    <a href="?page={{ plates_to_display.previous_page_number }}">
+    {% if display_plates.has_previous %}
+    <a href="?{% url_replace request 'page' display_plates.previous_page_number %}">
       previous
     </a>
     {% endif %}
 
     <span class="current">
-      Page {{ plates_to_display.number }}
-      of {{ plates_to_display.paginator.num_pages }}.
+      Page {{ display_plates.number }}
+      of {{ display_plates.paginator.num_pages }}.
     </span>
 
-    {% if plates_to_display.has_next %}
-    <a href="?page={{ plates_to_display.next_page_number }}">
+    {% if display_plates.has_next %}
+    <a href="?{% url_replace request 'page' display_plates.next_page_number %}">
       next
     </a>
     {% endif %}
@@ -64,7 +65,7 @@
   </thead>
 
   <tbody>
-    {% for plate in plates_to_display %}
+    {% for plate in display_plates %}
     <tr>
       <td>{{ plate }}</td>
       <td>{{ plate.screen_stage }}</td>
