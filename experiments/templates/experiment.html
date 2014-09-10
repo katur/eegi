@@ -44,10 +44,19 @@
 </div>
 
 <table id="images">
-  {% for i in 96|get_range %}
+  {% for row in plate_template %}
   <tr>
-    <td>Tile {{ i|add:"1" }}</td>
-    <td><img src="{% get_image_url experiment i|add:"1" %}"></td>
+    {% for position in row %}
+      <td>
+        <div class="title">
+          {{ position.well }}
+          <span class="parenthetical">({{ position.tile }})</span>
+        </div>
+        <a href="{% get_image experiment position.tile %}">
+          <img src="{% get_thumbnail_image experiment position.tile %}">
+        </a>
+      </td>
+    {% endfor %}
   </tr>
   {% endfor %}
 </table>

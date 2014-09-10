@@ -1,8 +1,9 @@
 import re
 
-rows = 'ABCDEFGH'
-backwards_rows = 'BDFH'
+ROWS = 'ABCDEFGH'
+BACKWARDS_ROWS = 'BDFH'
 NUMBER_OF_COLUMNS = 12
+NUMBER_OF_ROWS = len(ROWS)
 
 
 def well_to_tile(well):
@@ -27,10 +28,10 @@ def tile_to_index(tile):
 
 
 def index_to_well(index):
-    row = rows[index / NUMBER_OF_COLUMNS]
+    row = ROWS[index / NUMBER_OF_COLUMNS]
     index_in_row = index % NUMBER_OF_COLUMNS
 
-    if row in backwards_rows:
+    if row in BACKWARDS_ROWS:
         position_from_left = NUMBER_OF_COLUMNS - 1 - index_in_row
     else:
         position_from_left = index_in_row
@@ -48,13 +49,35 @@ def well_to_index(well):
     assert position_from_left >= 0 and position_from_left < NUMBER_OF_COLUMNS
 
     min_row_index = (ord(row) - 65) * NUMBER_OF_COLUMNS
-    if row in backwards_rows:
+    if row in BACKWARDS_ROWS:
         index_in_row = NUMBER_OF_COLUMNS - 1 - position_from_left
     else:
         index_in_row = position_from_left
 
     overall_index = min_row_index + index_in_row
     return overall_index
+
+
+def row_and_column_indices_to_well(row_index, column_index):
+    row_string = ROWS[row_index]
+    column_string = str(column_index + 1).zfill(2)
+    return row_string + column_string
+
+
+def get_96_well_plate_template():
+    plate = []
+    for row in range(NUMBER_OF_ROWS):
+        plate.append([])
+        for column in range(NUMBER_OF_COLUMNS):
+            well = row_and_column_indices_to_well(row, column)
+            position_info = {
+                'well': well,
+                'tile': well_to_tile(well),
+                'index': well_to_index(well),
+            }
+            plate[row].append(position_info)
+
+    return plate
 
 
 if __name__ == '__main__':

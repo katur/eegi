@@ -3,6 +3,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm
+from utils.helpers import well_tile_conversion
 
 
 def experiments(request, context=None):
@@ -66,5 +67,6 @@ def experiments(request, context=None):
 
 def experiment(request, id):
     experiment = get_object_or_404(Experiment, pk=id)
-    context = {'experiment': experiment}
+    plate_template = well_tile_conversion.get_96_well_plate_template()
+    context = {'experiment': experiment, 'plate_template': plate_template}
     return render(request, 'experiment.html', context)

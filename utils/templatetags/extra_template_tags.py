@@ -1,3 +1,5 @@
+import string
+
 from django import template
 
 register = template.Library()
@@ -24,8 +26,15 @@ def url_replace(request, field, value):
 
 
 @register.simple_tag
-def get_image_url(experiment, tile_number):
+def get_image(experiment, tile):
     prefix = 'http://pleiades.bio.nyu.edu/GI_IMG/'
-    tile = 'Tile0000{}.bmp'.format(str(tile_number).zfill(2))
     url = '{}{}/{}'.format(prefix, experiment.id, tile)
+    return url
+
+
+@register.simple_tag
+def get_thumbnail_image(experiment, tile):
+    prefix = 'http://pleiades.bio.nyu.edu/GI_IMG/convertedImg/'
+    url = '{}{}/{}'.format(prefix, experiment.id, tile)
+    url = string.replace(url, 'bmp', 'jpg')
     return url
