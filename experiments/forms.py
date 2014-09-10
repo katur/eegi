@@ -14,4 +14,4 @@ class ExperimentFilterForm(forms.Form):
     temperature = forms.DecimalField(required=False)
     date = forms.DateField(required=False,
                            label="Date (YYYY-MM-DD)")
-    is_junk = forms.NullBooleanField(required=False, initial=False)
+    is_junk = forms.NullBooleanField(required=False)
