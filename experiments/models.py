@@ -63,3 +63,48 @@ class ManualScore(models.Model):
         return ('{}:{} scored {} by {}'
                 .format(str(self.experiment), self.well,
                         str(self.score_code), str(self.scorer)))
+
+
+class DevstarScore(models.Model):
+    experiment = models.ForeignKey(Experiment)
+    well = models.CharField(max_length=3)
+
+    area_adult = models.IntegerField(null=True, blank=True,
+                                     help_text='DevStaR program output')
+    area_larva = models.IntegerField(null=True, blank=True,
+                                     help_text='DevStaR program output')
+    area_embryo = models.IntegerField(null=True, blank=True,
+                                      help_text='DevStaR program output')
+    count_adult = models.IntegerField(null=True, blank=True,
+                                      help_text='DevStaR program output')
+    count_larva = models.IntegerField(null=True, blank=True,
+                                      help_text='DevStaR program output')
+    count_embryo = models.IntegerField(null=True, blank=True,
+                                       help_text='area_embryo / 70')
+
+    larvae_per_adult = models.FloatField(
+        null=True, blank=True, default=None,
+        help_text='count_larva / count_adult')
+    embryo_per_adult = models.FloatField(
+        null=True, blank=True, default=None,
+        help_text='count_embryo / count_adult')
+    survival = models.FloatField(
+        null=True, blank=True, default=None,
+        help_text='count_larvae / (count_larvae + count_embryo)')
+    lethality = models.IntegerField(
+        null=True, blank=True, default=None,
+        help_text='count_embryo / (count_larvae + count_embryo)')
+
+    is_bacteria_present = models.NullBooleanField(default=None)
+
+    gi_score_larvae_per_adult = models.FloatField(
+        null=True, blank=True, default=None, help_text='')
+    gi_score_survival = models.FloatField(
+        null=True, blank=True, default=None, help_text='')
+
+    class Meta:
+        db_table = 'DevstarScore'
+
+    def __unicode__(self):
+        return ('{}:{} DevStaR score'
+                .format(str(self.experiment), self.well))
