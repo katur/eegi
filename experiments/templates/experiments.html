@@ -38,7 +38,26 @@ Or use filters:
 </form>
 
 {% if experiments %}
-{{ experiments|length }} results
+<span id="total">{{ experiments|length }} total experiments.</span>
+<div class="pagination">
+  {% if display_experiments.has_previous %}
+  <a href="?{% url_replace request 'page' display_experiments.previous_page_number %}">
+    previous
+  </a>
+  {% endif %}
+
+  <span class="current">
+    Page {{ display_experiments.number }}
+    of {{ display_experiments.paginator.num_pages }}.
+  </span>
+
+  {% if display_experiments.has_next %}
+  <a href="?{% url_replace request 'page' display_experiments.next_page_number %}">
+    next
+  </a>
+  {% endif %}
+</div>
+<br>
 <table class="striped">
   <thead>
     <tr>
@@ -54,7 +73,7 @@ Or use filters:
   </thead>
 
   <tbody>
-    {% for experiment in experiments %}
+    {% for experiment in display_experiments %}
     <tr>
       <td>
         <a href="{% url 'experiment_url' id=experiment.id %}">{{ experiment.id }}</a>

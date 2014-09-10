@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm
 
@@ -6,6 +8,7 @@ from experiments.forms import ExperimentFilterForm
 def experiments(request, context=None):
     errors = []
     experiments = None
+    display_experiments = None
 
     if 'exact_id' in request.GET:
         try:
@@ -36,14 +39,23 @@ def experiments(request, context=None):
                     Experiment.objects.filter(**filters)
                     .values('id', 'worm_strain', 'worm_strain__genotype',
                             'library_plate', 'temperature', 'date',
-                            'is_junk', 'comment')
-                )
+                            'is_junk', 'comment'))
+
+                paginator = Paginator(experiments, 100)
+                page = request.GET.get('page')
+                try:
+                    display_experiments = paginator.page(page)
+                except PageNotAnInteger:
+                    display_experiments = paginator.page(1)
+                except EmptyPage:
+                    display_experiments = paginator.page(paginator.num_pages)
 
     else:
         form = ExperimentFilterForm()
 
     context = {
         'experiments': experiments,
+        'display_experiments': display_experiments,
         'errors': errors,
         'form': form,
     }
