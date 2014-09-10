@@ -12,5 +12,6 @@ class ExperimentFilterForm(forms.Form):
     worm_strain__allele = forms.CharField(required=False)
     library_plate = forms.CharField(required=False)
     temperature = forms.DecimalField(required=False)
-    date = forms.DateField(required=False)
+    date = forms.DateField(required=False,
+                           label="Date (YYYY-MM-DD)")
     is_junk = forms.NullBooleanField(required=False, initial=False)

@@ -6,9 +6,7 @@ from experiments.forms import ExperimentFilterForm
 
 
 def experiments(request, context=None):
-    errors = []
-    experiments = None
-    display_experiments = None
+    exact_id_errors = []
 
     if 'exact_id' in request.GET:
         try:
@@ -16,10 +14,13 @@ def experiments(request, context=None):
             if (id > 0):
                 return redirect(experiment, id=id)
             else:
-                errors.append('Experiment id must be positive')
+                exact_id_errors.append('Experiment id must be positive')
 
         except ValueError:
-            errors.append('Experiment id must be a positive integer')
+            exact_id_errors.append('Experiment id must be a positive integer')
+
+    total_results = None
+    display_experiments = None
 
     if len(request.GET):
         form = ExperimentFilterForm(request.GET)
@@ -40,6 +41,7 @@ def experiments(request, context=None):
                     .values('id', 'worm_strain', 'worm_strain__genotype',
                             'library_plate', 'temperature', 'date',
                             'is_junk', 'comment'))
+                total_results = len(experiments)
 
                 paginator = Paginator(experiments, 100)
                 page = request.GET.get('page')
@@ -54,10 +56,10 @@ def experiments(request, context=None):
         form = ExperimentFilterForm()
 
     context = {
-        'experiments': experiments,
-        'display_experiments': display_experiments,
-        'errors': errors,
+        'exact_id_errors': exact_id_errors,
         'form': form,
+        'total_results': total_results,
+        'display_experiments': display_experiments,
     }
     return render(request, 'experiments.html', context)
 

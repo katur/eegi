@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 {% load extra_template_tags %}
 
+{% block body_id %}library-plates{% endblock %}
 {% block page_title %}RNAi Library Plates{% endblock %}
 
 {% block content %}
-<div class="filters">
+<div id="plate-filters">
   <a href="{% url 'library_plates_url' %}"
     {% ifequal request.GET.screen_stage None %}
     class="active"
@@ -30,27 +31,25 @@
   >Not used for screening</a>
 </div>
 
-<div>
+<div id="results-header">
   <span id="total">
     {{ plates|length }} total plates.
   </span>
 
-  <div class="pagination">
+  <div class="pagination-status">
     {% if display_plates.has_previous %}
     <a href="?{% url_replace request 'page' display_plates.previous_page_number %}">
-      previous
-    </a>
+      previous</a>
     {% endif %}
 
-    <span class="current">
+    <span>
       Page {{ display_plates.number }}
       of {{ display_plates.paginator.num_pages }}.
     </span>
 
     {% if display_plates.has_next %}
     <a href="?{% url_replace request 'page' display_plates.next_page_number %}">
-      next
-    </a>
+      next</a>
     {% endif %}
   </div>
 </div>

@@ -1,28 +1,29 @@
 {% extends "base.html" %}
 {% load extra_template_tags %}
 
+{% block body_id %}experiments{% endblock %}
 {% block page_title %}Experiments{% endblock %}
 
 {% block content %}
 
-{% if errors %}
-<span class="error-message">
-  {% for error in errors %}
-    {{ error }}<br>
-  {% endfor %}
-</span>
-<br><br>
-{% endif %}
-
 Find an experiment by exact id:
+
 <form id="exact-id-form" action="" method="get">
   <input type="text" name="exact_id">
   <input type="submit" value="Submit">
 </form>
 
+{% if exact_id_errors %}
+<span id="exact-id-errors" class="error-message">
+  {% for error in exact_id_errors %}
+    {{ error }}<br>
+  {% endfor %}
+</span>
+{% endif %}
+
 <hr>
 
-Or use filters:
+Find experiments with filters:
 
 {% if form.errors %}
 <span class="error-message">
@@ -30,35 +31,44 @@ Or use filters:
 </span>
 {% endif %}
 
-<form action="" method="get">
+<form id="experiment-filter-form" action="" method="get">
   <table>
     {{ form.as_table }}
   </table>
   <input type="submit" value="Submit">
 </form>
 
-{% if experiments %}
-<span id="total">{{ experiments|length }} total experiments.</span>
-<div class="pagination">
-  {% if display_experiments.has_previous %}
-  <a href="?{% url_replace request 'page' display_experiments.previous_page_number %}">
-    previous
-  </a>
-  {% endif %}
-
-  <span class="current">
-    Page {{ display_experiments.number }}
-    of {{ display_experiments.paginator.num_pages }}.
+{% ifnotequal total_results None %}
+<div id="results-header">
+  <span id="total">
+    {{ total_results }} total experiments.
   </span>
 
-  {% if display_experiments.has_next %}
-  <a href="?{% url_replace request 'page' display_experiments.next_page_number %}">
-    next
-  </a>
+  {% if total_results %}
+  <div class="pagination-status">
+    {% if display_experiments.has_previous %}
+    <a href="?{% url_replace request 'page' display_experiments.previous_page_number %}">
+      previous
+    </a>
+    {% endif %}
+
+    <span>
+      Page {{ display_experiments.number }}
+      of {{ display_experiments.paginator.num_pages }}.
+    </span>
+
+    {% if display_experiments.has_next %}
+    <a href="?{% url_replace request 'page' display_experiments.next_page_number %}">
+      next
+    </a>
+    {% endif %}
+  </div>
   {% endif %}
 </div>
-<br>
-<table class="striped">
+{% endifnotequal %}
+
+{% if total_results %}
+<table id="experiment-results" class="striped">
   <thead>
     <tr>
       <th>Experiment ID</th>
