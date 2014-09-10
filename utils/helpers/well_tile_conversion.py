@@ -5,7 +5,7 @@ backwards_rows = 'BDFH'
 NUMBER_OF_COLUMNS = 12
 
 
-def get_tile(well):
+def well_to_tile(well):
     assert re.match('[A-H]\d\d', well)
     row = well[0]
     column = int(well[1:3])
@@ -24,7 +24,7 @@ def get_tile(well):
         str(overall_rank + 1).zfill(2))
 
 
-def get_well(tile):
+def tile_to_well(tile):
     assert re.match('Tile0000\d\d.bmp', tile)
     overall_rank = int(tile[8:10]) - 1
     row = rows[overall_rank / NUMBER_OF_COLUMNS]
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     )
 
     for test in tests:
-        if get_tile(test[0]) != test[1]:
-            print 'fail:' + get_tile(test[0])
-        if get_well(test[1]) != test[0]:
-            print 'FAIL: ' + get_well(test[1])
+        if well_to_tile(test[0]) != test[1]:
+            print 'fail:' + well_to_tile(test[0])
+        if tile_to_well(test[1]) != test[0]:
+            print 'FAIL: ' + tile_to_well(test[1])

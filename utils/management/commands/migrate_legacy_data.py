@@ -222,7 +222,7 @@ def update_ManualScore_table(cursor):
                      'datetime'.format(legacy_row[0], legacy_row[1]))
         legacy_score = ManualScore(
             experiment=get_experiment(legacy_row[0]),
-            well=well_tile_conversion.get_well(legacy_row[1]),
+            well=well_tile_conversion.tile_to_well(legacy_row[1]),
             score_code=get_score_code(legacy_row[2]),
             scorer=scorer,
             timestamp=timestamp,
