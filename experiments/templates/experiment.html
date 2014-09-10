@@ -5,32 +5,50 @@
 {% block page_title %}Experiment {{ experiment.id }}{% endblock %}
 
 {% block content %}
-Worm strain:
-<a href="{{ experiment.worm_strain.get_lab_website_url }}">
-  {{ experiment.worm_strain }}</a>
+<div id="experiment-wide-info">
+  <span>
+    Worm strain:
+    <a href="{{ experiment.worm_strain.get_lab_website_url }}">
+      {{ experiment.worm_strain }}</a>
+  </span>
 
-{% if experiment.worm_strain.genotype %}
-<br>
-Worm genotype: {{ experiment.worm_strain.genotype }}
-{% endif %}
+  {% if experiment.worm_strain.genotype %}
+  <span>
+    Worm genotype: {{ experiment.worm_strain.genotype }}
+  </span>
+  {% endif %}
 
-<br><br>
-Library plate: {{ experiment.library_plate }}
+  <span>
+    Library plate: {{ experiment.library_plate }}
+  </span>
 
-<br><br>
-Temperature: {{ experiment.temperature|get_celsius_string }}
+  <span>
+    Temperature: {{ experiment.temperature|get_celsius_string }}
+  </span>
 
-<br><br>
-Date: {{ experiment.date }}
+  <span>
+    Date: {{ experiment.date }}
+  </span>
 
-{% if experiment.is_junk %}
-<br><br>
-JUNK
-{% endif %}
+  {% if experiment.is_junk %}
+  <span>
+    JUNK
+  </span>
+  {% endif %}
 
-{% if experiment.comment %}
-<br><br>
-Comment: {{ experiment.comment }}
-{% endif %}
+  {% if experiment.comment %}
+  <span>
+    Comment: {{ experiment.comment }}
+  </span>
+  {% endif %}
+</div>
 
+<table id="images">
+  {% for i in 96|get_range %}
+  <tr>
+    <td>Tile {{ i|add:"1" }}</td>
+    <td><img src="{% get_image_url experiment i|add:"1" %}"></td>
+  </tr>
+  {% endfor %}
+</table>
 {% endblock %}
