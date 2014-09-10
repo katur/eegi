@@ -71,7 +71,7 @@ HTML uses the
 [Django template language](https://docs.djangoproject.com/en/dev/topics/templates/).
 
 CSS is in [SASS](http://sass-lang.com/). Run
-`sass -wc --style compressed website/static/website/stylesheets/styles.sass`
+`sass -wc --style compressed website/static/stylesheets/styles.sass`
 to compile.
 
 Javascript is in [jQuery](http://jquery.com/).
