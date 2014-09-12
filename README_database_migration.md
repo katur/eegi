@@ -39,8 +39,7 @@ tables).
 
 Find further documentation in the script itself (including which queries were
 performed on the legacy database).
-But below is a quick list of changes that were made between the old and
-new database.
+But below is a reference of changes between the old and new databases.
 
 
 ## Reference of Changes
