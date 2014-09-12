@@ -17,7 +17,7 @@ is a the same schema view as a pdf.
 
 Notes on migrating the data from Huey-Ling's MySQL database
 (`GenomeWideGI` on pleiades)
-are in `database_migration_notes.md`.
+are in `README_database_migration.md`.
 
 
 ## Dependencies
