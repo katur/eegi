@@ -56,7 +56,7 @@ referring to worm strains | generally mutant and allele, sometimes just allele |
 ### `clones` app
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
-clone mapping info | 1-to-1 scattered throughout database in many tables (typically `node_primary_name` and/or `gene` accompanying `clone`) | 1-to-many `CloneMapping` table (and associated tables about mapping); rest of database mentions clone only
+clone mapping info | 1-to-1 redundant over many tables (typically `clone` is accompanied by `node_primary_name` and/or `gene`) | 1-to-many `CloneMapping` table (and associated tables about mapping); rest of database refers to `clone` only
 
 ### `library` app
 **concept** | **GenomeWideGI** | **eegi**
