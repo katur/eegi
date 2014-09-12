@@ -35,14 +35,14 @@ class Command(BaseCommand):
     Where start is inclusive, end is exclusive,
     and the values for start and end reference the steps below
     (dependencies in parentheses):
-    0: LibraryPlate
-    1: Experiment (WormStrain, 0)
-    2: ManualScoreCode
-    3: ManualScore (1, 2)
-    4: DevstarScore (1)
-    5: Clone
-    6: LibraryWell (0, 5)
-    7: LibrarySequencing (6)
+        0: LibraryPlate
+        1: Experiment (WormStrain, 0)
+        2: ManualScoreCode
+        3: ManualScore (1, 2)
+        4: DevstarScore (1)
+        5: Clone
+        6: LibraryWell (0, 5)
+        7: LibrarySequencing (6)
     """
     help = ('Update this database according to legacy database')
 
@@ -178,8 +178,26 @@ def update_ManualScoreCode_table(cursor):
     """
     Update the ManualScoreCode table, against the legacy table of the same
     name.
+
+    We've made these decisions about migrating score codes and scores
+        into the new database:
+
+    - Scrap these antiquated codes, along with scores:
+        -8: 2 degree pool (currently no scores; not used)
+        -1: not sure (just Julie, whose scores are being deleted anyway)
+        4: No Larvae (for a preliminary DevStaR test; no easy conversion)
+        5: Larvae present ("")
+        6: A lot of Larvae ("")
+
+    - Scrap these antiquated codes, but convert scores:
+        -6: Poor Image Quality (convert to -7)
+
+    - Migrate these antiquated codes, but do not show in interface:
+        -5: IA Error
     """
-    legacy_query = 'SELECT code, definition FROM ManualScoreCode'
+    legacy_query = ('SELECT code, definition FROM ManualScoreCode '
+                    'WHERE code != -8 AND code != -1 AND code != 4 '
+                    'AND code != 5 AND code != 6 AND code != -6')
     recorded_score_codes = ManualScoreCode.objects.all()
     fields_to_compare = ('legacy_description',)
 
@@ -199,31 +217,94 @@ def update_ManualScore_table(cursor):
     """
     Requires that ScoreYear, ScoreMonth, ScoreDate, and ScoreTime
     are valid fields for a python datetime.datetime.
+
+    As described in update_ManualScoreCode_table, do not migrate scores
+    with score code -8, -1, 4, 5, or 6.
+
+    Also as described in update_ManualScoreCode_table, convert
+    any -6 scores to -7 during migration.
+
+    In addition, we've made these decisions about score migration:
+        - *?*?* do not migrate isJunk = -1 scores, as we are probably trashing
+          these experiments entirely *?*?*
+
+        - scrap scorer Julie, treating her scores as follows:
+            no bacteria (-2) scores: mark as scored by hueyling (hueyling did
+                    populate these scores automatically, and Julie was simply
+                    listed as the default scorer in the old database
+            all other scores: do not migrate (all correspond to misbehaving
+                    spn-4 line and have no bearing on our results)
+
+        - scrap scorer expPeople, treating scores as hueyling
+
+        - scrap alejandro and katy as scorers, not migrating any of their
+          scores (all their scores were redundant; alejandro was not trained
+          well, and katy's were done prior to other decisions)
+
+        - scrap ENH scores only by eliana and lara
+
+        - keep ENH scores by sherly, kelly, and patricia, but do not have
+          these show in the interface
+
+        - for sherly and patricia's ENH scores, ensure that any medium or
+          strong enhancers were caught by official scorers
     """
-    legacy_query = ('SELECT expID, ImgName, score, scoreBy, scoreYMD, '
-                    'ScoreYear, ScoreMonth, ScoreDate, ScoreTime '
-                    'FROM ManualScore')
+    legacy_query = ('SELECT ManualScore.expID, ImgName, score, scoreBy, '
+                    'scoreYMD, ScoreYear, ScoreMonth, ScoreDate, ScoreTime, '
+                    'mutant, screenFor '
+                    'FROM ManualScore '
+                    'LEFT JOIN RawData '
+                    'ON ManualScore.expID = RawData.expID '
+                    'WHERE code != -8 AND code != -1 AND code != 4 '
+                    'AND code != 5 AND code != 6')
     recorded_scores = ManualScore.objects.all()
     fields_to_compare = None
 
     def sync_score_row(legacy_row):
-        scorer = get_user(legacy_row[3])
-        if not scorer:
-            sys.stderr.write('WARNING: skipping a score '
-                             'scored by non-User {}\n'
-                             .format(legacy_row[3]))
+        legacy_score_code = legacy_row[2]
+        legacy_scorer = legacy_row[3]
+        gene = legacy_row[9]
+        screen = legacy_row[10]
+
+        # Skip some scores entirely (see criteria above)
+        skip_entirely = ('alejandro', 'katy')
+        skip_ENH = ('eliana', 'lara')
+
+        if ((legacy_scorer == 'Julie' and legacy_score_code != -2) or
+                (legacy_scorer in skip_entirely) or
+                (screen == 'ENH' and legacy_scorer in skip_ENH)):
+            sys.stderr.write('Skipping a {} {} score of {} by {}\n'
+                             .format(gene, screen, legacy_scorer))
             return True
+
+        # Convert some scorers to hueyling (see criteria above)
+        if legacy_scorer == 'Julie' or legacy_scorer == 'expPeople':
+            sys.stderr.write('Converting a {} score by {} to hueyling\n'
+                             .format(legacy_score_code, legacy_scorer))
+            legacy_scorer = 'hueyling'
+
+        # Convert some score codes to other score codes (see criteria above)
+        if legacy_score_code == -6:
+            sys.stderr.write('Converting score from -6 to -7\n')
+            legacy_score_code = -7
+
+        # The following raise exceptions if improperly formatted or not found
+        experiment = get_experiment(legacy_row[0])
+        well = well_tile_conversion.tile_to_well(legacy_row[1])
+        score_code = get_score_code(legacy_score_code)
+        scorer = get_user(legacy_scorer)
 
         timestamp = get_timestamp(legacy_row[5], legacy_row[6], legacy_row[7],
                                   legacy_row[8], legacy_row[4])
         if not timestamp:
-            sys.exit('ERROR: score of {}({}), '
+            sys.exit('ERROR: score of experiment {}, well {} '
                      'could not be converted to a proper '
                      'datetime'.format(legacy_row[0], legacy_row[1]))
+
         legacy_score = ManualScore(
-            experiment=get_experiment(legacy_row[0]),
-            well=well_tile_conversion.tile_to_well(legacy_row[1]),
-            score_code=get_score_code(legacy_row[2]),
+            experiment=experiment,
+            well=well,
+            score_code=score_code,
             scorer=scorer,
             timestamp=timestamp,
         )
@@ -413,8 +494,6 @@ def get_user(username):
         username = 'julie'
     if username == 'patricia':
         username = 'giselle'
-    if username == 'katy' or username == 'expPeople':
-        return None
 
     try:
         return User.objects.get(username=username)
