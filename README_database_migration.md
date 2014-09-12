@@ -15,8 +15,8 @@ which lives in `utils/management/commands`. To run:
 to officially migrate to the new database, the new database should be
 populated from scratch in order to account for deleted rows.)
 
-In a nutshell, the script is broken into steps,
-where each step roughly corresponds to a database table.
+In a nutshell, the script is broken into about 10 steps,
+each step roughly corresponding to migrating a single table.
 These steps are ordered based on dependencies between steps,
 and optional arguments can specify running a subrange of steps.
 Within each step, the legacy database is queried
