@@ -44,29 +44,24 @@ But below is a quick list of changes that were made between the old and
 new database.
 
 
-## Change Reference
+## Reference of Changes
 
 *concept* | *GenomeWideGI* | *eegi*
----------   --------------   ------
+--------- | -------------- | ------
 information about worm strains | no table | `WormStrain` table
 referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
-
 plate-level information about library plates | no table | `LibraryPlate` table
 clone locations within library plates | `RNAiPlate` (primary) and `CherryPickRNAiPlate` (secondary)* | combine in `LibraryWell`
 clone parent location relationships | `CherryPickTemplate` (incomplete) | capture in `LibraryWell`
 sequencing results: table name | `SeqPlate` | `LibrarySequencing`
 sequencing results: what information is stored | mostly conclusions, hardly any Genewiz output | raw Genewiz output
-
 clone mapping info | 1-to-1 scattered, 1-to-many in | 1-to-many `CloneMapping` table
-
 experiments table | `RawData` | `Experiment`
 temperature datatype | string (e.g. "25C") | decimal
 experiment date datatype | string | date
-
 human scores table(s) | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
 score time datatype | originally int year, string month, int day, string time; scoreYMD incomplete | 'aware' datetime
 scorer | string of username | FK to `User`
-
 score category -8: secondary pool | no corresponding scores | no not migrate category or scores
 score category -1: not sure | only Julie sscores | do not migrate category or scores
 score category 4: No Larvae | K/S mel-26 scores for test | do not migrate category or scores
@@ -74,7 +69,6 @@ score category 5: Larvae Present | K/S mel-26 scores for test | do not migrate c
 score category 6: A lot of Larvae | K/S mel-26 scores for test (no obvious suppressors) | do not migrate category or scores
 score category -6: Poor Image Quality | very old scores only | convert to -7 (problem)
 score category -5: IA Error | very old scores only | migrate, but omit from interface
-
 scorer expPeople | only one NB score | convert to hueyling
 scorer Julie (MySQL default) | spn-4 scores and -2 (NB) scores | convert NB scores to hueyling; do not migrate spn-4 scores (useless)
 scorer alejandro | all ENH scores | do not migrate any alejandro scores
@@ -82,7 +76,6 @@ scorer katy | all ENH scores | do not migrate any katy scores
 scorer eliana | pre-consensus ENH scores | do not migrate eliana's ENH scores
 scorer lara | pre-consensus ENH scores | do not migrate lara's ENH scores
 scorers sherly, giselle, kelly | pre-consensus ENH scores | migrate, but omit from interface (to investigate relevance)
-
 DevStaR scores table | `RawDataWithScore` | `DevstarScore`
 
 
