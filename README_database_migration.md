@@ -46,22 +46,38 @@ new database.
 
 ## Reference of Changes
 
+### *worms* app
+
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
- | *worms* app | 
 information about worm strains | no table | `WormStrain` table
 referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
- | *library* | 
+
+### *library* app
+**concept** | **GenomeWideGI** | **eegi**
+----------- | ---------------- | --------
 plate-level information about library plates | no table | `LibraryPlate` table
 clone locations within library plates | `RNAiPlate` (primary) and `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | combine in `LibraryWell`; do not migrate Julie plates; still need to decide about Eliana rearrays
 clone parent location relationships | `CherryPickTemplate` (incomplete) | capture with FK from `LibraryWell` to `LibraryWell`
 sequencing results: table name | `SeqPlate` | `LibrarySequencing`
 sequencing results: what information is stored | mostly conclusions, hardly any Genewiz output | raw Genewiz output
+
+### *clones* app
+**concept** | **GenomeWideGI** | **eegi**
+----------- | ---------------- | --------
 clone mapping info | 1-to-1 scattered throughout database in many tables (typically `node_primary_name` and/or `gene` accompanying `clone`) | 1-to-many `CloneMapping` table (and associated tables about mapping); rest of database mentions clone only
+
+### *experiments* app: experiments
+**concept** | **GenomeWideGI** | **eegi**
+----------- | ---------------- | --------
 experiments table | `RawData` | `Experiment`
 temperature datatype | string (e.g. "25C") | decimal
 experiment date datatype | string | date
-human scores table(s) | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
+
+### *experiments* app: manual scores
+**concept** | **GenomeWideGI** | **eegi**
+----------- | ---------------- | --------
+manual scores table(s) | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
 score time datatype | originally int year, string month, int day, string time; scoreYMD incomplete | 'aware' datetime
 scorer | string of username | FK to `User`
 score category -8: secondary pool | no corresponding scores | no not migrate category or scores
@@ -78,6 +94,10 @@ scorer katy | all ENH scores | do not migrate any katy scores
 scorer eliana | pre-consensus ENH scores | do not migrate eliana's ENH scores
 scorer lara | pre-consensus ENH scores | do not migrate lara's ENH scores
 scorers sherly, giselle, kelly | pre-consensus ENH scores | migrate, but omit from interface (to investigate relevance)
+
+### *experiments* app: DevStaR scores
+**concept** | **GenomeWideGI** | **eegi**
+----------- | ---------------- | --------
 DevStaR scores table | `RawDataWithScore` | `DevstarScore`
 
 
@@ -85,7 +105,7 @@ Still considering these changes
 - vidal plate names | e.g. 1 | e.g. vidal-1
 
 Probably not touching these during migration:
-- attribute, node, synonym (Firoz domain)
+- attribute, node, synonym (Firoz/mapping domain)
 - WellToTile (to be replaced with simple python functions)
 - CherryPickList (temporary step in generating CherryPickRNAiPlate; probably meant for deletion)
 - CherryPickRNAiPlate\_2011 and CherryPickRNAiPlate\_lock (but ensure they are redundant with CherryPickRNAiPlate)
@@ -93,10 +113,7 @@ Probably not touching these during migration:
 - PredManualScore and PredManualScoreList (but figure out why these exist!)
 
 
-## Draft of SQL queries for a faster approach
-
-### WormStrain (did not exist in GenomeWideGI)
-Add by hand, referencing Google Doc
+## Possible (untested) SQL queries if you want to not use the script
 
 ### LibraryPlate (did not exist in GenomeWideGI)
 Add 384 plates and Eliana Rearray plates by hand.
