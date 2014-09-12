@@ -6,12 +6,13 @@ to the redesigned MySQL database (eegi).
 
 ## Data Migration Script
 
-A script is used to migrate new or updated rows,
-which lives in `utils/management/commands`. (It does not yet account for
-deleted rows, so just prior to the official migration to the new database,
-the script should be run on a truncated database). To run:
+A script is used to migrate new or updated rows;
+it does not yet account for deleted rows, 
+so should be run on a truncated database just prior to
+the official migration to the new database.
+The script lives in `utils/management/commands`, and can be run with:
 
-    ./manage.py migrate_legacy_data
+    ./manage.py migrate_legacy_data [start_step end_step]
 
 
 In a nutshell, the script is broken into about 10 steps,
