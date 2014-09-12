@@ -7,8 +7,9 @@ from the legacy MySQL database (GenomeWideGI on pleiades)
 to the redesigned MySQL database (eegi).
 
 A script is used to migrate new or updated rows,
-which lives in `utils/management/commands`. To run it:
-    `./manage.py migrate_legacy_data`.
+which lives in `utils/management/commands`. To run:
+
+    ./manage.py migrate_legacy_data
 
 The script does not yet account for deleted rows. So when we are ready
 to officially migrate to the new database, the new database should be
