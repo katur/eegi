@@ -16,7 +16,8 @@ The script lives in `utils/management/commands`, and can be run with:
     
     
 Please see the script's documentation for more information 
-(including optional args, legacy database queries, etc).
+(including how to enter legacy database connection information,
+optional args, legacy database queries, etc).
 But in a nutshell, the script is broken into about 10 steps,
 each step roughly corresponding to migrating a single table.
 These steps are ordered based on dependencies between steps,
