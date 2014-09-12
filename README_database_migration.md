@@ -51,7 +51,7 @@ new database.
 information about worm strains | no table | `WormStrain` table
 referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
 plate-level information about library plates | no table | `LibraryPlate` table
-clone locations within library plates | `RNAiPlate` (primary) and `CherryPickRNAiPlate` (secondary)* | combine in `LibraryWell`
+clone locations within library plates | `RNAiPlate` (primary) and `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | combine in `LibraryWell`; do not migrate Julie plates; still need to decide about Eliana Rearrays
 clone parent location relationships | `CherryPickTemplate` (incomplete) | capture in `LibraryWell`
 sequencing results: table name | `SeqPlate` | `LibrarySequencing`
 sequencing results: what information is stored | mostly conclusions, hardly any Genewiz output | raw Genewiz output
@@ -78,12 +78,6 @@ scorer lara | pre-consensus ENH scores | do not migrate lara's ENH scores
 scorers sherly, giselle, kelly | pre-consensus ENH scores | migrate, but omit from interface (to investigate relevance)
 DevStaR scores table | `RawDataWithScore` | `DevstarScore`
 
-
-
-
-
-
-*also, ReArrayRNAiPlate holds clone locations in Eliana Rearrays, which we still must decide about
 
 Still considering these changes
 - vidal plate names | e.g. 1 | e.g. vidal-1
