@@ -43,7 +43,7 @@ installed):
 
 ## Apps
 
-The project is organized into four data-oriented apps.
+The project is organized into four primary apps.
 
 `worms` captures the *C. elegans* strains used in the screen.
 
@@ -57,14 +57,12 @@ including sequencing results.
 including human and machine scores of results.
 
 There is also an app `website` for aspects of the website that are common
-between apps.
-
-There is also an app `utils` for utilities shared by all apps.
+between apps, and an app `utils` for general utilities and helper functions.
 
 
 ## Code
 
-The project is organized in the standard
+The project is organized the standard
 [Django](https://www.djangoproject.com/) way, with almost all code in Python.
 
 HTML uses the
