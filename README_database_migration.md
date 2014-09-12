@@ -38,45 +38,70 @@ new database, performing various conversions on the old tables with SQL,
 inserting the old rows into the new tables with SQL, and deleting the old
 tables).
 
-For precise details about the steps (including legacy queries performed,
-rules regarding data that might not be pulled, etc), please see the script
-itself.
+Find further documentation in the script itself (including which queries were
+performed on the legacy database).
 But below is a quick list of changes that were made between the old and
 new database.
 
 
 ## Change Reference
 
-
 *concept* | *GenomeWideGI* | *eegi*
 ---------   --------------   ------
-worm strain information | no table | `WormStrain` table
-plate-level experiment information | `RawData` | `Experiment`
-plate-level library plates | no table | `LibraryPlate` table
-human scores | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
-DevStaR scores | `RawDataWithScore` | `DevstarScore`
-clone location in plates | `RNAiPlate` (primary) and `CherryPickRNAiPlate` (secondary) | combine in `LibraryWell`
-clone parent location relationships | `CherryPickTemplate` (incomplete) | capture in `LibraryWell`
-sequencing result table name | `SeqPlate` | `LibrarySequencing`
-sequencing result info stored | mostly conclusions, hardly any Genewiz output | raw Genewiz output
-clone mapping info | 1-to-1 scattered, 1-to-many in | 1-to-many `CloneMapping` table
-worm PK | generally mutant and allele, sometimes just allele | strain name
-temperature type | string (e.g. "25C") | decimal
-timestamps | time
+information about worm strains | no table | `WormStrain` table
+referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
 
+plate-level information about library plates | no table | `LibraryPlate` table
+clone locations within library plates | `RNAiPlate` (primary) and `CherryPickRNAiPlate` (secondary)* | combine in `LibraryWell`
+clone parent location relationships | `CherryPickTemplate` (incomplete) | capture in `LibraryWell`
+sequencing results: table name | `SeqPlate` | `LibrarySequencing`
+sequencing results: what information is stored | mostly conclusions, hardly any Genewiz output | raw Genewiz output
+
+clone mapping info | 1-to-1 scattered, 1-to-many in | 1-to-many `CloneMapping` table
+
+experiments table | `RawData` | `Experiment`
+temperature datatype | string (e.g. "25C") | decimal
+experiment date datatype | string | date
+
+human scores table(s) | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
+score time datatype | originally int year, string month, int day, string time; scoreYMD incomplete | 'aware' datetime
+scorer | string of username | FK to `User`
+
+score category -8: secondary pool | no corresponding scores | no not migrate category or scores
+score category -1: not sure | only Julie sscores | do not migrate category or scores
+score category 4: No Larvae | K/S mel-26 scores for test | do not migrate category or scores
+score category 5: Larvae Present | K/S mel-26 scores for test | do not migrate category or scores
+score category 6: A lot of Larvae | K/S mel-26 scores for test (no obvious suppressors) | do not migrate category or scores
+score category -6: Poor Image Quality | very old scores only | convert to -7 (problem)
+score category -5: IA Error | very old scores only | migrate, but omit from interface
+
+scorer expPeople | only one NB score | convert to hueyling
+scorer Julie (MySQL default) | spn-4 scores and -2 (NB) scores | convert NB scores to hueyling; do not migrate spn-4 scores (useless)
+scorer alejandro | all ENH scores | do not migrate any alejandro scores
+scorer katy | all ENH scores | do not migrate any katy scores
+scorer eliana | pre-consensus ENH scores | do not migrate eliana's ENH scores
+scorer lara | pre-consensus ENH scores | do not migrate lara's ENH scores
+scorers sherly, giselle, kelly | pre-consensus ENH scores | migrate, but omit from interface (to investigate relevance)
+
+DevStaR scores table | `RawDataWithScore` | `DevstarScore`
+
+
+
+
+
+
+*also, ReArrayRNAiPlate holds clone locations in Eliana Rearrays, which we still must decide about
 
 Still considering these changes
 - vidal plate names | e.g. 1 | e.g. vidal-1
 
-
-Probably not really touching these during migration:
+Probably not touching these during migration:
 - attribute, node, synonym (Firoz domain)
 - WellToTile (to be replaced with simple python functions)
-- CherryPickList (temporary step in generating CherryPickRNAiPlate; probably meant to be deleted)
-- CherryPickRNAiPlate_2011 and CherryPickRNAiPlate_lock (first ensure redundant with CherryPickRNAiPlate)
-- ScoreResultsDevStaR (probably incomplete copy of RawDataWithScore that Kris made)
-- PredManualScore and PredManualScoreList (what are these?)
-- ReArrayRNAiPlate (first need to decide about holding onto Eliana ReArray info)
+- CherryPickList (temporary step in generating CherryPickRNAiPlate; probably meant for deletion)
+- CherryPickRNAiPlate\_2011 and CherryPickRNAiPlate\_lock (but ensure they are redundant with CherryPickRNAiPlate)
+- ScoreResultsDevStaR (but ensure it is just an incomplete copy of RawDataWithScore, made by Kris)
+- PredManualScore and PredManualScoreList (but figure out why these exist!)
 
 
 ## Draft of SQL queries for a faster approach
