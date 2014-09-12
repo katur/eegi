@@ -53,6 +53,11 @@ tables).
 information about worm strains | no table | `WormStrain` table
 referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
 
+### `clones` app
+**concept** | **GenomeWideGI** | **eegi**
+----------- | ---------------- | --------
+clone mapping info | 1-to-1 scattered throughout database in many tables (typically `node_primary_name` and/or `gene` accompanying `clone`) | 1-to-many `CloneMapping` table (and associated tables about mapping); rest of database mentions clone only
+
 ### `library` app
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
@@ -61,19 +66,14 @@ clone locations within library plates | `RNAiPlate` (primary) and `CherryPickRNA
 clone parent location relationships | `CherryPickTemplate` (incomplete) | capture with FK from `LibraryWell` to `LibraryWell`
 sequencing results | `SeqPlate` table, which stores mostly conclusions and little Genewiz output | `LibrarySequencing`, which stores mostly Genewiz output
 
-### *clones* app
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
-clone mapping info | 1-to-1 scattered throughout database in many tables (typically `node_primary_name` and/or `gene` accompanying `clone`) | 1-to-many `CloneMapping` table (and associated tables about mapping); rest of database mentions clone only
-
-### *experiments* app: experiments
+### `experiments` app: experiments
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
 experiments table | `RawData` | `Experiment`
 temperature datatype | string (e.g. "25C") | decimal
 experiment date datatype | string | date
 
-### *experiments* app: manual scores
+### `experiments` app: manual scores
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
 manual scores table(s) | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
@@ -94,7 +94,7 @@ scorer eliana | pre-consensus ENH scores | do not migrate eliana's ENH scores
 scorer lara | pre-consensus ENH scores | do not migrate lara's ENH scores
 scorers sherly, giselle, kelly | pre-consensus ENH scores | migrate, but omit from interface (to investigate relevance)
 
-### *experiments* app: DevStaR scores
+### `experiments` app: DevStaR scores
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
 DevStaR scores table | `RawDataWithScore` | `DevstarScore`
