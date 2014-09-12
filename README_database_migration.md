@@ -59,8 +59,7 @@ referring to worm strains | generally mutant and allele, sometimes just allele |
 plate-level information about library plates | no table | `LibraryPlate` table
 clone locations within library plates | `RNAiPlate` (primary) and `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | combine in `LibraryWell`; do not migrate Julie plates; still need to decide about Eliana rearrays
 clone parent location relationships | `CherryPickTemplate` (incomplete) | capture with FK from `LibraryWell` to `LibraryWell`
-sequencing results: table name | `SeqPlate` | `LibrarySequencing`
-sequencing results: what information is stored | mostly conclusions, hardly any Genewiz output | raw Genewiz output
+sequencing results | `SeqPlate` table, which stores mostly conclusions and little Genewiz output | `LibrarySequencing`, which stores mostly Genewiz output
 
 ### *clones* app
 **concept** | **GenomeWideGI** | **eegi**
