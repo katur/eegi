@@ -52,6 +52,7 @@ tables).
 ----------- | ---------------- | --------
 information about worm strains | no table | `WormStrain` table
 referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
+par-1 allele | zc310 | zu310
 
 ### `clones` app
 **concept** | **GenomeWideGI** | **eegi**
