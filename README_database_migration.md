@@ -36,7 +36,7 @@ For this reason, its simplicity and robustness was favored over a faster
 approach (such as clearing the new database, copying the old tables into the
 new database, performing various conversions on the old tables with SQL,
 inserting the old rows into the new tables with SQL, and deleting the old
-tables). See untested example queries in last section of this document.
+tables).
 
 For precise details about the steps (including legacy queries performed,
 rules regarding data that might not be pulled, etc), please see the script
