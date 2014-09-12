@@ -34,8 +34,8 @@ since the last migration.
 
 This process of creating a Python object for every single row
 (about 4 million rows) is very slow. But it only needs to be run
-periodically during development of the new database, and then once
-prior to the official migration to the new database.
+a few times during development of the new database, and then once 
+just prior to the official migration to the new database.
 For this reason, its simplicity and robustness was favored over a faster
 approach (such as clearing the new database, copying the old tables into the
 new database, performing various conversions on the old tables with SQL,
