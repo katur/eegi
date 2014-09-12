@@ -43,7 +43,7 @@ installed):
 
 ## Apps
 
-The project is organized into four primary apps.
+The project is organized into four main apps.
 
 `worms` captures the *C. elegans* strains used in the screen.
 
