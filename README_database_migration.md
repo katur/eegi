@@ -46,12 +46,12 @@ new database.
 
 ## Reference of Changes
 
-*concept* | *GenomeWideGI* | *eegi*
---------- | -------------- | ------
+**concept** | **GenomeWideGI** | **eegi**
+----------- | ---------------- | --------
 information about worm strains | no table | `WormStrain` table
 referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
 plate-level information about library plates | no table | `LibraryPlate` table
-clone locations within library plates | `RNAiPlate` (primary) and `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | combine in `LibraryWell`; do not migrate Julie plates; still need to decide about Eliana Rearrays
+clone locations within library plates | `RNAiPlate` (primary) and `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | combine in `LibraryWell`; do not migrate Julie plates; still need to decide about Eliana rearrays
 clone parent location relationships | `CherryPickTemplate` (incomplete) | capture in `LibraryWell`
 sequencing results: table name | `SeqPlate` | `LibrarySequencing`
 sequencing results: what information is stored | mostly conclusions, hardly any Genewiz output | raw Genewiz output
