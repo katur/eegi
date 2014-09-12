@@ -29,7 +29,8 @@ various validation and conversion steps are used to create a Python object
 that is compatible with a row in the new database.
 Finally, if a corresponding object does not exist in the new database,
 the object is saved to the new database;
-otherwise, the corresponding object is updated if any updates have occured.
+otherwise, the corresponding object is updated if any changes have occured
+since the last migration.
 
 This process of creating a Python object for every single row
 (about 4 million rows) is very slow. But it only needs to be run
