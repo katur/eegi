@@ -43,17 +43,14 @@ installed):
 
 ## Apps
 
-The project is organized into four main apps.
+The project is organized into four main apps centered around the project data:
 
-`worms` captures the *C. elegans* strains used in the screen.
-
-`clones` captures the theoretical identity of the RNAi clones,
+- `worms` captures the *C. elegans* strains used in the screen.
+- `clones` captures the theoretical identity of the RNAi clones,
 including mapping information.
-
-`library` captures the physical RNAi stocks used in the screen,
+- `library` captures the physical RNAi stocks used in the screen,
 including sequencing results.
-
-`experiments` captures the actual experiments,
+- `experiments` captures the actual experiments,
 including human and machine scores of results.
 
 There is also an app `website` for aspects of the website that are common
