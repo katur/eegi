@@ -11,9 +11,9 @@ which lives in `utils/management/commands`. To run:
 
     ./manage.py migrate_legacy_data
 
-The script does not yet account for deleted rows. So when we are ready
+(This script does not yet account for deleted rows. So when we are ready
 to officially migrate to the new database, the new database should be
-populated from scratch in order to account for deleted rows.
+populated from scratch in order to account for deleted rows.)
 
 In a nutshell, the script is broken into steps,
 where each step roughly corresponds to a database table.
