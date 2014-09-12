@@ -46,14 +46,14 @@ tables).
 
 ## Reference of Changes
 
-### *worms* app
+### `worms` app
 
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
 information about worm strains | no table | `WormStrain` table
 referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
 
-### *library* app
+### `library` app
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
 plate-level information about library plates | no table | `LibraryPlate` table
