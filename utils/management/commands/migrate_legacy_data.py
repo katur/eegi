@@ -31,6 +31,10 @@ class Command(BaseCommand):
     To update just a range of tables, execute as so:
     ./manage.py migrate_legacy_data start end
 
+    Stdout reports whether a particular step had no changes or had changes.
+    Stderr reports every change (such as an added row), and thus can get
+        quite long; consider redirecting with 2> stderr.out.
+
     Where start is inclusive, end is exclusive,
     and the values for start and end reference the steps below
     (dependencies in parentheses):
@@ -254,8 +258,8 @@ def update_ManualScore_table(cursor):
                     'FROM ManualScore '
                     'LEFT JOIN RawData '
                     'ON ManualScore.expID = RawData.expID '
-                    'WHERE code != -8 AND code != -1 AND code != 4 '
-                    'AND code != 5 AND code != 6')
+                    'WHERE score != -8 AND score != -1 AND score != 4 '
+                    'AND score != 5 AND score != 6')
     recorded_scores = ManualScore.objects.all()
     fields_to_compare = None
 
@@ -273,7 +277,8 @@ def update_ManualScore_table(cursor):
                 (legacy_scorer in skip_entirely) or
                 (screen == 'ENH' and legacy_scorer in skip_ENH)):
             sys.stderr.write('Skipping a {} {} score of {} by {}\n'
-                             .format(gene, screen, legacy_scorer))
+                             .format(gene, screen, legacy_score_code,
+                                     legacy_scorer))
             return True
 
         # Convert some scorers to hueyling (see criteria above)
@@ -387,9 +392,8 @@ def update_or_save_object(legacy_object, recorded_objects, fields_to_compare,
 
     except ObjectDoesNotExist:
         legacy_object.save()
-        sys.stderr.write('WARNING: Added new object {} '
-                         'to the database\n'
-                         .format(str(object)))
+        sys.stderr.write('Added new object {} to the database\n'
+                         .format(str(legacy_object)))
         return False
 
 

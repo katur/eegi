@@ -1,6 +1,9 @@
 # Database connection and other secret settings
 *local_settings.py
 
+# Redirected command-line output
+*.out
+
 # Compiled source
 *.com
 *.class
