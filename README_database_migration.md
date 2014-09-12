@@ -1,10 +1,10 @@
 # Database Migration Notes
 
-## General Description
-
 These notes are about migrating the genome-wide GI project data
 from the legacy MySQL database (GenomeWideGI on pleiades)
 to the redesigned MySQL database (eegi).
+
+## Data Migration Script
 
 A script is used to migrate new or updated rows,
 which lives in `utils/management/commands`. To run:
