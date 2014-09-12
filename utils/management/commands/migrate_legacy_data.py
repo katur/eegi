@@ -1,16 +1,15 @@
-import datetime
 import MySQLdb
 import sys
 
 from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
-from django.utils import timezone
 
 from eegi.local_settings import LEGACY_DATABASE
 from experiments.models import Experiment, ManualScoreCode, ManualScore
 from library.models import LibraryPlate
-from utils.helpers import well_tile_conversion
+from utils.helpers.well_tile_conversion import tile_to_well
+from utils.helpers.time_conversion import get_timestamp
 from worms.models import WormStrain
 
 
@@ -290,7 +289,7 @@ def update_ManualScore_table(cursor):
 
         # The following raise exceptions if improperly formatted or not found
         experiment = get_experiment(legacy_row[0])
-        well = well_tile_conversion.tile_to_well(legacy_row[1])
+        well = tile_to_well(legacy_row[1])
         score_code = get_score_code(legacy_score_code)
         scorer = get_user(legacy_scorer)
 
@@ -500,41 +499,3 @@ def get_user(username):
     except ObjectDoesNotExist:
         sys.exit('ERROR: User with username ' + str(username) +
                  'not found in the new database\n')
-
-
-def get_timestamp(year, month, day, time, ymd):
-    """
-    Return a datetime.datetime object from an int year,
-    a 3-letter-string month (e.g. 'Jan'), an int day,
-    and a string time in format '00:00:00'.
-
-    If a ymd is passed in, it is simply confirmed to match the date derived
-    from the year/month/day/time.
-
-    If the year/month/day/time or ymd are not in the expected format,
-    or if both exist and are in the expected format yet they do not match
-    each other, returns None.
-    """
-    try:
-        string = '{}-{}-{}::{}'.format(year, month, day, time)
-        timestamp = timezone.make_aware(
-            datetime.datetime.strptime(string, '%Y-%b-%d::%H:%M:%S'),
-            timezone.get_default_timezone())
-    except Exception:
-        return None
-
-    if ymd:
-        try:
-            hour, minute, second = time.split(':')
-            timestamp_from_ymd = timezone.make_aware(
-                datetime.datetime(ymd.year, ymd.month, ymd.day,
-                                  int(hour), int(minute), int(second)),
-                timezone.get_default_timezone())
-
-            if timestamp != timestamp_from_ymd:
-                return None
-
-        except Exception:
-            return None
-
-    return timestamp
