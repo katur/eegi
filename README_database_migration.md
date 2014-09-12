@@ -12,10 +12,12 @@ so should be run on a truncated database just prior to
 the official migration to the new database.
 The script lives in `utils/management/commands`, and can be run with:
 
-    ./manage.py migrate_legacy_data [start_step end_step]
-
-
-In a nutshell, the script is broken into about 10 steps,
+    ./manage.py migrate_legacy_data
+    
+    
+Please see the script's docs for thorough information 
+(including optional args, legacy database queries, etc).
+But in a nutshell, the script is broken into about 10 steps,
 each step roughly corresponding to migrating a single table.
 These steps are ordered based on dependencies between steps,
 and optional arguments can specify running a subrange of steps.
@@ -38,9 +40,6 @@ new database, performing various conversions on the old tables with SQL,
 inserting the old rows into the new tables with SQL, and deleting the old
 tables).
 
-Find further documentation in the script itself (including which queries were
-performed on the legacy database).
-But below is a reference of changes between the old and new databases.
 
 
 ## Reference of Changes
