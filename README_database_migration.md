@@ -57,7 +57,7 @@ par-1 allele | zc310 | zu310
 ### `clones` app
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
-clone mapping info | 1-to-1 redundant over many tables (typically `clone` is accompanied by `node_primary_name` and/or `gene`) | 1-to-many `CloneMapping` table (and associated tables about mapping); rest of database refers to `clone` only
+clone mapping info | 1-to-1, scattered over many tables (typically `clone` is accompanied by `node_primary_name` and/or `gene`) | 1-to-many `CloneMapping` table (and associated tables about mapping); rest of database refers to `clone` only
 
 ### `library` app
 **concept** | **GenomeWideGI** | **eegi**
