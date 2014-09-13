@@ -80,8 +80,8 @@ experiment date datatype | string | date
 manual scores table(s) | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
 score time datatype | originally int year, string month, int day, string time; scoreYMD incomplete | 'aware' datetime
 scorer | string of username | FK to `User`
-score category -8: secondary pool | no corresponding scores | no not migrate category or scores
-score category -1: not sure | only Julie sscores | do not migrate category or scores
+score category -8: secondary pool | was used temporarily to flag 'uncertain' scores. now has no corresponding scores | no not migrate category or scores
+score category -1: not sure | only Julie scores have this value | do not migrate category or scores
 score category 4: No Larvae | K/S mel-26 scores for test | do not migrate category or scores
 score category 5: Larvae Present | K/S mel-26 scores for test | do not migrate category or scores
 score category 6: A lot of Larvae | K/S mel-26 scores for test (no obvious suppressors) | do not migrate category or scores
