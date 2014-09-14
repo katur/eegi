@@ -73,6 +73,8 @@ sequencing results | `SeqPlate` table, which stores mostly conclusions and littl
 experiments table | `RawData` | `Experiment`
 temperature datatype | string (e.g. "25C") | decimal
 experiment date datatype | string | date
+is junk datatype | integer | boolean
+junk meaning | -1 "definite junk", 1 "possible junk", but these weren't used consistently | just boolean. All definite junk to date has a comment explaining why it is junk so is easy to determine why not to trust these experiments. 
 
 ### `experiments` app: manual scores
 **concept** | **GenomeWideGI** | **eegi**
