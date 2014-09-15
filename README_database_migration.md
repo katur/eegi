@@ -86,22 +86,22 @@ is\_junk values | -1 "definite junk", never to be trusted (e.g. wrong worms, wro
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
 manual scores table(s) | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
-score time datatype | originally int year, string month, int day, string time; scoreYMD incomplete | 'aware' datetime
+score time datatype | originally int year, string month, int day, string time; scoreYMD eventually added, but incomplete (since not updated by most of HL's programs to add experiments), and doesn't include timestamp | 'aware' datetime
 scorer | string of username | FK to `User`
-score category -8: secondary pool | was used temporarily to flag 'uncertain' scores. now has no corresponding scores | no not migrate category or scores
-score category -1: not sure | only Julie scores have this value | do not migrate category or scores
-score category 4: No Larvae | K/S mel-26 scores for test | do not migrate category or scores
-score category 5: Larvae Present | K/S mel-26 scores for test | do not migrate category or scores
-score category 6: A lot of Larvae | K/S mel-26 scores for test (no obvious suppressors) | do not migrate category or scores
-score category -6: Poor Image Quality | very old scores only | convert to -7 (problem)
-score category -5: IA Error | very old scores only | migrate, but omit from interface
-scorer expPeople | only one NB score | convert to hueyling
-scorer Julie (MySQL default) | spn-4 scores and -2 (NB) scores | convert NB scores to hueyling; do not migrate spn-4 scores (useless)
-scorer alejandro | all ENH scores | do not migrate any alejandro scores
-scorer katy | all ENH scores | do not migrate any katy scores
-scorer eliana | pre-consensus ENH scores | do not migrate eliana's ENH scores
-scorer lara | pre-consensus ENH scores | do not migrate lara's ENH scores
-scorers sherly, giselle, kelly | pre-consensus ENH scores | migrate, but omit from interface (to investigate relevance)
+score category -8: secondary pool | was used temporarily to flag 'uncertain' scores. now has no corresponding scores | no not migrate this category or scores
+score category -1: not sure | only Julie scores have this value | do not migrate this category or scores
+score category 4: No Larvae | K/S mel-26 scores for test | do not migrate this category or scores
+score category 5: Larvae Present | K/S mel-26 scores for test | do not migrate this category or scores
+score category 6: A lot of Larvae | K/S mel-26 scores for test (but on re-examination, no obvious suppressors, since the L4440 control this week had tons of larvae) | do not migrate this category or scores
+score category -6: Poor Image Quality | very old scores only | convert to -7
+score category -5: IA Error (i.e., DevStaR issues that aren't caused by poor image quality) | very old scores only | migrate, but omit from interface
+scorer expPeople | only one score of "no bacteria" | convert to hueyling
+scorer Julie (MySQL default for scoredBy) | All scores have an improper date, and were probably not added via the traditional scoring interface. All scores are either spn-4 scores (perhaps Julie gave Hueyling at Excel sheet of scores, which might be why Hueyling made "Julie" the default scoredBy), or "no bacteria" scores (which we believe Hueyling and Amelia entered, perhaps using Katherine's growth history data) | convert "no bacteria" scores to hueyling; do not migrate spn-4 scores (these experiments are useless, due to using a reverting spn-4 line)
+scorer eliana | some pre-consensus ENH scores | do not migrate eliana's ENH scores (scored before ENH criteria finalized)
+scorer lara | some pre-consensus ENH scores | do not migrate lara's ENH scores (scored before ENH criteria finalized)
+scorer katy | only pre-consensus ENH scores | do not migrate any katy scores (scored before ENH criteria finalized)
+scorer alejandro | only ENH scores | do not migrate any alejandro scores (not well trained, and did not score much)
+scorers sherly, giselle, kelly | some pre-consensus ENH scores | migrate in order to investigate relevance of these scores and to ensure all enhancers caught by "real" scorers, but omit from interface
 
 ### `experiments` app: DevStaR scores
 **concept** | **GenomeWideGI** | **eegi**
