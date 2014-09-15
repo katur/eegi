@@ -88,7 +88,7 @@ is\_junk values | -1 "definite junk", never to be trusted (e.g. wrong worms, wro
 manual scores table(s) | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
 score time datatype | originally int year, string month, int day, string time; scoreYMD eventually added, but incomplete (since not updated by most of HL's programs to add experiments), and doesn't include timestamp | 'aware' datetime
 scorer | string of username | FK to `User`
-score category -8: secondary pool | was used temporarily to flag 'uncertain' scores. now has no corresponding scores | no not migrate this category or scores
+score category -8: secondary pool | was used temporarily to flag 'uncertain' scores. now has no corresponding scores. | do not migrate this category or scores
 score category -1: not sure | only Julie scores have this value | do not migrate this category or scores
 score category 4: No Larvae | K/S mel-26 scores for test | do not migrate this category or scores
 score category 5: Larvae Present | K/S mel-26 scores for test | do not migrate this category or scores
