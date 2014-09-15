@@ -46,8 +46,14 @@ tables).
 
 ## Reference of Changes
 
-### `worms` app
+### general
+**concept** | **GenomeWideGI** | **eegi**
+----------- | ---------------- | --------
+database name | GenomeWideGI | eegi (a la Python package name)
+table names | usually CamelCase, but not always | always CamelCase (a la Python class names)
+field names | mishmash of under_scores, mixedCase, CamelCase | always underscores (a la Python variables)
 
+### `worms` app
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
 information about worm strains | no table | `WormStrain` table
@@ -57,8 +63,8 @@ par-1 allele | zc310 | zu310
 ### `clones` app
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
-clone mapping info | 1-to-1 redundant over many tables (typically `clone` is accompanied by `node_primary_name` and/or `gene`) | 1-to-many `CloneMapping` table (and associated tables about mapping); rest of database refers to `clone` only
-
+clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is accompanied by `node_primary_name` and/or `gene`) | All mapping isolated to `clones` app, which is connected to rest of database only by FK to `Clone`. Mapping is 1-to-many.
+clone names | sjj\_X and mv\_X | sjj\_X and ???
 ### `library` app
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
@@ -73,6 +79,8 @@ sequencing results | `SeqPlate` table, which stores mostly conclusions and littl
 experiments table | `RawData` | `Experiment`
 temperature datatype | string (e.g. "25C") | decimal
 experiment date datatype | string | date
+is_junk datatype | integer | boolean
+junk meaning | -1 "definite junk", 1 "possible junk", but these weren't used consistently | just boolean. All definite junk to date has a comment explaining why it is junk so is easy to determine why not to trust these experiments. 
 
 ### `experiments` app: manual scores
 **concept** | **GenomeWideGI** | **eegi**
@@ -80,8 +88,8 @@ experiment date datatype | string | date
 manual scores table(s) | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
 score time datatype | originally int year, string month, int day, string time; scoreYMD incomplete | 'aware' datetime
 scorer | string of username | FK to `User`
-score category -8: secondary pool | no corresponding scores | no not migrate category or scores
-score category -1: not sure | only Julie sscores | do not migrate category or scores
+score category -8: secondary pool | was used temporarily to flag 'uncertain' scores. now has no corresponding scores | no not migrate category or scores
+score category -1: not sure | only Julie scores have this value | do not migrate category or scores
 score category 4: No Larvae | K/S mel-26 scores for test | do not migrate category or scores
 score category 5: Larvae Present | K/S mel-26 scores for test | do not migrate category or scores
 score category 6: A lot of Larvae | K/S mel-26 scores for test (no obvious suppressors) | do not migrate category or scores
