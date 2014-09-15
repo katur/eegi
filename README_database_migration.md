@@ -69,9 +69,9 @@ clone names | sjj\_X and mv\_X | sjj\_X and ???
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
 plate-level information about library plates | no table | `LibraryPlate` table
-clone locations within library plates | `RNAiPlate` (primary) and `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | combine in `LibraryWell`; do not migrate Julie plates; still need to decide about Eliana rearrays
-clone parent location relationships | `CherryPickTemplate` (incomplete) | capture with FK from `LibraryWell` to `LibraryWell`
-sequencing results | `SeqPlate` table, which stores mostly conclusions and little Genewiz output | `LibrarySequencing`, which stores mostly Genewiz output
+clone locations within library plates | `RNAiPlate` (primary and 384) and `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | Combine all plates in `LibraryWell`. Do not migrate Julie plates. Still need to decide about Eliana rearrays.
+clone parent location relationships | `CherryPickTemplate` (but incomplete, even for secondary rearrays) | capture with FK from `LibraryWell` to `LibraryWell`
+sequencing results | `SeqPlate` table, which stores mostly conclusions (missing most Genewiz output) | `LibrarySequencing`, which stores mostly Genewiz output
 
 ### `experiments` app: experiments
 **concept** | **GenomeWideGI** | **eegi**
