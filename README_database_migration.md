@@ -95,7 +95,7 @@ score category 5: Larvae Present | K/S mel-26 scores, for some DevStaR test | do
 score category 6: A lot of Larvae | K/S mel-26 scores, for some DevStaR test (on re-examination, no obvious suppressors, since the L4440 control this week had tons of larvae) | do not migrate this category or scores
 score category -6: Poor Image Quality | very old scores only | convert to -7
 score category -5: IA Error (i.e., DevStaR issues that aren't caused by poor image quality) | very old scores only | migrate, but omit from interface
-scorer expPeople | only one score of "no bacteria" | convert to hueyling
+scorer expPeople | only one score ("no bacteria") | convert to hueyling
 scorer Julie (MySQL default for scoredBy) | All scores have an improper date, and were probably not added via the traditional scoring interface. All scores are either spn-4 scores (perhaps Julie gave Hueyling at Excel sheet of scores, which might be why Hueyling made "Julie" the default scoredBy), or "no bacteria" scores (which we believe Hueyling and Amelia entered, perhaps using Katherine's growth history data) | convert "no bacteria" scores to hueyling; do not migrate spn-4 scores (these experiments are useless, due to using a reverting spn-4 line)
 scorer eliana | some pre-consensus ENH scores | do not migrate eliana's ENH scores (scored before ENH criteria finalized)
 scorer lara | some pre-consensus ENH scores | do not migrate lara's ENH scores (scored before ENH criteria finalized)
