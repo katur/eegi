@@ -6,7 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 
 from eegi.local_settings import LEGACY_DATABASE
-from experiments.models import Experiment, ManualScoreCode, ManualScore
+from experiments.models import (Experiment, ManualScoreCode, ManualScore,
+                                DevstarScore)
 from library.models import LibraryPlate
 from utils.helpers.well_tile_conversion import tile_to_well
 from utils.helpers.time_conversion import get_timestamp
@@ -326,7 +327,79 @@ def update_ManualScore_table(cursor):
 
 
 def update_DevstarScore_table(cursor):
-    pass
+    legacy_query = ('SELECT expID, 96well, '
+                    'mutantAllele, targetRNAiClone, RNAiPlateID, '
+                    'areaWorm, areaLarvae, areaEmbryo, '
+                    'AdultCount, LarvaeCount, EggCount, '
+                    'EggPerWorm, LarvaePerWorm, survival, lethality, '
+                    'machineCall, machineDetectBac, '
+                    'GIscoreLarvaePerWorm, GIscoreSurvival '
+                    'FROM RawDataWithScore '
+                    'LIMIT 10000')
+
+    recorded_scores = DevstarScore.objects.all()
+    fields_to_compare = ('area_adult', 'area_larva', 'area_embryo',
+                         'count_adult', 'count_larva', 'is_bacteria_present',
+                         'count_embryo', 'larvae_per_adult',
+                         'embryo_per_adult', 'survival', 'lethality',)
+
+    def sync_score_row(legacy_row):
+        # Build the object using the minimimum fields
+        count_adult = legacy_row[8]
+        count_larva = legacy_row[9]
+        if count_adult == -1:
+            count_adult = None
+        if count_larva == -1:
+            count_larva = None
+
+        legacy_score = DevstarScore(
+            experiment=get_experiment(legacy_row[0]),
+            well=legacy_row[1],
+            area_adult=legacy_row[5],
+            area_larva=legacy_row[6],
+            area_embryo=legacy_row[7],
+            count_adult=count_adult,
+            count_larva=count_larva,
+            is_bacteria_present=legacy_row[16],
+        )
+
+        # Clean the object to populate the fields derived from other fields
+        legacy_score.clean()
+
+        errors = []
+        if legacy_score.experiment.worm_strain.allele != legacy_row[2]:
+            errors.append('allele mismatch')
+        if legacy_score.experiment.library_plate.id != legacy_row[4]:
+            errors.append('RNAi plate mismatch')
+        if legacy_score.count_embryo != legacy_row[10]:
+            errors.append('embryo count mismatch')
+
+        if (legacy_row[8] and legacy_row[8] != -1 and
+                int(legacy_score.embryo_per_adult) != legacy_row[11]):
+            errors.append('embryo per adult mismatch')
+        if (legacy_row[9] and legacy_row[9] != -1 and
+                int(legacy_score.larvae_per_adult) != legacy_row[12]):
+            errors.append('larvae per adult mismatch')
+
+        if (not compare_floats_for_equality(
+                legacy_score.survival, legacy_row[13]) and
+                legacy_row[13] != 0):
+            errors.append('invalid survival')
+        if (not compare_floats_for_equality(
+                legacy_score.lethality, legacy_row[14]) and
+                legacy_row[13] != 0):
+            errors.append('invalid lethality')
+
+        if errors:
+            sys.exit('DevstarScore for {}:{} had these errors: {}'
+                     .format(legacy_row[0], legacy_row[1], errors))
+
+        return update_or_save_object(
+            legacy_score, recorded_scores, fields_to_compare,
+            alternate_pk={'experiment': legacy_score.experiment,
+                          'well': legacy_score.well})
+
+    sync_rows(cursor, legacy_query, sync_score_row)
 
 
 def update_Clone_table(cursor):
@@ -409,7 +482,8 @@ def compare_fields(object, legacy_object, fields, update=False):
     """
     differences = []
     for field in fields:
-        if getattr(object, field) != getattr(legacy_object, field):
+        if not compare_fields_for_equality(getattr(object, field),
+                                           getattr(legacy_object, field)):
             differences.append('{} was previously recorded as {}, '
                                'but is now {} in legacy database\n'
                                .format(field,
@@ -503,3 +577,21 @@ def get_user(username):
     except ObjectDoesNotExist:
         sys.exit('ERROR: User with username ' + str(username) +
                  'not found in the new database\n')
+
+
+def compare_floats_for_equality(x, y):
+    if x is None and y is None:
+        return True
+    elif x is None or y is None:
+        return False
+    elif abs(x - y) < 0.001:
+        return True
+    else:
+        return False
+
+
+def compare_fields_for_equality(x, y):
+    if isinstance(x, float) or isinstance(x, long):
+        return compare_floats_for_equality(x, y)
+    else:
+        return x == y

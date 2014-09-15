@@ -1,3 +1,5 @@
+from __future__ import division
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -90,12 +92,15 @@ class DevstarScore(models.Model):
         help_text='count_embryo / count_adult')
     survival = models.FloatField(
         null=True, blank=True, default=None,
-        help_text='count_larvae / (count_larvae + count_embryo)')
-    lethality = models.IntegerField(
+        help_text='count_larva / (count_larva + count_embryo)')
+    lethality = models.FloatField(
         null=True, blank=True, default=None,
-        help_text='count_embryo / (count_larvae + count_embryo)')
+        help_text='count_embryo / (count_larva + count_embryo)')
 
-    is_bacteria_present = models.NullBooleanField(default=None)
+    is_bacteria_present = models.NullBooleanField(
+        default=None, help_text='DevStaR program output')
+
+    selected_for_scoring = models.NullBooleanField(default=None)
 
     gi_score_larvae_per_adult = models.FloatField(
         null=True, blank=True, default=None, help_text='')
@@ -108,3 +113,32 @@ class DevstarScore(models.Model):
     def __unicode__(self):
         return ('{}:{} DevStaR score'
                 .format(str(self.experiment), self.well))
+
+    def clean(self):
+        # Set the fields calculated from the DevStaR fields (resets if already
+        # set).
+
+        # Floor division for egg count
+        if self.area_embryo is not None:
+            self.count_embryo = self.area_embryo // 70
+
+        if self.count_larva is not None and self.count_adult is not None:
+            if self.count_adult == 0:
+                self.larvae_per_adult = 0
+            else:
+                self.larvae_per_adult = self.count_larva / self.count_adult
+
+        if self.count_embryo is not None and self.count_adult is not None:
+            if self.count_adult == 0:
+                self.embryo_per_adult = 0
+            else:
+                self.embryo_per_adult = self.count_embryo / self.count_adult
+
+        if self.count_embryo is not None and self.count_larva is not None:
+            brood_size = self.count_larva + self.count_embryo
+            if brood_size == 0:
+                self.surival = 0
+                self.lethality = 0
+            else:
+                self.survival = self.count_larva / brood_size
+                self.lethality = self.count_embryo / brood_size
