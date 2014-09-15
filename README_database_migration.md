@@ -79,8 +79,8 @@ sequencing results | `SeqPlate` table, which stores mostly conclusions and littl
 experiments table | `RawData` | `Experiment`
 temperature datatype | string (e.g. "25C") | decimal
 experiment date datatype | string | date
-is_junk datatype | integer | boolean
-junk meaning | -1 "definite junk", 1 "possible junk", but these weren't used consistently | just boolean. All definite junk to date has a comment explaining why it is junk so is easy to determine why not to trust these experiments. 
+is\_junk datatype | integer | boolean
+is\_junk values | -1 "definite junk", never to be trusted (e.g. wrong worms, wrong bacteria); 1 "possible junk", not up to standards (e.g. temperature slightly off, too many worms per well, bacterial contamination). However, these definitions weren't used consistently. | No separation of possible vs definite junk. Anything untrustworthy should either be deleted (including pictures) or include a comment explaining why, in order to discourage ever updating to not junk (all isJunk==-1 to date has such a comment, so it is okay to migrate these experiments as is\_junk=True).
 
 ### `experiments` app: manual scores
 **concept** | **GenomeWideGI** | **eegi**
