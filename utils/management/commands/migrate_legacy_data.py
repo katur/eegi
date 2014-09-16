@@ -6,12 +6,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 
 from eegi.local_settings import LEGACY_DATABASE
-from experiments.models import (Experiment, ManualScoreCode, ManualScore,
-                                DevstarScore)
-from library.models import LibraryPlate
 from utils.helpers.well_tile_conversion import tile_to_well
 from utils.helpers.time_conversion import get_timestamp
 from worms.models import WormStrain
+from clones.models import Clone
+from library.models import LibraryPlate
+from experiments.models import (Experiment, ManualScoreCode, ManualScore,
+                                DevstarScore)
 
 
 class Command(BaseCommand):
@@ -44,7 +45,7 @@ class Command(BaseCommand):
         2: ManualScoreCode
         3: ManualScore (1, 2)
         4: DevstarScore (1)
-        5: Clone
+        5: Clone (named RNAiClone in database)
         6: LibraryWell (0, 5)
         7: LibrarySequencing (6)
     """
@@ -116,13 +117,9 @@ class Command(BaseCommand):
 
 def update_LibraryPlate_table(cursor):
     """
-    Update the LibraryPlate table.
-
-    While such a plate-level table did not exist in the legacy
-    database, it is updated primarily according to two
-    well-level legacy tables: RNAiPlate (which defines the clone
-    locations of primary plates) and CherryPickRNAiPlate
-    (which defines the clone locations of secondary plates).
+    Update the LibraryPlate table by finding the distinct plates names in
+    legacy tables RNAiPlate (defines the well-level contents of primary plates)
+    and CherryPickRNAiPlate (well-level contents of secondary plates).
 
     Rows representing the 384-well plates and some miscellanous plates
     (such as the Eliana Rearray plates) are hardcoded into the script.
@@ -451,7 +448,23 @@ def update_DevstarScore_table(cursor):
 
 
 def update_Clone_table(cursor):
-    pass
+    """
+    Update the Clone table by finding the distinct Ahringer clone names
+    (prefixed 'sjj') and the L4440 empty vector clone from RNAiPlate,
+    and getting the Vidal clone names from the CSV from John Kim
+    (since we want to migrate away from RNAiPlate's use of mv_X names).
+    """
+    legacy_query = ('SELECT DISTINCT clone FROM RNAiPlate '
+                    'WHERE clone LIKE "sjj%" OR clone = "L4440"')
+    recorded_clones = Clone.objects.all()
+    fields_to_compare = None
+
+    def sync_clone_row(legacy_row):
+        legacy_clone = Clone(id=legacy_row[0])
+        return update_or_save_object(legacy_clone, recorded_clones,
+                                     fields_to_compare)
+
+    sync_rows(cursor, legacy_query, sync_clone_row)
 
 
 def update_LibraryWell_table(cursor):
