@@ -63,6 +63,9 @@ information about worm strains | no table | `WormStrain` table
 referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
 par-1 allele | zc310 | zu310
 
+DECISIONS TO MAKE ABOUT `worms` APP:
+- rows just inserted by Noah/Katherine into old database accidentally fixed the error. Could Kris unfix (zu310 -> zc310, so that her scoring interface works and so that GenomeWideGI and GWGI2 are consistently wrong?
+
 
 
 ### `clones` app
@@ -88,7 +91,7 @@ well names | typically A01, but A1 for Vidal plates | consistently 3 characters 
 well versus tile | some tables have one, some the other, some both | just use well throughout the database, with accessible Python functions to convert 
 
 DECISIONS TO MAKE ABOUT `library` APP:
-- are we sure we want screen level captured per experiment, and not per library plate? If so, Katherine needs to delete screen level from her current LibraryPlate table.
+- are we sure we want screen level captured per experiment, and not per library plate? (If so, Katherine needs to remember to delete screen level from her current LibraryPlate table).
 
 
 
@@ -102,7 +105,7 @@ is\_junk datatype | integer | boolean
 is\_junk values | -1 "definite junk", never to be trusted (e.g. wrong worms, wrong bacteria); 1 "possible junk", not up to standards (e.g. temperature slightly off, too many worms per well, bacterial contamination). However, these definitions weren't used consistently. | No separation of possible vs definite junk. Anything untrustworthy should either be deleted (including pictures), or have a comment in the database explaining why it is junk, in order to discourage future consideration (all "definite junk" to date has such a comment, so it is okay to migrate these experiments as generic junk).
 
 DECISIONS TO MAKE ABOUT EXPERIMENTS:
-- should we give vidal plates more descriptive names than just integers (e.g. vidal-1)?
+- should we give the Vidal rearray plates more descriptive names than just integers 1-21 (e.g. vidal-1 or vidal-rearray-1)?
 
 
 
@@ -138,7 +141,7 @@ DECISIONS TO MAKE ABOUT MANUAL SCORES:
 DevStaR scores table | `RawDataWithScore` | `DevstarScore`
 
 DECISIONS TO MAKE ABOUT DEVSTAR SCORES:
-- I'm consistenly using singular for adult, larva, embryo. Confirm everyone is cool with that, or if 'larvae' should be an exception
+- I'm consistenly using singular for adult, larva, embryo. Confirm everyone is cool with that, or if 'larvae' should be an exception (as before).
 - HL used Integer for embryo count, embryo per adult, larva per adult. Do we want Floats, at least for the per-adult ones?
 - HL survival/lethality floats seem to truncate at 6 past decimal. Do we want to do this? Easier to just do the math and store the real float.
 - HL made embryo and larva per adult zero if no adults. Do we want to do this, or null?
