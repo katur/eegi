@@ -7,6 +7,7 @@
 <div id="menu">
   {% url 'home_url' as home_url %}
   {% url 'worm_strains_url' as worm_strains_url %}
+  {% url 'clones_url' as clones_url %}
   {% url 'library_plates_url' as library_plates_url %}
   {% url 'experiments_url' as experiments_url %}
 
@@ -22,6 +23,13 @@
       class="active"
       {% endifequal %}>
     Worm Strains
+  </a>
+
+  <a href="{{ clones_url }}"
+      {% ifequal request.path clones_url %}
+      class="active"
+      {% endifequal %}>
+    RNAi Clones
   </a>
 
   <a href="{{ library_plates_url }}"
