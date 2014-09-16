@@ -361,17 +361,17 @@ def update_DevstarScore_table(cursor):
 
     Redundant fields (mutantAllele, targetRNAiClone, RNAiPlateID) are excluded.
 
-    The DevStaR output is simply 6 fields (adult area, larvae area, embryo
-    area, adult count, larvae count, and whether bacteria is present).
+    The DevStaR output is simply 6 fields (adult/larva/embryo area,
+    adult/larva count, and whether bacteria is present).
     Several other fields are simply calculations on these fields
-    (embryo per adult, larvae per adult, survival, lethality).
+    (embryo per adult, larva per adult, survival, lethality).
     I redo these calculations, but compare to the legacy value to make sure
     it is equal or almost equal. We also have some datatype conversions:
-        - embryo/larvae per adult become Float
+        - embryo/larva per adult become Float
         - survival and lethality become higher precision Floats
         - counts of -1 become NULL (this happens when part of the DevStaR
           program did not run)
-        - division by 0 in embryo/larvae per adult remain 0, but when adult=0
+        - division by 0 in embryo/larva per adult remain 0, but when adult=0
           we DO now calculate survival and lethality
         - machineCall becomes a boolean
     """
@@ -388,7 +388,7 @@ def update_DevstarScore_table(cursor):
     recorded_scores = DevstarScore.objects.all()
     fields_to_compare = ('area_adult', 'area_larva', 'area_embryo',
                          'count_adult', 'count_larva', 'is_bacteria_present',
-                         'count_embryo', 'larvae_per_adult',
+                         'count_embryo', 'larva_per_adult',
                          'embryo_per_adult', 'survival', 'lethality',)
 
     def sync_score_row(legacy_row):
@@ -426,8 +426,8 @@ def update_DevstarScore_table(cursor):
                 int(legacy_score.embryo_per_adult) != legacy_row[11]):
             errors.append('embryo per adult mismatch')
         if (legacy_row[9] and legacy_row[9] != -1 and
-                int(legacy_score.larvae_per_adult) != legacy_row[12]):
-            errors.append('larvae per adult mismatch')
+                int(legacy_score.larva_per_adult) != legacy_row[12]):
+            errors.append('larva per adult mismatch')
 
         if (not compare_floats_for_equality(
                 legacy_score.survival, legacy_row[13]) and

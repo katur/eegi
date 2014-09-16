@@ -87,7 +87,7 @@ class DevstarScore(models.Model):
     count_embryo = models.IntegerField(null=True, blank=True,
                                        help_text='area_embryo / 70')
 
-    larvae_per_adult = models.FloatField(
+    larva_per_adult = models.FloatField(
         null=True, blank=True, default=None,
         help_text='count_larva / count_adult')
     embryo_per_adult = models.FloatField(
@@ -105,7 +105,7 @@ class DevstarScore(models.Model):
 
     selected_for_scoring = models.NullBooleanField(default=None)
 
-    gi_score_larvae_per_adult = models.FloatField(
+    gi_score_larva_per_adult = models.FloatField(
         null=True, blank=True, default=None, help_text='')
     gi_score_survival = models.FloatField(
         null=True, blank=True, default=None, help_text='')
@@ -127,9 +127,9 @@ class DevstarScore(models.Model):
 
         if self.count_larva is not None and self.count_adult is not None:
             if self.count_adult == 0:
-                self.larvae_per_adult = 0
+                self.larva_per_adult = 0
             else:
-                self.larvae_per_adult = self.count_larva / self.count_adult
+                self.larva_per_adult = self.count_larva / self.count_adult
 
         if self.count_embryo is not None and self.count_adult is not None:
             if self.count_adult == 0:
