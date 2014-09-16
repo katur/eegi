@@ -65,6 +65,10 @@ par-1 allele | zc310 | zu310
 ----------- | ---------------- | --------
 clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is accompanied by `node_primary_name` and/or `gene`) | All mapping isolated to `clones` app, which is connected to rest of database only by FK to `Clone`. Mapping is 1-to-many.
 clone names | sjj\_X and mv\_X | sjj\_X and ???
+
+DECISIONS TO MAKE ABOUT `clones` APP:
+- schema for Firoz's tables
+
 ### `library` app
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
@@ -72,6 +76,9 @@ plate-level information about library plates | no table | `LibraryPlate` table
 clone locations within library plates | `RNAiPlate` (primary and 384) and `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | Combine all plates in `LibraryWell`. Do not migrate Julie plates. Still need to decide about Eliana rearrays.
 clone parent location relationships | `CherryPickTemplate` (but incomplete, even for secondary rearrays) | capture with FK from `LibraryWell` to `LibraryWell`
 sequencing results | `SeqPlate` table, which stores mostly conclusions (missing most Genewiz output) | `LibrarySequencing`, which stores mostly Genewiz output
+
+DECISIONS TO MAKE ABOUT `library` APP:
+- are we sure we want screen level captured per experiment, and not per library plate? If so, Katherine needs to delete screen level from her current LibraryPlate table.
 
 ### `experiments` app: experiments
 **concept** | **GenomeWideGI** | **eegi**
