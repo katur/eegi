@@ -383,7 +383,7 @@ def update_DevstarScore_table(cursor):
                     'machineCall, machineDetectBac, '
                     'GIscoreLarvaePerWorm, GIscoreSurvival '
                     'FROM RawDataWithScore '
-                    'LIMIT 10000')
+                    'LIMIT 12000')
 
     recorded_scores = DevstarScore.objects.all()
     fields_to_compare = ('area_adult', 'area_larva', 'area_embryo',
