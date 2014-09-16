@@ -116,8 +116,16 @@ class Command(BaseCommand):
 
 def update_LibraryPlate_table(cursor):
     """
-    Update the LibraryPlate table, primarily against distinct RNAiPlateID in
-    legacy tables RNAiPlate and CherryPickRNAiPlate.
+    Update the LibraryPlate table.
+
+    While such a plate-level table did not exist in the legacy
+    database, it is updated primarily according to two
+    well-level legacy tables: RNAiPlate (which defines the clone
+    locations of primary plates) and CherryPickRNAiPlate
+    (which defines the clone locations of secondary plates).
+
+    Rows representing the 384-well plates and some miscellanous plates
+    (such as the Eliana Rearray plates) are hardcoded into the script.
     """
     legacy_query = 'SELECT DISTINCT RNAiPlateID FROM {}'
     recorded_plates = LibraryPlate.objects.all()
@@ -149,7 +157,18 @@ def update_LibraryPlate_table(cursor):
 
 def update_Experiment_table(cursor):
     """
-    Update the Experiment table, primary against legacy table RawData.
+    Update the Experiment table according to legacy table RawData.
+
+    Several datatype transforms occur from the old to the new schema:
+
+        - mutant/mutantAllele become a FK to WormStrain
+        - RNAiPlateID becomes a FK to LibraryPlate
+        - temperature as string (with 'C') becomes a decimal
+        - recordDate as string becomes a DATE
+        - isJunk becomes a boolean (with both 1 and -1 becoming True)
+
+    Also, experiments of Julie's (which were done with a line of spn-4 worms
+    later deemed untrustworthy) are excluded.
     """
     legacy_query = ('SELECT expID, mutant, mutantAllele, RNAiPlateID, '
                     'CAST(SUBSTRING_INDEX(temperature, "C", 1) '
@@ -158,6 +177,7 @@ def update_Experiment_table(cursor):
                     'FROM RawData '
                     'WHERE (expID < 40000 OR expID>=50000) '
                     'AND RNAiPlateID NOT LIKE "Julie%"')
+
     recorded_experiments = Experiment.objects.all()
     fields_to_compare = ('worm_strain', 'library_plate',
                          'temperature', 'date', 'is_junk', 'comment',)
@@ -180,7 +200,7 @@ def update_Experiment_table(cursor):
 
 def update_ManualScoreCode_table(cursor):
     """
-    Update the ManualScoreCode table, against the legacy table of the same
+    Update the ManualScoreCode table according to the legacy table of the same
     name.
 
     We've made these decisions about migrating score codes and scores
@@ -219,6 +239,9 @@ def update_ManualScoreCode_table(cursor):
 
 def update_ManualScore_table(cursor):
     """
+    Update the ManualScore table according to the legacy table of the same
+    name.
+
     Requires that ScoreYear, ScoreMonth, ScoreDate, and ScoreTime
     are valid fields for a python datetime.datetime.
 
@@ -327,6 +350,25 @@ def update_ManualScore_table(cursor):
 
 
 def update_DevstarScore_table(cursor):
+    """
+    Update the DevstarScore table according to legacy table RawDataWithScore.
+
+    Redundant fields (mutantAllele, targetRNAiClone, RNAiPlateID) are excluded.
+
+    The DevStaR output is simply 6 fields (adult area, larvae area, embryo
+    area, adult count, larvae count, and whether bacteria is present).
+    Several other fields are simply calculations on these fields
+    (embryo per adult, larvae per adult, survival, lethality).
+    I redo these calculations, but compare to the legacy value to make sure
+    it is equal or almost equal. We also have some datatype conversions:
+        - embryo/larvae per adult become Float
+        - survival and lethality become higher precision Floats
+        - counts of -1 become NULL (this happens when part of the DevStaR
+          program did not run)
+        - division by 0 in embryo/larvae per adult remain 0, but when adult=0
+          we DO now calculate survival and lethality
+        - machineCall becomes a boolean
+    """
     legacy_query = ('SELECT expID, 96well, '
                     'mutantAllele, targetRNAiClone, RNAiPlateID, '
                     'areaWorm, areaLarvae, areaEmbryo, '
