@@ -73,6 +73,7 @@ clone names | sjj\_X and mv\_X | sjj\_X and ???
 
 DECISIONS TO MAKE ABOUT `clones` APP:
 - schema for Firoz's tables
+- are we really sure we want RNAiClone instead of Clone prefix for tables?
 
 
 
