@@ -9,9 +9,6 @@ class WormStrain(models.Model):
     # The name of this strain on Wormbase.org
     id = models.CharField(max_length=10, primary_key=True)
 
-    # Whether the strain is on Wormbase.org
-    on_wormbase = models.BooleanField(default=False)
-
     # Gene and allele causing temperature-sensitivity in this strain
     gene = models.CharField(max_length=10, blank=True)
     allele = models.CharField(max_length=10, blank=True)
@@ -22,6 +19,9 @@ class WormStrain(models.Model):
         max_digits=3, decimal_places=1, null=True, blank=True)
     restrictive_temperature = models.DecimalField(
         max_digits=3, decimal_places=1, null=True, blank=True)
+
+    # Whether the strain is on Wormbase.org
+    on_wormbase = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'WormStrain'

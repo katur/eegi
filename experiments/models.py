@@ -17,6 +17,9 @@ class Experiment(models.Model):
     id = models.PositiveIntegerField(primary_key=True)
     worm_strain = models.ForeignKey(WormStrain)
     library_plate = models.ForeignKey(LibraryPlate)
+    library_plate_copy_number = models.PositiveSmallIntegerField(null=True,
+                                                                 blank=True)
+    screen_level = models.PositiveSmallIntegerField(null=True, blank=True)
     temperature = models.DecimalField(max_digits=3, decimal_places=1)
     date = models.DateField()
     is_junk = models.BooleanField(default=False)
