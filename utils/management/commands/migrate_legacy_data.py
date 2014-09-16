@@ -179,14 +179,20 @@ def update_Experiment_table(cursor):
                     'AND RNAiPlateID NOT LIKE "Julie%"')
 
     recorded_experiments = Experiment.objects.all()
-    fields_to_compare = ('worm_strain', 'library_plate',
+    fields_to_compare = ('worm_strain', 'library_plate', 'screen_level',
                          'temperature', 'date', 'is_junk', 'comment',)
 
     def sync_experiment_row(legacy_row):
+        expID = legacy_row[0]
+        if expID < 40000:
+            screen_level = 1
+        else:
+            screen_level = 2
         legacy_experiment = Experiment(
             id=legacy_row[0],
             worm_strain=get_worm_strain(legacy_row[1], legacy_row[2]),
             library_plate=get_library_plate(legacy_row[3]),
+            screen_level=screen_level,
             temperature=legacy_row[4],
             date=legacy_row[5],
             is_junk=legacy_row[6],
@@ -507,7 +513,7 @@ def update_or_save_object(legacy_object, recorded_objects, fields_to_compare,
 
     except ObjectDoesNotExist:
         legacy_object.save()
-        sys.stderr.write('Added new object {} to the database\n'
+        sys.stderr.write('Added new record {} to the database\n'
                          .format(str(legacy_object)))
         return False
 
@@ -536,7 +542,7 @@ def compare_fields(object, legacy_object, fields, update=False):
                 object.save()
 
     if differences:
-        sys.stderr.write('WARNING: Object {} had these changes: {}\n'
+        sys.stderr.write('WARNING: Record {} had these changes: {}\n'
                          .format(str(object),
                                  str([d for d in differences])))
         if update:
