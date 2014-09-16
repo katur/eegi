@@ -19,7 +19,7 @@ class Experiment(models.Model):
     library_plate = models.ForeignKey(LibraryPlate)
     library_plate_copy_number = models.PositiveSmallIntegerField(null=True,
                                                                  blank=True)
-    screen_level = models.PositiveSmallIntegerField(null=True, blank=True)
+    screen_level = models.PositiveSmallIntegerField()
     temperature = models.DecimalField(max_digits=3, decimal_places=1)
     date = models.DateField()
     is_junk = models.BooleanField(default=False)
@@ -58,8 +58,8 @@ class ManualScore(models.Model):
     experiment = models.ForeignKey(Experiment)
     well = models.CharField(max_length=3)
     score_code = models.ForeignKey(ManualScoreCode)
-    scorer = models.ForeignKey(User, null=True, blank=True)
-    timestamp = models.DateTimeField(null=True, blank=True)
+    scorer = models.ForeignKey(User)
+    timestamp = models.DateTimeField()
 
     class Meta:
         db_table = 'ManualScore'
