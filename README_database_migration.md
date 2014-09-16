@@ -46,6 +46,7 @@ tables).
 
 ## Reference of Changes
 
+
 ### general
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
@@ -53,12 +54,16 @@ database name | GenomeWideGI | eegi (a la Python package name)
 table names | usually CamelCase, but not always | always CamelCase (a la Python class names)
 field names | mishmash of under_scores, mixedCase, CamelCase | always underscores (a la Python variables)
 
+
+
 ### `worms` app
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
 information about worm strains | no table | `WormStrain` table
 referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
 par-1 allele | zc310 | zu310
+
+
 
 ### `clones` app
 **concept** | **GenomeWideGI** | **eegi**
@@ -69,6 +74,8 @@ clone names | sjj\_X and mv\_X | sjj\_X and ???
 DECISIONS TO MAKE ABOUT `clones` APP:
 - schema for Firoz's tables
 
+
+
 ### `library` app
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
@@ -76,9 +83,13 @@ plate-level information about library plates | no table | `LibraryPlate` table
 clone locations within library plates | `RNAiPlate` (primary and 384) and `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | Combine all plates in `LibraryWell`. Do not migrate Julie plates. Still need to decide about Eliana rearrays.
 clone parent location relationships | `CherryPickTemplate` (but incomplete, even for secondary rearrays) | capture with FK from `LibraryWell` to `LibraryWell`
 sequencing results | `SeqPlate` table, which stores mostly conclusions (missing most Genewiz output) | `LibrarySequencing`, which stores mostly Genewiz output
+well names | typically A01, but A1 for Vidal plates | consistently 3 characters long
+well versus tile | some tables have one, some the other, some both | just use well throughout the database, with accessible Python functions to convert 
 
 DECISIONS TO MAKE ABOUT `library` APP:
 - are we sure we want screen level captured per experiment, and not per library plate? If so, Katherine needs to delete screen level from her current LibraryPlate table.
+
+
 
 ### `experiments` app: experiments
 **concept** | **GenomeWideGI** | **eegi**
@@ -88,6 +99,11 @@ temperature datatype | string (e.g. "25C") | decimal
 experiment date datatype | string | date
 is\_junk datatype | integer | boolean
 is\_junk values | -1 "definite junk", never to be trusted (e.g. wrong worms, wrong bacteria); 1 "possible junk", not up to standards (e.g. temperature slightly off, too many worms per well, bacterial contamination). However, these definitions weren't used consistently. | No separation of possible vs definite junk. Anything untrustworthy should either be deleted (including pictures), or have a comment in the database explaining why it is junk, in order to discourage future consideration (all "definite junk" to date has such a comment, so it is okay to migrate these experiments as generic junk).
+
+DECISIONS TO MAKE ABOUT EXPERIMENTS:
+- should we give vidal plates more descriptive names than just integers (e.g. vidal-1)?
+
+
 
 ### `experiments` app: manual scores
 **concept** | **GenomeWideGI** | **eegi**
@@ -110,17 +126,28 @@ scorer katy | only pre-consensus ENH scores | do not migrate any katy scores (sc
 scorer alejandro | only ENH scores | do not migrate any alejandro scores (not well trained, and did not score much)
 scorers sherly, giselle, kelly | some pre-consensus ENH scores | migrate in order to investigate relevance of these scores and to ensure all enhancers caught by "real" scorers, but omit from interface
 
+DECISIONS TO MAKE ABOUT MANUAL SCORES:
+- If real date and time are not known (i.e. Hueyling's 2011-01-01 00:00:00), should I make it null, or just preserve what she put?
+
+
+
 ### `experiments` app: DevStaR scores
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
 DevStaR scores table | `RawDataWithScore` | `DevstarScore`
 
+DECISIONS TO MAKE ABOUT DEVSTAR SCORES:
+- I'm consistenly using singular for adult, larva, embryo. Confirm everyone is cool with that, or if 'larvae' should be an exception
+- HL used Integer for embryo count, embryo per adult, larva per adult. Do we want Floats, at least for the per-adult ones?
+- HL survival/lethality floats seem to truncate at 6 past decimal. Do we want to do this? Easier to just do the math and store the real float.
+- HL made embryo and larva per adult zero if no adults. Do we want to do this, or null?
+- HL also made survival and lethality 0 if no adults, even though adults not used in this equation. Do we want to do this? Why?
 
-Still considering these changes
-- vidal plate names | e.g. 1 | e.g. vidal-1
 
-Probably not touching these during migration:
-- attribute, node, synonym (Firoz/mapping domain)
+
+
+FYI, likely not touching these during migration:
+- attribute, node, synonym (Firoz/mapping domain; he can take info from them if he wants)
 - WellToTile (to be replaced with simple python functions)
 - CherryPickList (temporary step in generating CherryPickRNAiPlate; probably meant for deletion)
 - CherryPickRNAiPlate\_2011 and CherryPickRNAiPlate\_lock (but ensure they are redundant with CherryPickRNAiPlate)
@@ -128,7 +155,7 @@ Probably not touching these during migration:
 - PredManualScore and PredManualScoreList (but figure out why these exist!)
 
 
-## Possible (untested) SQL queries if you want to not use the script
+## Below are untested drafts of SQL queries that could be used to bypass the script
 
 ### LibraryPlate (did not exist in GenomeWideGI)
 Add 384 plates and Eliana Rearray plates by hand.
