@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'website',
     'utils',
     'worms',
+    'clones',
     'library',
     'experiments',
 )

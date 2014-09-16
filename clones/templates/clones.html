@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load extra_template_tags %}
+
+{% block body_id %}clones{% endblock %}
+{% block page_title %}RNAi Clones{% endblock %}
+
+{% block content %}
+<table class="striped">
+  <thead>
+    <tr>
+      <th>Clone Name</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for clone in clones %}
+    <tr>
+      <td>{{ clone.id }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
