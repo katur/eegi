@@ -67,6 +67,6 @@ def experiments(request, context=None):
 
 def experiment(request, id):
     experiment = get_object_or_404(Experiment, pk=id)
-    plate_template = well_tile_conversion.get_96_well_plate_template()
+    plate_template = well_tile_conversion.get_96_grid()
     context = {'experiment': experiment, 'plate_template': plate_template}
     return render(request, 'experiment.html', context)

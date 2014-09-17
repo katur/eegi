@@ -6,7 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 
 from eegi.local_settings import LEGACY_DATABASE
-from utils.helpers.well_tile_conversion import tile_to_well
+from utils.helpers.well_tile_conversion import (tile_to_well,
+                                                get_three_character_well)
 from utils.helpers.time_conversion import get_timestamp
 from worms.models import WormStrain
 from clones.models import Clone
@@ -380,7 +381,7 @@ def update_DevstarScore_table(cursor):
                     'machineCall, machineDetectBac, '
                     'GIscoreLarvaePerWorm, GIscoreSurvival '
                     'FROM RawDataWithScore '
-                    'LIMIT 12000')
+                    'LIMIT 25000')
 
     recorded_scores = DevstarScore.objects.all()
     fields_to_compare = ('area_adult', 'area_larva', 'area_embryo',
