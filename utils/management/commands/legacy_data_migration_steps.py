@@ -466,7 +466,7 @@ def update_LibraryWell_table(cursor):
     # Ahringer plates from secondary screen (parent determined
     # easily, since sjj sjj clones in RNAiPlate)
     legacy_query_secondary = (
-        'SELECT DISTINCT C.RNAiPlateID as plate, C.96well as well, C.clone, '
+        'SELECT C.RNAiPlateID as plate, C.96well as well, C.clone, '
         'T.RNAiPlateID as definite_source_plate, '
         'T.96well as definite_source_well, '
         'R.RNAiPlateID as likely_origin_plate, '
@@ -474,7 +474,9 @@ def update_LibraryWell_table(cursor):
         'FROM CherryPickRNAiPlate AS C '
         'LEFT JOIN CherryPickTemplate AS T '
         'ON finalRNAiPlateID = C.RNAiPlateID AND final96well = C.96well '
-        'LEFT JOIN RNAiPlate AS R ON C.clone=R.clone '
+        'LEFT JOIN RNAiPlate AS R ON C.clone=R.clone AND '
+        '(T.RNAiPlateID IS NULL OR '
+        '(T.RNAiPlateID=R.RNAiPlateID AND T.96well=R.96well)) '
         'WHERE C.clone != "L4440" '
         'ORDER BY C.RNAiPlateID, C.96well')
 
@@ -563,6 +565,27 @@ def update_LibraryWell_table(cursor):
         return update_or_save_object(legacy_well, recorded_wells,
                                      fields_to_compare)
 
+    def sync_secondary_row(legacy_row):
+        plate_name = legacy_row[0]
+        well_improper = legacy_row[1]
+        well_proper = get_three_character_well(well_improper)
+        clone_name = legacy_row[2]
+
+        definite_parent_plate = legacy_row[3]
+        definite_parent_well = legacy_row[4]
+
+        likely_parent_plate = legacy_row[5]
+        likely_parent_well = legacy_row[6]
+
+        legacy_well = LibraryWell(
+            id=get_library_well_name(plate_name, well_proper),
+            plate=get_library_plate(plate_name),
+            well=well_proper,
+            parent_library_well=None,
+            intended_clone=get_clone('L4440'))
+
+        return update_or_save_object(legacy_well, recorded_wells,
+                                     fields_to_compare)
     sync_rows(cursor, legacy_query_source, sync_source_row)
     sync_rows(cursor, legacy_query_primary, sync_primary_row)
     sync_rows(cursor, legacy_query_secondary_L4440,
