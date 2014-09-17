@@ -450,12 +450,17 @@ def update_DevstarScore_table(cursor):
 
 def update_Clone_table(cursor):
     """
-    Update the Clone table by finding the distinct Ahringer clone names
-    (in 'sjj_X' format) and the L4440 empty vector clone (just called 'L4440')
-    from RNAiPlate.clone, and the distinct Vidal clone names
-    (in 'GHR-X@X' format) from RNAiPlate.384PlateID and RNAiPlate.384Well
-    (note that we are migrating away from the 'mv_X'-style clone names,
-    and our PK for Vidal clones will be instead in 'GHR-X@X' style)
+    Update the Clone table, according to the distinct clones in legacy
+    table RNAiPlate.
+
+    Find the distinct Ahringer clone names (in 'sjj_X' format) and
+    the L4440 empty vector clone (just called 'L4440')
+    from the clone field of RNAiPlate.
+
+    Find the distinct Vidal clone names (in 'GHR-X@X' format)
+    from the 384PlateID and 384Well fields of RNAiPlate
+    (note that we are no longer using the 'mv_X'-style Vidal clone names,
+    and our PK for Vidal clones will now be in 'GHR-X@X' style).
     """
     legacy_query = ('SELECT DISTINCT clone FROM RNAiPlate '
                     'WHERE clone LIKE "sjj%" OR clone = "L4440"')
@@ -481,7 +486,24 @@ def update_Clone_table(cursor):
 
 
 def update_LibraryWell_table(cursor):
-    pass
+    """
+    Update the LibraryWell table according to legacy tables RNAiPlate and
+    CherryPickRNAiPlate.
+    """
+    # Query for parent plates (i.e., Ahringer 384 plates, original Orfeome
+    # plates); skip L4440 plates
+    legacy_query_parent_plates = ('SELECT DISTINCT 384PlateID, 384Well '
+                                  'FROM RNAiPlate WHERE clone LIKE "sjj%" '
+                                  'OR clone LIKE "mv%"')
+
+    # Queries for actual plates used in the screen
+    legacy_query_primary = ('SELECT RNAiPlateID, 96well, clone, 384PlateID, '
+                            '384Well FROM RNAiPlate ')
+    legacy_query_secondary = ('SELECT C.RNAiPlateID, C.96well, C.clone, '
+                              '384PlateID, 384Well '
+                              'FROM CherryPickRNAiPlate AS C '
+                              'LEFT JOIN RNAiPlate AS R '
+                              'ON C.clone=R.clone')
 
 
 def update_LibrarySequencing_table(cursor):
