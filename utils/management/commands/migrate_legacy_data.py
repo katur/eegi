@@ -400,7 +400,7 @@ def update_DevstarScore_table(cursor):
 
         legacy_score = DevstarScore(
             experiment=get_experiment(legacy_row[0]),
-            well=legacy_row[1],
+            well=get_three_character_well(legacy_row[1]),
             area_adult=legacy_row[5],
             area_larva=legacy_row[6],
             area_embryo=legacy_row[7],
@@ -451,12 +451,17 @@ def update_DevstarScore_table(cursor):
 def update_Clone_table(cursor):
     """
     Update the Clone table by finding the distinct Ahringer clone names
-    (prefixed 'sjj') and the L4440 empty vector clone from RNAiPlate,
-    and getting the Vidal clone names from the CSV from John Kim
-    (since we want to migrate away from RNAiPlate's use of mv_X names).
+    (in 'sjj_X' format) and the L4440 empty vector clone (just called 'L4440')
+    from RNAiPlate.clone, and the distinct Vidal clone names
+    (in 'GHR-X@X' format) from RNAiPlate.384PlateID and RNAiPlate.384Well
+    (note that we are migrating away from the 'mv_X'-style clone names,
+    and our PK for Vidal clones will be instead in 'GHR-X@X' style)
     """
     legacy_query = ('SELECT DISTINCT clone FROM RNAiPlate '
                     'WHERE clone LIKE "sjj%" OR clone = "L4440"')
+    legacy_query_vidal = ('SELECT DISTINCT 384PlateID, 384Well FROM RNAiPlate '
+                          'WHERE clone LIKE "mv%"')
+
     recorded_clones = Clone.objects.all()
     fields_to_compare = None
 
@@ -465,7 +470,14 @@ def update_Clone_table(cursor):
         return update_or_save_object(legacy_clone, recorded_clones,
                                      fields_to_compare)
 
+    def sync_clone_row_vidal(legacy_row):
+        vidal_clone_name = '{}@{}'.format(legacy_row[0], legacy_row[1])
+        legacy_clone = Clone(id=vidal_clone_name)
+        return update_or_save_object(legacy_clone, recorded_clones,
+                                     fields_to_compare)
+
     sync_rows(cursor, legacy_query, sync_clone_row)
+    sync_rows(cursor, legacy_query_vidal, sync_clone_row_vidal)
 
 
 def update_LibraryWell_table(cursor):
@@ -484,6 +496,10 @@ def sync_rows(cursor, legacy_query, sync_row_function, **kwargs):
     """
     cursor.execute(legacy_query)
     legacy_rows = cursor.fetchall()
+    sync_rows_helper(legacy_query, legacy_rows, sync_row_function, **kwargs)
+
+
+def sync_rows_helper(legacy_query, legacy_rows, sync_row_function, **kwargs):
     all_match = True
 
     for legacy_row in legacy_rows:
