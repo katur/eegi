@@ -427,8 +427,25 @@ def update_Clone_table(cursor):
 
 def update_LibraryWell_table(cursor):
     """
-    Update the LibraryWell table according to legacy tables RNAiPlate and
-    CherryPickRNAiPlate.
+    Update the LibraryWell table to reflect the clone layout of all plates,
+    primarily according to legacy tables RNAiPlate and CherryPickRNAiPlate.
+
+    The wells of the source plates (i.e, Ahringer 384 and original
+    Orfeome plates e.g. GHR-10001) can be determined by finding unique
+    values in the 384-esque columns of RNAiPlate.
+
+    Primary wells, as well as their parent wells, are captured relatively
+    straightforwardly in RNAiPlate (though note that certain conversions must
+    take place, such as naming Vidal clones with the GHR name).
+
+    Secondary wells are captured in CherryPickRNAiPlate, and come in
+    several flavors based on the clone column:
+    - L4440: no parent
+    - sjj: parent can be uniquely determined from RNAiPlate
+    - mv: parent cannot be uniquely determined from RNAiPlate; try
+    CherryPickTemplate, but this is incomplete
+    - no clone: parent cannot be determined; leave blank for now.
+
     """
     # 'Source' plates are Ahringer 384 plates and original Orfeome
     # plates (e.g. GHR-10001)
@@ -441,14 +458,25 @@ def update_LibraryWell_table(cursor):
                             'chromosome, 384PlateID, 384Well '
                             'FROM RNAiPlate')
 
-    '''
-    # Plates from secondary screen
-    legacy_query_secondary = ('SELECT C.RNAiPlateID, C.96well, C.clone, '
-                              '384PlateID, 384Well '
-                              'FROM CherryPickRNAiPlate AS C '
-                              'LEFT JOIN RNAiPlate AS R '
-                              'ON C.clone=R.clone')
-    '''
+    # L4440 plates from secondary screen (no parent)
+    legacy_query_secondary_L4440 = ('SELECT RNAiPlateID, 96well '
+                                    'FROM CherryPickRNAiPlate '
+                                    'WHERE clone = "L4440"')
+
+    # Ahringer plates from secondary screen (parent determined
+    # easily, since sjj sjj clones in RNAiPlate)
+    legacy_query_secondary = (
+        'SELECT DISTINCT C.RNAiPlateID as plate, C.96well as well, C.clone, '
+        'T.RNAiPlateID as definite_source_plate, '
+        'T.96well as definite_source_well, '
+        'R.RNAiPlateID as likely_origin_plate, '
+        'R.96well as likely_origin_well '
+        'FROM CherryPickRNAiPlate AS C '
+        'LEFT JOIN CherryPickTemplate AS T '
+        'ON finalRNAiPlateID = C.RNAiPlateID AND final96well = C.96well '
+        'LEFT JOIN RNAiPlate AS R ON C.clone=R.clone '
+        'WHERE C.clone != "L4440" '
+        'ORDER BY C.RNAiPlateID, C.96well')
 
     recorded_wells = LibraryWell.objects.all()
     fields_to_compare = ('plate', 'well', 'parent_library_well',
@@ -520,8 +548,25 @@ def update_LibraryWell_table(cursor):
         return update_or_save_object(legacy_well, recorded_wells,
                                      fields_to_compare)
 
+    def sync_secondary_L4440_row(legacy_row):
+        plate_name = legacy_row[0]
+        well_improper = legacy_row[1]
+        well_proper = get_three_character_well(well_improper)
+
+        legacy_well = LibraryWell(
+            id=get_library_well_name(plate_name, well_proper),
+            plate=get_library_plate(plate_name),
+            well=well_proper,
+            parent_library_well=None,
+            intended_clone=get_clone('L4440'))
+
+        return update_or_save_object(legacy_well, recorded_wells,
+                                     fields_to_compare)
+
     sync_rows(cursor, legacy_query_source, sync_source_row)
     sync_rows(cursor, legacy_query_primary, sync_primary_row)
+    sync_rows(cursor, legacy_query_secondary_L4440,
+              sync_secondary_L4440_row)
 
 
 def update_LibrarySequencing_table(cursor):
