@@ -118,38 +118,72 @@ class Command(BaseCommand):
 
 def update_LibraryPlate_table(cursor):
     """
-    Update the LibraryPlate table by finding the distinct plates names in
-    legacy tables RNAiPlate (defines the well-level contents of primary plates)
-    and CherryPickRNAiPlate (well-level contents of secondary plates).
+    Update the LibraryPlate table according to distinct plates recorded
+    in legacy tables RNAiPlate and CherryPickRNAiPlate.
 
-    Rows representing the 384-well plates and some miscellanous plates
-    (such as the Eliana Rearray plates) are hardcoded into the script.
+    Find original Ahringer 384-well plates through the chromosome and
+    384PlateID fields of RNAiPlate (384PlateID NOT LIKE GHR-%, != 0).
+
+    Find original Orfeome plates through the 384PlateID field of RNAiPlate
+    (384PlateID LIKE GHR-%). Note that these original Orfeome plates
+    are actually in 96-well format.
+
+    Find the plates actually used in our primary experiments as the distinct
+    RNAiPlateID from RNAiPlate, and the distinct RNAiPlateID LIKE Eliana%
+    from ReArrayRNAiPlate.
+
+    Find the plates actually used in our secondary experiments as the distinct
+    RNAiPlateID from CherryPickRNAiPlates.
     """
-    legacy_query = 'SELECT DISTINCT RNAiPlateID FROM {}'
+    legacy_query_384_plates = ('SELECT DISTINCT chromosome, 384PlateID '
+                               'FROM RNAiPlate '
+                               'WHERE 384PlateID NOT LIKE "GHR-%" '
+                               'AND 384PlateID != 0')
+
+    legacy_query_orfeome_plates = ('SELECT DISTINCT 384PlateID '
+                                   'FROM RNAiPlate '
+                                   'WHERE 384PlateID LIKE "GHR-%"')
+
+    legacy_query_experiment_plates = 'SELECT DISTINCT RNAiPlateID FROM {}'
+
+    legacy_query_eliana_rearrays = ('SELECT DISTINCT RNAiPlateID FROM '
+                                    'ReArrayRNAiPlate WHERE RNAiPlateID '
+                                    'LIKE "Eliana%"')
+
     recorded_plates = LibraryPlate.objects.all()
     fields_to_compare = ('screen_stage', 'number_of_wells')
 
     def sync_library_plate_row(legacy_row, screen_stage, number_of_wells=96):
-        legacy_plate = LibraryPlate(id=legacy_row[0],
+        if len(legacy_row) > 1:
+            legacy_plate_name = legacy_row[0] + '-' + legacy_row[1]
+        else:
+            legacy_plate_name = legacy_row[0]
+        legacy_plate = LibraryPlate(id=legacy_plate_name,
                                     screen_stage=screen_stage,
                                     number_of_wells=number_of_wells)
         return update_or_save_object(legacy_plate, recorded_plates,
                                      fields_to_compare)
 
-    original_384_plates = {'I': 8, 'II': 9, 'III': 7, 'IV': 8, 'V': 13, 'X': 7}
+    # 384-well Ahringer plates from which our 96-well Ahringer plates were
+    # arrayed
+    sync_rows(cursor, legacy_query_384_plates, sync_library_plate_row,
+              screen_stage=0, number_of_wells=384)
 
-    for chromosome in original_384_plates:
-        number = original_384_plates[chromosome]
-        for i in range(1, number+1):
-            sync_library_plate_row(['{}-{}'.format(chromosome, str(i))],
-                                   0, 384)
+    # 96-well Orfeome plates from which our 96-well Vidal rearrays were
+    # cherry-picked
+    sync_rows(cursor, legacy_query_orfeome_plates, sync_library_plate_row,
+              screen_stage=0)
 
-    sync_library_plate_row(['Eliana_ReArray_1'], 1)
-    sync_library_plate_row(['Eliana_ReArray_2'], 1)
-
-    sync_rows(cursor, legacy_query.format('RNAiPlate'),
+    # The 96-well plates actually used in our experiments
+    sync_rows(cursor,
+              legacy_query_experiment_plates.format('RNAiPlate'),
               sync_library_plate_row, screen_stage=1)
-    sync_rows(cursor, legacy_query.format('CherryPickRNAiPlate'),
+
+    sync_rows(cursor, legacy_query_eliana_rearrays,
+              sync_library_plate_row, screen_stage=1)
+
+    sync_rows(cursor,
+              legacy_query_experiment_plates.format('CherryPickRNAiPlate'),
               sync_library_plate_row, screen_stage=2)
 
 
