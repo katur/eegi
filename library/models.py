@@ -1,5 +1,7 @@
 from django.db import models
 
+from clones.models import Clone
+
 
 class LibraryPlate(models.Model):
     """
@@ -43,3 +45,22 @@ class LibraryPlate(models.Model):
             # All other situations, simply order alphabetically
             else:
                 return cmp(self.id, other.id)
+
+
+class LibraryWell(models.Model):
+    """
+    A well in a library plate, including the intended clone.
+    """
+    id = models.CharField(max_length=24, primary_key=True)
+    plate = models.ForeignKey(LibraryPlate)
+    well = models.CharField(max_length=3)
+    parent_library_well = models.ForeignKey('self', null=True, blank=True)
+    intended_clone = models.ForeignKey(Clone, null=True, blank=True)
+
+    class Meta:
+        db_table = 'LibraryWell'
+        ordering = ['id']
+
+    def __unicode__(self):
+        return '{} (intended clone: {})'.format(self.id,
+                                                str(self.intended_clone))
