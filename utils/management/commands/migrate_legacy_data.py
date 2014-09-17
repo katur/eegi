@@ -1,4 +1,5 @@
 import MySQLdb
+import re
 import sys
 
 from django.core.management.base import BaseCommand, CommandError
@@ -11,7 +12,7 @@ from utils.helpers.well_tile_conversion import (tile_to_well,
 from utils.helpers.time_conversion import get_timestamp
 from worms.models import WormStrain
 from clones.models import Clone
-from library.models import LibraryPlate
+from library.models import LibraryPlate, LibraryWell
 from experiments.models import (Experiment, ManualScoreCode, ManualScore,
                                 DevstarScore)
 
@@ -155,7 +156,8 @@ def update_LibraryPlate_table(cursor):
 
     def sync_library_plate_row(legacy_row, screen_stage, number_of_wells=96):
         if len(legacy_row) > 1:
-            legacy_plate_name = legacy_row[0] + '-' + legacy_row[1]
+            legacy_plate_name = get_ahringer_384_plate_name(legacy_row[0],
+                                                            legacy_row[1])
         else:
             legacy_plate_name = legacy_row[0]
         legacy_plate = LibraryPlate(id=legacy_plate_name,
@@ -415,7 +417,7 @@ def update_DevstarScore_table(cursor):
                     'machineCall, machineDetectBac, '
                     'GIscoreLarvaePerWorm, GIscoreSurvival '
                     'FROM RawDataWithScore '
-                    'LIMIT 25000')
+                    'LIMIT 10000')
 
     recorded_scores = DevstarScore.objects.all()
     fields_to_compare = ('area_adult', 'area_larva', 'area_embryo',
@@ -498,22 +500,23 @@ def update_Clone_table(cursor):
     """
     legacy_query = ('SELECT DISTINCT clone FROM RNAiPlate '
                     'WHERE clone LIKE "sjj%" OR clone = "L4440"')
-    legacy_query_vidal = ('SELECT DISTINCT 384PlateID, 384Well FROM RNAiPlate '
-                          'WHERE clone LIKE "mv%"')
-
-    recorded_clones = Clone.objects.all()
-    fields_to_compare = None
 
     def sync_clone_row(legacy_row):
         legacy_clone = Clone(id=legacy_row[0])
         return update_or_save_object(legacy_clone, recorded_clones,
                                      fields_to_compare)
 
+    legacy_query_vidal = ('SELECT DISTINCT 384PlateID, 384Well FROM RNAiPlate '
+                          'WHERE clone LIKE "mv%"')
+
     def sync_clone_row_vidal(legacy_row):
-        vidal_clone_name = '{}@{}'.format(legacy_row[0], legacy_row[1])
+        vidal_clone_name = get_vidal_clone_name(legacy_row[0], legacy_row[1])
         legacy_clone = Clone(id=vidal_clone_name)
         return update_or_save_object(legacy_clone, recorded_clones,
                                      fields_to_compare)
+
+    recorded_clones = Clone.objects.all()
+    fields_to_compare = None
 
     sync_rows(cursor, legacy_query, sync_clone_row)
     sync_rows(cursor, legacy_query_vidal, sync_clone_row_vidal)
@@ -524,20 +527,91 @@ def update_LibraryWell_table(cursor):
     Update the LibraryWell table according to legacy tables RNAiPlate and
     CherryPickRNAiPlate.
     """
-    # Query for parent plates (i.e., Ahringer 384 plates, original Orfeome
-    # plates); skip L4440 plates
-    legacy_query_parent_plates = ('SELECT DISTINCT 384PlateID, 384Well '
-                                  'FROM RNAiPlate WHERE clone LIKE "sjj%" '
-                                  'OR clone LIKE "mv%"')
+    # Get parent plates (i.e., Ahringer 384 plates, original Orfeome
+    # plates); L4440 has no parent
+    legacy_query_parents = ('SELECT DISTINCT clone, chromosome, '
+                            '384PlateID, 384Well FROM RNAiPlate '
+                            'WHERE clone LIKE "sjj%" OR clone LIKE "mv%"')
 
     # Queries for actual plates used in the screen
-    legacy_query_primary = ('SELECT RNAiPlateID, 96well, clone, 384PlateID, '
-                            '384Well FROM RNAiPlate ')
+    legacy_query_primary = ('SELECT clone, RNAiPlateID, 96well, '
+                            'chromosome, 384PlateID, 384Well '
+                            'FROM RNAiPlate')
+
+    recorded_library_wells = LibraryWell.objects.all()
+    fields_to_compare = ('plate', 'well', 'parent_library_well',
+                         'intended_clone')
+
+    def sync_parent_row(legacy_row):
+        clone_name = legacy_row[0]
+        chromosome = legacy_row[1]
+        plate_name = legacy_row[2]
+        well_original = legacy_row[3]
+        well_proper = get_three_character_well(well_original)
+
+        if re.match('sjj', clone_name):
+            plate_name = get_ahringer_384_plate_name(chromosome, plate_name)
+        elif re.match('mv', clone_name):
+            clone_name = get_vidal_clone_name(plate_name, well_original)
+        else:
+            raise Exception('Some parent clone does not match mv or sjj')
+
+        library_well_name = get_library_well_name(plate_name, well_proper)
+
+        legacy_well = LibraryWell(id=library_well_name,
+                                  plate=get_library_plate(plate_name),
+                                  well=well_proper,
+                                  parent_library_well=None,
+                                  intended_clone=get_clone(clone_name))
+        print legacy_well
+        return True
+
+    def sync_primary_row(legacy_row):
+        clone_name = legacy_row[0]
+        plate_name = legacy_row[1]
+        well_original = legacy_row[2]
+        well_proper = get_three_character_well(well_original)
+        parent_chromosome = legacy_row[3]
+        parent_plate_name = legacy_row[4]
+        parent_well_original = legacy_row[5]
+        parent_well_proper = get_three_character_well(parent_well_original)
+
+        if re.match('sjj', clone_name):
+            parent_plate_name = get_ahringer_384_plate_name(parent_chromosome,
+                                                            parent_plate_name)
+        elif re.match('mv', clone_name):
+            clone_name = get_vidal_clone_name(parent_plate_name,
+                                              parent_well_original)
+
+        intended_clone = get_clone(clone_name)
+
+        library_well_name = get_library_well_name(plate_name, well_proper)
+        parent_library_well_name = get_library_well_name(parent_plate_name,
+                                                         parent_well_proper)
+        parent_library_well = get_library_well(parent_library_well_name)
+
+        # Confirm that this intended clone matches parent's clone
+        if parent_library_well.intended_clone != intended_clone:
+            sys.exit('Clone does not match parent')
+
+        legacy_well = LibraryWell(id=library_well_name,
+                                  plate=get_library_plate(plate_name),
+                                  well=well_proper,
+                                  parent_library_well=parent_library_well,
+                                  intended_clone=intended_clone)
+        print legacy_well
+        return True
+
+    sync_rows(cursor, legacy_query_parents, sync_parent_row)
+    sync_rows(cursor, legacy_query_primary, sync_primary_row)
+
+    """
     legacy_query_secondary = ('SELECT C.RNAiPlateID, C.96well, C.clone, '
                               '384PlateID, 384Well '
                               'FROM CherryPickRNAiPlate AS C '
                               'LEFT JOIN RNAiPlate AS R '
                               'ON C.clone=R.clone')
+    """
 
 
 def update_LibrarySequencing_table(cursor):
@@ -663,41 +737,35 @@ def get_worm_strain(mutant, mutantAllele):
         return worm_strain
 
     except ObjectDoesNotExist:
-        sys.exit('ERROR: Strain with mutant: ' + mutant +
-                 ', mutantAllele: ' + mutantAllele +
-                 ' in the legacy database does not match any '
-                 'worm strain in the new database\n')
+        exit_with_missing_object_message('WormStrain', gene=mutant,
+                                         allele=mutantAllele)
 
 
-def get_library_plate(library_plate_as_string):
+def get_library_plate(library_plate_name):
     """
     Get a library plate from the new database, from its plate name.
 
     Exits with an error if the plate is not present.
     """
     try:
-        return LibraryPlate.objects.get(id=library_plate_as_string)
+        return LibraryPlate.objects.get(id=library_plate_name)
 
     except ObjectDoesNotExist:
-        sys.exit('ERROR: RNAiPlateID ' + library_plate_as_string +
-                 ' in the legacy database does not match any library '
-                 'plate in the new database\n')
+        exit_with_missing_object_message('LibraryPlate', id=library_plate_name)
 
 
-def get_experiment(id):
+def get_experiment(experiment_id):
     try:
-        return Experiment.objects.get(id=id)
+        return Experiment.objects.get(id=experiment_id)
     except ObjectDoesNotExist:
-        sys.exit('ERROR: Experiment ' + str(id) +
-                 'not found in the new database\n')
+        exit_with_missing_object_message('Experiment', id=experiment_id)
 
 
-def get_score_code(id):
+def get_score_code(score_code_id):
     try:
-        return ManualScoreCode.objects.get(id=id)
+        return ManualScoreCode.objects.get(id=score_code_id)
     except ObjectDoesNotExist:
-        sys.exit('ERROR: ManualScoreCode with id ' + str(id) +
-                 'not found in the new database\n')
+        exit_with_missing_object_message('ManualScoreCode', id=score_code_id)
 
 
 def get_user(username):
@@ -709,8 +777,38 @@ def get_user(username):
     try:
         return User.objects.get(username=username)
     except ObjectDoesNotExist:
-        sys.exit('ERROR: User with username ' + str(username) +
-                 'not found in the new database\n')
+        exit_with_missing_object_message('User', username=username)
+
+
+def get_clone(clone_name):
+    try:
+        return Clone.objects.get(id=clone_name)
+    except ObjectDoesNotExist:
+        exit_with_missing_object_message('Clone', id=clone_name)
+
+
+def get_library_well(library_well_name):
+    try:
+        return LibraryWell.objects.get(id=library_well_name)
+    except ObjectDoesNotExist:
+        exit_with_missing_object_message('LibraryWell', id=library_well_name)
+
+
+def get_ahringer_384_plate_name(chromosome, plate_number):
+    return '{}-{}'.format(chromosome, plate_number)
+
+
+def get_vidal_clone_name(orfeome_plate_name, orfeome_well):
+    return '{}@{}'.format(orfeome_plate_name, orfeome_well)
+
+
+def get_library_well_name(plate_name, well):
+    return '{}_{}'.format(plate_name, well)
+
+
+def exit_with_missing_object_message(klass, **kwargs):
+    sys.exit('ERROR: {} with {} not found in the new database\n'
+             .format(klass, str(kwargs)))
 
 
 def compare_floats_for_equality(x, y):
