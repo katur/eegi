@@ -99,11 +99,11 @@ sequencing results | `SeqPlate` table, which stores mostly conclusions (missing 
 **Decisions to make about `library` app: plate-level**
 - Are we sure we want screen level to be captured per experiment, rather than per library plate? (Note: if so, Katherine should delete screen level from `LibraryPlate`).
 - Should we give the Orfeome rearray plates more descriptive names than just integers 1 to 21 (e.g. vidal-1)?
-- Should we convert all underscores in plate names to dashes? Already so for Ahringer 384 (e.g. II-4), Ahringer 96 (e.g. II-4-B2), original Orfeome plate (e.g. GHR-10010), proposed Vidal 96 rearray (e.g. vidal-13). Would only need to convert secondary plates (e.g. b1023\_F1) and Eliana rearrays (Eliana\_Rearray\_2). The reason this would be nice is to make `LibraryWell.id` is more readable (e.g. b1023-F5\_F05 instead of b1023\_F5\_F05).
+- Should we convert all underscores in plate names to dashes? Already so for Ahringer 384 (e.g. II-4), Ahringer 96 (e.g. II-4-B2), original Orfeome plate (e.g. GHR-10010), and proposed Orefeome rearray names (e.g. vidal-13). Would only need to convert secondary plates (e.g. b1023\_F1) and Eliana rearrays (Eliana\_Rearray\_2). The reason this would be nice is to make `LibraryWell.id` is more readable (e.g. b1023-F5\_F05 instead of b1023\_F5\_F05).
 
 **Decisions to make about `library` app: well-level**
-- Should we add LibraryWell rows to capture wells that supposedly have no clone? Old database does not have these. The reason is that in our copy, sometimes these wells do grow, so even if there is no intended clone it could be determined by sequencing (and actually, some of these did make it into our secondary plates, meaning these plates have no defined parent unless we add these rows).
-- Should we really hardcode the intended clone for child plates (instead of relying on pointers)? This has caused database consistency issues in the past.
+- Should we add LibraryWell records to capture wells that have no intended clone? The reason this would be nice is that in our copy of the library, sometimes wells with no intended clone do grow, which can always be sequenced if there is a phenotype (actually, some of these did make it into our secondary plates, meaning these wells have no defined parent unless we add these rows).
+- Discuss briefly the dangers of hardcoding the intended clone for child wells (instead of relying on parent); this has caused database consistency issues in the past.
 
 
 
