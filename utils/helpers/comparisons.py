@@ -60,7 +60,7 @@ def compare_fields(old_object, new_object, fields, update=False):
 
     if differences:
         sys.stderr.write('WARNING: Record {} had these changes: {}\n'
-                         .format(str(object),
+                         .format(str(old_object),
                                  str([d for d in differences])))
         if update:
             sys.stderr.write('The database was updated to reflect '

@@ -1,6 +1,8 @@
 import re
 import sys
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from utils.helpers.well_tile_conversion import (tile_to_well,
                                                 get_three_character_well)
 from utils.helpers.time_conversion import get_timestamp
@@ -39,6 +41,9 @@ def update_LibraryPlate_table(cursor):
     Find the plates actually used in our secondary experiments as the distinct
     RNAiPlateID from CherryPickRNAiPlates.
     """
+    recorded_plates = LibraryPlate.objects.all()
+    fields_to_compare = ('screen_stage', 'number_of_wells')
+
     legacy_query_384_plates = ('SELECT DISTINCT chromosome, 384PlateID '
                                'FROM RNAiPlate '
                                'WHERE 384PlateID NOT LIKE "GHR-%" '
@@ -53,9 +58,6 @@ def update_LibraryPlate_table(cursor):
     legacy_query_eliana_rearrays = ('SELECT DISTINCT RNAiPlateID FROM '
                                     'ReArrayRNAiPlate WHERE RNAiPlateID '
                                     'LIKE "Eliana%"')
-
-    recorded_plates = LibraryPlate.objects.all()
-    fields_to_compare = ('screen_stage', 'number_of_wells')
 
     def sync_library_plate_row(legacy_row, screen_stage, number_of_wells=96):
         if len(legacy_row) > 1:
@@ -107,6 +109,10 @@ def update_Experiment_table(cursor):
     Also, experiments of Julie's (which were done with a line of spn-4 worms
     later deemed untrustworthy) are excluded.
     """
+    recorded_experiments = Experiment.objects.all()
+    fields_to_compare = ('worm_strain', 'library_plate', 'screen_level',
+                         'temperature', 'date', 'is_junk', 'comment',)
+
     legacy_query = ('SELECT expID, mutant, mutantAllele, RNAiPlateID, '
                     'CAST(SUBSTRING_INDEX(temperature, "C", 1) '
                     'AS DECIMAL(3,1)), '
@@ -114,10 +120,6 @@ def update_Experiment_table(cursor):
                     'FROM RawData '
                     'WHERE (expID < 40000 OR expID>=50000) '
                     'AND RNAiPlateID NOT LIKE "Julie%"')
-
-    recorded_experiments = Experiment.objects.all()
-    fields_to_compare = ('worm_strain', 'library_plate', 'screen_level',
-                         'temperature', 'date', 'is_junk', 'comment',)
 
     def sync_experiment_row(legacy_row):
         expID = legacy_row[0]
@@ -162,11 +164,12 @@ def update_ManualScoreCode_table(cursor):
     - Migrate these antiquated codes, but do not show in interface:
         -5: IA Error
     """
+    recorded_score_codes = ManualScoreCode.objects.all()
+    fields_to_compare = ('legacy_description',)
+
     legacy_query = ('SELECT code, definition FROM ManualScoreCode '
                     'WHERE code != -8 AND code != -1 AND code != 4 '
                     'AND code != 5 AND code != 6 AND code != -6')
-    recorded_score_codes = ManualScoreCode.objects.all()
-    fields_to_compare = ('legacy_description',)
 
     def sync_score_code_row(legacy_row):
         legacy_score_code = ManualScoreCode(
@@ -219,6 +222,9 @@ def update_ManualScore_table(cursor):
         - for sherly and patricia's ENH scores, ensure that any medium or
           strong enhancers were caught by official scorers
     """
+    recorded_scores = ManualScore.objects.all()
+    fields_to_compare = None
+
     legacy_query = ('SELECT ManualScore.expID, ImgName, score, scoreBy, '
                     'scoreYMD, ScoreYear, ScoreMonth, ScoreDate, ScoreTime, '
                     'mutant, screenFor '
@@ -227,8 +233,6 @@ def update_ManualScore_table(cursor):
                     'ON ManualScore.expID = RawData.expID '
                     'WHERE score != -8 AND score != -1 AND score != 4 '
                     'AND score != 5 AND score != 6')
-    recorded_scores = ManualScore.objects.all()
-    fields_to_compare = None
 
     def sync_score_row(legacy_row):
         legacy_score_code = legacy_row[2]
@@ -312,6 +316,12 @@ def update_DevstarScore_table(cursor):
           we DO now calculate survival and lethality
         - machineCall becomes a boolean
     """
+    recorded_scores = DevstarScore.objects.all()
+    fields_to_compare = ('area_adult', 'area_larva', 'area_embryo',
+                         'count_adult', 'count_larva', 'is_bacteria_present',
+                         'count_embryo', 'larva_per_adult',
+                         'embryo_per_adult', 'survival', 'lethality',)
+
     legacy_query = ('SELECT expID, 96well, '
                     'mutantAllele, targetRNAiClone, RNAiPlateID, '
                     'areaWorm, areaLarvae, areaEmbryo, '
@@ -321,12 +331,6 @@ def update_DevstarScore_table(cursor):
                     'GIscoreLarvaePerWorm, GIscoreSurvival '
                     'FROM RawDataWithScore '
                     'LIMIT 10000')
-
-    recorded_scores = DevstarScore.objects.all()
-    fields_to_compare = ('area_adult', 'area_larva', 'area_embryo',
-                         'count_adult', 'count_larva', 'is_bacteria_present',
-                         'count_embryo', 'larva_per_adult',
-                         'embryo_per_adult', 'survival', 'lethality',)
 
     def sync_score_row(legacy_row):
         # Build the object using the minimimum fields
@@ -401,6 +405,9 @@ def update_Clone_table(cursor):
     (note that we are no longer using the 'mv_X'-style Vidal clone names,
     and our PK for Vidal clones will now be in 'GHR-X@X' style).
     """
+    recorded_clones = Clone.objects.all()
+    fields_to_compare = None
+
     legacy_query = ('SELECT DISTINCT clone FROM RNAiPlate '
                     'WHERE clone LIKE "sjj%" OR clone = "L4440"')
 
@@ -418,71 +425,34 @@ def update_Clone_table(cursor):
         return update_or_save_object(legacy_clone, recorded_clones,
                                      fields_to_compare)
 
-    recorded_clones = Clone.objects.all()
-    fields_to_compare = None
-
     sync_rows(cursor, legacy_query, sync_clone_row)
     sync_rows(cursor, legacy_query_vidal, sync_clone_row_vidal)
 
 
 def update_LibraryWell_table(cursor):
     """
-    Update the LibraryWell table to reflect the clone layout of all plates,
+    Update the LibraryWell table to reflect the clone layout of all plates:
+    source plates (Ahringer 384 and original Orfeome plates e.g. GHR-10001),
+    primary plates, and secondary plates. Also update the parent LibraryWells
+    of primary and secondary plates.
+
+    This information comes from a variety of queries of
     primarily according to legacy tables RNAiPlate and CherryPickRNAiPlate.
-
-    The wells of the source plates (i.e, Ahringer 384 and original
-    Orfeome plates e.g. GHR-10001) can be determined by finding unique
-    values in the 384-esque columns of RNAiPlate.
-
-    Primary wells, as well as their parent wells, are captured relatively
-    straightforwardly in RNAiPlate (though note that certain conversions must
-    take place, such as naming Vidal clones with the GHR name).
-
-    Secondary wells are captured in CherryPickRNAiPlate, and come in
-    several flavors based on the clone column:
-    - L4440: no parent
-    - sjj: parent can be uniquely determined from RNAiPlate
-    - mv: parent cannot be uniquely determined from RNAiPlate; try
-    CherryPickTemplate, but this is incomplete
-    - no clone: parent cannot be determined; leave blank for now.
-
+    Detailed comments inline.
     """
-    # 'Source' plates are Ahringer 384 plates and original Orfeome
-    # plates (e.g. GHR-10001)
-    legacy_query_source = ('SELECT DISTINCT 384PlateID, 384Well, '
-                           'chromosome, clone FROM RNAiPlate '
-                           'WHERE clone LIKE "sjj%" OR clone LIKE "mv%"')
-
-    # Plates from primary screen
-    legacy_query_primary = ('SELECT RNAiPlateID, 96well, clone, '
-                            'chromosome, 384PlateID, 384Well '
-                            'FROM RNAiPlate')
-
-    # L4440 plates from secondary screen (no parent)
-    legacy_query_secondary_L4440 = ('SELECT RNAiPlateID, 96well '
-                                    'FROM CherryPickRNAiPlate '
-                                    'WHERE clone = "L4440"')
-
-    # Ahringer plates from secondary screen (parent determined
-    # easily, since sjj sjj clones in RNAiPlate)
-    legacy_query_secondary = (
-        'SELECT C.RNAiPlateID as plate, C.96well as well, C.clone, '
-        'T.RNAiPlateID as definite_source_plate, '
-        'T.96well as definite_source_well, '
-        'R.RNAiPlateID as likely_origin_plate, '
-        'R.96well as likely_origin_well '
-        'FROM CherryPickRNAiPlate AS C '
-        'LEFT JOIN CherryPickTemplate AS T '
-        'ON finalRNAiPlateID = C.RNAiPlateID AND final96well = C.96well '
-        'LEFT JOIN RNAiPlate AS R ON C.clone=R.clone AND '
-        '(T.RNAiPlateID IS NULL OR '
-        '(T.RNAiPlateID=R.RNAiPlateID AND T.96well=R.96well)) '
-        'WHERE C.clone != "L4440" '
-        'ORDER BY C.RNAiPlateID, C.96well')
-
     recorded_wells = LibraryWell.objects.all()
     fields_to_compare = ('plate', 'well', 'parent_library_well',
                          'intended_clone')
+
+    # 'Source' plates are Ahringer 384 plates and original Orfeome
+    # plates (e.g. GHR-10001). Plate names are captured as they
+    # were in update_LibraryPlate_table (i.e., using fields 384PlateID and
+    # chromosome). Well is captured in field 384Well. Clone is captured
+    # as described in update_Clone_table (i.e., using clone field for
+    # sjj clones, and source plate@well for mv clones).
+    legacy_query_source = ('SELECT DISTINCT 384PlateID, 384Well, '
+                           'chromosome, clone FROM RNAiPlate '
+                           'WHERE clone LIKE "sjj%" OR clone LIKE "mv%"')
 
     def sync_source_row(legacy_row):
         plate_name = legacy_row[0]
@@ -507,6 +477,15 @@ def update_LibraryWell_table(cursor):
 
         return update_or_save_object(legacy_well, recorded_wells,
                                      fields_to_compare)
+
+    # Primary well layout is captured in RNAiPlate (fields RNAiPlateID
+    # and 96well). Clone is determined the same way as described in
+    # update_Clone_table (i.e., clone column for sjj clones, and source
+    # plate@well for mv clones). No parent for L4440 wells. Parent for other
+    # plates determined using fields 384PlateID, chromosome, and 384Well.
+    legacy_query_primary = ('SELECT RNAiPlateID, 96well, clone, '
+                            'chromosome, 384PlateID, 384Well '
+                            'FROM RNAiPlate')
 
     def sync_primary_row(legacy_row):
         plate_name = legacy_row[0]
@@ -550,6 +529,13 @@ def update_LibraryWell_table(cursor):
         return update_or_save_object(legacy_well, recorded_wells,
                                      fields_to_compare)
 
+    # L4440 wells from secondary screen are treated specially (since
+    # the complicated join used to resolve parents below complicates things
+    # for L4440). L4440 wells have no recorded parent.
+    legacy_query_secondary_L4440 = ('SELECT RNAiPlateID, 96well '
+                                    'FROM CherryPickRNAiPlate '
+                                    'WHERE clone = "L4440"')
+
     def sync_secondary_L4440_row(legacy_row):
         plate_name = legacy_row[0]
         well_improper = legacy_row[1]
@@ -565,31 +551,110 @@ def update_LibraryWell_table(cursor):
         return update_or_save_object(legacy_well, recorded_wells,
                                      fields_to_compare)
 
+    # Secondary well layout is captured in CherryPickRNAiPlate (fields
+    # RNAiPlate and 96well). However, there are no columns in this table
+    # for origina. CherryPickTemplate captures MOST parent relationships,
+    # but not all. Therefore, we rely on CherryPickTemplate where available
+    # to define parent relationship. Otherwise, we guess based on clone name
+    # (which almost always uniquely defines the source well). In the handful
+    # of cases not in CherryPickTemplate and where there is ambiguity,
+    # we leave the parent undefined (and we will need go back through physical
+    # notes to resolve these).
+    legacy_query_secondary = (
+        'SELECT C.RNAiPlateID as plate, C.96well as well, C.clone, '
+        'T.RNAiPlateID as definite_parent_plate, '
+        'T.96well as definite_parent_well, '
+        'R.RNAiPlateID as likely_parent_plate, '
+        'R.96well as likely_parent_well, '
+        'R.clone as likely_parent_clone '
+        'FROM CherryPickRNAiPlate AS C '
+        'LEFT JOIN CherryPickTemplate AS T '
+        'ON finalRNAiPlateID = C.RNAiPlateID AND final96well = C.96well '
+        'LEFT JOIN RNAiPlate AS R ON C.clone=R.clone AND '
+        '(T.RNAiPlateID IS NULL OR '
+        '(T.RNAiPlateID=R.RNAiPlateID AND T.96well=R.96well)) '
+        'WHERE C.clone != "L4440" '
+        'ORDER BY C.RNAiPlateID, C.96well')
+
     def sync_secondary_row(legacy_row):
         plate_name = legacy_row[0]
         well_improper = legacy_row[1]
         well_proper = get_three_character_well(well_improper)
         clone_name = legacy_row[2]
 
-        definite_parent_plate = legacy_row[3]
+        definite_parent_plate_name = legacy_row[3]
         definite_parent_well = legacy_row[4]
+        if definite_parent_well:
+            definite_parent_well = get_three_character_well(
+                definite_parent_well)
 
-        likely_parent_plate = legacy_row[5]
+        likely_parent_plate_name = legacy_row[5]
         likely_parent_well = legacy_row[6]
+        if likely_parent_well:
+            likely_parent_well = get_three_character_well(likely_parent_well)
+        likely_parent_clone_name = legacy_row[7]
+
+        if (definite_parent_plate_name and likely_parent_plate_name and
+                definite_parent_plate_name != likely_parent_plate_name):
+            sys.exit('ERROR: definite and likely parent plates disagree '
+                     'for {} {}\n'.format(plate_name, well_proper))
+
+        if (definite_parent_well and likely_parent_well and
+                definite_parent_well != likely_parent_well):
+            sys.exit('ERROR: definite and likely parent wells disagree '
+                     'for {} {}\n'.format(plate_name, well_proper))
+
+        if definite_parent_plate_name and definite_parent_well:
+            parent_library_well_name = get_library_well_name(
+                definite_parent_plate_name, definite_parent_well)
+        else:
+            parent_library_well_name = get_library_well_name(
+                likely_parent_plate_name, likely_parent_well)
+
+        try:
+            parent_library_well = get_library_well(parent_library_well_name)
+            intended_clone = parent_library_well.intended_clone
+        except ObjectDoesNotExist:
+            sys.stdout.write('WARNING for LibraryWell {} {}: parent not '
+                             'found in LibraryWell\n'
+                             .format(plate_name, well_proper))
+            parent_library_well = None
+            intended_clone = None
+
+        if clone_name and (clone_name != likely_parent_clone_name):
+            sys.stdout.write('WARNING for LibraryWell {} {}: clone recorded '
+                             'in CherryPickRNAiPlate is inconsistent with '
+                             'CherryPickTemplate source/destination records\n'
+                             .format(plate_name, well_proper))
+
+        if re.match('sjj', clone_name):
+            try:
+                recorded_clone = get_clone(clone_name)
+                if recorded_clone != intended_clone:
+                    sys.stdout.write('WARNING for LibraryWell {} {}: '
+                                     'clone recorded in CherryPickRNAiPlate '
+                                     'does not match its parent\'s clone\n'
+                                     .format(plate_name, well_proper))
+            except ObjectDoesNotExist:
+                sys.stdout.write('WARNING for LibraryWell {} {}: clone '
+                                 'recorded in CherryPickRNAiPlate not found '
+                                 'at all in RNAiPlate\n'
+                                 .format(plate_name, well_proper))
 
         legacy_well = LibraryWell(
             id=get_library_well_name(plate_name, well_proper),
             plate=get_library_plate(plate_name),
             well=well_proper,
-            parent_library_well=None,
-            intended_clone=get_clone('L4440'))
+            parent_library_well=parent_library_well,
+            intended_clone=intended_clone)
 
         return update_or_save_object(legacy_well, recorded_wells,
                                      fields_to_compare)
-    sync_rows(cursor, legacy_query_source, sync_source_row)
-    sync_rows(cursor, legacy_query_primary, sync_primary_row)
-    sync_rows(cursor, legacy_query_secondary_L4440,
-              sync_secondary_L4440_row)
+    # sync_rows(cursor, legacy_query_source, sync_source_row)
+    # sync_rows(cursor, legacy_query_primary, sync_primary_row)
+    # sync_rows(cursor, legacy_query_secondary_L4440,
+    #          sync_secondary_L4440_row)
+    sync_rows(cursor, legacy_query_secondary, sync_secondary_row)
 
 
 def update_LibrarySequencing_table(cursor):
