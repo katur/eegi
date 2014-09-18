@@ -65,7 +65,7 @@ information about worm strains | no table | `WormStrain` table
 referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
 par-1 allele | zc310 | zu310
 
-DECISIONS TO MAKE ABOUT `worms` APP:
+**Decisions to make about `worms` app**
 - Rows just inserted by Noah/Katherine into old database accidentally fixed the zc310 error. Could Kris unfix it in GenomeWideGI and GWGI2 (i.e. change zu310 -> zc310 in allele fields and plate names), so that her scoring interface works and so that GenomeWideGI and GWGI2 are consistently wrong?
 
 
@@ -76,7 +76,7 @@ DECISIONS TO MAKE ABOUT `worms` APP:
 clone names | sjj\_X and mv\_X | sjj\_X and GHR-X@X
 clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is accompanied by `node_primary_name` and/or `gene`) | All mapping isolated to `clones` app, which is connected to rest of database only by FK to `RNAiClone`. Mapping will be 1-to-many.
 
-DECISIONS TO MAKE ABOUT `clones` APP:
+**Decisions to make about `clones` app**
 - The well within GHR-style clones names are "A1" style for GHR-10%, but "A01" style for GHR-11% onward. We should probably leave these as is for the actual clone names, for consistency with the Orfeome database. But in the fields of LibraryWell that refer to vidal clone locations (e.g. the id, and the well column), I'll consistently use "A01" style.
 - Are we sure we want RNAiClone instead of Clone prefix for tables?
 - Schema for Firoz's tables!
@@ -93,11 +93,14 @@ well-level parent relationships from secondary plates to primary plates | `Cherr
 PK for `LibraryWell` | two fields: plate and well | single field, in format plate\_well (e.g., I-1-A1\_H05)
 sequencing results | `SeqPlate` table, which stores mostly conclusions (missing most Genewiz output) | `LibrarySequencing`, which stores mostly Genewiz output
 
-DECISIONS TO MAKE ABOUT `library` APP:
+**Decisions to make about `library` app: plate-level**
 - Are we sure we want screen level to be captured per experiment, rather than per library plate? If so, Katherine needs to remember to delete screen level from her current LibraryPlate table.
 - Should we give the Vidal rearray plates more descriptive names than just integers 1 to 21 (e.g. vidal-1)?
 - Should we convert all underscores in plate names to dashes? Already so for Ahringer 384 (e.g. II-4), Ahringer 96 (e.g. II-4-B2), original Orfeome plate (e.g. GHR-10010), proposed Vidal 96 rearray (e.g. vidal-13). Would only need to convert secondary plates (e.g. b1023\_F1) and Eliana rearrays (Eliana\_Rearray\_2). The reason this is nice is so that LibraryWell is more readable (e.g. b1023\_F5\_F05 is confusing).
-- I think we should have LibraryWell rows capturing the wells that supposedly have no clone (we sometimes see a phenotype in these, and for example some of our secondary clones have "no parent" unless we define these supposedly-no-bacteria wells).
+
+**Decisions to make about `library` app: well-level**
+- Should we add LibraryWell rows to capture wells that supposedly have no clone? Old database does not have these. The reason is that in our copy, sometimes these wells do grow, so even if there is no intended clone it could be determined by sequencing (and actually, some of these did make it into our secondary plates, meaning these plates have no defined parent unless we add these rows).
+- Should we really hardcode the intended clone for child plates (instead of relying on pointers)? This has caused database consistency issues in the past.
 
 
 
@@ -133,8 +136,8 @@ scorer katy | only pre-consensus ENH scores | do not migrate any katy scores (sc
 scorer alejandro | only ENH scores | do not migrate any alejandro scores (not well trained, and did not score much)
 scorers sherly, giselle, kelly | some pre-consensus ENH scores | migrate in order to investigate relevance of these scores and to ensure all enhancers caught by "real" scorers, but omit from interface
 
-DECISIONS TO MAKE ABOUT MANUAL SCORES:
-- If real date and time are not known (i.e. 2011-01-01 00:00:00), should I make it null, or just preserve what HL put?
+**Decisions to make about `experiments` app: manual scores**
+- If real date and time are not known, should I make it null, or just preserve HL's placeholder (i.e. 2011-01-01 00:00:00)?
 
 
 
@@ -143,25 +146,26 @@ DECISIONS TO MAKE ABOUT MANUAL SCORES:
 ----------- | ---------------- | --------
 DevStaR scores table | `RawDataWithScore` | `DevstarScore`
 
-DECISIONS TO MAKE ABOUT DEVSTAR SCORES:
-- I'm consistenly using singular for adult, larva, embryo. Confirm everyone is cool with that, or if 'larvae' should be an exception (as before).
-- HL used Integer for embryo count, embryo per adult, larva per adult. Do we want Floats, at least for the per-adult ones?
-- HL survival/lethality floats seem to truncate at 6 past decimal. Do we want to do this? Easier to just do the math and store the real float.
-- HL made embryo per adult and larva per adult 0 if no adults. Do we want to do this, or should it be null?
+**Decisions to make about `experiments` app: DevStaR scores**
+- I'm consistenly using singular for adult, larva, embryo. Is everyone cool with that, or should 'larvae' remain an exception?
+- HL used INTEGER for embryo count, embryo per adult, larva per adult. Do we want FLOAT for any of these?
+- HL survival/lethality FLOATs seem to truncate at 6 digits past the decimal. Do we want to do this? Easy to just store the real Float.
+- HL set embryo per adult and larva per adult to 0 if no adults. Do we want to do this, or should it be null?
 - HL also made survival and lethality 0 if no adults, even though adults not used in this equation. Do we want to do this? Why?
 
 
 
 
-FYI, likely not touching these during migration:
+### Tables not touched during migration
 - attribute, node, synonym (Firoz/mapping domain; he can take info from them if he wants)
-- WellToTile (to be replaced with simple Python functions)
 - CherryPickList (temporary step in generating CherryPickRNAiPlate; probably meant for deletion)
 - CherryPickRNAiPlate\_2011 and CherryPickRNAiPlate\_lock (but ensure they are redundant with CherryPickRNAiPlate)
 - ScoreResultsDevStaR (but ensure it is just an incomplete copy of RawDataWithScore, made by Kris)
 - PredManualScore and PredManualScoreList (but figure out why these exist!)
+- WellToTile (to be replaced with simple Python functions)
 
 
+-----------------------------------------------------------------------------------
 
 ## Below are untested drafts of SQL queries that could be used to bypass the script
 
