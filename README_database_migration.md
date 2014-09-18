@@ -4,6 +4,8 @@ These notes are about migrating the genome-wide GI project data
 from the legacy MySQL database (GenomeWideGI on pleiades)
 to the redesigned MySQL database (eegi).
 
+-----------------------------------------------------------------------------------
+
 ## Data Migration Script
 
 A script is used to migrate new or updated rows;
@@ -42,7 +44,7 @@ new database, performing various conversions on the old tables with SQL,
 inserting the old rows into the new tables with SQL, and deleting the old
 tables).
 
-
+-----------------------------------------------------------------------------------
 
 ## Reference of Changes
 
@@ -165,8 +167,9 @@ DevStaR scores table | `RawDataWithScore` | `DevstarScore`
 - WellToTile (to be replaced with simple Python functions)
 
 
------------------------------------------------------------------------------------
+
 <!--
+-----------------------------------------------------------------------------------
 ## Drafts of SQL queries that could be used to bypass the script, if time is a concern
 
 ### LibraryPlate (did not exist in GenomeWideGI)
