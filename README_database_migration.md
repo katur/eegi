@@ -49,7 +49,7 @@ tables).
 ## Reference of Changes
 
 
-### general
+### General
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
 database name | GenomeWideGI | eegi (a la Python package name)
