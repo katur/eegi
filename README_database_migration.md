@@ -152,11 +152,11 @@ score category 4: No Larvae | K/S mel-26 scores, for some DevStaR test | do not 
 score category 5: Larvae Present | K/S mel-26 scores, for some DevStaR test | do not migrate this category or scores
 score category 6: A lot of Larvae | K/S mel-26 scores, for some DevStaR test (on re-examination, no obvious suppressors, since the L4440 control this week had tons of larvae) | do not migrate this category or scores
 score category -6: Poor Image Quality | very old scores only | convert to -7
-score category -5: IA Error (i.e., DevStaR issues that aren't caused by poor image quality) | very old scores only | migrate, but omit from interface
+score category -5: IA Error (i.e., DevStaR issues that aren't caused by poor image quality) | very old scores only | migrate, but omit from interface for now (possible delete later for simplicity)
 scorer expPeople | only one score ("no bacteria") | convert to hueyling
-scorer Julie (MySQL default for scoredBy) | All scores have an improper date, and were probably not added via the traditional scoring interface. All scores are either spn-4 scores (perhaps Julie gave Hueyling at Excel sheet of scores, which might be why Hueyling made "Julie" the default scoredBy), or "no bacteria" scores (which we believe Hueyling and Amelia entered, perhaps using Katherine's growth history data) | convert "no bacteria" scores to hueyling; do not migrate spn-4 scores (these experiments are useless, due to using a reverting spn-4 line)
+scorer Julie (MySQL default for scoredBy) | All her scores have an improper date, and were probably not added via the traditional scoring interface. All scores are either spn-4 scores from junk experiments (perhaps Julie gave Hueyling at Excel sheet of scores, which might be why Hueyling made "Julie" the default scoredBy), or "no bacteria" scores (which we believe Hueyling and Amelia entered, perhaps using Katherine's growth history data) | convert "no bacteria" scores to hueyling; do not migrate spn-4 scores (these experiments are useless, due to using a reverting spn-4 line)
 scorer alejandro | only ENH scores | do not migrate any alejandro scores (not well trained, and did not score much)
-scorer katy | only pre-consensus ENH scores | do not migrate any katy scores (scored before ENH criteria finalized)
+scorer katy | only pre-consensus div-1 ENH scores | do not migrate any katy scores (scored before ENH criteria finalized)
 scorer lara | some pre-consensus ENH scores | do not migrate lara's ENH scores (scored before ENH criteria finalized)
 scorer eliana | some pre-consensus ENH scores | do not migrate eliana's ENH scores (scored before ENH criteria finalized)
 scorer kelly | some pre-consensus ENH scores | probably do not migrate kelly's ENH scores (scored before ENH criteria finalized, plus some training issues), but try to confirm that they were not used in amelia's cutoff analysis
