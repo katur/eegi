@@ -16,14 +16,14 @@ The script lives in `utils/management/commands`, and can be run with:
 
     ./manage.py migrate_legacy_data
     
-    
 Please see the script's documentation for more information 
-(including how to enter legacy database connection information,
-optional args, legacy database queries, etc).
-But in a nutshell, the script is broken into about 10 steps,
+(including where to enter legacy database connection information,
+optional arguments to run only part of the script, 
+the actual queries performed on the legacy databas, etc).
+
+In a nutshell, however, the script is broken into about 10 steps,
 each step roughly corresponding to migrating a single table.
-These steps are ordered based on dependencies between steps,
-and optional arguments can specify running a subrange of steps.
+These steps are ordered based on dependencies between steps.
 Within each step, the legacy database is queried
 (e.g. to fetch all the rows from some legacy table).
 For each row the the query result,
