@@ -86,24 +86,45 @@ clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is acc
 
 
 
-### `library` app
+### `library` app: plate-level
 concept | GenomeWideGI | eegi
 ------- | ------------ | ----
 plate-level information about library plates | no table | `LibraryPlate` table
-well-level clone identities of library plates | `RNAiPlate` (primary plates), `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | Combine all plates in `LibraryWell`. Do not migrate Julie plates.
-well-level parent relationships from primary plates to source plates (i.e., to Ahringer 384 plate or GHR-style Orfeome plates) | can be derived from `RNAiPlate` columns `chromosome`, `384PlateID`, and `384Well` (though confusing because 384PlateID is incomplete without chromosome for Ahringer 384 plates, and because the Orfeome plates are actually 96 wells) | capture with FK from `LibraryWell` to `LibraryWell`
-well-level parent relationships from secondary plates to primary plates | `CherryPickTemplate` (but incomplete; many rows missing) | capture with FK from `LibraryWell` to `LibraryWell`
-PK for `LibraryWell` | two fields: plate and well | single field, in format plate\_well (e.g., I-1-A1\_H05)
-sequencing results | `SeqPlate` table, which stores mostly conclusions (missing most Genewiz output) | `LibrarySequencing`, which stores mostly Genewiz output
+
 
 **Decisions to make about `library` app: plate-level**
 - Are we sure we want screen level to be captured per experiment, rather than per library plate? (Note: if so, Katherine should delete screen level from `LibraryPlate`).
 - Should we give the Orfeome rearray plates more descriptive names than just integers 1 to 21 (e.g. vidal-1)?
 - Should we convert all underscores in plate names to dashes? Already so for Ahringer 384 (e.g. II-4), Ahringer 96 (e.g. II-4-B2), original Orfeome plate (e.g. GHR-10010), and proposed Orefeome rearray names (e.g. vidal-13). Would only need to convert secondary plates (e.g. b1023\_F1) and Eliana rearrays (Eliana\_Rearray\_2). The reason this would be nice is to make `LibraryWell.id` is more readable (e.g. b1023-F5\_F05 instead of b1023\_F5\_F05).
 
+
+
+### `library` app: well-level
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
+well-level clone identities of library plates | `RNAiPlate` (primary plates), `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | Combine all plates in `LibraryWell`. Do not migrate Julie plates.
+well-level parent relationships from primary plates to source plates (i.e., to Ahringer 384 plate or GHR-style Orfeome plates) | can be derived from `RNAiPlate` columns `chromosome`, `384PlateID`, and `384Well` (though confusing because 384PlateID is incomplete without chromosome for Ahringer 384 plates, and because the Orfeome plates are actually 96 wells) | capture with FK from `LibraryWell` to `LibraryWell`
+well-level parent relationships from secondary plates to primary plates | `CherryPickTemplate` (but incomplete; many rows missing) | capture with FK from `LibraryWell` to `LibraryWell`
+PK for `LibraryWell` | two fields: plate and well | single field, in format plate\_well (e.g., I-1-A1\_H05)
+
 **Decisions to make about `library` app: well-level**
 - Should we add LibraryWell records to capture wells that have no intended clone? The reason this would be nice is that in our copy of the library, sometimes wells with no intended clone do grow, which can always be sequenced if there is a phenotype (actually, some of these did make it into our secondary plates, meaning these wells have no defined parent unless we add these rows).
 - Discuss briefly the dangers of hardcoding the intended clone for child wells (instead of relying on parent); this has caused database consistency issues in the past.
+
+
+
+### `library` app: sequencing
+concept | GenomeWideGI | eegi
+------- | ------------ | ---- 
+sequencing results | `SeqPlate` table, which stores mostly conclusions (missing most Genewiz output) | `LibrarySequencing`, which stores mostly Genewiz output
+recent sequencing results (plates 56-70) | not present in database | to include in new database, parse google docs we have identifying what went into what sequencing plates
+Genewiz resequencing same well | forced into one row of `SeqPlate` | different sequencing results, different rows (see decisions below)
+
+**Decisions to make about `library` app: sequencing**
+- SeqPlate skipped Genewiz output that does not correspond to a known clone (e.g. sometimes we sequencing entire wells, even if the last few wells were empty), and skips some (but not all) L4440 sequences. It would be convenient to instead simply have all Genewiz output in the database (so that we have a record of what that Genewiz output on the server is). This is another reason having empty wells represented in `LibraryWell` would be nice.
+- When Genewiz did a resequencing, it seems like HL forced these into the same row. Example: genewiz tracking 10-190633217, tube 90, has two separate sequencing (Tube Label JL90 and JL90\_R, with separate seq and ab1 files). However, HL put these on the same row, only indicated by multiple values for SeqResult (e.g. BN/BN) and seqClone (sjj\_F57A10.2|789|sjj_T24A6.1|857). Want to confirm that I will instead make sequencing a 1-to-many relationship (one well can be sequenced many times).
+- Particularly if we decide about doing the two steps above, I'm going to approach migrating the sequencing data a bit differently (basically doing it from scratch, only referencing HL's table to discern what sequencing columns came from what library columns)
+
 
 
 
