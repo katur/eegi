@@ -51,7 +51,7 @@ tables).
 
 ### General
 concept | GenomeWideGI | eegi
------------ | ---------------- | --------
+------- | ------------ | ----
 database name | GenomeWideGI | eegi (a la Python package name)
 table names | usually CamelCase, but not always | always CamelCase (a la Python class names)
 field names | mishmash of under_scores, mixedCase, CamelCase | always underscores (a la Python variables)
@@ -61,8 +61,8 @@ well names | typically "A01" style, but "A1" for Vidal plates | consistently 3 c
 
 
 ### `worms` app
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
 information about worm strains | no table | `WormStrain` table
 referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
 par-1 allele | zc310 | zu310
@@ -73,8 +73,8 @@ par-1 allele | zc310 | zu310
 
 
 ### `clones` app
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
 clone names | sjj\_X and mv\_X | sjj\_X and GHR-X@X
 clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is accompanied by `node_primary_name` and/or `gene`) | All mapping isolated to `clones` app, which is connected to rest of database only by FK to `RNAiClone`. Mapping will be 1-to-many.
 
@@ -86,8 +86,8 @@ clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is acc
 
 
 ### `library` app
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
 plate-level information about library plates | no table | `LibraryPlate` table
 well-level clone identities of library plates | `RNAiPlate` (primary plates), `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | Combine all plates in `LibraryWell`. Do not migrate Julie plates.
 well-level parent relationships from primary plates to source plates (i.e., to Ahringer 384 plate or GHR-style Orfeome plates) | can be derived from `RNAiPlate` columns `chromosome`, `384PlateID`, and `384Well` (though confusing because 384PlateID is incomplete without chromosome for Ahringer 384 plates, and because the Orfeome plates are actually 96 wells) | capture with FK from `LibraryWell` to `LibraryWell` 
@@ -107,8 +107,8 @@ sequencing results | `SeqPlate` table, which stores mostly conclusions (missing 
 
 
 ### `experiments` app: experiments
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
 experiments table | `RawData` | `Experiment`
 temperature datatype | string (e.g. "25C") | decimal
 experiment date datatype | string | date
@@ -118,8 +118,8 @@ is\_junk values | -1 "definite junk", never to be trusted (e.g. wrong worms, wro
 
 
 ### `experiments` app: manual scores
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
 manual scores table(s) | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
 score time datatype | originally int year, string month, int day, string time; scoreYMD eventually added, but incomplete (since not updated by most of HL's programs to add experiments), and doesn't include timestamp | 'aware' datetime
 scorer | string of username | FK to `User`
@@ -144,8 +144,8 @@ scorers sherly, giselle, kelly | some pre-consensus ENH scores | migrate in orde
 
 
 ### `experiments` app: DevStaR scores
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
 DevStaR scores table | `RawDataWithScore` | `DevstarScore`
 
 **Decisions to make about `experiments` app: DevStaR scores**
