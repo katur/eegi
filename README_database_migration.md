@@ -57,7 +57,7 @@ database name | GenomeWideGI | eegi (a la Python package name)
 table names | usually CamelCase, but not always | always CamelCase (a la Python class names)
 field names | mishmash of under_scores, mixedCase, CamelCase | always underscores (a la Python variables)
 "well" versus "tile" | some tables have one, some the other, some both | use only "well" throughout the database, with accessible Python functions to convert
-well names | typically "A01" style, but "A1" for Vidal plates | consistently 3 characters long, except in case of Orfeome clone *name* (see more description in `clones` decisions below).
+well names | typically "A01" style, but "A1" for Vidal plates | consistently 3 characters long (except special case of within Orfeome clone *name*; see `clones` decisions below).
 
 
 
