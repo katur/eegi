@@ -53,6 +53,7 @@ tables).
 database name | GenomeWideGI | eegi (a la Python package name)
 table names | usually CamelCase, but not always | always CamelCase (a la Python class names)
 field names | mishmash of under_scores, mixedCase, CamelCase | always underscores (a la Python variables)
+well versus tile | some tables have one, some the other, some both | just use well throughout the database, with accessible Python functions to convert 
 
 
 
@@ -64,19 +65,21 @@ referring to worm strains | generally mutant and allele, sometimes just allele |
 par-1 allele | zc310 | zu310
 
 DECISIONS TO MAKE ABOUT `worms` APP:
-- rows just inserted by Noah/Katherine into old database accidentally fixed the error. Could Kris unfix (zu310 -> zc310, so that her scoring interface works and so that GenomeWideGI and GWGI2 are consistently wrong?
+- Rows just inserted by Noah/Katherine into old database accidentally fixed the zc310 error. Could Kris unfix it in GenomeWideGI and GWGI2 (i.e. change zu310 -> zc310 in allele fields and plate names), so that her scoring interface works and so that GenomeWideGI and GWGI2 are consistently wrong?
 
 
 
 ### `clones` app
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
+clone names | sjj\_X and mv\_X | sjj\_X and GHR-X@X
 clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is accompanied by `node_primary_name` and/or `gene`) | All mapping isolated to `clones` app, which is connected to rest of database only by FK to `Clone`. Mapping is 1-to-many.
-clone names | sjj\_X and mv\_X | sjj\_X and ???
+
 
 DECISIONS TO MAKE ABOUT `clones` APP:
-- schema for Firoz's tables
-- are we really sure we want RNAiClone instead of Clone prefix for tables?
+- The well within GHR-style clones names are "A1" style for GHR-10%, but "A01" style for GHR-11% onward. We should probably leave these as are for the actual clone names, for consistency with the orfeome database. But in LibraryPlate (when refering to that clone being in a plate at a particular well), I'll use "A01" style.
+- Are we sure we want RNAiClone instead of Clone prefix for tables?
+- Schema for Firoz's tables!
 
 
 
@@ -84,14 +87,18 @@ DECISIONS TO MAKE ABOUT `clones` APP:
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
 plate-level information about library plates | no table | `LibraryPlate` table
-clone locations within library plates | `RNAiPlate` (primary and 384) and `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | Combine all plates in `LibraryWell`. Do not migrate Julie plates. Still need to decide about Eliana rearrays.
-clone parent location relationships | `CherryPickTemplate` (but incomplete, even for secondary rearrays) | capture with FK from `LibraryWell` to `LibraryWell`
+well-level clone identities of library plates | `RNAiPlate` (primary plates), `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | Combine all plates in `LibraryWell`. Do not migrate Julie plates.
+well-level parent relationships from primary plates to source plates (i.e., to Ahringer 384 plate or GHR-style Orfeome plates) | can be derived from `RNAiPlate` columns `chromosome`, `384PlateID`, and `384Well` (though confusing because 384PlateID is incomplete without chromosome for Ahringer 384 plates, and because the Orfeome plates are actually 96 wells) | capture with FK from `LibraryWell` to `LibraryWell` 
+well-level parent relationships from secondary plates to primary plates | `CherryPickTemplate` (but incomplete; many rows missing) | capture with FK from `LibraryWell` to `LibraryWell`
+PK for `LibraryWell` | two fields: plate and well | single field, in format plate\_well (e.g., I-1-A1\_H05)
 sequencing results | `SeqPlate` table, which stores mostly conclusions (missing most Genewiz output) | `LibrarySequencing`, which stores mostly Genewiz output
-well names | typically A01, but A1 for Vidal plates | consistently 3 characters long
-well versus tile | some tables have one, some the other, some both | just use well throughout the database, with accessible Python functions to convert 
+well names | typically A01, but A1 for Vidal plates | consistently 3 characters long (though note the dilemma about GHR-style clone names in `clones` decisions) 
+
 
 DECISIONS TO MAKE ABOUT `library` APP:
-- are we sure we want screen level captured per experiment, and not per library plate? (If so, Katherine needs to remember to delete screen level from her current LibraryPlate table).
+- Are we sure we want screen level to be captured per experiment, rather than per library plate? If so, Katherine needs to remember to delete screen level from her current LibraryPlate table.
+- Should we give the Vidal rearray plates more descriptive names than just integers 1 to 21 (e.g. vidal-1)?
+- Should we convert all underscores in plate names to dashes? Already so for Ahringer 384 (e.g. II-4), Ahringer 96 (e.g. II-4-B2), original Orfeome plate (e.g. GHR-10010), proposed Vidal 96 rearray (e.g. vidal-13). Would only need to convert secondary plates (e.g. b1023\_F1) and Eliana rearrays (Eliana\_Rearray\_2). The reason this is nice is so that LibraryWell is more readable (e.g. b1023\_F5\_F05 is confusing).
 
 
 
@@ -103,9 +110,6 @@ temperature datatype | string (e.g. "25C") | decimal
 experiment date datatype | string | date
 is\_junk datatype | integer | boolean
 is\_junk values | -1 "definite junk", never to be trusted (e.g. wrong worms, wrong bacteria); 1 "possible junk", not up to standards (e.g. temperature slightly off, too many worms per well, bacterial contamination). However, these definitions weren't used consistently. | No separation of possible vs definite junk. Anything untrustworthy should either be deleted (including pictures), or have a comment in the database explaining why it is junk, in order to discourage future consideration (all "definite junk" to date has such a comment, so it is okay to migrate these experiments as generic junk).
-
-DECISIONS TO MAKE ABOUT EXPERIMENTS:
-- should we give the Vidal rearray plates more descriptive names than just integers 1-21 (e.g. vidal-1 or vidal-rearray-1)?
 
 
 
@@ -131,7 +135,7 @@ scorer alejandro | only ENH scores | do not migrate any alejandro scores (not we
 scorers sherly, giselle, kelly | some pre-consensus ENH scores | migrate in order to investigate relevance of these scores and to ensure all enhancers caught by "real" scorers, but omit from interface
 
 DECISIONS TO MAKE ABOUT MANUAL SCORES:
-- If real date and time are not known (i.e. Hueyling's 2011-01-01 00:00:00), should I make it null, or just preserve what she put?
+- If real date and time are not known (i.e. 2011-01-01 00:00:00), should I make it null, or just preserve what HL put?
 
 
 
@@ -144,7 +148,7 @@ DECISIONS TO MAKE ABOUT DEVSTAR SCORES:
 - I'm consistenly using singular for adult, larva, embryo. Confirm everyone is cool with that, or if 'larvae' should be an exception (as before).
 - HL used Integer for embryo count, embryo per adult, larva per adult. Do we want Floats, at least for the per-adult ones?
 - HL survival/lethality floats seem to truncate at 6 past decimal. Do we want to do this? Easier to just do the math and store the real float.
-- HL made embryo and larva per adult zero if no adults. Do we want to do this, or null?
+- HL made embryo per adult and larva per adult 0 if no adults. Do we want to do this, or should it be null?
 - HL also made survival and lethality 0 if no adults, even though adults not used in this equation. Do we want to do this? Why?
 
 
