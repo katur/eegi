@@ -8,8 +8,8 @@ to the redesigned MySQL database (eegi).
 
 ## Data Migration Script
 
-A script is used to migrate new or updated rows.
-It does not yet account for deleted rows, 
+A script is used to migrate new or updated records.
+It does not yet account for deleted records, 
 so should be run from scratch on a truncated database 
 just prior to the official migration to the new database.
 
@@ -20,26 +20,26 @@ The script lives in `utils/management/commands`, and can be run with:
 Please see the script's documentation for more information 
 (including where to enter legacy database connection information,
 optional arguments to run only part of the script, 
-the actual queries performed on the legacy databas, etc).
+the actual queries performed on the legacy database, etc).
 
 In a nutshell, however, the script is broken into about 10 steps,
 each step roughly corresponding to migrating a single table.
 These steps are ordered based on dependencies between steps.
 Within each step, the legacy database is queried
-(e.g. to fetch all the rows from some legacy table).
-For each row the the query result,
+(e.g. to fetch all the records from some legacy table).
+For each record in the query result,
 various validation and conversion steps are used to create a Python object
-that is compatible with a row in the new database.
-Finally, if a corresponding object does not exist in the new database,
+that is compatible with a record in the new database.
+Finally, if a corresponding record does not exist in the new database,
 the object is saved to the new database;
-otherwise, the corresponding object is updated if any changes have occured
-since the last migration.
+otherwise, the corresponding object is updated to reflect changes 
+that have occured since the last migration.
 
-This process of creating a Python object for every single row
-(about 4 million rows) is very slow. But it only needs to be run
+This process of creating a Python object for every single record
+(~4 million records) is very slow. But it only needs to be run
 a few times during development of the new database, and then once 
 just prior to the official migration to the new database.
-For this reason, its simplicity and robustness was favored over a faster
+For this reason, the easy validation it offers was favored over a faster
 approach (such as clearing the new database, copying the old tables into the
 new database, performing various conversions on the old tables with SQL,
 inserting the old rows into the new tables with SQL, and deleting the old
