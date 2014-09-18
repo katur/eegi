@@ -155,11 +155,12 @@ score category -6: Poor Image Quality | very old scores only | convert to -7
 score category -5: IA Error (i.e., DevStaR issues that aren't caused by poor image quality) | very old scores only | migrate, but omit from interface
 scorer expPeople | only one score ("no bacteria") | convert to hueyling
 scorer Julie (MySQL default for scoredBy) | All scores have an improper date, and were probably not added via the traditional scoring interface. All scores are either spn-4 scores (perhaps Julie gave Hueyling at Excel sheet of scores, which might be why Hueyling made "Julie" the default scoredBy), or "no bacteria" scores (which we believe Hueyling and Amelia entered, perhaps using Katherine's growth history data) | convert "no bacteria" scores to hueyling; do not migrate spn-4 scores (these experiments are useless, due to using a reverting spn-4 line)
-scorer eliana | some pre-consensus ENH scores | do not migrate eliana's ENH scores (scored before ENH criteria finalized)
-scorer lara | some pre-consensus ENH scores | do not migrate lara's ENH scores (scored before ENH criteria finalized)
-scorer katy | only pre-consensus ENH scores | do not migrate any katy scores (scored before ENH criteria finalized)
 scorer alejandro | only ENH scores | do not migrate any alejandro scores (not well trained, and did not score much)
-scorers sherly, giselle, kelly | some pre-consensus ENH scores | migrate in order to investigate relevance of these scores and to ensure all enhancers caught by "real" scorers, but omit from interface
+scorer katy | only pre-consensus ENH scores | do not migrate any katy scores (scored before ENH criteria finalized)
+scorer lara | some pre-consensus ENH scores | do not migrate lara's ENH scores (scored before ENH criteria finalized)
+scorer eliana | some pre-consensus ENH scores | do not migrate eliana's ENH scores (scored before ENH criteria finalized)
+scorer kelly | some pre-consensus ENH scores | still deciding. these scores are definitely not good (do to improper training), but we want to confirm that they were not used in amelia's cutoff analysis before deleting them.
+scorers sherly, giselle | some pre-consensus ENH scores | still deciding. The danger in keeping these is that they are inconsistent with our eventual scoring criteria (and they are redundant, since everything was eventually scored by the "official" scorers noah, koji, and mirza). But we need to investigate 1) were these scores used in amelia's cutoff analysis? and 2) were all Mediums and Strongs captured by the official scorers?
 
 **Decisions to make about `experiments` app: manual scores**
 - If real date and time are not known, should I make it null, or just preserve HL's placeholder (i.e. 2011-01-01 00:00:00)?
