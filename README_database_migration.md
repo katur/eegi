@@ -80,9 +80,9 @@ clone names | sjj\_X and mv\_X | sjj\_X and GHR-X@X
 clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is accompanied by `node_primary_name` and/or `gene`) | All mapping isolated to `clones` app, which is connected to rest of database only by FK to `RNAiClone`. Mapping will be 1-to-many.
 
 **Decisions to make about `clones` app**
-- The well within GHR-style clones names are "A1" style for GHR-10%, but "A01" style for GHR-11% onward. We should probably leave these as is for the actual clone names, for consistency with the Orfeome database. But in the fields of LibraryWell that refer to vidal clone locations (e.g. the id, and the well column), I'll consistently use "A01" style.
-- Are we sure we want RNAiClone instead of Clone prefix for tables?
-- Schema for Firoz's tables!
+- The well within Orfeome clone names is "A1"-style for GHR-10%, but "A01"-style for GHR-11% onward. We should probably leave this for the actual clone names, for consistency with the Orfeome database. But in the fields of `LibraryWell` that refer to the location of these cloens (i.e. `LibraryWell.id` and `LibraryWell.well`), I'll consistently use "A01" style.
+- Are we sure we want "RNAi" prefix for clone tables (as opposed to just Clone, CloneMapping, ...)?
+- Time to decide on schema for Firoz's tables re: mapping!
 
 
 
@@ -97,9 +97,9 @@ PK for `LibraryWell` | two fields: plate and well | single field, in format plat
 sequencing results | `SeqPlate` table, which stores mostly conclusions (missing most Genewiz output) | `LibrarySequencing`, which stores mostly Genewiz output
 
 **Decisions to make about `library` app: plate-level**
-- Are we sure we want screen level to be captured per experiment, rather than per library plate? If so, Katherine needs to remember to delete screen level from her current LibraryPlate table.
-- Should we give the Vidal rearray plates more descriptive names than just integers 1 to 21 (e.g. vidal-1)?
-- Should we convert all underscores in plate names to dashes? Already so for Ahringer 384 (e.g. II-4), Ahringer 96 (e.g. II-4-B2), original Orfeome plate (e.g. GHR-10010), proposed Vidal 96 rearray (e.g. vidal-13). Would only need to convert secondary plates (e.g. b1023\_F1) and Eliana rearrays (Eliana\_Rearray\_2). The reason this is nice is so that LibraryWell is more readable (e.g. b1023\_F5\_F05 is confusing).
+- Are we sure we want screen level to be captured per experiment, rather than per library plate? (Note: if so, Katherine should delete screen level from `LibraryPlate`).
+- Should we give the Orfeome rearray plates more descriptive names than just integers 1 to 21 (e.g. vidal-1)?
+- Should we convert all underscores in plate names to dashes? Already so for Ahringer 384 (e.g. II-4), Ahringer 96 (e.g. II-4-B2), original Orfeome plate (e.g. GHR-10010), proposed Vidal 96 rearray (e.g. vidal-13). Would only need to convert secondary plates (e.g. b1023\_F1) and Eliana rearrays (Eliana\_Rearray\_2). The reason this would be nice is to make `LibraryWell.id` is more readable (e.g. b1023-F5\_F05 instead of b1023\_F5\_F05).
 
 **Decisions to make about `library` app: well-level**
 - Should we add LibraryWell rows to capture wells that supposedly have no clone? Old database does not have these. The reason is that in our copy, sometimes these wells do grow, so even if there is no intended clone it could be determined by sequencing (and actually, some of these did make it into our secondary plates, meaning these plates have no defined parent unless we add these rows).
