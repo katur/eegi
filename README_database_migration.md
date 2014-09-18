@@ -9,17 +9,17 @@ to the redesigned MySQL database (eegi).
 ## Data Migration Script
 
 A script is used to migrate new or updated records.
-It does not yet account for deleted records, 
-so should be run from scratch on a truncated database 
+It does not yet account for deleted records,
+so should be run from scratch on a truncated database
 just prior to the official migration to the new database.
 
 The script lives in `utils/management/commands`, and can be run with:
 
-    ./manage.py migrate_legacy_data
-    
-Please see the script's documentation for more information 
+    ./manage.py migrate_legacy_database
+
+Please see the script's documentation for more information
 (including where to enter legacy database connection information,
-optional arguments to run only part of the script, 
+optional arguments to run only part of the script,
 the actual queries performed on the legacy database, etc).
 
 In a nutshell, however, the script is broken into about 10 steps,
@@ -32,12 +32,12 @@ various validation and conversion steps are used to create a Python object
 that is compatible with a record in the new database.
 Finally, if a corresponding record does not exist in the new database,
 the object is saved to the new database;
-otherwise, the corresponding object is updated to reflect changes 
+otherwise, the corresponding object is updated to reflect changes
 that have occured since the last migration.
 
 This process of creating a Python object for every single record
 (~4 million records) is very slow. But it only needs to be run
-a few times during development of the new database, and then once 
+a few times during development of the new database, and then once
 just prior to the official migration to the new database.
 For this reason, the easy validation it offers was favored over a faster
 approach (such as clearing the new database, copying the old tables into the
@@ -91,7 +91,7 @@ concept | GenomeWideGI | eegi
 ------- | ------------ | ----
 plate-level information about library plates | no table | `LibraryPlate` table
 well-level clone identities of library plates | `RNAiPlate` (primary plates), `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | Combine all plates in `LibraryWell`. Do not migrate Julie plates.
-well-level parent relationships from primary plates to source plates (i.e., to Ahringer 384 plate or GHR-style Orfeome plates) | can be derived from `RNAiPlate` columns `chromosome`, `384PlateID`, and `384Well` (though confusing because 384PlateID is incomplete without chromosome for Ahringer 384 plates, and because the Orfeome plates are actually 96 wells) | capture with FK from `LibraryWell` to `LibraryWell` 
+well-level parent relationships from primary plates to source plates (i.e., to Ahringer 384 plate or GHR-style Orfeome plates) | can be derived from `RNAiPlate` columns `chromosome`, `384PlateID`, and `384Well` (though confusing because 384PlateID is incomplete without chromosome for Ahringer 384 plates, and because the Orfeome plates are actually 96 wells) | capture with FK from `LibraryWell` to `LibraryWell`
 well-level parent relationships from secondary plates to primary plates | `CherryPickTemplate` (but incomplete; many rows missing) | capture with FK from `LibraryWell` to `LibraryWell`
 PK for `LibraryWell` | two fields: plate and well | single field, in format plate\_well (e.g., I-1-A1\_H05)
 sequencing results | `SeqPlate` table, which stores mostly conclusions (missing most Genewiz output) | `LibrarySequencing`, which stores mostly Genewiz output

@@ -5,22 +5,21 @@ from django.core.management.base import BaseCommand, CommandError
 
 from eegi.local_settings import LEGACY_DATABASE
 
-from legacy_data_migration_steps import (update_LibraryPlate_table,
-                                         update_Experiment_table,
-                                         update_ManualScoreCode_table,
-                                         update_ManualScore_table,
-                                         update_DevstarScore_table,
-                                         update_Clone_table,
-                                         update_LibraryWell_table,
-                                         update_LibrarySequencing_table)
+from legacy_database_migration_steps import (update_LibraryPlate_table,
+                                             update_Experiment_table,
+                                             update_ManualScoreCode_table,
+                                             update_ManualScore_table,
+                                             update_DevstarScore_table,
+                                             update_Clone_table,
+                                             update_LibraryWell_table,
+                                             update_LibrarySequencing_table)
 
 
 class Command(BaseCommand):
     """
     Command to update the new database according to the legacy database.
 
-    REQUIREMENTS:
-
+    REQUIREMENTS
     Requires connection info for legacy database in local_settings, in format:
     LEGACY_DATABASE = {
         'NAME': 'GenomeWideGI',
@@ -32,13 +31,12 @@ class Command(BaseCommand):
     Some steps require that the WormStrain table is already populated.
 
 
-    USAGE:
-
+    USAGE
     To update all tables, execute as so (from the project root):
-    ./manage.py migrate_legacy_data
+    ./manage.py migrate_legacy_database
 
     To update just a range of tables, execute as so:
-    ./manage.py migrate_legacy_data start end
+    ./manage.py migrate_legacy_database start end
 
     Where start is inclusive, end is exclusive,
     and the values for start and end reference the steps below
@@ -53,9 +51,8 @@ class Command(BaseCommand):
         7: LibrarySequencing (6)
 
 
-    OUTPUT:
-
-    Stdout reports whether a particular step had no changes or had changes.
+    OUTPUT
+    Stdout reports whether or not a particular step had changes.
     Stderr reports every change (such as an added row), and thus can get
         quite long; consider redirecting with 2> stderr.out.
     """
@@ -65,9 +62,9 @@ class Command(BaseCommand):
         if len(args) != 0 and len(args) != 2:
             sys.exit(
                 'Usage:\n'
-                '\t./manage.py migrate_legacy_data\n'
+                '\t./manage.py migrate_legacy_database\n'
                 'or\n'
-                '\t./manage.py migrate_legacy_data start end\n'
+                '\t./manage.py migrate_legacy_database start end\n'
                 '(where start is inclusive and end is exclusive)\n'
             )
 
