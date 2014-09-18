@@ -6,7 +6,7 @@ to the redesigned MySQL database (eegi).
 
 -----------------------------------------------------------------------------------
 
-## Data Migration Script
+## Database Migration Script
 
 A script is used to migrate new or updated records.
 It does not yet account for deleted records,
