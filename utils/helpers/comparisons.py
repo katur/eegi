@@ -49,8 +49,8 @@ def compare_fields(old_object, new_object, fields, update=False):
     for field in fields:
         if not compare_fields_for_equality(getattr(old_object, field),
                                            getattr(new_object, field)):
-            differences.append('{} was previously recorded as {}, '
-                               'but is now changed to {}\n'
+            differences.append('{} previously recorded as {}, '
+                               'now {}'
                                .format(field,
                                        str(getattr(old_object, field)),
                                        str(getattr(new_object, field))))
@@ -60,13 +60,13 @@ def compare_fields(old_object, new_object, fields, update=False):
 
     if differences:
         sys.stderr.write('WARNING: Record {} had these changes: {}\n'
-                         .format(str(old_object),
+                         .format(str(new_object),
                                  str([d for d in differences])))
         if update:
-            sys.stderr.write('The database was updated to reflect '
+            sys.stderr.write('\tThe database was updated to reflect '
                              'the changes\n\n')
         else:
-            sys.stderr.write('The database was NOT updated to reflect '
+            sys.stderr.write('\tThe database was NOT updated to reflect '
                              'the changes\n\n')
         return False
     else:

@@ -1,3 +1,13 @@
+"""
+This module contains the individual steps used to migrate data from the legacy
+database to the new database.
+
+Each step works more or less the same way. Records are queried from the old
+database for a particular table. For each record, various conversions and
+validations are performed to make a Python object that is compatible with
+the new database. This Python object is inserted into the new database
+if not present, or used to update an existing record if changes have occurred.
+"""
 import re
 import sys
 
@@ -20,6 +30,31 @@ from clones.models import Clone
 from library.models import LibraryPlate, LibraryWell
 from experiments.models import (Experiment, ManualScoreCode, ManualScore,
                                 DevstarScore)
+
+
+def sync_rows(cursor, legacy_query, sync_row_function, **kwargs):
+    """
+    Sync the rows from a query to the legacy database
+    to the current database, according to
+    sync_row_function(legacy_row, **kwargs).
+    """
+    cursor.execute(legacy_query)
+    legacy_rows = cursor.fetchall()
+    all_match = True
+
+    for legacy_row in legacy_rows:
+        matches = sync_row_function(legacy_row, **kwargs)
+        all_match &= matches
+
+    if all_match:
+        sys.stdout.write('All objects from legacy query:\n\n\t{}\n\n'
+                         'were already represented in new database.\n\n'
+                         .format(legacy_query))
+    else:
+        sys.stdout.write('Some objects from legacy query:\n\n\t{}\n\n'
+                         'were just added or updated in new database'
+                         '(individual changes printed to sys.stderr.)\n\n'
+                         .format(legacy_query))
 
 
 def update_LibraryPlate_table(cursor):
@@ -650,37 +685,12 @@ def update_LibraryWell_table(cursor):
 
         return update_or_save_object(legacy_well, recorded_wells,
                                      fields_to_compare)
-    # sync_rows(cursor, legacy_query_source, sync_source_row)
-    # sync_rows(cursor, legacy_query_primary, sync_primary_row)
-    # sync_rows(cursor, legacy_query_secondary_L4440,
-    #          sync_secondary_L4440_row)
+    sync_rows(cursor, legacy_query_source, sync_source_row)
+    sync_rows(cursor, legacy_query_primary, sync_primary_row)
+    sync_rows(cursor, legacy_query_secondary_L4440,
+              sync_secondary_L4440_row)
     sync_rows(cursor, legacy_query_secondary, sync_secondary_row)
 
 
 def update_LibrarySequencing_table(cursor):
     pass
-
-
-def sync_rows(cursor, legacy_query, sync_row_function, **kwargs):
-    """
-    Sync the rows resulting from a query to the legacy database
-    to the current database, according to
-    sync_row_function(legacy_row, **kwargs).
-    """
-    cursor.execute(legacy_query)
-    legacy_rows = cursor.fetchall()
-    all_match = True
-
-    for legacy_row in legacy_rows:
-        matches = sync_row_function(legacy_row, **kwargs)
-        all_match &= matches
-
-    if all_match:
-        sys.stdout.write('All objects from legacy query:\n\n\t{}\n\n'
-                         'were already represented in new database.\n\n'
-                         .format(legacy_query))
-    else:
-        sys.stdout.write('Some objects from legacy query:\n\n\t{}\n\n'
-                         'were just added or updated in new database'
-                         '(individual changes printed to sys.stderr.)\n\n'
-                         .format(legacy_query))

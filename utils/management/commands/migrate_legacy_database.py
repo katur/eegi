@@ -5,14 +5,14 @@ from django.core.management.base import BaseCommand, CommandError
 
 from eegi.local_settings import LEGACY_DATABASE
 
-from legacy_database_migration_steps import (update_LibraryPlate_table,
-                                             update_Experiment_table,
-                                             update_ManualScoreCode_table,
-                                             update_ManualScore_table,
-                                             update_DevstarScore_table,
-                                             update_Clone_table,
-                                             update_LibraryWell_table,
-                                             update_LibrarySequencing_table)
+from migrate_legacy_database_steps import (update_LibraryPlate_table,
+                                           update_Experiment_table,
+                                           update_ManualScoreCode_table,
+                                           update_ManualScore_table,
+                                           update_DevstarScore_table,
+                                           update_Clone_table,
+                                           update_LibraryWell_table,
+                                           update_LibrarySequencing_table)
 
 
 class Command(BaseCommand):
