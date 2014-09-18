@@ -159,7 +159,7 @@ scorer alejandro | only ENH scores | do not migrate any alejandro scores (not we
 scorer katy | only pre-consensus ENH scores | do not migrate any katy scores (scored before ENH criteria finalized)
 scorer lara | some pre-consensus ENH scores | do not migrate lara's ENH scores (scored before ENH criteria finalized)
 scorer eliana | some pre-consensus ENH scores | do not migrate eliana's ENH scores (scored before ENH criteria finalized)
-scorer kelly | some pre-consensus ENH scores | still deciding. these scores are definitely not good (do to improper training), but we want to confirm that they were not used in amelia's cutoff analysis before deleting them.
+scorer kelly | some pre-consensus ENH scores | probably do not migrate, but try to confirm that they were not used in amelia's cutoff analysis
 scorers sherly, giselle | some pre-consensus ENH scores | still deciding. The danger in keeping these is that they are inconsistent with our eventual scoring criteria (and they are redundant, since everything was eventually scored by the "official" scorers noah, koji, and mirza). But we need to investigate 1) were these scores used in amelia's cutoff analysis? and 2) were all Mediums and Strongs captured by the official scorers?
 
 **Decisions to make about `experiments` app: manual scores**
