@@ -50,7 +50,7 @@ tables).
 
 
 ### General
-*concept* | *GenomeWideGI* | *eegi*
+concept | GenomeWideGI | eegi
 ----------- | ---------------- | --------
 database name | GenomeWideGI | eegi (a la Python package name)
 table names | usually CamelCase, but not always | always CamelCase (a la Python class names)
