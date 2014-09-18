@@ -166,11 +166,12 @@ DevStaR scores table | `RawDataWithScore` | `DevstarScore`
 
 
 -----------------------------------------------------------------------------------
-
-## Below are untested drafts of SQL queries that could be used to bypass the script
+<!--
+## Drafts of SQL queries that could be used to bypass the script, if time is a concern
 
 ### LibraryPlate (did not exist in GenomeWideGI)
-Add 384 plates and Eliana Rearray plates by hand.
+
+First add 384 plates and Eliana Rearray plates by hand.
 
 Then:
 
@@ -182,7 +183,8 @@ Then:
 
 
 ### Experiment
-Correct misspelled allele in eegi.RawData:
+
+First correct misspelled allele in eegi.RawData:
 
     UPDATE RawData SET mutantAllele='zu310' WHERE mutantAllele='zc310';
 
@@ -203,3 +205,4 @@ Then:
     ON RawData.RNAiPlateID = LibraryPlate.name
     WHERE (expID < 40000 OR expID > 49999)
     AND RNAiPlateID NOT LIKE "Julie%";
+-->
