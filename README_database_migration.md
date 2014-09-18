@@ -77,7 +77,7 @@ clone names | sjj\_X and mv\_X | sjj\_X and GHR-X@X
 clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is accompanied by `node_primary_name` and/or `gene`) | All mapping isolated to `clones` app, which is connected to rest of database only by FK to `RNAiClone`. Mapping will be 1-to-many.
 
 DECISIONS TO MAKE ABOUT `clones` APP:
-- The well within GHR-style clones names are "A1" style for GHR-10%, but "A01" style for GHR-11% onward. We should probably leave these as is for the actual clone names, for consistency with the Orfeome database. But in the fields of LibraryWell that refer to vidal clone locations (e.g. the well column and the id), I'll be consistent with "A01".
+- The well within GHR-style clones names are "A1" style for GHR-10%, but "A01" style for GHR-11% onward. We should probably leave these as is for the actual clone names, for consistency with the Orfeome database. But in the fields of LibraryWell that refer to vidal clone locations (e.g. the id, and the well column), I'll consistently use "A01" style.
 - Are we sure we want RNAiClone instead of Clone prefix for tables?
 - Schema for Firoz's tables!
 
