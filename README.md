@@ -5,21 +5,6 @@ which used millions of pairwise gene knockdown experiments to uncover
 suppressor and enhancer phenotypes to reveal genetic interactions.
 
 
-## Database
-
-The database is MySQL, and is named `eegi`.
-
-[Here](https://www.lucidchart.com/documents/view/4eb4bac8-5339-ae33-8c00-5ccd0a0085f4)
-is a web view of the database schema on Lucidchart.
-
-[Here](https://www.lucidchart.com/publicSegments/view/53f3c896-8854-49cc-8c3a-69d30a005381)
-is a the same schema view as a pdf.
-
-Notes on migrating the data from Huey-Ling's MySQL database
-(`GenomeWideGI` on pleiades)
-are in [README_database_migration.md](README_database_migration.md).
-
-
 ## Dependencies
 
 Python version is listed in `runtime.txt`.
@@ -39,6 +24,21 @@ installed):
     mkvirtualenv eegi
     workon eegi
     pip install -r requirements.txt
+
+
+## Database
+
+The database is MySQL, and is named `eegi`.
+
+[Here](https://www.lucidchart.com/documents/view/4eb4bac8-5339-ae33-8c00-5ccd0a0085f4)
+is a web view of the database schema on Lucidchart.
+
+[Here](https://www.lucidchart.com/publicSegments/view/53f3c896-8854-49cc-8c3a-69d30a005381)
+is a the same schema view as a pdf.
+
+Notes on migrating the data from Huey-Ling's MySQL database
+(`GenomeWideGI` on pleiades)
+are in [README_database_migration.md](README_database_migration.md).
 
 
 ## Apps
@@ -72,6 +72,6 @@ to compile.
 Javascript is in [jQuery](http://jquery.com/).
 
 Purely offline scripts to be run by the project maintainer
-(e.g. to migrate data from the old database)
+(e.g. the script that migrates data from the old database)
 live in the standard location: `appname/management/commands/scriptname.py`,
 to be run with `./manage.py scriptname`.

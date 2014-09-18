@@ -4,114 +4,123 @@ These notes are about migrating the genome-wide GI project data
 from the legacy MySQL database (GenomeWideGI on pleiades)
 to the redesigned MySQL database (eegi).
 
+-----------------------------------------------------------------------------------
+
 ## Data Migration Script
 
-A script is used to migrate new or updated rows;
-it does not yet account for deleted rows, 
-so should be run on a truncated database just prior to
-the official migration to the new database.
+A script is used to migrate new or updated records.
+It does not yet account for deleted records, 
+so should be run from scratch on a truncated database 
+just prior to the official migration to the new database.
+
 The script lives in `utils/management/commands`, and can be run with:
 
     ./manage.py migrate_legacy_data
     
-    
 Please see the script's documentation for more information 
-(including how to enter legacy database connection information,
-optional args, legacy database queries, etc).
-But in a nutshell, the script is broken into about 10 steps,
-each step roughly corresponding to migrating a single table.
-These steps are ordered based on dependencies between steps,
-and optional arguments can specify running a subrange of steps.
-Within each step, the legacy database is queried
-(e.g. to fetch all the rows from some legacy table).
-For each row the the query result,
-various validation and conversion steps are used to create a Python object
-that is compatible with a row in the new database.
-Finally, if a corresponding object does not exist in the new database,
-the object is saved to the new database;
-otherwise, the corresponding object is updated if any changes have occured
-since the last migration.
+(including where to enter legacy database connection information,
+optional arguments to run only part of the script, 
+the actual queries performed on the legacy database, etc).
 
-This process of creating a Python object for every single row
-(about 4 million rows) is very slow. But it only needs to be run
+In a nutshell, however, the script is broken into about 10 steps,
+each step roughly corresponding to migrating a single table.
+These steps are ordered based on dependencies between steps.
+Within each step, the legacy database is queried
+(e.g. to fetch all the records from some legacy table).
+For each record in the query result,
+various validation and conversion steps are used to create a Python object
+that is compatible with a record in the new database.
+Finally, if a corresponding record does not exist in the new database,
+the object is saved to the new database;
+otherwise, the corresponding object is updated to reflect changes 
+that have occured since the last migration.
+
+This process of creating a Python object for every single record
+(~4 million records) is very slow. But it only needs to be run
 a few times during development of the new database, and then once 
 just prior to the official migration to the new database.
-For this reason, its simplicity and robustness was favored over a faster
+For this reason, the easy validation it offers was favored over a faster
 approach (such as clearing the new database, copying the old tables into the
 new database, performing various conversions on the old tables with SQL,
 inserting the old rows into the new tables with SQL, and deleting the old
 tables).
 
-
+-----------------------------------------------------------------------------------
 
 ## Reference of Changes
 
 
-### general
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
+### General
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
 database name | GenomeWideGI | eegi (a la Python package name)
 table names | usually CamelCase, but not always | always CamelCase (a la Python class names)
 field names | mishmash of under_scores, mixedCase, CamelCase | always underscores (a la Python variables)
+"well" versus "tile" | some tables have one, some the other, some both | use only "well" throughout the database, with accessible Python functions to convert
+well names | typically "A01" style, but "A1" for Vidal plates | consistently 3 characters long (except special case of within Orfeome clone *name*; see `clones` decisions below)
 
 
 
 ### `worms` app
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
 information about worm strains | no table | `WormStrain` table
 referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
 par-1 allele | zc310 | zu310
 
-DECISIONS TO MAKE ABOUT `worms` APP:
-- rows just inserted by Noah/Katherine into old database accidentally fixed the error. Could Kris unfix (zu310 -> zc310, so that her scoring interface works and so that GenomeWideGI and GWGI2 are consistently wrong?
+**Decisions to make about `worms` app**
+- The rows just inserted by Noah & Katherine into the old database accidentally fixed the zc310 error. Could Kris "unfix" it in GenomeWideGI and GWGI2 (i.e. change zu310 -> zc310 in both allele fields and plate names), so that her scoring interface works for par-1, and so that GenomeWideGI and GWGI2 are consistently wrong?
 
 
 
 ### `clones` app
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
-clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is accompanied by `node_primary_name` and/or `gene`) | All mapping isolated to `clones` app, which is connected to rest of database only by FK to `Clone`. Mapping is 1-to-many.
-clone names | sjj\_X and mv\_X | sjj\_X and ???
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
+clone names | sjj\_X and mv\_X | sjj\_X and GHR-X@X
+clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is accompanied by `node_primary_name` and/or `gene`) | All mapping isolated to `clones` app, which is connected to rest of database only by FK to `RNAiClone`. Mapping will be 1-to-many.
 
-DECISIONS TO MAKE ABOUT `clones` APP:
-- schema for Firoz's tables
-- are we really sure we want RNAiClone instead of Clone prefix for tables?
+**Decisions to make about `clones` app**
+- The well within Orfeome clone names is "A1"-style for GHR-10%, but "A01"-style for GHR-11% onward. We should probably leave this for the actual clone names, for consistency with the Orfeome database. But in the fields of `LibraryWell` that refer to the location of these cloens (i.e. `LibraryWell.id` and `LibraryWell.well`), I'll consistently use "A01" style.
+- Are we sure we want "RNAi" prefix for clone tables (as opposed to just Clone, CloneMapping, ...)?
+- Time to decide on schema for Firoz's tables re: mapping!
 
 
 
 ### `library` app
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
 plate-level information about library plates | no table | `LibraryPlate` table
-clone locations within library plates | `RNAiPlate` (primary and 384) and `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | Combine all plates in `LibraryWell`. Do not migrate Julie plates. Still need to decide about Eliana rearrays.
-clone parent location relationships | `CherryPickTemplate` (but incomplete, even for secondary rearrays) | capture with FK from `LibraryWell` to `LibraryWell`
+well-level clone identities of library plates | `RNAiPlate` (primary plates), `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | Combine all plates in `LibraryWell`. Do not migrate Julie plates.
+well-level parent relationships from primary plates to source plates (i.e., to Ahringer 384 plate or GHR-style Orfeome plates) | can be derived from `RNAiPlate` columns `chromosome`, `384PlateID`, and `384Well` (though confusing because 384PlateID is incomplete without chromosome for Ahringer 384 plates, and because the Orfeome plates are actually 96 wells) | capture with FK from `LibraryWell` to `LibraryWell` 
+well-level parent relationships from secondary plates to primary plates | `CherryPickTemplate` (but incomplete; many rows missing) | capture with FK from `LibraryWell` to `LibraryWell`
+PK for `LibraryWell` | two fields: plate and well | single field, in format plate\_well (e.g., I-1-A1\_H05)
 sequencing results | `SeqPlate` table, which stores mostly conclusions (missing most Genewiz output) | `LibrarySequencing`, which stores mostly Genewiz output
-well names | typically A01, but A1 for Vidal plates | consistently 3 characters long
-well versus tile | some tables have one, some the other, some both | just use well throughout the database, with accessible Python functions to convert 
 
-DECISIONS TO MAKE ABOUT `library` APP:
-- are we sure we want screen level captured per experiment, and not per library plate? (If so, Katherine needs to remember to delete screen level from her current LibraryPlate table).
+**Decisions to make about `library` app: plate-level**
+- Are we sure we want screen level to be captured per experiment, rather than per library plate? (Note: if so, Katherine should delete screen level from `LibraryPlate`).
+- Should we give the Orfeome rearray plates more descriptive names than just integers 1 to 21 (e.g. vidal-1)?
+- Should we convert all underscores in plate names to dashes? Already so for Ahringer 384 (e.g. II-4), Ahringer 96 (e.g. II-4-B2), original Orfeome plate (e.g. GHR-10010), and proposed Orefeome rearray names (e.g. vidal-13). Would only need to convert secondary plates (e.g. b1023\_F1) and Eliana rearrays (Eliana\_Rearray\_2). The reason this would be nice is to make `LibraryWell.id` is more readable (e.g. b1023-F5\_F05 instead of b1023\_F5\_F05).
+
+**Decisions to make about `library` app: well-level**
+- Should we add LibraryWell records to capture wells that have no intended clone? The reason this would be nice is that in our copy of the library, sometimes wells with no intended clone do grow, which can always be sequenced if there is a phenotype (actually, some of these did make it into our secondary plates, meaning these wells have no defined parent unless we add these rows).
+- Discuss briefly the dangers of hardcoding the intended clone for child wells (instead of relying on parent); this has caused database consistency issues in the past.
 
 
 
 ### `experiments` app: experiments
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
 experiments table | `RawData` | `Experiment`
 temperature datatype | string (e.g. "25C") | decimal
 experiment date datatype | string | date
 is\_junk datatype | integer | boolean
 is\_junk values | -1 "definite junk", never to be trusted (e.g. wrong worms, wrong bacteria); 1 "possible junk", not up to standards (e.g. temperature slightly off, too many worms per well, bacterial contamination). However, these definitions weren't used consistently. | No separation of possible vs definite junk. Anything untrustworthy should either be deleted (including pictures), or have a comment in the database explaining why it is junk, in order to discourage future consideration (all "definite junk" to date has such a comment, so it is okay to migrate these experiments as generic junk).
 
-DECISIONS TO MAKE ABOUT EXPERIMENTS:
-- should we give the Vidal rearray plates more descriptive names than just integers 1-21 (e.g. vidal-1 or vidal-rearray-1)?
-
 
 
 ### `experiments` app: manual scores
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
 manual scores table(s) | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
 score time datatype | originally int year, string month, int day, string time; scoreYMD eventually added, but incomplete (since not updated by most of HL's programs to add experiments), and doesn't include timestamp | 'aware' datetime
 scorer | string of username | FK to `User`
@@ -130,51 +139,56 @@ scorer katy | only pre-consensus ENH scores | do not migrate any katy scores (sc
 scorer alejandro | only ENH scores | do not migrate any alejandro scores (not well trained, and did not score much)
 scorers sherly, giselle, kelly | some pre-consensus ENH scores | migrate in order to investigate relevance of these scores and to ensure all enhancers caught by "real" scorers, but omit from interface
 
-DECISIONS TO MAKE ABOUT MANUAL SCORES:
-- If real date and time are not known (i.e. Hueyling's 2011-01-01 00:00:00), should I make it null, or just preserve what she put?
+**Decisions to make about `experiments` app: manual scores**
+- If real date and time are not known, should I make it null, or just preserve HL's placeholder (i.e. 2011-01-01 00:00:00)?
 
 
 
 ### `experiments` app: DevStaR scores
-**concept** | **GenomeWideGI** | **eegi**
------------ | ---------------- | --------
+concept | GenomeWideGI | eegi
+------- | ------------ | ----
 DevStaR scores table | `RawDataWithScore` | `DevstarScore`
 
-DECISIONS TO MAKE ABOUT DEVSTAR SCORES:
-- I'm consistenly using singular for adult, larva, embryo. Confirm everyone is cool with that, or if 'larvae' should be an exception (as before).
-- HL used Integer for embryo count, embryo per adult, larva per adult. Do we want Floats, at least for the per-adult ones?
-- HL survival/lethality floats seem to truncate at 6 past decimal. Do we want to do this? Easier to just do the math and store the real float.
-- HL made embryo and larva per adult zero if no adults. Do we want to do this, or null?
+**Decisions to make about `experiments` app: DevStaR scores**
+- I'm consistenly using singular for adult, larva, embryo. Is everyone cool with that, or should 'larvae' remain an exception?
+- HL used INTEGER for embryo count, embryo per adult, larva per adult. Do we want FLOAT for any of these?
+- HL survival/lethality FLOATs seem to truncate at 6 digits past the decimal. Do we want to do this? Easy to just store the real Float.
+- HL set embryo per adult and larva per adult to 0 if no adults. Do we want to do this, or should it be null?
 - HL also made survival and lethality 0 if no adults, even though adults not used in this equation. Do we want to do this? Why?
 
 
 
 
-FYI, likely not touching these during migration:
+### Tables not touched during migration
 - attribute, node, synonym (Firoz/mapping domain; he can take info from them if he wants)
-- WellToTile (to be replaced with simple python functions)
 - CherryPickList (temporary step in generating CherryPickRNAiPlate; probably meant for deletion)
 - CherryPickRNAiPlate\_2011 and CherryPickRNAiPlate\_lock (but ensure they are redundant with CherryPickRNAiPlate)
 - ScoreResultsDevStaR (but ensure it is just an incomplete copy of RawDataWithScore, made by Kris)
 - PredManualScore and PredManualScoreList (but figure out why these exist!)
+- WellToTile (to be replaced with simple Python functions)
 
 
-## Below are untested drafts of SQL queries that could be used to bypass the script
+
+<!--
+-----------------------------------------------------------------------------------
+## Drafts of SQL queries that could be used to bypass the script, if time is a concern
 
 ### LibraryPlate (did not exist in GenomeWideGI)
-Add 384 plates and Eliana Rearray plates by hand.
+
+First add 384 plates and Eliana Rearray plates by hand.
 
 Then:
 
-  INSERT INTO LibraryPlate (id, screen_stage, number_of_wells)
+  INSERT INTO LibraryPlate (id, screen\_stage, number\_of\_wells)
   SELECT DISTINCT RNAiPlateID, 1, 96 FROM RNAiPlate;
 
-  INSERT INTO LibraryPlate (id, screen_stage, number_of_wells)
+  INSERT INTO LibraryPlate (id, screen\_stage, number\_of\_wells)
   SELECT DISTINCT RNAiPlateID, 2, 96 FROM CherryPickRNAiPlate;
 
 
 ### Experiment
-Correct misspelled allele in eegi.RawData:
+
+First correct misspelled allele in eegi.RawData:
 
     UPDATE RawData SET mutantAllele='zu310' WHERE mutantAllele='zc310';
 
@@ -195,3 +209,4 @@ Then:
     ON RawData.RNAiPlateID = LibraryPlate.name
     WHERE (expID < 40000 OR expID > 49999)
     AND RNAiPlateID NOT LIKE "Julie%";
+-->
