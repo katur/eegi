@@ -97,6 +97,7 @@ DECISIONS TO MAKE ABOUT `library` APP:
 - Are we sure we want screen level to be captured per experiment, rather than per library plate? If so, Katherine needs to remember to delete screen level from her current LibraryPlate table.
 - Should we give the Vidal rearray plates more descriptive names than just integers 1 to 21 (e.g. vidal-1)?
 - Should we convert all underscores in plate names to dashes? Already so for Ahringer 384 (e.g. II-4), Ahringer 96 (e.g. II-4-B2), original Orfeome plate (e.g. GHR-10010), proposed Vidal 96 rearray (e.g. vidal-13). Would only need to convert secondary plates (e.g. b1023\_F1) and Eliana rearrays (Eliana\_Rearray\_2). The reason this is nice is so that LibraryWell is more readable (e.g. b1023\_F5\_F05 is confusing).
+- I think we should have LibraryWell rows capturing the wells that supposedly have no clone (we sometimes see a phenotype in these, and for example some of our secondary clones have "no parent" unless we define these supposedly-no-bacteria wells).
 
 
 
