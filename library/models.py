@@ -54,8 +54,8 @@ class LibraryWell(models.Model):
     id = models.CharField(max_length=24, primary_key=True)
     plate = models.ForeignKey(LibraryPlate)
     well = models.CharField(max_length=3)
-    parent_library_well = models.ForeignKey('self', null=True, blank=True)
     intended_clone = models.ForeignKey(Clone, null=True, blank=True)
+    parent_library_well = models.ForeignKey('self', null=True, blank=True)
 
     class Meta:
         db_table = 'LibraryWell'
@@ -64,3 +64,11 @@ class LibraryWell(models.Model):
     def __unicode__(self):
         return '{} (intended clone: {})'.format(self.id,
                                                 str(self.intended_clone))
+
+
+class LibrarySequencing(models.Model):
+    source_library_well = models.ForeignKey(LibraryWell, null=True, blank=True)
+    library_plate_copy_number = models.PositiveSmallIntegerField(null=True,
+                                                                 blank=True)
+    seq_plate_number = models.IntegerField()
+    seq_tube_number = models.IntegerField()
