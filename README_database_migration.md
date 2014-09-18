@@ -53,7 +53,8 @@ tables).
 database name | GenomeWideGI | eegi (a la Python package name)
 table names | usually CamelCase, but not always | always CamelCase (a la Python class names)
 field names | mishmash of under_scores, mixedCase, CamelCase | always underscores (a la Python variables)
-well versus tile | some tables have one, some the other, some both | just use well throughout the database, with accessible Python functions to convert 
+well versus tile | some tables have one, some the other, some both | just use well throughout the database, with accessible Python functions to convert
+well names | typically "A01" style, but "A1" for Vidal plates | consistently 3 characters long, except in case of Orfeome clone *name* (see more description in `clones` decisions below).
 
 
 
@@ -73,11 +74,10 @@ DECISIONS TO MAKE ABOUT `worms` APP:
 **concept** | **GenomeWideGI** | **eegi**
 ----------- | ---------------- | --------
 clone names | sjj\_X and mv\_X | sjj\_X and GHR-X@X
-clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is accompanied by `node_primary_name` and/or `gene`) | All mapping isolated to `clones` app, which is connected to rest of database only by FK to `Clone`. Mapping is 1-to-many.
-
+clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is accompanied by `node_primary_name` and/or `gene`) | All mapping isolated to `clones` app, which is connected to rest of database only by FK to `RNAiClone`. Mapping will be 1-to-many.
 
 DECISIONS TO MAKE ABOUT `clones` APP:
-- The well within GHR-style clones names are "A1" style for GHR-10%, but "A01" style for GHR-11% onward. We should probably leave these as are for the actual clone names, for consistency with the orfeome database. But in LibraryPlate (when refering to that clone being in a plate at a particular well), I'll use "A01" style.
+- The well within GHR-style clones names are "A1" style for GHR-10%, but "A01" style for GHR-11% onward. We should probably leave these as is for the actual clone names, for consistency with the Orfeome database. But in the fields of LibraryWell that refer to vidal clone locations (e.g. the well column and the id), I'll be consistent with "A01".
 - Are we sure we want RNAiClone instead of Clone prefix for tables?
 - Schema for Firoz's tables!
 
@@ -92,8 +92,6 @@ well-level parent relationships from primary plates to source plates (i.e., to A
 well-level parent relationships from secondary plates to primary plates | `CherryPickTemplate` (but incomplete; many rows missing) | capture with FK from `LibraryWell` to `LibraryWell`
 PK for `LibraryWell` | two fields: plate and well | single field, in format plate\_well (e.g., I-1-A1\_H05)
 sequencing results | `SeqPlate` table, which stores mostly conclusions (missing most Genewiz output) | `LibrarySequencing`, which stores mostly Genewiz output
-well names | typically A01, but A1 for Vidal plates | consistently 3 characters long (though note the dilemma about GHR-style clone names in `clones` decisions) 
-
 
 DECISIONS TO MAKE ABOUT `library` APP:
 - Are we sure we want screen level to be captured per experiment, rather than per library plate? If so, Katherine needs to remember to delete screen level from her current LibraryPlate table.
@@ -156,11 +154,12 @@ DECISIONS TO MAKE ABOUT DEVSTAR SCORES:
 
 FYI, likely not touching these during migration:
 - attribute, node, synonym (Firoz/mapping domain; he can take info from them if he wants)
-- WellToTile (to be replaced with simple python functions)
+- WellToTile (to be replaced with simple Python functions)
 - CherryPickList (temporary step in generating CherryPickRNAiPlate; probably meant for deletion)
 - CherryPickRNAiPlate\_2011 and CherryPickRNAiPlate\_lock (but ensure they are redundant with CherryPickRNAiPlate)
 - ScoreResultsDevStaR (but ensure it is just an incomplete copy of RawDataWithScore, made by Kris)
 - PredManualScore and PredManualScoreList (but figure out why these exist!)
+
 
 
 ## Below are untested drafts of SQL queries that could be used to bypass the script
@@ -170,10 +169,10 @@ Add 384 plates and Eliana Rearray plates by hand.
 
 Then:
 
-  INSERT INTO LibraryPlate (id, screen_stage, number_of_wells)
+  INSERT INTO LibraryPlate (id, screen\_stage, number\_of\_wells)
   SELECT DISTINCT RNAiPlateID, 1, 96 FROM RNAiPlate;
 
-  INSERT INTO LibraryPlate (id, screen_stage, number_of_wells)
+  INSERT INTO LibraryPlate (id, screen\_stage, number\_of\_wells)
   SELECT DISTINCT RNAiPlateID, 2, 96 FROM CherryPickRNAiPlate;
 
 
