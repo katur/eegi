@@ -4,6 +4,8 @@ import sys
 
 from django.core.management.base import BaseCommand, CommandError
 
+from library.models import LibrarySequencing
+
 # from eegi.local_settings import LEGACY_DATABASE
 
 
@@ -25,7 +27,7 @@ class Command(BaseCommand):
 
     USAGE
     To update all tables, execute as so (from the project root):
-    ./manage.py migrate_sequencing_data tracking_ids genewiz_output_root
+    ./manage.py migrate_sequencing_data tracking_numbers genewiz_output_root
     """
     help = ('Update the sequencing information in the new database.')
 
@@ -34,7 +36,7 @@ class Command(BaseCommand):
             sys.exit(
                 'Usage:\n'
                 '\t./manage.py migrate_sequencing_data '
-                'tracking_ids genewiz_output_root\n'
+                'tracking_numbers genewiz_output_root\n'
             )
 
         proceed = False
@@ -52,7 +54,7 @@ class Command(BaseCommand):
             else:
                 proceed = True
 
-        tracking_ids = args[0]
+        tracking_numbers = args[0]
         genewiz_output_root = args[1]
 
         '''
@@ -63,7 +65,7 @@ class Command(BaseCommand):
         cursor = legacy_db.cursor()
         '''
 
-        with open(tracking_ids, 'rb') as csvfile:
+        with open(tracking_numbers, 'rb') as csvfile:
             reader = csv.DictReader(csvfile)
 
             for row in reader:
@@ -71,65 +73,65 @@ class Command(BaseCommand):
                                                row['tracking_number'])
 
 
-def update_LibrarySequencing_table(genewiz_output_root, tracking_id):
+def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
     qscrl_filepath = ('{}/{}_QSCRL.txt'.format(genewiz_output_root,
-                                               tracking_id))
+                                               tracking_number))
     try:
         qscrl_file = open(qscrl_filepath, 'rb')
 
     except IOError:
         sys.stderr.write('QSCRL file missing for tracking number {}\n'
-                         .format(tracking_id))
+                         .format(tracking_number))
         return
 
     with qscrl_file:
         qscrl_reader = csv.DictReader(qscrl_file, delimiter='\t')
         for row in qscrl_reader:
             # Identification
-            tracking_id = row['trackingNumber']
+            tracking_number = row['trackingNumber']
             dna_name = row['DNAName']
             plate_name = get_plate_name_from_dna_name(dna_name)
             tube_number = get_tube_number_from_dna_name(dna_name)
-            time_created = row['Created_Dttm']
+            timestamp = row['Created_Dttm']
 
-            # try to avoid tube_label... often 1-2 instead of 95-96
-            # tube_label = row['TubeLabel']
-
-            # try to avoid template_name... sometimes e.g. 'GC1'
-            # template_name = row['Template_Name']
-
-            # Quality
-            quality_score = row['QualityScore']
-            crl = row['CRL']
-            qv20plus= row['QV20Plus']
-            si_a = row['SI_A']
-            si_c = row['SI_C']
-            si_g = row['SI_G']
-            si_t = row['SI_T']
+            # avoid TubeLabel... often 1-2 instead of 95-96
+            # avoid Template_Name... sometimes e.g. 'GC1'
 
             seq_filepath = ('{}/{}_seq/{}_*.seq'.format(genewiz_output_root,
-                                                        tracking_id,
+                                                        tracking_number,
                                                         dna_name))
-
             try:
                 seq_file = open(glob.glob(seq_filepath)[0], 'rb')
 
             except IOError:
                 sys.stderr.write('Seq file missing for tracking number '
                                  '{}, dna {}\n'
-                                 .format(tracking_id, dna_name))
+                                 .format(tracking_number, dna_name))
             with seq_file:
                 ab1_filename = seq_file.next()
                 ab1_filename = ab1_filename.strip()
                 ab1_filename = ab1_filename.split('>')[1]
 
                 sequence = ''
-                for row in seq_file:
-                    sequence += row.strip()
+                for seq_row in seq_file:
+                    sequence += seq_row.strip()
 
-            print ('sequence processed: {} {} {}\n'.format(plate_name,
-                                                           tube_number,
-                                                           ab1_filename))
+            new_sequence = LibrarySequencing(
+                genewiz_tracking_number=tracking_number,
+                seq_plate_name=plate_name,
+                seq_tube_number=tube_number,
+                sequence=sequence,
+                ab1_filename=ab1_filename,
+                quality_score=row['QualityScore'],
+                crl=row['CRL'],
+                qv20plus=row['QV20Plus'],
+                si_a=row['SI_A'],
+                si_c=row['SI_C'],
+                si_g=row['SI_G'],
+                si_t=row['SI_T']
+            )
+
+            print (str(new_sequence) + '\n')
 
     print '\n'
 
