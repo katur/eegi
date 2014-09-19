@@ -79,7 +79,9 @@ clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is acc
 **Decisions to make about `clones` app**
 - The well within Orfeome clone names is "A1"-style for GHR-10%, but "A01"-style for GHR-11% onward. We should probably leave this for the actual clone names, for consistency with the Orfeome database. But in the fields of `LibraryWell` that refer to the location of these cloens (i.e. `LibraryWell.id` and `LibraryWell.well`), I'll consistently use "A01" style.
 - Are we sure we want "RNAi" prefix for clone tables (as opposed to just Clone, CloneMapping, ...)?
-- Time to decide on schema for Firoz's tables re: mapping!
+
+**Still to do**
+- Decide on schema for Firoz's tables re: mapping!
 
 
 
@@ -90,9 +92,12 @@ plate-level information about library plates | no table | `LibraryPlate` table
 
 
 **Decisions to make about `library` app: plate-level**
-- Are we sure we want screen level to be captured per experiment, rather than per library plate? (Note: if so, Katherine should delete screen level from `LibraryPlate`).
+- Are we sure we want screen level to be captured per experiment, rather than per library plate?
 - Should we give the Orfeome rearray plates more descriptive names than just integers 1 to 21 (e.g. vidal-1)?
 - Should we convert all underscores in plate names to dashes? Already so for Ahringer 384 (e.g. II-4), Ahringer 96 (e.g. II-4-B2), original Orfeome plate (e.g. GHR-10010), and proposed Orefeome rearray names (e.g. vidal-13). Would only need to convert secondary plates (e.g. b1023\_F1) and Eliana rearrays (Eliana\_Rearray\_2). The reason this would be nice is to make `LibraryWell.id` is more readable (e.g. b1023-F5\_F05 instead of b1023\_F5\_F05).
+ 
+**Still to do**
+- If nixing screen_level, Katherine should delete from `LibraryPlate`
 
 
 
@@ -106,7 +111,7 @@ PK for `LibraryWell` | two fields: plate and well | single field, in format plat
 
 **Decisions to make about `library` app: well-level**
 - Should we add LibraryWell records to capture wells that have no intended clone? The reason this would be nice is that in our copy of the library, sometimes wells with no intended clone do grow, which can always be sequenced if there is a phenotype (actually, some of these did make it into our secondary plates, meaning these wells have no defined parent unless we add these rows).
-- Discuss briefly the dangers of hardcoding the intended clone for child wells (instead of relying on parent); this has caused database consistency issues in the past.
+- Are we sure we want to hardcode the intended clone for child wells (instead of relying on parent)? Has caused database consistency issues in the past. But, probably best for speed. Just wanted to discuss.
 
 
 
@@ -122,6 +127,9 @@ Genewiz resequencing same well | forced into one row of `SeqPlate` | different s
 - When Genewiz did a resequencing, it seems like HL forced these into the same row. Example: genewiz tracking 10-190633217, tube 90, has two separate sequencing (Tube Label JL90 and JL90\_R, with separate seq and ab1 files). However, HL put these on the same row, only indicated by multiple values for SeqResult (e.g. BN/BN) and seqClone (sjj\_F57A10.2|789|sjj_T24A6.1|857). Want to confirm that I will instead make sequencing a 1-to-many relationship (one well can be sequenced many times).
 - Do we want to migrate HL's categories (BN/GN) and/or the gene she sequenced to? If so, how to handle cases such as above (where the row does not say which seqClone came from which resequencing)?
 - How I'm going to proceed to populate `LibrarySequencing`: assuming we are including 'empty well' sequences and allowing 1-to-many, I'm hardly going to reference `SeqPlate` in migrating the data. For each Genewiz Tracking number (which we have recorded in a Google Doc), I will fetch the various genewiz output. To figure out source wells, for plates 0-55, I'll reference HL's table; for plates 56-70, we have Google Docs.
+
+**Still to do**
+- Katherine just has to add parent wells, but needs to clarify something quick with Giselle and Jess when they're back next week.
 
 
 
@@ -161,6 +169,9 @@ scorers sherly, giselle | some pre-consensus ENH scores | pending decision about
 
 **Decisions to make about `experiments` app: manual scores**
 - If real date and time are not known, should I make it null, or just preserve HL's placeholder (i.e. 2011-01-01 00:00:00)?
+
+**Still to do**
+- Migrated scores from ManualScore, but now ScoreResultsManual yet
 
 
 
