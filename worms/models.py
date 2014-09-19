@@ -6,7 +6,7 @@ class WormStrain(models.Model):
     A worm strain used in this experiment. Can be either a
     temperature-sensitive mutant, or a control strain.
     """
-    # The name of this strain on Wormbase.org
+    # The name of this strain (e.g. KK300)
     id = models.CharField(max_length=10, primary_key=True)
 
     # Gene and allele causing temperature-sensitivity in this strain
@@ -14,7 +14,7 @@ class WormStrain(models.Model):
     allele = models.CharField(max_length=10, blank=True)
     genotype = models.CharField(max_length=20, blank=True)
 
-    # Temperatures in Celsius used for screening
+    # Temperatures, in Celsius, used for screening
     permissive_temperature = models.DecimalField(
         max_digits=3, decimal_places=1, null=True, blank=True)
     restrictive_temperature = models.DecimalField(
