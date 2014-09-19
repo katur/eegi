@@ -690,7 +690,3 @@ def update_LibraryWell_table(cursor):
     sync_rows(cursor, legacy_query_secondary_L4440,
               sync_secondary_L4440_row)
     sync_rows(cursor, legacy_query_secondary, sync_secondary_row)
-
-
-def update_LibrarySequencing_table(cursor):
-    pass

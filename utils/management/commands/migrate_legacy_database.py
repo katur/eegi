@@ -11,8 +11,7 @@ from migrate_legacy_database_steps import (update_LibraryPlate_table,
                                            update_ManualScore_table,
                                            update_DevstarScore_table,
                                            update_Clone_table,
-                                           update_LibraryWell_table,
-                                           update_LibrarySequencing_table)
+                                           update_LibraryWell_table)
 
 
 class Command(BaseCommand):
@@ -48,8 +47,6 @@ class Command(BaseCommand):
         4: DevstarScore (1)
         5: Clone (named RNAiClone in database)
         6: LibraryWell (0, 5)
-        7: LibrarySequencing (6)
-
 
     OUTPUT
     Stdout reports whether or not a particular step had changes.
@@ -76,7 +73,6 @@ class Command(BaseCommand):
             update_DevstarScore_table,
             update_Clone_table,
             update_LibraryWell_table,
-            update_LibrarySequencing_table,
         )
 
         if args:
