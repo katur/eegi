@@ -16,13 +16,13 @@
     {% ifequal request.GET.screen_stage "1" %}
     class="active"
     {% endifequal %}
-  >Primary</a>
+  >For primary screen</a>
 
   <a href="{% url 'library_plates_url' %}?screen_stage=2"
     {% ifequal request.GET.screen_stage "2" %}
     class="active"
     {% endifequal %}
-  >Secondary</a>
+  >For secondary screen</a>
 
   <a href="{% url 'library_plates_url' %}?screen_stage=0"
     {% ifequal request.GET.screen_stage "0" %}
