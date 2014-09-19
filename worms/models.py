@@ -31,9 +31,4 @@ class WormStrain(models.Model):
         return self.id
 
     def __cmp__(self, other):
-        if self.genotype < other.genotype:
-            return -1
-        elif self.genotype > other.genotype:
-            return 1
-        else:
-            return 0
+        return cmp(self.genotype, other.genotype)
