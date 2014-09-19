@@ -1,5 +1,6 @@
-import sys
 import csv
+import glob
+import sys
 
 from django.core.management.base import BaseCommand, CommandError
 
@@ -68,32 +69,78 @@ class Command(BaseCommand):
             for row in reader:
                 update_LibrarySequencing_table(genewiz_output_root,
                                                row['tracking_number'])
-                break
 
 
 def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
+    qscrl_filepath = ('{}/{}_QSCRL.txt'.format(genewiz_output_root,
+                                               tracking_number))
     try:
-        filename = ('{}/{}_QSCRL.txt'
-                    .format(genewiz_output_root, tracking_number))
-        with open(filename, 'rb') as csvfile:
-            reader = csv.DictReader(csvfile, delimiter='\t')
-            for row in reader:
-                # Identification
-                tracking_number = row['trackingNumber']
-                tube_label = row['TubeLabel']
-                dna_name = row['DNAName']
-                template_name = row['Template_Name']
-                time_created = row['Created_Dttm']
-
-                # Quality
-                quality_score = row['QualityScore']
-                crl = row['CRL']
-                qv20plus= row['QV20Plus']
-                si_a = row['SI_A']
-                si_c = row['SI_C']
-                si_g = row['SI_G']
-                si_t = row['SI_T']
-        print '\n\n\n\n\n\n'
+        qscrl_file = open(qscrl_filepath, 'rb')
 
     except IOError:
-        print 'file does not exit'
+        sys.stderr.write('QSCRL file missing for tracking number {}\n'
+                         .format(tracking_number))
+        return
+
+    with qscrl_file:
+        qscrl_reader = csv.DictReader(qscrl_file, delimiter='\t')
+        for row in qscrl_reader:
+            # Identification
+            tracking_number = row['trackingNumber']
+            dna_name = row['DNAName']
+            tube_number = get_tube_number_from_dna_name(dna_name)
+            time_created = row['Created_Dttm']
+
+            # try to avoid tube_label... often 1-2 instead of 95-96
+            # tube_label = row['TubeLabel']
+
+            # try to avoid template_name... sometimes e.g. 'GC1'
+            # template_name = row['Template_Name']
+
+            # Quality
+            quality_score = row['QualityScore']
+            crl = row['CRL']
+            qv20plus= row['QV20Plus']
+            si_a = row['SI_A']
+            si_c = row['SI_C']
+            si_g = row['SI_G']
+            si_t = row['SI_T']
+
+            seq_filepath = ('{}/{}_seq/{}_*.seq'.format(genewiz_output_root,
+                                                        tracking_number,
+                                                        dna_name))
+
+            try:
+                seq_file = open(glob.glob(seq_filepath)[0], 'rb')
+
+            except IOError:
+                sys.stderr.write('Seq file missing for tracking number '
+                                 '{}, dna {}\n'
+                                 .format(tracking_number, dna_name))
+            with seq_file:
+                ab1_filename = seq_file.next()
+                ab1_filename = ab1_filename.strip()
+                ab1_filename = ab1_filename.split('>')[1]
+
+                sequence = ''
+                for row in seq_file:
+                    sequence += row.strip()
+
+            print ('sequence processed: {} {} {}\n'.format(quality_score,
+                                                           dna_name,
+                                                           ab1_filename))
+
+    print '\n'
+
+
+def get_tube_number_from_dna_name(dna_name):
+    try:
+        return int(dna_name.split('_')[1].split('-')[0])
+    except ValueError:
+        raise ValueError('dna_name {} parsed with a non-int tube number'
+                         .format(dna_name))
+
+
+
+def get_well_from_tube_number(tube_number):
+    pass
