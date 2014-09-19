@@ -104,10 +104,12 @@ def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
             dna_name = row['DNAName']
             sample_plate_name = get_plate_name_from_dna_name(dna_name)
             sample_tube_number = get_tube_number_from_dna_name(dna_name)
-
             timestamp = row['Created_Dttm']
 
             # avoid Template_Name... sometimes e.g. 'GC1'
+
+            if '_R' in tube_label:
+                dna_name += '_R'
 
             seq_filepath = ('{}/{}_seq/{}_*.seq'.format(genewiz_output_root,
                                                         tracking_number,
