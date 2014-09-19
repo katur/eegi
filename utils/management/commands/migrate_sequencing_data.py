@@ -25,7 +25,7 @@ class Command(BaseCommand):
 
     USAGE
     To update all tables, execute as so (from the project root):
-    ./manage.py migrate_sequencing_data tracking_numbers genewiz_output_root
+    ./manage.py migrate_sequencing_data tracking_ids genewiz_output_root
     """
     help = ('Update the sequencing information in the new database.')
 
@@ -34,7 +34,7 @@ class Command(BaseCommand):
             sys.exit(
                 'Usage:\n'
                 '\t./manage.py migrate_sequencing_data '
-                'tracking_numbers genewiz_output_root\n'
+                'tracking_ids genewiz_output_root\n'
             )
 
         proceed = False
@@ -52,7 +52,7 @@ class Command(BaseCommand):
             else:
                 proceed = True
 
-        tracking_numbers = args[0]
+        tracking_ids = args[0]
         genewiz_output_root = args[1]
 
         '''
@@ -63,7 +63,7 @@ class Command(BaseCommand):
         cursor = legacy_db.cursor()
         '''
 
-        with open(tracking_numbers, 'rb') as csvfile:
+        with open(tracking_ids, 'rb') as csvfile:
             reader = csv.DictReader(csvfile)
 
             for row in reader:
@@ -71,23 +71,24 @@ class Command(BaseCommand):
                                                row['tracking_number'])
 
 
-def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
+def update_LibrarySequencing_table(genewiz_output_root, tracking_id):
     qscrl_filepath = ('{}/{}_QSCRL.txt'.format(genewiz_output_root,
-                                               tracking_number))
+                                               tracking_id))
     try:
         qscrl_file = open(qscrl_filepath, 'rb')
 
     except IOError:
         sys.stderr.write('QSCRL file missing for tracking number {}\n'
-                         .format(tracking_number))
+                         .format(tracking_id))
         return
 
     with qscrl_file:
         qscrl_reader = csv.DictReader(qscrl_file, delimiter='\t')
         for row in qscrl_reader:
             # Identification
-            tracking_number = row['trackingNumber']
+            tracking_id = row['trackingNumber']
             dna_name = row['DNAName']
+            plate_name = get_plate_name_from_dna_name(dna_name)
             tube_number = get_tube_number_from_dna_name(dna_name)
             time_created = row['Created_Dttm']
 
@@ -107,7 +108,7 @@ def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
             si_t = row['SI_T']
 
             seq_filepath = ('{}/{}_seq/{}_*.seq'.format(genewiz_output_root,
-                                                        tracking_number,
+                                                        tracking_id,
                                                         dna_name))
 
             try:
@@ -116,7 +117,7 @@ def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
             except IOError:
                 sys.stderr.write('Seq file missing for tracking number '
                                  '{}, dna {}\n'
-                                 .format(tracking_number, dna_name))
+                                 .format(tracking_id, dna_name))
             with seq_file:
                 ab1_filename = seq_file.next()
                 ab1_filename = ab1_filename.strip()
@@ -126,11 +127,15 @@ def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
                 for row in seq_file:
                     sequence += row.strip()
 
-            print ('sequence processed: {} {} {}\n'.format(quality_score,
-                                                           dna_name,
+            print ('sequence processed: {} {} {}\n'.format(plate_name,
+                                                           tube_number,
                                                            ab1_filename))
 
     print '\n'
+
+
+def get_plate_name_from_dna_name(dna_name):
+    return dna_name.split('_')[0]
 
 
 def get_tube_number_from_dna_name(dna_name):
@@ -139,8 +144,3 @@ def get_tube_number_from_dna_name(dna_name):
     except ValueError:
         raise ValueError('dna_name {} parsed with a non-int tube number'
                          .format(dna_name))
-
-
-
-def get_well_from_tube_number(tube_number):
-    pass
