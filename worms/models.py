@@ -20,15 +20,9 @@ class WormStrain(models.Model):
     restrictive_temperature = models.DecimalField(
         max_digits=3, decimal_places=1, null=True, blank=True)
 
-    # Whether the strain is on Wormbase.org
-    on_wormbase = models.BooleanField(default=False)
-
     class Meta:
         db_table = 'WormStrain'
         ordering = ['genotype']
-
-    def get_wormbase_url(self):
-        return 'http://www.wormbase.org/species/c_elegans/strain/' + self.id
 
     def get_lab_website_url(self):
         return 'http://gunsiano.webfactional.com/strain/' + self.id

@@ -10,7 +10,6 @@ class WormStrainAdmin(admin.ModelAdmin):
         'allele',
         'permissive_temperature',
         'restrictive_temperature',
-        'on_wormbase',
     )
 
     list_filter = ('permissive_temperature', 'restrictive_temperature')
