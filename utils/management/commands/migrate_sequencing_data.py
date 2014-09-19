@@ -2,6 +2,7 @@ import csv
 import glob
 import sys
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 
 from library.models import LibrarySequencing
@@ -87,14 +88,24 @@ def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
     with qscrl_file:
         qscrl_reader = csv.DictReader(qscrl_file, delimiter='\t')
         for row in qscrl_reader:
-            # Identification
+            # Identification.
+            # Need tracking number and tube label because they are the fields
+            # that genewiz uses to uniquely define sequences, in the case of
+            # resequencing.
+            # Need sample plate namd and sample tube number because they are
+            # what we name our samples (to identify what sequence well came
+            # from what library well).
+            # Note that tube_label can't be used for sample_tube_number
+            # because it is often 1-2 instead of 95-96
+
             tracking_number = row['trackingNumber']
+            tube_label = row['TubeLabel']
             dna_name = row['DNAName']
-            plate_name = get_plate_name_from_dna_name(dna_name)
-            tube_number = get_tube_number_from_dna_name(dna_name)
+            sample_plate_name = get_plate_name_from_dna_name(dna_name)
+            sample_tube_number = get_tube_number_from_dna_name(dna_name)
+
             timestamp = row['Created_Dttm']
 
-            # avoid TubeLabel... often 1-2 instead of 95-96
             # avoid Template_Name... sometimes e.g. 'GC1'
 
             seq_filepath = ('{}/{}_seq/{}_*.seq'.format(genewiz_output_root,
@@ -116,22 +127,27 @@ def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
                 for seq_row in seq_file:
                     sequence += seq_row.strip()
 
-            new_sequence = LibrarySequencing(
-                genewiz_tracking_number=tracking_number,
-                seq_plate_name=plate_name,
-                seq_tube_number=tube_number,
-                sequence=sequence,
-                ab1_filename=ab1_filename,
-                quality_score=row['QualityScore'],
-                crl=row['CRL'],
-                qv20plus=row['QV20Plus'],
-                si_a=row['SI_A'],
-                si_c=row['SI_C'],
-                si_g=row['SI_G'],
-                si_t=row['SI_T']
-            )
-
-            print (str(new_sequence) + '\n')
+            try:
+                LibrarySequencing.objects.get(
+                    genewiz_tracking_number=tracking_number,
+                    genewiz_tube_label=tube_label)
+            except ObjectDoesNotExist:
+                new_sequence = LibrarySequencing(
+                    sample_plate_name=sample_plate_name,
+                    sample_tube_number=sample_tube_number,
+                    genewiz_tracking_number=tracking_number,
+                    genewiz_tube_label=tube_label,
+                    sequence=sequence,
+                    ab1_filename=ab1_filename,
+                    quality_score=row['QualityScore'],
+                    crl=row['CRL'],
+                    qv20plus=row['QV20Plus'],
+                    si_a=row['SI_A'],
+                    si_c=row['SI_C'],
+                    si_g=row['SI_G'],
+                    si_t=row['SI_T']
+                )
+                # new_sequence.save()
 
     print '\n'
 

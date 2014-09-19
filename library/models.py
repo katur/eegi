@@ -70,10 +70,12 @@ class LibrarySequencing(models.Model):
     source_library_well = models.ForeignKey(LibraryWell, null=True, blank=True)
     library_plate_copy_number = models.PositiveSmallIntegerField(null=True,
                                                                  blank=True)
+    sample_plate_name = models.CharField(max_length=10, blank=True)
+    sample_tube_number = models.IntegerField(null=True, blank=True)
+
     genewiz_tracking_number = models.CharField(max_length=20, null=True,
                                                blank=True)
-    seq_plate_name = models.CharField(max_length=10, blank=True)
-    seq_tube_number = models.IntegerField(null=True, blank=True)
+    genewiz_tube_label = models.CharField(max_length=20, null=True, blank=True)
 
     sequence = models.TextField(blank=True)
     ab1_filename = models.CharField(max_length=20, null=True, blank=True)
@@ -88,7 +90,8 @@ class LibrarySequencing(models.Model):
 
     class Meta:
         db_table = 'LibrarySequencing'
-        ordering = ['genewiz_tracking_number', 'seq_tube_number']
+        ordering = ['sample_plate_name', 'sample_tube_number']
+        unique_together = ('genewiz_tracking_number', 'genewiz_tube_label')
 
     def __unicode__(self):
         return ('Sequence of {}, seq plate {}, seq tube {}'
