@@ -68,9 +68,6 @@ information about worm strains | no table | `WormStrain` table
 referring to worm strains | generally mutant and allele, sometimes just allele | FK to `WormStrain`
 par-1 allele | zc310 | zu310
 
-**Decisions to make about `worms` app**
-- The rows just inserted by Noah & Katherine into the old database accidentally fixed the zc310 error. Could Kris "unfix" it in GenomeWideGI and GWGI2 (i.e. change zu310 -> zc310 in both allele fields and plate names), so that her scoring interface works for par-1, and so that GenomeWideGI and GWGI2 are consistently wrong?
-
 
 
 ### `clones` app
