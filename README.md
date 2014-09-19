@@ -1,6 +1,6 @@
 # Genome-Wide EEGI (Early Embryogenesis Genetic Interactions) Project
 
-Django-based web interface and programs for a genome-wide *C. elegans* screen,
+Django-based web interface and programs for a genome-wide *Caenorhabditis elegans* screen,
 which used millions of pairwise gene knockdown experiments to uncover
 suppressor and enhancer phenotypes to reveal genetic interactions.
 
