@@ -81,7 +81,8 @@ def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
         qscrl_file = open(qscrl_filepath, 'rb')
 
     except IOError:
-        sys.stderr.write('QSCRL file missing for tracking number {}\n'
+        sys.stderr.write('QSCRL file missing or could not be open '
+                         'for tracking number {}\n'
                          .format(tracking_number))
         return
 
@@ -147,9 +148,7 @@ def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
                     si_g=row['SI_G'],
                     si_t=row['SI_T']
                 )
-                # new_sequence.save()
-
-    print '\n'
+                new_sequence.save()
 
 
 def get_plate_name_from_dna_name(dna_name):
