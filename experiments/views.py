@@ -6,7 +6,21 @@ from experiments.forms import ExperimentFilterForm
 from utils.helpers import well_tile_conversion
 
 
+def experiment(request, id):
+    """
+    Render the page to see information about a specific experiment.
+    """
+    experiment = get_object_or_404(Experiment, pk=id)
+    plate_template = well_tile_conversion.get_96_grid()
+    context = {'experiment': experiment, 'plate_template': plate_template}
+    return render(request, 'experiment.html', context)
+
+
 def experiments(request, context=None):
+    """
+    Render the page to navigate all experiments. Provides navigation
+    by either a specific experiment id, or various filters.
+    """
     exact_id_errors = []
 
     if 'exact_id' in request.GET:
@@ -63,10 +77,3 @@ def experiments(request, context=None):
         'display_experiments': display_experiments,
     }
     return render(request, 'experiments.html', context)
-
-
-def experiment(request, id):
-    experiment = get_object_or_404(Experiment, pk=id)
-    plate_template = well_tile_conversion.get_96_grid()
-    context = {'experiment': experiment, 'plate_template': plate_template}
-    return render(request, 'experiment.html', context)

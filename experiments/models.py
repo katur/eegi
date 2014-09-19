@@ -11,8 +11,6 @@ class Experiment(models.Model):
     """
     A plate-level experiment (i.e., a flat-bottom plate in which
     worms and RNAi clones were put at a specific temperature).
-
-    This table is essentially 'RawData' in the GenomeWideGI database.
     """
     id = models.PositiveIntegerField(primary_key=True)
     worm_strain = models.ForeignKey(WormStrain)
@@ -34,6 +32,9 @@ class Experiment(models.Model):
 
 
 class ManualScoreCode(models.Model):
+    """
+    A score category that can be assigned to an image by a human.
+    """
     id = models.IntegerField(primary_key=True)
     description = models.CharField(max_length=100, blank=True)
     short_description = models.CharField(max_length=50, blank=True)
@@ -55,6 +56,9 @@ class ManualScoreCode(models.Model):
 
 
 class ManualScore(models.Model):
+    """
+    A score that was assigned to an image by a human.
+    """
     experiment = models.ForeignKey(Experiment)
     well = models.CharField(max_length=3)
     score_code = models.ForeignKey(ManualScoreCode)
@@ -71,6 +75,10 @@ class ManualScore(models.Model):
 
 
 class DevstarScore(models.Model):
+    """
+    Information about an image determined by the DevStaR computer vision
+    program.
+    """
     experiment = models.ForeignKey(Experiment)
     well = models.CharField(max_length=3)
 
@@ -105,10 +113,9 @@ class DevstarScore(models.Model):
 
     selected_for_scoring = models.NullBooleanField(default=None)
 
-    gi_score_larva_per_adult = models.FloatField(
-        null=True, blank=True, default=None, help_text='')
-    gi_score_survival = models.FloatField(
-        null=True, blank=True, default=None, help_text='')
+    gi_score_larva_per_adult = models.FloatField(null=True, blank=True,
+                                                 default=None)
+    gi_score_survival = models.FloatField(null=True, blank=True, default=None)
 
     class Meta:
         db_table = 'DevstarScore'

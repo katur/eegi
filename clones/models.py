@@ -3,7 +3,7 @@ from django.db import models
 
 class Clone(models.Model):
     """
-    An RNAi clone used in this experiment.
+    An RNAi clone.
     """
     # The name of this strain on Wormbase.org
     id = models.CharField(max_length=30, primary_key=True)

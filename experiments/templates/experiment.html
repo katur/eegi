@@ -13,9 +13,7 @@
   </span>
 
   {% if experiment.worm_strain.genotype %}
-  <span>
-    Worm genotype: {{ experiment.worm_strain.genotype }}
-  </span>
+    <span>Worm genotype: {{ experiment.worm_strain.genotype }}</span>
   {% endif %}
 
   <span>
@@ -26,20 +24,12 @@
     Temperature: {{ experiment.temperature|get_celsius_string }}
   </span>
 
-  <span>
-    Date: {{ experiment.date }}
-  </span>
+  <span>Date: {{ experiment.date }}</span>
 
-  {% if experiment.is_junk %}
-  <span>
-    JUNK
-  </span>
-  {% endif %}
+  {% if experiment.is_junk %}<span>JUNK</span>{% endif %}
 
   {% if experiment.comment %}
-  <span>
-    Comment: {{ experiment.comment }}
-  </span>
+    <span>Comment: {{ experiment.comment }}</span>
   {% endif %}
 </div>
 

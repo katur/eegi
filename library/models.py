@@ -5,8 +5,8 @@ from clones.models import Clone
 
 class LibraryPlate(models.Model):
     """
-    A library plate of RNAi feeding clones. This plate is meant to represent
-    the theoretical plate, not an individual frozen stock of the plate.
+    A library plate of RNAi feeding clones. This plate represents the
+    theoretical plate, not an individual frozen stock of the plate.
     """
     id = models.CharField(max_length=20, primary_key=True)
     screen_stage = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -49,7 +49,8 @@ class LibraryPlate(models.Model):
 
 class LibraryWell(models.Model):
     """
-    A well in a library plate, including the intended clone.
+    A well in a library plate, including the clone intended on being in the
+    well.
     """
     id = models.CharField(max_length=24, primary_key=True)
     plate = models.ForeignKey(LibraryPlate)
@@ -67,6 +68,9 @@ class LibraryWell(models.Model):
 
 
 class LibrarySequencing(models.Model):
+    """
+    A Genewiz sequencing result from a particular LibraryWell.
+    """
     source_library_well = models.ForeignKey(LibraryWell, null=True, blank=True)
     library_plate_copy_number = models.PositiveSmallIntegerField(null=True,
                                                                  blank=True)

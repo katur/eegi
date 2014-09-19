@@ -3,8 +3,8 @@ from django.db import models
 
 class WormStrain(models.Model):
     """
-    A worm strain used in this experiment, including both mutant and
-    control strains.
+    A worm strain used in this experiment. Can be either a
+    temperature-sensitive mutant, or a control strain.
     """
     # The name of this strain on Wormbase.org
     id = models.CharField(max_length=10, primary_key=True)
