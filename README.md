@@ -36,7 +36,7 @@ is a web view of the database schema on Lucidchart.
 [Here](https://www.lucidchart.com/publicSegments/view/53f3c896-8854-49cc-8c3a-69d30a005381)
 is a the same schema view as a pdf.
 
-Notes on migrating the data from Huey-Ling's MySQL database
+Notes on migrating the data from the old database
 (`GenomeWideGI` on pleiades)
 are in [README_database_migration.md](README_database_migration.md).
 
