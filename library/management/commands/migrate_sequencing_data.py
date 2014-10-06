@@ -89,21 +89,21 @@ def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
     with qscrl_file:
         qscrl_reader = csv.DictReader(qscrl_file, delimiter='\t')
         for row in qscrl_reader:
-            # Identification.
             # Need tracking number and tube label because they are the fields
             # that genewiz uses to uniquely define sequences, in the case of
             # resequencing.
+            tracking_number = row['trackingNumber']
+            tube_label = row['TubeLabel']
+            dna_name = row['DNAName']
+
             # Need sample plate namd and sample tube number because they are
             # what we name our samples (to identify what sequence well came
             # from what library well).
             # Note that tube_label can't be used for sample_tube_number
             # because it is often 1-2 instead of 95-96
-
-            tracking_number = row['trackingNumber']
-            tube_label = row['TubeLabel']
-            dna_name = row['DNAName']
             sample_plate_name = get_plate_name_from_dna_name(dna_name)
             sample_tube_number = get_tube_number_from_dna_name(dna_name)
+
             timestamp = row['Created_Dttm']
 
             # avoid Template_Name... sometimes e.g. 'GC1'
