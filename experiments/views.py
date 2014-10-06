@@ -6,6 +6,14 @@ from experiments.forms import ExperimentFilterForm
 from utils.helpers import well_tile_conversion
 
 
+def experiment_image(request, id, well):
+    experiment = get_object_or_404(Experiment, pk=id)
+    tile = well_tile_conversion.well_to_tile(well)
+    context = {'experiment': experiment, 'well': well,
+               'tile': tile}
+    return render(request, 'experiment_image.html', context)
+
+
 def experiment(request, id):
     """
     Render the page to see information about a specific experiment.

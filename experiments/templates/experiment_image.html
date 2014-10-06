@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load extra_template_tags %}
+
+{% block body_id %}experiment-image{% endblock %}
+{% block page_title %}
+  Experiment {{ experiment.id }}, Well {{ well }}
+{% endblock %}
+
+{% block content %}
+  <img src="{% get_image experiment tile %}"/>
+{% endblock %}

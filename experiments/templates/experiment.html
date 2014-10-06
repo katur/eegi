@@ -42,7 +42,7 @@
           {{ position.well }}
           <span class="parenthetical">({{ position.tile }})</span>
         </div>
-        <a href="{% get_image experiment position.tile %}">
+        <a href="{% url 'experiment_image_url' experiment position.well %}">
           <img src="{% get_thumbnail_image experiment position.tile %}">
         </a>
       </td>
