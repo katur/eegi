@@ -55,6 +55,17 @@
 
 #experiment-image
   #content
-    img
+    #image
+      position: relative
       width: 100%
       max-width: 1300px
+
+      img
+        width: 100%
+        position: absolute
+
+      &:after
+        content: ''
+        display: block
+        position: relative
+        padding-top: 75%
