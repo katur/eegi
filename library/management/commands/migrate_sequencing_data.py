@@ -71,7 +71,7 @@ class Command(BaseCommand):
 
             for row in reader:
                 update_LibrarySequencing_table(genewiz_output_root,
-                                               row['tracking_number'])
+                                               row['tracking_number'].strip())
 
 
 def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
@@ -80,10 +80,10 @@ def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
     try:
         qscrl_file = open(qscrl_filepath, 'rb')
 
-    except IOError:
+    except IOError as e:
         sys.stderr.write('QSCRL file missing or could not be open '
-                         'for tracking number {}\n'
-                         .format(tracking_number))
+                         'for tracking number {}. I/O error({}): {}\n'
+                         .format(tracking_number, e.errno, e.strerror))
         return
 
     with qscrl_file:
