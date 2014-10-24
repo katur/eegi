@@ -76,16 +76,22 @@ class Command(BaseCommand):
         all_recorded_sequences = LibrarySequencing.objects.all()
 
         # Use legacy database to update the library source of each sequencing
-        # (legacy database only updated for plates 1-56, not including L4440
-        # or empty wells)
+        # for plates 1-56 (plates 57-onward were not recorded in legacy db)
         legacy_db = MySQLdb.connect(host=LEGACY_DATABASE['HOST'],
                                     user=LEGACY_DATABASE['USER'],
                                     passwd=LEGACY_DATABASE['PASSWORD'],
                                     db=LEGACY_DATABASE['NAME'])
         cursor = legacy_db.cursor()
-        legacy_query = ('SELECT RNAiPlateID, 96well, SeqPlateID, tubeNum, '
-                        'receiptID, oriClone '
-                        'FROM SeqPlate WHERE SeqPlateID<56')
+
+        # The join is because HueyLing did not update tubeNum in SeqPlate
+        # for plate 56. Since Seq96well determines tubeNum, and since
+        # SeqPlateID 1 includes all 96 rows, this join works.
+        legacy_query = ('SELECT A.RNAiPlateID, A.96well, A.SeqPlateID, '
+                        'B.tubeNum, A.receiptID, A.oriClone '
+                        'FROM SeqPlate AS A '
+                        'JOIN SeqPlate AS B '
+                        'ON A.Seq96well = B.Seq96well '
+                        'WHERE B.SeqPlateID=1;')
         cursor.execute(legacy_query)
         legacy_rows = cursor.fetchall()
         for row in legacy_rows:
