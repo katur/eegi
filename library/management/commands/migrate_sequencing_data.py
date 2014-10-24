@@ -83,24 +83,33 @@ class Command(BaseCommand):
                                     db=LEGACY_DATABASE['NAME'])
         cursor = legacy_db.cursor()
 
-        # The join is because HueyLing did not update tubeNum in SeqPlate
-        # for plate 56. Since Seq96well determines tubeNum, and since
-        # SeqPlateID 1 includes all 96 rows, this join works.
-        legacy_query = ('SELECT A.RNAiPlateID, A.96well, A.SeqPlateID, '
-                        'B.tubeNum, A.receiptID, A.oriClone '
-                        'FROM SeqPlate AS A '
-                        'JOIN SeqPlate AS B '
-                        'ON A.Seq96well = B.Seq96well '
-                        'WHERE B.SeqPlateID=1;')
+        # Create a dictionary to translate from sequencing well to tube number,
+        # because tube is not always recorded (e.g. for plate 56 in the
+        # legacy database, or for plates 57-70 in google docs)
+        cursor.execute('SELECT tubeNum, Seq96well FROM SeqPlate '
+                       'WHERE SeqPlateID=1')
+        seq_well_to_tube = {}
+        for row in cursor.fetchall():
+            seq_well_to_tube[row[1]] = row[0]
+
+        legacy_query = ('SELECT RNAiPlateID, 96well, oriClone, receiptID, '
+                        'SeqPlateID, Seq96well FROM SeqPlate')
         cursor.execute(legacy_query)
         legacy_rows = cursor.fetchall()
         for row in legacy_rows:
+            # The plate and well that the sequencing result came from
             source_plate_id = row[0]
             source_well = row[1]
-            sample_plate_name = 'JL' + str(row[2])
-            sample_tube_number = row[3]
-            tracking_number = row[4]
-            legacy_clone = row[5]
+
+            # Legacy clone and legacy tracking just for double checking
+            legacy_clone = row[2]
+            legacy_tracking = row[3]
+
+            # Identifying information for the plate/tube that were sequenced
+            sample_plate_name = 'JL' + str(row[4])
+            sample_well = row[5]
+            sample_tube_number = seq_well_to_tube[sample_well]
+
             recorded_sequences = all_recorded_sequences.filter(
                 sample_plate_name=sample_plate_name,
                 sample_tube_number=sample_tube_number)
@@ -110,7 +119,7 @@ class Command(BaseCommand):
                                                          sample_tube_number))
             else:
                 for sequence in recorded_sequences:
-                    if tracking_number != sequence.genewiz_tracking_number:
+                    if legacy_tracking != sequence.genewiz_tracking_number:
                         sys.stderr.write('Tracking number mismatch for '
                                          'sequencing record {} {}\n'.format(
                                              sample_plate_name,
