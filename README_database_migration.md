@@ -140,6 +140,7 @@ Wells with no clone (theoretically) | not included in database | include in data
 
 **Still to do**
 - Add the empty wells to the database, including Ahringer 384 and parent relationships.
+- Once the empty wells are added, sort out the few secondary plate source ambiguities.
 
 
 
