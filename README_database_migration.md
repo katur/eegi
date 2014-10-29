@@ -136,10 +136,10 @@ well-level clone identities of library plates | `RNAiPlate` (primary plates), `C
 well-level parent relationships from primary plates to source plates (i.e., to Ahringer 384 plate or GHR-style Orfeome plates) | can be derived from `RNAiPlate` columns `chromosome`, `384PlateID`, and `384Well` (though confusing because 384PlateID is incomplete without chromosome for Ahringer 384 plates, and because the Orfeome plates are actually 96 wells) | capture with FK from `LibraryWell` to `LibraryWell`
 well-level parent relationships from secondary plates to primary plates | `CherryPickTemplate` (but incomplete; many rows missing) | capture with FK from `LibraryWell` to `LibraryWell`
 PK for `LibraryWell` | two fields: plate and well | single field, in format plate\_well (e.g., I-1-A1\_H05)
+Wells with no clone (theoretically) | not included in database | include in database. Due to mistakes in the bacterial library, some wells with no intended clone do grow, and sometimes even have phenotypes. We photograph these wells, and sometimes even score and sequence them. So we should represent them in the database, with `intended_clone_id` null.
 
-**Decisions to make about `library` app: well-level**
-- Should we add LibraryWell records to capture wells that have no intended clone? The reason this would be nice is that in our copy of the library, sometimes wells with no intended clone do grow, which can always be sequenced if there is a phenotype (actually, some of these did make it into our secondary plates, meaning these wells have no defined parent unless we add these rows).
-- Are we sure we want to hardcode the intended clone for child wells (instead of relying on parent)? Has caused database consistency issues in the past. But, probably best for speed. Just wanted to discuss.
+**Still to do**
+- Add the empty wells to the database, including Ahringer 384 and parent relationships.
 
 
 
@@ -148,17 +148,12 @@ concept | GenomeWideGI | eegi
 ------- | ------------ | ---- 
 sequencing results | `SeqPlate` table, which stores mostly conclusions (missing most Genewiz output) | `LibrarySequencing`, which stores mostly Genewiz output
 recent sequencing results (plates 56-70) | not present in database | include in new database by referencing our google docs
-Genewiz resequencing same well | forced into one row of `SeqPlate` | different sequencing results, different rows (see decisions below)
-
-**Decisions to make about `library` app: sequencing**
-- SeqPlate skipped Genewiz output that does not correspond to a known clone (e.g. sometimes we sequencing entire wells, even if the last few wells were empty), and skips some (but not all) L4440 sequences. It would be convenient to instead simply have all Genewiz output in the database (so that we have a record of what that Genewiz output on the server is). This is another reason having empty wells represented in `LibraryWell` would be nice.
-- When Genewiz did a resequencing, it seems like HL forced these into the same row. Example: genewiz tracking 10-190633217, tube 90, has two separate sequencing (Tube Label JL90 and JL90\_R, with separate seq and ab1 files). However, HL put these on the same row, only indicated by multiple values for SeqResult (e.g. BN/BN) and seqClone (sjj\_F57A10.2|789|sjj_T24A6.1|857). Want to confirm that I will instead make sequencing a 1-to-many relationship (one well can be sequenced many times).
-- Do we want to migrate HL's categories (BN/GN) and/or the gene she sequenced to? If so, how to handle cases such as above (where the row does not say which seqClone came from which resequencing)?
-- How I'm going to proceed to populate `LibrarySequencing`: assuming we are including 'empty well' sequences and allowing 1-to-many, I'm hardly going to reference `SeqPlate` in migrating the data. For each Genewiz Tracking number (which we have recorded in a Google Doc), I will fetch the various genewiz output. To figure out source wells, for plates 0-55, I'll reference HL's table; for plates 56-70, we have Google Docs.
+Genewiz resequencing of same well | forced into one row of `SeqPlate` | allow many-to-one sequences-per-well. Example: genewiz tracking 10-190633217, tube 90, has two separate sequencing (Tube Label JL90 and JL90\_R, with separate seq and ab1 files). However, HL put these on the same row, only indicated by multiple values for SeqResult (e.g. BN/BN) and seqClone (sjj\_F57A10.2|789|sjj_T24A6.1|857). I am putting these in separate rows. 
+Genewiz output corresponding to no known clone (due to supposedly empty wells in the sequencing plates) | skipped in database | include in database (so it is clear what these sequences / ab1 files are from)
 
 **Still to do**
-- Katherine just has to add parent wells, but needs to clarify something quick with Giselle and Jess when they're back next week.
-
+- After adding empty LibraryWells to the database, fill in the corresponding parent relationships for sequencing wells.
+- I am not migrating HL's categories (BN/GN) or the resulting clone, since Firoz is redoing this.
 
 
 
@@ -177,7 +172,7 @@ is\_junk values | -1 "definite junk", never to be trusted (e.g. wrong worms, wro
 concept | GenomeWideGI | eegi
 ------- | ------------ | ----
 manual scores table(s) | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
-score time datatype | originally int year, string month, int day, string time; scoreYMD eventually added, but incomplete (since not updated by most of HL's programs to add experiments), and doesn't include timestamp | 'aware' datetime
+score time datatype | originally int year, string month, int day, string time; scoreYMD eventually added, but incomplete (since not updated by most of HL's programs to add experiments), and doesn't include timestamp | timezone-aware datetime
 scorer | string of username | FK to `User`
 score category -8: secondary pool | was used temporarily to flag 'uncertain' scores. now has no corresponding scores. | do not migrate this category or scores
 score category -1: not sure | only Julie scores have this value | do not migrate this category or scores
@@ -194,12 +189,6 @@ scorer lara | some pre-consensus ENH scores | do not migrate lara's ENH scores (
 scorer eliana | some pre-consensus ENH scores | do not migrate eliana's ENH scores (scored before ENH criteria finalized)
 scorer kelly | some pre-consensus ENH scores | probably do not migrate kelly's ENH scores (scored before ENH criteria finalized, plus some training issues), but try to confirm that they were not used in amelia's cutoff analysis
 scorers sherly, giselle | some pre-consensus ENH scores | pending decision about whether to migrate their ENH scores. The danger in keeping these is that they are inconsistent with our eventual scoring criteria (and they are redundant, since everything was eventually scored by the "official" scorers noah, koji, and mirza). But we need to investigate 1) were these scores used in amelia's cutoff analysis? and 2) were all Mediums and Strongs captured by the official scorers?
-
-**Decisions to make about `experiments` app: manual scores**
-- If real date and time are not known, should I make it null, or just preserve HL's placeholder (i.e. 2011-01-01 00:00:00)?
-
-**Still to do**
-- Migrated scores from ManualScore, but now ScoreResultsManual yet
 
 
 
