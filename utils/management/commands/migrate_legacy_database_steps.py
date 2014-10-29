@@ -331,7 +331,7 @@ def update_ManualScore_table(cursor):
     sync_rows(cursor, legacy_query, sync_score_row)
 
 
-def update_ManualScore_table_SUP_secondary(cursor):
+def update_ManualScore_table_secondary(cursor):
     recorded_scores = ManualScore.objects.all()
     fields_to_compare = None
     legacy_query = ('SELECT ScoreResultsManual.expID, ImgName, score, '

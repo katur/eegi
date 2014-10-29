@@ -3,7 +3,7 @@ import sys
 
 from django.core.management.base import BaseCommand, CommandError
 
-from eegi.local_settings import LEGACY_DATABASE
+from eegi.local_settings import LEGACY_DATABASE, LEGACY_DATABASE_2
 
 from migrate_legacy_database_steps import (update_LibraryPlate_table,
                                            update_Experiment_table,
@@ -11,7 +11,8 @@ from migrate_legacy_database_steps import (update_LibraryPlate_table,
                                            update_ManualScore_table,
                                            update_DevstarScore_table,
                                            update_Clone_table,
-                                           update_LibraryWell_table)
+                                           update_LibraryWell_table,
+                                           update_ManualScore_table_secondary)
 
 
 class Command(BaseCommand):
@@ -47,6 +48,7 @@ class Command(BaseCommand):
         4: DevstarScore (1)
         5: Clone (named RNAiClone in database)
         6: LibraryWell (0, 5)
+        7: ManualScore_secondary (1, 2)
 
     OUTPUT
     Stdout reports whether or not a particular step had changes.
@@ -73,6 +75,7 @@ class Command(BaseCommand):
             update_DevstarScore_table,
             update_Clone_table,
             update_LibraryWell_table,
+            update_ManualScore_table_secondary,
         )
 
         if args:
@@ -111,5 +114,17 @@ class Command(BaseCommand):
                                     db=LEGACY_DATABASE['NAME'])
         cursor = legacy_db.cursor()
 
+        if end == 8:
+            step_seven = True
+            end = 7
+
         for step in range(start, end):
             steps[step](cursor)
+
+        if step_seven:
+            legacy_db_2 = MySQLdb.connect(host=LEGACY_DATABASE_2['HOST'],
+                                          user=LEGACY_DATABASE_2['USER'],
+                                          passwd=LEGACY_DATABASE_2['PASSWORD'],
+                                          db=LEGACY_DATABASE_2['NAME'])
+            cursor = legacy_db_2.cursor()
+            steps[7](cursor)
