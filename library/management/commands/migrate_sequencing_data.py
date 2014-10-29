@@ -26,11 +26,8 @@ class Command(BaseCommand):
         'PASSWORD': 'my_password',
     }
 
-    Some steps require that the WormStrain table is already populated.
-
-
     USAGE
-    To update all tables, execute as so (from the project root):
+    From the project root:
     ./manage.py migrate_sequencing_data tracking_numbers genewiz_output_root
     """
     help = ('Update the sequencing information in the new database.')
@@ -96,6 +93,7 @@ class Command(BaseCommand):
                         'SeqPlateID, Seq96well FROM SeqPlate')
         cursor.execute(legacy_query)
         legacy_rows = cursor.fetchall()
+
         for row in legacy_rows:
             # The plate and well that the sequencing result came from
             source_plate_id = row[0]
