@@ -1,7 +1,8 @@
 # Database Migration Notes
 
 These notes are about migrating the genome-wide GI project data
-from the legacy MySQL database (GenomeWideGI on pleiades)
+from the legacy MySQL database (primarily pleiades.GenomeWideGI, plus
+Noah's SUP Secondary scores from pleiades.GWGI2.ScoreResultsManual)
 to the redesigned MySQL database (eegi).
 
 -----------------------------------------------------------------------------------
@@ -44,6 +45,39 @@ approach (such as clearing the new database, copying the old tables into the
 new database, performing various conversions on the old tables with SQL,
 inserting the old rows into the new tables with SQL, and deleting the old
 tables).
+
+-----------------------------------------------------------------------------------
+
+## Migrating Sequencing Data
+
+A separate script is used to migrate sequencing data, which also lives
+in `utils/management/commands`. The reason this script is separate is that 
+it uses a very different approach than the other database migration steps (since the 
+legacy database did not store most of the raw sequencing data, nor is it up to date).
+
+To migrate the sequencing data, first copy all the genewiz sequencing output to your
+local machine:
+    
+    scp username@pleiades.bio.nyu.edu:~genewiz/GenomeWideGI/ destination/genewiz\_output\_root
+    
+Note that this genewiz directory includes ALL sequencing done by the lab; 
+not just for the GI project.
+
+Run Hueyling's script to remove the date from the Seq and AB1 directories 
+(this script is located in the directory just copied): 
+
+    cd destination
+    perl rmDateFromSeqAB1.pl
+    
+There is no need to run her other scripts (my script it written to work with .csv or .xls)
+
+Separately, copy the GI team Google Doc `tracking_numbers`, which includes genewiz
+tracking numbers for all GI-specific sequencing plates.
+
+Now run the script to migrate the data (see the script for database connection
+requirements):
+
+    ./manage.py migrate_sequencing_data tracking_numbers genewiz_output_root
 
 -----------------------------------------------------------------------------------
 
