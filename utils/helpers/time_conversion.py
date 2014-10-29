@@ -29,17 +29,21 @@ def get_timestamp(year, month, day, time, ymd):
         return None
 
     if ymd:
-        try:
-            hour, minute, second = time.split(':')
-            timestamp_from_ymd = timezone.make_aware(
-                datetime.datetime(ymd.year, ymd.month, ymd.day,
-                                  int(hour), int(minute), int(second)),
-                timezone.get_default_timezone())
-
-            if timestamp != timestamp_from_ymd:
-                return None
-
-        except Exception:
+        timestamp_from_ymd = get_timestamp_from_ymd(ymd, time)
+        if timestamp != timestamp_from_ymd:
             return None
 
     return timestamp
+
+
+def get_timestamp_from_ymd(ymd, time):
+    try:
+        hour, minute, second = time.split(':')
+        timestamp = timezone.make_aware(
+            datetime.datetime(ymd.year, ymd.month, ymd.day,
+                              int(hour), int(minute), int(second)),
+            timezone.get_default_timezone())
+        return timestamp
+
+    except Exception:
+        return None

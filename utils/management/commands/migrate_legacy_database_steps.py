@@ -15,7 +15,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from utils.helpers.well_tile_conversion import (tile_to_well,
                                                 get_three_character_well)
-from utils.helpers.time_conversion import get_timestamp
+from utils.helpers.time_conversion import get_timestamp, get_timestamp_from_ymd
 from utils.helpers.name_getters import (get_ahringer_384_plate_name,
                                         get_vidal_clone_name,
                                         get_library_well_name)
@@ -306,6 +306,51 @@ def update_ManualScore_table(cursor):
 
         timestamp = get_timestamp(legacy_row[5], legacy_row[6], legacy_row[7],
                                   legacy_row[8], legacy_row[4])
+        if not timestamp:
+            sys.exit('ERROR: score of experiment {}, well {} '
+                     'could not be converted to a proper '
+                     'datetime'.format(legacy_row[0], legacy_row[1]))
+
+        legacy_score = ManualScore(
+            experiment=experiment,
+            well=well,
+            score_code=score_code,
+            scorer=scorer,
+            timestamp=timestamp,
+        )
+
+        return update_or_save_object(
+            legacy_score, recorded_scores, fields_to_compare,
+            alternate_pk={'experiment': legacy_score.experiment,
+                          'well': legacy_score.well,
+                          'score_code': legacy_score.score_code,
+                          'scorer': legacy_score.scorer,
+                          'timestamp': timestamp}
+        )
+
+    sync_rows(cursor, legacy_query, sync_score_row)
+
+
+def update_ManualScore_table_SUP_secondary(cursor):
+    recorded_scores = ManualScore.objects.all()
+    fields_to_compare = None
+    legacy_query = ('SELECT ScoreResultsManual.expID, ImgName, score, '
+                    'scoreBy, scoreYMD, ScoreTime '
+                    'FROM ScoreResultsManual '
+                    'LEFT JOIN Experiments '
+                    'ON ManualScore.expID = RawData.expID')
+
+    def sync_score_row(legacy_row):
+        legacy_score_code = legacy_row[2]
+        legacy_scorer = legacy_row[3]
+
+        # The following raise exceptions if improperly formatted or not found
+        experiment = get_experiment(legacy_row[0])
+        well = tile_to_well(legacy_row[1])
+        score_code = get_score_code(legacy_score_code)
+        scorer = get_user(legacy_scorer)
+
+        timestamp = get_timestamp_from_ymd(legacy_row[4], legacy_row[5])
         if not timestamp:
             sys.exit('ERROR: score of experiment {}, well {} '
                      'could not be converted to a proper '
