@@ -112,7 +112,7 @@ clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is acc
 
 **Still to do**
 - Decide on schema for Firoz's tables re: mapping!
-- Are we sure we want "RNAi" prefix for clone tables (as opposed to just Clone, CloneMapping, ...)?
+- Confirm Kris and Firoz are okay ditching the "RNAi" prefix for clone tables. If so, rename RNAiClone in the project.
 
 
 
