@@ -117,6 +117,8 @@ class Command(BaseCommand):
         if end == 8:
             step_seven = True
             end = 7
+        else:
+            step_seven = False
 
         for step in range(start, end):
             steps[step](cursor)

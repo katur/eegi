@@ -37,6 +37,10 @@ def get_timestamp(year, month, day, time, ymd):
 
 
 def get_timestamp_from_ymd(ymd, time):
+    """
+    Return a datetime.datetime timezone aware object from a ymd-format date
+    and time.
+    """
     try:
         hour, minute, second = time.split(':')
         timestamp = timezone.make_aware(
