@@ -20,7 +20,11 @@ class Command(BaseCommand):
     Command to update the new database according to the legacy database.
 
     REQUIREMENTS
-    Requires connection info for legacy database in local_settings, in format:
+    Some steps require that the WormStrain table is already populated
+    (small enough that I populated it by hand).
+
+    Steps 0-6 requires connection info for legacy database GenomeWideGI
+    in local_settings.LEGACY_DATABASE, format:
     LEGACY_DATABASE = {
         'NAME': 'GenomeWideGI',
         'HOST': 'localhost',
@@ -28,14 +32,15 @@ class Command(BaseCommand):
         'PASSWORD': 'my_password',
     }
 
-    Some steps require that the WormStrain table is already populated.
+    Step 7 requires connection info for legacy database GWGI2
+    in local_settings.LEGACY_DATABASE_2, same format as above.
 
 
     USAGE
-    To update all tables, execute as so (from the project root):
+    To update all tables, execute (from the project root):
     ./manage.py migrate_legacy_database
 
-    To update just a range of tables, execute as so:
+    To update a range of tables, execute (from the project root):
     ./manage.py migrate_legacy_database start end
 
     Where start is inclusive, end is exclusive,
@@ -50,8 +55,10 @@ class Command(BaseCommand):
         6: LibraryWell (0, 5)
         7: ManualScore_secondary (1, 2)
 
+
     OUTPUT
-    Stdout reports whether or not a particular step had changes.
+    Stdout reports whether or not a particular large step had changes.
+
     Stderr reports every change (such as an added row), and thus can get
         quite long; consider redirecting with 2> stderr.out.
     """
