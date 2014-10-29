@@ -124,7 +124,7 @@ vidal plate names | integers 1-21 | prefix with "vidal", e.g., "vidal-4"
 plate names in general | mishmash of hyphens (e.g. I-2-B1 and GHR-10010) and underscores (e.g. b1023\_F5 and Eliana\_Rearray\_2) | hyphens only (for more readable `LibraryWell.id`, e.g., b1023-F5\_F05)
  
 **Still to do**
-- Either delete `LibraryPlate.screen_stage` since it's redundant with `Experiment.screen_level`, or if we want to keep it, rename to `LibraryPlate.screen_level` for consistency.
+- Delete `LibraryPlate.screen_stage` since it's redundant with `Experiment.screen_level`. Or, if we think it would be useful to keep it, rename to `LibraryPlate.screen_level` for consistency.
 - Add the prefix to vidal plate names, and convert the plate name underscores to hyphens.
 
 
@@ -198,21 +198,21 @@ scorers sherly, giselle | some pre-consensus ENH scores | pending decision about
 concept | GenomeWideGI | eegi
 ------- | ------------ | ----
 DevStaR scores table | `RawDataWithScore` | `DevstarScore`
+worm stage names | mishmash of plural and singular, and worm/adult | consistently using singular adult, larva, embryo
+datatype for embryo per adult, larva per adult | INTEGER | FLOAT
+datatype for survival/lethality | truncated to 6 digits past decimal | more precision
+survival and lethality, if no adults | 0 | calculate the regular way, using embryo and larva numbers
 
-**Decisions to make about `experiments` app: DevStaR scores**
-- I'm consistenly using singular for adult, larva, embryo. Is everyone cool with that, or should 'larvae' remain an exception?
-- HL used INTEGER for embryo count, embryo per adult, larva per adult. Do we want FLOAT for any of these?
-- HL survival/lethality FLOATs seem to truncate at 6 digits past the decimal. Do we want to do this? Easy to just store the real Float.
-- HL set embryo per adult and larva per adult to 0 if no adults. Do we want to do this, or should it be null?
-- HL also made survival and lethality 0 if no adults, even though adults not used in this equation. Do we want to do this? Why?
-
+**Still to do**
+- Per HL, I kept the embryo count as an integer. Should we change it to a float?
+- Per HL, I set embryo per adult and larva per adult to 0 if no adults. Should this actually be null?
 
 
 
 ### Tables not touched during migration
 - attribute, node, synonym (Firoz/mapping domain; he can take info from them if he wants)
 - CherryPickList (temporary step in generating CherryPickRNAiPlate; probably meant for deletion)
-- CherryPickRNAiPlate\_2011 and CherryPickRNAiPlate\_lock (but ensure they are redundant with CherryPickRNAiPlate)
+- CherryPickRNAiPlate\_2011 and CherryPickRNAiPlate\_lock (I should ensure they are redundant with CherryPickRNAiPlate)
 - ScoreResultsDevStaR (but ensure it is just an incomplete copy of RawDataWithScore, made by Kris)
 - PredManualScore and PredManualScoreList (but figure out why these exist!)
 - WellToTile (to be replaced with simple Python functions)
