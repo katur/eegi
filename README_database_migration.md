@@ -48,30 +48,42 @@ tables).
 
 -----------------------------------------------------------------------------------
 
+## Migrating Empty LibraryWells
+
+After migrating the database, use this script to add rows to represent
+'empty' wells in the database:
+
+    ./manage.py add_empty_LibraryWells
+
+This is separate from the main script because empty wells were not represented
+in the previous database.
+
+-----------------------------------------------------------------------------------
+
 ## Migrating Sequencing Data
 
 A separate script is used to migrate sequencing data, which also lives
-in `utils/management/commands`. The reason this script is separate is that 
-it uses a very different approach than the other database migration steps (since the 
+in `utils/management/commands`. The reason this script is separate is that
+it uses a very different approach than the other database migration steps (since the
 legacy database did not store most of the raw sequencing data, nor is it up to date).
 
 To migrate the sequencing data, first copy all the genewiz sequencing output to your
 local machine:
-    
+
     scp username@machine:~genewiz/GenomeWideGI/ destination
-    
-Note that this genewiz directory includes ALL sequencing done by the lab; 
+
+Note that this genewiz directory includes ALL sequencing done by the lab;
 not just for the GI project.
 
-Run Hueyling's script to remove the date from the Seq and AB1 directories 
-(this script is located in the directory just copied): 
+Run Hueyling's script to remove the date from the Seq and AB1 directories
+(this script is located in the directory just copied):
 
     cd destination
     perl rmDateFromSeqAB1.pl
-    
+
 There is no need to run her other scripts; the new script it written to work with .csv or .xls.
 
-Second, copy the GI team Google Doc `tracking_numbers` to your machine, which includes 
+Second, copy the GI team Google Doc `tracking_numbers` to your machine, which includes
 genewiz tracking numbers for all GI-specific sequencing plates.
 
 Now run the script to migrate the data (see the script for database connection
@@ -122,7 +134,7 @@ concept | GenomeWideGI | eegi
 plate-level information about library plates | no table | `LibraryPlate` table
 vidal plate names | integers 1-21 | prefix with "vidal", e.g., "vidal-4"
 plate names in general | mishmash of hyphens (e.g. I-2-B1 and GHR-10010) and underscores (e.g. b1023\_F5 and Eliana\_Rearray\_2) | hyphens only (for more readable `LibraryWell.id`, e.g., b1023-F5\_F05)
- 
+
 **Still to do**
 - Delete `LibraryPlate.screen_stage` since it's redundant with `Experiment.screen_level`. Or, if we think it would be useful to keep it, rename to `LibraryPlate.screen_level` for consistency.
 - Add the prefix to vidal plate names, and convert the plate name underscores to hyphens.
@@ -146,10 +158,10 @@ Wells with no clone (theoretically) | not included in database | include in data
 
 ### `library` app: sequencing
 concept | GenomeWideGI | eegi
-------- | ------------ | ---- 
+------- | ------------ | ----
 sequencing results | `SeqPlate` table, which stores mostly conclusions (missing most Genewiz output) | `LibrarySequencing`, which stores mostly Genewiz output
 recent sequencing results (plates 56-70) | not present in database | include in new database by referencing our google docs
-Genewiz resequencing of same well | forced into one row of `SeqPlate` | allow many-to-one sequences-per-well. Example: genewiz tracking 10-190633217, tube 90, has two separate sequencing (Tube Label JL90 and JL90\_R, with separate seq and ab1 files). However, HL put these on the same row, only indicated by multiple values for SeqResult (e.g. BN/BN) and seqClone (sjj\_F57A10.2|789|sjj_T24A6.1|857). I am putting these in separate rows. 
+Genewiz resequencing of same well | forced into one row of `SeqPlate` | allow many-to-one sequences-per-well. Example: genewiz tracking 10-190633217, tube 90, has two separate sequencing (Tube Label JL90 and JL90\_R, with separate seq and ab1 files). However, HL put these on the same row, only indicated by multiple values for SeqResult (e.g. BN/BN) and seqClone (sjj\_F57A10.2|789|sjj_T24A6.1|857). I am putting these in separate rows.
 Genewiz output corresponding to no known clone (due to supposedly empty wells in the sequencing plates) | skipped in database | include in database (so it is clear what these sequences / ab1 files are from)
 
 **Still to do**
