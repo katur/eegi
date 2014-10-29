@@ -120,15 +120,12 @@ clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is acc
 concept | GenomeWideGI | eegi
 ------- | ------------ | ----
 plate-level information about library plates | no table | `LibraryPlate` table
-
-
-**Decisions to make about `library` app: plate-level**
-- Are we sure we want screen level to be captured per experiment, rather than per library plate?
-- Should we give the Orfeome rearray plates more descriptive names than just integers 1 to 21 (e.g. vidal-1)?
-- Should we convert all underscores in plate names to dashes? Already so for Ahringer 384 (e.g. II-4), Ahringer 96 (e.g. II-4-B2), original Orfeome plate (e.g. GHR-10010), and proposed Orefeome rearray names (e.g. vidal-13). Would only need to convert secondary plates (e.g. b1023\_F1) and Eliana rearrays (Eliana\_Rearray\_2). The reason this would be nice is to make `LibraryWell.id` is more readable (e.g. b1023-F5\_F05 instead of b1023\_F5\_F05).
+vidal plate names | integers 1-21 | prefix with "vidal", e.g., "vidal-4"
+plate names in general | mishmash of hyphens (e.g. I-2-B1 and GHR-10010) and underscores (e.g. b1023\_F5 and Eliana\_Rearray\_2) | hyphens only (for more readable `LibraryWell.id`, e.g., b1023-F5\_F05)
  
 **Still to do**
-- If nixing screen_level, Katherine should delete from `LibraryPlate`
+- Either delete `LibraryPlate.screen_stage` since it's redundant with `Experiment.screen_level`, or if we want to keep it, rename to `LibraryPlate.screen_level` for consistency.
+- Add the prefix to vidal plate names, and convert the plate name underscores to hyphens.
 
 
 
