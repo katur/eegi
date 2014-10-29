@@ -58,7 +58,7 @@ legacy database did not store most of the raw sequencing data, nor is it up to d
 To migrate the sequencing data, first copy all the genewiz sequencing output to your
 local machine:
     
-    scp username@machine:~genewiz/GenomeWideGI/ destination/genewiz_output_root
+    scp username@machine:~genewiz/GenomeWideGI/ destination
     
 Note that this genewiz directory includes ALL sequencing done by the lab; 
 not just for the GI project.
@@ -69,10 +69,10 @@ Run Hueyling's script to remove the date from the Seq and AB1 directories
     cd destination
     perl rmDateFromSeqAB1.pl
     
-There is no need to run her other scripts (my script it written to work with .csv or .xls)
+There is no need to run her other scripts; the new script it written to work with .csv or .xls.
 
-Separately, copy the GI team Google Doc `tracking_numbers`, which includes genewiz
-tracking numbers for all GI-specific sequencing plates.
+Second, copy the GI team Google Doc `tracking_numbers` to your machine, which includes 
+genewiz tracking numbers for all GI-specific sequencing plates.
 
 Now run the script to migrate the data (see the script for database connection
 requirements):
