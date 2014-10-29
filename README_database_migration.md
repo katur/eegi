@@ -58,7 +58,7 @@ legacy database did not store most of the raw sequencing data, nor is it up to d
 To migrate the sequencing data, first copy all the genewiz sequencing output to your
 local machine:
     
-    scp username@pleiades.bio.nyu.edu:~genewiz/GenomeWideGI/ destination/genewiz\_output\_root
+    scp username@pleiades.bio.nyu.edu:~genewiz/GenomeWideGI/ destination/genewiz_output_root
     
 Note that this genewiz directory includes ALL sequencing done by the lab; 
 not just for the GI project.
