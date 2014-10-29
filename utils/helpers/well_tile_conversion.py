@@ -2,8 +2,12 @@ import re
 
 ROWS = 'ABCDEFGH'
 BACKWARDS_ROWS = 'BDFH'
-NUMBER_OF_COLUMNS = 12
 NUMBER_OF_ROWS = len(ROWS)
+NUMBER_OF_COLUMNS = 12
+
+ROWS_384 = 'ABCDEFGHIJKLMNOP'
+NUMBER_OF_ROWS_384 = len(ROWS_384)
+NUMBER_OF_COLUMNS_384 = 24
 
 
 def get_well_name(row_name, column_name):
@@ -118,6 +122,62 @@ def get_96_grid():
     return plate
 
 
+def get_96_well_set():
+    """
+    Get set of all standard 96-plate well names: 'A01', ..., 'H12'
+    """
+    return get_well_set(ROWS, range(1, NUMBER_OF_COLUMNS + 1))
+
+
+def get_384_well_set():
+    """
+    Get set of all standard 384-plate well names: 'A01', ..., 'P24'
+    """
+    return get_well_set(ROWS_384, range(1, NUMBER_OF_COLUMNS_384 + 1))
+
+
+def get_well_set(rows, columns):
+    """
+    Get a list of all well names made from combining the provided rows
+    and columns. Expects integer columns, no more than 2 digits.
+    """
+    wells = set()
+    for row in rows:
+        for column in columns:
+            wells.add(get_well_name(row, column))
+    return wells
+
+
+def get_384_position(child_quadrant, child_position):
+    if child_quadrant[0] == 'A':
+        odd_row = True
+    else:
+        odd_row = False
+
+    if child_quadrant[1] == '1':
+        odd_column = True
+    else:
+        odd_column = False
+
+    child_row = child_position[0]
+    child_row_index = ROWS.index(child_row)
+    parent_row_index = child_row_index * 2
+    if not odd_row:
+        parent_row_index += 1
+    parent_row = ROWS_384[parent_row_index]
+
+    child_column = int(child_position[1:])
+    parent_column = child_column * 2
+    if odd_column:
+        parent_column -= 1
+
+    return get_well_name(parent_row, parent_column)
+
+
+def is_ahringer_96_plate(plate_name):
+    return re.match('(I|II|III|IV|V|X)-[1-9][0-3]?-[AB][12]', plate_name)
+
+
 if __name__ == '__main__':
     tests = (
         ('A01', 'Tile000001.bmp'),
@@ -134,3 +194,8 @@ if __name__ == '__main__':
             print 'fail:' + well_to_tile(test[0])
         if tile_to_well(test[1]) != test[0]:
             print 'FAIL: ' + tile_to_well(test[1])
+
+    print 'A1 H12 to 384: ' + get_384_position('A1', 'H12')
+    print 'B1 H12 to 384: ' + get_384_position('B1', 'H12')
+    print 'A2 H12 to 384: ' + get_384_position('A2', 'H12')
+    print 'B2 H12 to 384: ' + get_384_position('B2', 'H12')
