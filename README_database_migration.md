@@ -73,7 +73,7 @@ par-1 allele | zc310 | zu310
 ### `clones` app
 concept | GenomeWideGI | eegi
 ------- | ------------ | ----
-clone names | sjj\_X and mv\_X | sjj\_X and GHR-X@X. Note: The well within Orfeome clone names is "A1"-style for GHR-10%, but "A01"-style for GHR-11% onward. I'm leaving this as is for consistency with the Orfeome database. But in the fields of `LibraryWell` that refer to the location of these cloens (i.e. `LibraryWell.id` and `LibraryWell.well`), I'll consistently use "A01" style.
+clone names | sjj\_X and mv\_X | sjj\_X and GHR-X\@X. Note: The well within Orfeome clone names is "A1"-style for GHR-10%, but "A01"-style for GHR-11% onward. I'm leaving this as is for consistency with the Orfeome database. But in the fields of `LibraryWell` that refer to the location of these cloens (i.e. `LibraryWell.id` and `LibraryWell.well`), I'll consistently use "A01" style.
 clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is accompanied by `node_primary_name` and/or `gene`) | All mapping isolated to `clones` app, which is connected to rest of database only by FK to `RNAiClone`. Mapping will be 1-to-many.
 
 **Still to do**
