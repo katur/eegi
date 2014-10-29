@@ -153,6 +153,7 @@ Genewiz output corresponding to no known clone (due to supposedly empty wells in
 
 **Still to do**
 - After adding empty LibraryWells to the database, fill in the corresponding parent relationships for sequencing wells.
+- After accounting for empty wells, migrate plates 57-70 using the Google Docs.
 - I am not migrating HL's categories (BN/GN) or the resulting clone, since Firoz is redoing this.
 
 
