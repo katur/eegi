@@ -50,13 +50,21 @@ tables).
 
 ## Migrating Empty LibraryWells
 
-After migrating the database, use this script to add rows to represent
-'empty' wells in the database:
+After using the main script to migrate the LibraryWell table, 
+another script is used to add rows to representing 'empty' wells in the database:
 
     ./manage.py add_empty_LibraryWells
 
 This is separate from the main script because empty wells were not represented
-in the previous database.
+in the previous database's library tables.
+
+After running this script, you should re-run the LibraryWell step of the main
+script. While the old database did not represent "empty wells" in its library 
+tables, it did not enforce foreign key constraints, and therefore allowed
+"impossible" parent relationships from LibraryWells. The main script is 
+designed to ignore the impossible parent relationships (leaving parent null) 
+because it does enforce FK constraints. However, a handful of these are resolved once
+the empty library wells are accounted for.
 
 -----------------------------------------------------------------------------------
 
