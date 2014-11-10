@@ -61,7 +61,7 @@ class Command(BaseCommand):
                 )
 
                 if is_ahringer:
-                    well.parent = get_384_parent_well(well)
+                    well.parent_library_well = get_384_parent_well(well)
 
                 well.save()
 
