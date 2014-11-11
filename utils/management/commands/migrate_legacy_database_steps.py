@@ -441,18 +441,20 @@ def update_DevstarScore_table(cursor):
         if legacy_score.count_embryo != legacy_row[10]:
             errors.append('embryo count mismatch')
 
-        if (legacy_row[8] and legacy_row[8] != -1 and
+        if (legacy_score.embryo_per_adult and legacy_row[8] and
+                legacy_row[8] != -1 and
                 int(legacy_score.embryo_per_adult) != legacy_row[11]):
             errors.append('embryo per adult mismatch')
-        if (legacy_row[9] and legacy_row[9] != -1 and
+        if (legacy_score.larva_per_adult and legacy_row[9] and
+                legacy_row[9] != -1 and
                 int(legacy_score.larva_per_adult) != legacy_row[12]):
             errors.append('larva per adult mismatch')
 
-        if (not compare_floats_for_equality(
+        if (legacy_score.survival and not compare_floats_for_equality(
                 legacy_score.survival, legacy_row[13]) and
                 legacy_row[13] != 0):
             errors.append('invalid survival')
-        if (not compare_floats_for_equality(
+        if (legacy_score.lethality and not compare_floats_for_equality(
                 legacy_score.lethality, legacy_row[14]) and
                 legacy_row[13] != 0):
             errors.append('invalid lethality')
