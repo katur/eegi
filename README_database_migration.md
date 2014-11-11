@@ -59,21 +59,27 @@ This is separate from the main script because empty wells were not represented
 in the previous database's library tables.
 
 After running this script, you should re-run the LibraryWell step of the main
-script. While the old database did not represent "empty wells" in its library 
-tables, it did not enforce foreign key constraints, and therefore allowed
-"impossible" parent relationships from LibraryWells. The main script is 
-designed to ignore the impossible parent relationships (leaving parent null) 
-because it does enforce FK constraints. However, a handful of these are resolved once
+script, to resolve empty well parents of rearrayed plates. The legacy 
+database did not represent "empty wells" in its library 
+tables, but it did not enforce foreign key constraints, and therefore allowed
+some "impossible" parent relationships between LibraryWells (parent wells that 
+themselves did not have rows in the database). The main script ignores these 
+impossiblilities (by leaving parent null), because the new database does 
+enforce FK constraints. However, a handful of these are resolved once
 the empty library wells are accounted for.
+
+In addition, the legacy database did not include sequencing results from supposedly
+empty wells. So for the sequencing plates whose parent wells are resolved
+using the legacy database (plates 1-56), the source of empty wells must be resolved
+after this point.
 
 -----------------------------------------------------------------------------------
 
 ## Migrating Sequencing Data
 
-A separate script is used to migrate sequencing data, which also lives
-in `utils/management/commands`. The reason this script is separate is that
-it uses a very different approach than the other database migration steps (since the
-legacy database did not store most of the raw sequencing data, nor is it up to date).
+A third script is used to migrate sequencing data. The reason this script is 
+separate is that it uses a very different approach than the other database migration 
+steps (since the legacy database did not store raw sequencing data, nor is it up to date).
 
 To migrate the sequencing data, first copy all the genewiz sequencing output to your
 local machine:
@@ -159,8 +165,7 @@ PK for `LibraryWell` | two fields: plate and well | single field, in format plat
 Wells with no clone (theoretically) | not included in database | include in database. Due to mistakes in the bacterial library, some wells with no intended clone do grow, and sometimes even have phenotypes. We photograph these wells, and sometimes even score and sequence them. So we should represent them in the database, with `intended_clone_id` null.
 
 **Still to do**
-- Add the empty wells to the database, including Ahringer 384 and parent relationships.
-- Once the empty wells are added, sort out the few secondary plate source ambiguities.
+- There are a handful (about ten) ambiguities regarding the source of secondary plate wells, due to the legacy database storing these as ambiguous mv_cosmid only, and `CherryPickTemplate` being out of date. Since these are easy to fix manually, make sure to do this just prior to the official migration.
 
 
 
@@ -175,7 +180,7 @@ Genewiz output corresponding to no known clone (due to supposedly empty wells in
 **Still to do**
 - After adding empty LibraryWells to the database, fill in the corresponding parent relationships for sequencing wells.
 - After accounting for empty wells, migrate plates 57-70 using the Google Docs.
-- Firoz will be analyzing the sequencing and adding result clone (note that I am not migrating either Hueyling's quality categorization (BN/GN), or her resulting clone.
+- Add Firoz's resulting clones, once calculated (note that I am not migrating either Hueyling's quality categorization, e.g. BY/GN, or her resulting clone).
 
 
 
@@ -222,10 +227,10 @@ worm stage names | mishmash of plural and singular, and worm/adult | consistentl
 datatype for embryo per adult, larva per adult | INTEGER | FLOAT
 datatype for survival/lethality | truncated to 6 digits past decimal | more precision
 survival and lethality, if no adults | 0 | calculate the regular way, using embryo and larva numbers
+embryo per adult and larva per adult, if no adults | 0 | null
 
 **Still to do**
 - Per HL, I kept the embryo count as an integer. Should we change it to a float?
-- Per HL, I set embryo per adult and larva per adult to 0 if no adults. Should this actually be null?
 
 
 
