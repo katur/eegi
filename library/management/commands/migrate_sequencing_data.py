@@ -1,5 +1,5 @@
 import csv
-import datetime
+# import datetime
 import glob
 import MySQLdb
 import sys
@@ -58,22 +58,22 @@ class Command(BaseCommand):
         tracking_numbers = args[0]
         genewiz_output_root = args[1]
 
-        # Add all genewiz output, including actual sequence as well as various
-        # quality scores, for GI sequences (distinguished
+        # First add all raw genewiz output, including actual sequence and
+        # various quality scores, for GI sequences only (distinguished
         # from sequencing for other lab members by being in the
         # tracking_numbers file)
         with open(tracking_numbers, 'rb') as csvfile:
             reader = csv.DictReader(csvfile)
 
             for row in reader:
-                update_LibrarySequencing_table(genewiz_output_root,
-                                               row['tracking_number'].strip())
+                process_genewiz_tracking_number(genewiz_output_root,
+                                                row['tracking_number'].strip())
 
         # Retrieve all the sequencing objects just recorded
         all_recorded_sequences = LibrarySequencing.objects.all()
 
-        # Use legacy database to update the library source of each sequencing
-        # for plates 1-56 (plates 57-onward were not recorded in legacy db)
+        # Connect to legacy database for updating the source of sequencing
+        # plates 1-56.
         legacy_db = MySQLdb.connect(host=LEGACY_DATABASE['HOST'],
                                     user=LEGACY_DATABASE['USER'],
                                     passwd=LEGACY_DATABASE['PASSWORD'],
@@ -81,82 +81,105 @@ class Command(BaseCommand):
         cursor = legacy_db.cursor()
 
         # Create a dictionary to translate from sequencing well to tube number,
-        # because tube is not always recorded (e.g. for plate 56 in the
-        # legacy database, or for plates 57-70 in google docs)
+        # because all 96 tubes are not recorded in the legacy database
+        # (legacy database skips empty wells).
+        # Choose SeqPlateID=1 because it happens to have all 96 wells.
         cursor.execute('SELECT tubeNum, Seq96well FROM SeqPlate '
                        'WHERE SeqPlateID=1')
         seq_well_to_tube = {}
         for row in cursor.fetchall():
             seq_well_to_tube[row[1]] = row[0]
 
-        legacy_query = ('SELECT RNAiPlateID, 96well, oriClone, receiptID, '
-                        'SeqPlateID, Seq96well FROM SeqPlate')
+        # Query legacy database for recorded sequence sources (plates 1-56).
+        legacy_query = ('SELECT RNAiPlateID, 96well, SeqPlateID, Seq96Well, '
+                        'oriClone, receiptID FROM SeqPlate')
         cursor.execute(legacy_query)
         legacy_rows = cursor.fetchall()
 
         for row in legacy_rows:
-            # The plate and well that the sequencing result came from
-            source_plate_id = row[0]
-            source_well = row[1]
+            process_legacy_row(row, all_recorded_sequences, seq_well_to_tube)
 
-            # Legacy clone and legacy tracking just for double checking
-            legacy_clone = row[2]
-            legacy_tracking = row[3]
-
-            # Identifying information for the plate/tube that were sequenced
-            sample_plate_name = 'JL' + str(row[4])
-            sample_well = row[5]
-            sample_tube_number = seq_well_to_tube[sample_well]
-
-            recorded_sequences = all_recorded_sequences.filter(
-                sample_plate_name=sample_plate_name,
-                sample_tube_number=sample_tube_number)
-            if not recorded_sequences:
-                sys.stderr.write('No record in new database for sequencing '
-                                 'record {} {}\n'.format(sample_plate_name,
-                                                         sample_tube_number))
-            else:
-                for sequence in recorded_sequences:
-                    if legacy_tracking != sequence.genewiz_tracking_number:
-                        sys.stderr.write('Tracking number mismatch for '
-                                         'sequencing record {} {}\n'.format(
-                                             sample_plate_name,
-                                             sample_tube_number))
-                    source_library_well_id = '{}_{}'.format(source_plate_id,
-                                                            source_well)
-                    try:
-                        source_library_well = LibraryWell.objects.get(
-                            pk=source_library_well_id)
-                        try:
-                            # Double check that clone matches
-                            clone = source_library_well.intended_clone.id
-                            if ('GHR' not in clone) and clone != legacy_clone:
-                                sys.stderr.write(
-                                    'Clone mismatch for {} {}: {} {}\n'
-                                    .format(source_plate_id, source_well,
-                                            clone, legacy_clone))
-
-                        except AttributeError:
-                            # Due to a few wells with no intended clone
-                            # being sequenced
-                            sys.stderr.write('LibraryWell {} has no clone\n'
-                                             .format(source_library_well_id))
-
-                        # Save the source well, regardless of clone issues
-                        sequence.source_library_well = source_library_well
-                        sequence.save()
-
-                    except ObjectDoesNotExist:
-                        # Due to Hueyling deleting from CherryPickRNAiPlate
-                        # the wells that did not grow, but not deleting these
-                        # from CherryPickTemplate or SeqPlate.
-                        # When I go back and add all empty wells to be
-                        # represented, these should get added.
-                        sys.stderr.write('LibraryWell {} not found\n'
-                                         .format(source_library_well_id))
+        full_plates = {
+            57: 'hybrid_F1',
+            58: 'hybrid_F2',
+            59: 'hybrid_F3',
+            60: 'hybrid_F4',
+            61: 'hybrid_F5',
+            62: 'hybrid_F6',
+            63: 'universal_F5',
+            64: 'or346_F6',
+            65: 'or346_F7',
+            66: 'mr17_F3',
+        }
 
 
-def update_LibrarySequencing_table(genewiz_output_root, tracking_number):
+def process_legacy_row(row, all_recorded_sequences, seq_well_to_tube):
+    # The plate and well that the sequencing result came from
+    source_plate_id = row[0]
+    source_well = row[1]
+
+    # Identifying information for the plate/tube that were sequenced
+    sample_plate_name = 'JL' + str(row[2])
+    sample_well = row[3]
+    sample_tube_number = seq_well_to_tube[sample_well]
+
+    # Legacy clone and legacy tracking just for double checking
+    if len(row) > 4:
+        legacy_clone = row[4]
+        legacy_tracking = row[5]
+
+    recorded_sequences = all_recorded_sequences.filter(
+        sample_plate_name=sample_plate_name,
+        sample_tube_number=sample_tube_number)
+
+    if not recorded_sequences:
+        sys.stderr.write('No record in new database for sequencing '
+                         'record {} {}\n'.format(sample_plate_name,
+                                                 sample_tube_number))
+    else:
+        for sequence in recorded_sequences:
+            if (legacy_tracking and
+                    legacy_tracking != sequence.genewiz_tracking_number):
+                sys.stderr.write('Tracking number mismatch for '
+                                 'sequencing record {} {}\n'.format(
+                                     sample_plate_name,
+                                     sample_tube_number))
+            source_library_well_id = '{}_{}'.format(source_plate_id,
+                                                    source_well)
+            try:
+                source_library_well = LibraryWell.objects.get(
+                    pk=source_library_well_id)
+                try:
+                    # Double check that clone matches
+                    clone = source_library_well.intended_clone.id
+                    if (legacy_clone and ('GHR' not in clone)
+                            and clone != legacy_clone):
+                        sys.stderr.write(
+                            'Clone mismatch for {} {}: {} {}\n'
+                            .format(source_plate_id, source_well,
+                                    clone, legacy_clone))
+
+                except AttributeError:
+                    # Due to a few wells with no intended clone
+                    # being sequenced
+                    sys.stderr.write('LibraryWell {} has no intended clone\n'
+                                     .format(source_library_well_id))
+
+                # Save the source well, regardless of clone issues
+                sequence.source_library_well = source_library_well
+                sequence.save()
+
+            except ObjectDoesNotExist:
+                # Due to Hueyling deleting from CherryPickRNAiPlate
+                # the wells that did not grow, but not deleting these
+                # from CherryPickTemplate or SeqPlate.
+                # When I go back and add all empty wells to be
+                # represented, these should get added.
+                sys.stderr.write('LibraryWell {} not found\n'
+                                 .format(source_library_well_id))
+
+
+def process_genewiz_tracking_number(genewiz_output_root, tracking_number):
     qscrl_txt = ('{}/{}_QSCRL.txt'.format(genewiz_output_root,
                                           tracking_number))
     qscrl_xls = ('{}/{}_QSCRL.xls'.format(genewiz_output_root,
