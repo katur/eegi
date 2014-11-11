@@ -408,7 +408,7 @@ def update_DevstarScore_table(cursor):
                     'machineCall, machineDetectBac, '
                     'GIscoreLarvaePerWorm, GIscoreSurvival '
                     'FROM RawDataWithScore '
-                    'LIMIT 10000')
+                    'LIMIT 100000')
 
     def sync_score_row(legacy_row):
         # Build the object using the minimimum fields
@@ -437,7 +437,13 @@ def update_DevstarScore_table(cursor):
         if legacy_score.experiment.worm_strain.allele != legacy_row[2]:
             errors.append('allele mismatch')
         if legacy_score.experiment.library_plate.id != legacy_row[4]:
-            errors.append('RNAi plate mismatch')
+            # expID 461 has an improper RNAiPlateID in the RawDataWithScore
+            # legacy table (this field is redundant and must not have
+            # been updated during a data entry correction)
+            if legacy_score.experiment.id == 461:
+                pass
+            else:
+                errors.append('RNAi plate mismatch')
         if legacy_score.count_embryo != legacy_row[10]:
             errors.append('embryo count mismatch')
 
