@@ -31,7 +31,8 @@ installed):
 The database is MySQL, and is named `eegi`.
 
 [Here](https://www.lucidchart.com/documents/view/4eb4bac8-5339-ae33-8c00-5ccd0a0085f4)
-is a web view of the database schema on Lucidchart.
+is a web view of the database schema on Lucidchart, and [here](https://www.lucidchart.com/documents/view/819feb06-fb91-4262-8f39-aa8584e6c02b) 
+is the draft in progress of the `clones` app.
 
 [Here](https://www.lucidchart.com/publicSegments/view/53f3c896-8854-49cc-8c3a-69d30a005381)
 is a the same schema view as a pdf.
