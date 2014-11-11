@@ -8,7 +8,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
-from local_settings import DEBUG, DATABASES, SECRET_KEY
+from local_settings import DEBUG, DATABASES, LOCKDOWN_PASSWORDS, SECRET_KEY
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
@@ -33,6 +33,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'lockdown',
     'south',
 
     'website',
@@ -50,6 +51,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'lockdown.middleware.LockdownMiddleware',
 )
 
 ROOT_URLCONF = 'eegi.urls'
@@ -84,3 +86,5 @@ TEMPLATE_CONTEXT_PROCESSORS = TCP + (
 )
 
 LOGIN_REDIRECT_URL = 'home_url'
+
+LOCKDOWN_FORM = 'lockdown.forms.LockdownForm'
