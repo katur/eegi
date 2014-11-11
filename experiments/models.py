@@ -134,21 +134,21 @@ class DevstarScore(models.Model):
 
         if self.count_larva is not None and self.count_adult is not None:
             if self.count_adult == 0:
-                self.larva_per_adult = 0
+                self.larva_per_adult = None
             else:
                 self.larva_per_adult = self.count_larva / self.count_adult
 
         if self.count_embryo is not None and self.count_adult is not None:
             if self.count_adult == 0:
-                self.embryo_per_adult = 0
+                self.embryo_per_adult = None
             else:
                 self.embryo_per_adult = self.count_embryo / self.count_adult
 
         if self.count_embryo is not None and self.count_larva is not None:
             brood_size = self.count_larva + self.count_embryo
             if brood_size == 0:
-                self.surival = 0
-                self.lethality = 0
+                self.surival = None
+                self.lethality = None
             else:
                 self.survival = self.count_larva / brood_size
                 self.lethality = self.count_embryo / brood_size
