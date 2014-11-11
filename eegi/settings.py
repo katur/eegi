@@ -33,7 +33,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'lockdown',
     'south',
 
     'website',
@@ -42,6 +41,10 @@ INSTALLED_APPS = (
     'clones',
     'library',
     'experiments',
+
+    # Must be listed after website, so the lockdown custom template
+    # (which is inside the website app) has precedence.
+    'lockdown',
 )
 
 MIDDLEWARE_CLASSES = (
