@@ -12,6 +12,8 @@ from library.models import LibraryWell, LibrarySequencing
 
 from eegi.local_settings import LEGACY_DATABASE
 
+from utils.helpers.well_tile_conversion import get_well_name
+
 
 class Command(BaseCommand):
     """
@@ -120,6 +122,82 @@ class Command(BaseCommand):
                        library_well.well)
                 process_legacy_row(row, all_recorded_sequences,
                                    seq_well_to_tube)
+
+        full_seq_columns = {
+            67: {
+                1: ('hc69_F7', 1),
+                2: ('hc69_F7', 3),
+                3: ('hc69_F7', 4),
+                4: ('hc69_F7', 5),
+                5: ('g53_F2', 8),
+                6: ('g53_F2', 9),
+                7: ('g53_F2', 10),
+                8: ('it5_F3', 4, 'DEFGH'),
+                9: ('it5_F3', 5),
+                10: ('it57_F4', 4, 'GH'),
+                11: ('ye60_F2', 8),
+                12: ('b244_F1', 12),
+            },
+            68: {
+                1: ('or191_F1', 1),
+                2: ('or191_F1', 3),
+                3: ('or191_F1', 4),
+                4: ('or191_F1', 5),
+                5: ('or191_F1', 6),
+                6: ('or191_F1', 8),
+                7: ('or191_F1', 9),
+                8: ('or191_F1', 10),
+                9: ('or191_F1', 12),
+                10: ('or191_F2', 1),
+                11: ('or191_F2', 3),
+                12: ('or191_F2', 4),
+            },
+            69: {
+                1: ('or191_F2', 5),
+                2: ('or191_F2', 6),
+                3: ('or191_F2', 8),
+                4: ('or191_F2', 9),
+                5: ('or191_F2', 10),
+                6: ('or191_F2', 12),
+                7: ('or191_F3', 1),
+                8: ('or191_F3', 3),
+                9: ('b235_F5', 1),
+                10: ('b235_F5', 3),
+                11: ('b235_F5', 4),
+                12: ('b235_F5', 5),
+            },
+            70: {
+                1: ('b235_F5', 6),
+                2: ('b235_F5', 8),
+                3: ('b235_F5', 9),
+                4: ('b235_F5', 10),
+                5: ('b235_F5', 12),
+                6: ('b235_F6', 1),
+                7: ('b235_F6', 3),
+                8: ('b235_F6', 4),
+                9: ('b235_F6', 5),
+                10: ('b235_F6', 6),
+                11: ('b235_F6', 8),
+                12: ('b235_F6', 9),
+            },
+        }
+
+        for seq_plate_number in full_seq_columns:
+            seq_columns = full_seq_columns[seq_plate_number]
+            for seq_column in seq_columns:
+                source_plate_id = seq_columns[seq_column][0]
+                source_column = seq_columns[seq_column][1]
+                if len(seq_columns[seq_column]) > 2:
+                    letters = seq_columns[seq_column][2]
+                else:
+                    letters = 'ABCDEFGH'
+                for letter in letters:
+                    seq_well = get_well_name(letter, seq_column)
+                    source_well = get_well_name(letter, source_column)
+                    row = (source_plate_id, source_well, seq_plate_number,
+                           seq_well)
+                    process_legacy_row(row, all_recorded_sequences,
+                                       seq_well_to_tube)
 
 
 def process_legacy_row(row, all_recorded_sequences, seq_well_to_tube):
