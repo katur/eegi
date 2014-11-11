@@ -99,7 +99,7 @@ class Command(BaseCommand):
         for row in legacy_rows:
             process_legacy_row(row, all_recorded_sequences, seq_well_to_tube)
 
-        full_plates = {
+        full_seq_plates = {
             57: 'hybrid_F1',
             58: 'hybrid_F2',
             59: 'hybrid_F3',
@@ -111,6 +111,15 @@ class Command(BaseCommand):
             65: 'or346_F7',
             66: 'mr17_F3',
         }
+
+        for seq_plate_number in full_seq_plates:
+            source_plate_id = full_seq_plates[seq_plate_number]
+            library_wells = LibraryWell.objects.filter(plate=source_plate_id)
+            for library_well in library_wells:
+                row = (source_plate_id, library_well.well, seq_plate_number,
+                       library_well.well)
+                process_legacy_row(row, all_recorded_sequences,
+                                   seq_well_to_tube)
 
 
 def process_legacy_row(row, all_recorded_sequences, seq_well_to_tube):
@@ -127,6 +136,9 @@ def process_legacy_row(row, all_recorded_sequences, seq_well_to_tube):
     if len(row) > 4:
         legacy_clone = row[4]
         legacy_tracking = row[5]
+    else:
+        legacy_clone = None
+        legacy_tracking = None
 
     recorded_sequences = all_recorded_sequences.filter(
         sample_plate_name=sample_plate_name,
