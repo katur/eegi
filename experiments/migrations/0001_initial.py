@@ -1,58 +1,106 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+from django.conf import settings
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'Experiment'
-        db.create_table('Experiment', (
-            ('id', self.gf('django.db.models.fields.PositiveIntegerField')(primary_key=True)),
-            ('worm_strain', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['worms.WormStrain'])),
-            ('library_plate', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['library.LibraryPlate'])),
-            ('temperature', self.gf('django.db.models.fields.DecimalField')(max_digits=3, decimal_places=1)),
-            ('date', self.gf('django.db.models.fields.DateField')()),
-            ('is_junk', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('comment', self.gf('django.db.models.fields.TextField')(blank=True)),
-        ))
-        db.send_create_signal(u'experiments', ['Experiment'])
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('library', '0001_initial'),
+        ('worms', '0001_initial'),
+    ]
 
-
-    def backwards(self, orm):
-        # Deleting model 'Experiment'
-        db.delete_table('Experiment')
-
-
-    models = {
-        u'experiments.experiment': {
-            'Meta': {'ordering': "['id']", 'object_name': 'Experiment', 'db_table': "'Experiment'"},
-            'comment': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'date': ('django.db.models.fields.DateField', [], {}),
-            'id': ('django.db.models.fields.PositiveIntegerField', [], {'primary_key': 'True'}),
-            'is_junk': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'library_plate': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['library.LibraryPlate']"}),
-            'temperature': ('django.db.models.fields.DecimalField', [], {'max_digits': '3', 'decimal_places': '1'}),
-            'worm_strain': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['worms.WormStrain']"})
-        },
-        u'library.libraryplate': {
-            'Meta': {'ordering': "['id']", 'object_name': 'LibraryPlate', 'db_table': "'LibraryPlate'"},
-            'id': ('django.db.models.fields.CharField', [], {'max_length': '20', 'primary_key': 'True'}),
-            'number_of_wells': ('django.db.models.fields.PositiveSmallIntegerField', [], {}),
-            'screen_stage': ('django.db.models.fields.PositiveSmallIntegerField', [], {'null': 'True', 'blank': 'True'})
-        },
-        u'worms.wormstrain': {
-            'Meta': {'ordering': "['genotype']", 'object_name': 'WormStrain', 'db_table': "'WormStrain'"},
-            'allele': ('django.db.models.fields.CharField', [], {'max_length': '10', 'blank': 'True'}),
-            'gene': ('django.db.models.fields.CharField', [], {'max_length': '10', 'blank': 'True'}),
-            'genotype': ('django.db.models.fields.CharField', [], {'max_length': '20', 'blank': 'True'}),
-            'id': ('django.db.models.fields.CharField', [], {'max_length': '10', 'primary_key': 'True'}),
-            'on_wormbase': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'permissive_temperature': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '3', 'decimal_places': '1', 'blank': 'True'}),
-            'restrictive_temperature': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '3', 'decimal_places': '1', 'blank': 'True'})
-        }
-    }
-
-    complete_apps = ['experiments']
+    operations = [
+        migrations.CreateModel(
+            name='DevstarScore',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('well', models.CharField(max_length=3)),
+                ('area_adult', models.IntegerField(help_text=b'DevStaR program output', null=True, blank=True)),
+                ('area_larva', models.IntegerField(help_text=b'DevStaR program output', null=True, blank=True)),
+                ('area_embryo', models.IntegerField(help_text=b'DevStaR program output', null=True, blank=True)),
+                ('count_adult', models.IntegerField(help_text=b'DevStaR program output', null=True, blank=True)),
+                ('count_larva', models.IntegerField(help_text=b'DevStaR program output', null=True, blank=True)),
+                ('count_embryo', models.IntegerField(help_text=b'area_embryo / 70', null=True, blank=True)),
+                ('larva_per_adult', models.FloatField(default=None, help_text=b'count_larva / count_adult', null=True, blank=True)),
+                ('embryo_per_adult', models.FloatField(default=None, help_text=b'count_embryo / count_adult', null=True, blank=True)),
+                ('survival', models.FloatField(default=None, help_text=b'count_larva / (count_larva + count_embryo)', null=True, blank=True)),
+                ('lethality', models.FloatField(default=None, help_text=b'count_embryo / (count_larva + count_embryo)', null=True, blank=True)),
+                ('is_bacteria_present', models.NullBooleanField(default=None, help_text=b'DevStaR program output')),
+                ('selected_for_scoring', models.NullBooleanField(default=None)),
+                ('gi_score_larva_per_adult', models.FloatField(default=None, null=True, blank=True)),
+                ('gi_score_survival', models.FloatField(default=None, null=True, blank=True)),
+            ],
+            options={
+                'db_table': 'DevstarScore',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Experiment',
+            fields=[
+                ('id', models.PositiveIntegerField(serialize=False, primary_key=True)),
+                ('library_plate_copy_number', models.PositiveSmallIntegerField(null=True, blank=True)),
+                ('screen_level', models.PositiveSmallIntegerField()),
+                ('temperature', models.DecimalField(max_digits=3, decimal_places=1)),
+                ('date', models.DateField()),
+                ('is_junk', models.BooleanField(default=False)),
+                ('comment', models.TextField(blank=True)),
+                ('library_plate', models.ForeignKey(to='library.LibraryPlate')),
+                ('worm_strain', models.ForeignKey(to='worms.WormStrain')),
+            ],
+            options={
+                'ordering': ['id'],
+                'db_table': 'Experiment',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ManualScore',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('well', models.CharField(max_length=3)),
+                ('timestamp', models.DateTimeField()),
+                ('experiment', models.ForeignKey(to='experiments.Experiment')),
+            ],
+            options={
+                'db_table': 'ManualScore',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ManualScoreCode',
+            fields=[
+                ('id', models.IntegerField(serialize=False, primary_key=True)),
+                ('description', models.CharField(max_length=100, blank=True)),
+                ('short_description', models.CharField(max_length=50, blank=True)),
+                ('legacy_description', models.CharField(max_length=100, blank=True)),
+            ],
+            options={
+                'ordering': ['id'],
+                'db_table': 'ManualScoreCode',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='manualscore',
+            name='score_code',
+            field=models.ForeignKey(to='experiments.ManualScoreCode'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='manualscore',
+            name='scorer',
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='devstarscore',
+            name='experiment',
+            field=models.ForeignKey(to='experiments.Experiment'),
+            preserve_default=True,
+        ),
+    ]

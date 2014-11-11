@@ -1,30 +1,24 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'Clone'
-        db.create_table('RNAiClone', (
-            ('id', self.gf('django.db.models.fields.CharField')(max_length=30, primary_key=True)),
-        ))
-        db.send_create_signal(u'clones', ['Clone'])
+    dependencies = [
+    ]
 
-
-    def backwards(self, orm):
-        # Deleting model 'Clone'
-        db.delete_table('RNAiClone')
-
-
-    models = {
-        u'clones.clone': {
-            'Meta': {'ordering': "['id']", 'object_name': 'Clone', 'db_table': "'RNAiClone'"},
-            'id': ('django.db.models.fields.CharField', [], {'max_length': '30', 'primary_key': 'True'})
-        }
-    }
-
-    complete_apps = ['clones']
+    operations = [
+        migrations.CreateModel(
+            name='Clone',
+            fields=[
+                ('id', models.CharField(max_length=30, serialize=False, primary_key=True)),
+            ],
+            options={
+                'ordering': ['id'],
+                'db_table': 'RNAiClone',
+            },
+            bases=(models.Model,),
+        ),
+    ]
