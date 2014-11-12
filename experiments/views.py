@@ -89,7 +89,7 @@ def experiment(request, id):
     return render(request, 'experiment.html', context)
 
 
-def experiment_image(request, id, well):
+def experiment_well(request, id, well):
     experiment = get_object_or_404(Experiment, pk=id)
     well = LibraryWell.objects.filter(
         plate=experiment.library_plate).filter(well=well)[0]
@@ -99,4 +99,4 @@ def experiment_image(request, id, well):
         'well': well,
     }
 
-    return render(request, 'experiment_image.html', context)
+    return render(request, 'experiment_well.html', context)

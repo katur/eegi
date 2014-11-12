@@ -48,7 +48,7 @@
         </div>
 
         <div class="well-content">
-          <a href="{% url 'experiment_image_url' experiment well.well %}">
+          <a href="{% url 'experiment_well_url' experiment well.well %}">
             <img src="{% get_thumbnail_image experiment well.get_tile %}">
           </a>
           {{ well.intended_clone }}
