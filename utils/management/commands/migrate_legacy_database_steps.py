@@ -445,7 +445,8 @@ def update_DevstarScore_table(cursor):
             # expID 461 has an improper RNAiPlateID in the RawDataWithScore
             # legacy table (this field is redundant and must not have
             # been updated during a data entry correction)
-            if legacy_score.experiment.id == 461:
+            if (legacy_score.experiment.id == 461 or
+                    legacy_score.experiment.id == 8345):
                 pass
             else:
                 errors.append('RNAi plate mismatch')
