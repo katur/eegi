@@ -3,10 +3,10 @@
 
 {% block body_id %}experiment-image{% endblock %}
 {% block page_title %}
-  Experiment {{ experiment.id }}, Well {{ well }},
-  Intended Clone {{ clone }}
+  Experiment {{ experiment.id }}, Well {{ well.well }},
+  Intended Clone {{ well.intended_clone }}
 {% endblock %}
 
 {% block content %}
-  <div id="image"><img src="{% get_image experiment tile %}"/></div>
+  <div id="image"><img src="{% get_image experiment well.get_tile %}"/></div>
 {% endblock %}

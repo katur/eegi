@@ -41,12 +41,12 @@
       <td {% if not well.intended_clone %} class="empty-well" {% endif %}>
         <div class="well-title">
           {{ well.well }}
-          <span class="parenthetical">({{ well.tile }})</span>
+          <span class="parenthetical">({{ well.get_tile }})</span>
         </div>
 
         <div class="well-content">
           <a href="{% url 'experiment_image_url' experiment well.well %}">
-            <img src="{% get_thumbnail_image experiment well.tile %}">
+            <img src="{% get_thumbnail_image experiment well.get_tile %}">
           </a>
           {{ well.intended_clone }}
         </div>

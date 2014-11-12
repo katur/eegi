@@ -36,8 +36,6 @@ def library_plate(request, id):
     wells = LibraryWell.objects.filter(plate=plate).order_by('well')
     for well in wells:
         well.row = well.get_row()
-        well.column = well.get_column()
-        well.tile = well.get_tile()
 
     context = {
         'plate': plate,

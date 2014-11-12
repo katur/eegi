@@ -14,7 +14,7 @@
       <td {% if not well.intended_clone %} class="empty-well" {% endif %}>
         <div class="well-title">
           {{ well.well }}
-          <span class="parenthetical">({{ well.tile }})</span>
+          <span class="parenthetical">({{ well.get_tile }})</span>
         </div>
         <div class="well-content">
           {{ well.intended_clone }}

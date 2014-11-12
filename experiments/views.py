@@ -4,7 +4,6 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm
 from library.models import LibraryWell
-from utils.helpers.well_tile_conversion import well_to_tile
 
 
 def experiments(request, context=None):
@@ -81,8 +80,6 @@ def experiment(request, id):
 
     for well in wells:
         well.row = well.get_row()
-        well.column = well.get_column()
-        well.tile = well.get_tile()
 
     context = {
         'experiment': experiment,
@@ -94,14 +91,12 @@ def experiment(request, id):
 
 def experiment_image(request, id, well):
     experiment = get_object_or_404(Experiment, pk=id)
-    library_well = LibraryWell.objects.filter(
+    well = LibraryWell.objects.filter(
         plate=experiment.library_plate).filter(well=well)[0]
-    tile = well_to_tile(well)
+
     context = {
         'experiment': experiment,
         'well': well,
-        'tile': tile,
-        'clone': library_well.intended_clone,
     }
 
     return render(request, 'experiment_image.html', context)
