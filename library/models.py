@@ -99,5 +99,5 @@ class LibrarySequencing(models.Model):
 
     def __unicode__(self):
         return ('Sequence of {}, seq plate {}, seq tube {}'
-                .format(self.source_library_well, self.seq_plate_name,
-                        self.seq_tube_number))
+                .format(self.source_library_well, self.sample_plate_name,
+                        self.sample_tube_number))
