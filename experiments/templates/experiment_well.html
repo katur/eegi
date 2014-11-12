@@ -3,10 +3,41 @@
 
 {% block body_id %}experiment-well{% endblock %}
 {% block page_title %}
-  Experiment {{ experiment.id }}, Well {{ well.well }},
-  Intended Clone {{ well.intended_clone }}
+  Experiment {{ experiment.id }}, Well {{ well.well }}
 {% endblock %}
 
 {% block content %}
-  <div id="image"><img src="{% get_image experiment well.get_tile %}"/></div>
+<span>
+  Worm strain:
+  <a href="{{ experiment.worm_strain.get_lab_website_url }}">
+    {{ experiment.worm_strain }}</a>
+</span>
+
+{% if experiment.worm_strain.genotype %}
+  <span>Worm genotype: {{ experiment.worm_strain.genotype }}</span>
+{% endif %}
+
+<span>
+  Library plate:
+  <a href="{% url 'library_plate_url' id=experiment.library_plate.id %}">
+  {{ experiment.library_plate }}
+  </a>
+</span>
+
+<span>
+  Temperature: {{ experiment.temperature|get_celsius_string }}
+</span>
+
+<span>Date: {{ experiment.date }}</span>
+
+{% if experiment.is_junk %}<span>JUNK</span>{% endif %}
+
+{% if experiment.comment %}
+  <span>Comment: {{ experiment.comment }}</span>
+{% endif %}
+
+<span>
+  Intended Clone: {{ well.intended_clone}}
+</span>
+<div id="image"><img src="{% get_image experiment well.get_tile %}"/></div>
 {% endblock %}
