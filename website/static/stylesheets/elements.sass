@@ -10,6 +10,7 @@ table.striped
     tr:nth-child(odd)
       background: $gray-lightest
 
+table.nice-padding
   th, td
     padding: 10px
 
@@ -39,13 +40,12 @@ hr
 
 .plate-96
   width: 100%
-  border: 1px solid $gray-light
+  text-align: center
 
   td
     width: 100% / 12
     position: relative
     padding: 3px
-    border: 1px solid $gray-light
 
     &.empty-well
       background: $light-red
@@ -64,8 +64,12 @@ hr
   .well-content
     width: 100%
     position: relative
+    text-align: center
 
   &.with-images
+    background: black
+    color: $gray-light
+
     img
       position: absolute
       top: 0
@@ -77,3 +81,6 @@ hr
         content: ""
         display: block
         padding-top: 80%
+
+    td
+      border: 2px solid $site-background
