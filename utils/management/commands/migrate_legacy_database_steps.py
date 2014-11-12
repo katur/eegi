@@ -408,7 +408,7 @@ def update_DevstarScore_table(cursor):
                     'machineCall, machineDetectBac, '
                     'GIscoreLarvaePerWorm, GIscoreSurvival '
                     'FROM RawDataWithScore '
-                    'LIMIT 100000')
+                    'LIMIT 1000000')
 
     def sync_score_row(legacy_row):
         # Build the object using the minimimum fields
