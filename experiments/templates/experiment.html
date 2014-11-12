@@ -34,17 +34,22 @@
 </div>
 
 <table class="plate-96 with-images">
-  {% for row in plate_template %}
+  {% regroup wells by row as wells_by_row %}
+  {% for row in wells_by_row %}
   <tr>
-    {% for position in row %}
-      <td>
+    {% for well in row.list %}
+      <td {% if not well.intended_clone %} class="empty-well" {% endif %}>
         <div class="well-title">
-          {{ position.well }}
-          <span class="parenthetical">({{ position.tile }})</span>
+          {{ well.well }}
+          <span class="parenthetical">({{ well.tile }})</span>
         </div>
-        <a href="{% url 'experiment_image_url' experiment position.well %}">
-          <img src="{% get_thumbnail_image experiment position.tile %}">
-        </a>
+
+        <div class="well-content">
+          <a href="{% url 'experiment_image_url' experiment well.well %}">
+            <img src="{% get_thumbnail_image experiment well.tile %}">
+          </a>
+          {{ well.intended_clone }}
+        </div>
       </td>
     {% endfor %}
   </tr>

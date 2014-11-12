@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from library.models import LibraryPlate, LibraryWell
-from utils.helpers.well_tile_conversion import get_96_grid
 
 
 def library_plates(request):
@@ -16,6 +15,7 @@ def library_plates(request):
 
     paginator = Paginator(plates, 50)
     page = request.GET.get('page')
+
     try:
         display_plates = paginator.page(page)
     except PageNotAnInteger:
@@ -27,6 +27,7 @@ def library_plates(request):
         'plates': plates,
         'display_plates': display_plates,
     }
+
     return render(request, 'library_plates.html', context)
 
 
@@ -38,10 +39,9 @@ def library_plate(request, id):
         well.column = well.get_column()
         well.tile = well.get_tile()
 
-    plate_template = get_96_grid()
     context = {
         'plate': plate,
-        'plate_template': plate_template,
         'wells': wells,
     }
+
     return render(request, 'library_plate.html', context)

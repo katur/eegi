@@ -3,25 +3,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm
-from utils.helpers import well_tile_conversion
-
-
-def experiment_image(request, id, well):
-    experiment = get_object_or_404(Experiment, pk=id)
-    tile = well_tile_conversion.well_to_tile(well)
-    context = {'experiment': experiment, 'well': well,
-               'tile': tile}
-    return render(request, 'experiment_image.html', context)
-
-
-def experiment(request, id):
-    """
-    Render the page to see information about a specific experiment.
-    """
-    experiment = get_object_or_404(Experiment, pk=id)
-    plate_template = well_tile_conversion.get_96_grid()
-    context = {'experiment': experiment, 'plate_template': plate_template}
-    return render(request, 'experiment.html', context)
+from library.models import LibraryWell
+from utils.helpers.well_tile_conversion import well_to_tile
 
 
 def experiments(request, context=None):
@@ -84,4 +67,41 @@ def experiments(request, context=None):
         'total_results': total_results,
         'display_experiments': display_experiments,
     }
+
     return render(request, 'experiments.html', context)
+
+
+def experiment(request, id):
+    """
+    Render the page to see information about a specific experiment.
+    """
+    experiment = get_object_or_404(Experiment, pk=id)
+    wells = LibraryWell.objects.filter(
+        plate=experiment.library_plate).order_by('well')
+
+    for well in wells:
+        well.row = well.get_row()
+        well.column = well.get_column()
+        well.tile = well.get_tile()
+
+    context = {
+        'experiment': experiment,
+        'wells': wells,
+    }
+
+    return render(request, 'experiment.html', context)
+
+
+def experiment_image(request, id, well):
+    experiment = get_object_or_404(Experiment, pk=id)
+    library_well = LibraryWell.objects.filter(
+        plate=experiment.library_plate).filter(well=well)[0]
+    tile = well_to_tile(well)
+    context = {
+        'experiment': experiment,
+        'well': well,
+        'tile': tile,
+        'clone': library_well.intended_clone,
+    }
+
+    return render(request, 'experiment_image.html', context)
