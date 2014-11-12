@@ -16,19 +16,22 @@
     {% ifequal request.GET.screen_stage "1" %}
     class="active"
     {% endifequal %}
-  >For primary screen</a>
+  >Primary screen</a>
 
   <a href="{% url 'library_plates_url' %}?screen_stage=2"
     {% ifequal request.GET.screen_stage "2" %}
     class="active"
     {% endifequal %}
-  >For secondary screen</a>
+  >Secondary screen</a>
 
+  <!--
+  Commented out due to current plate views expecting full 96-well plates
   <a href="{% url 'library_plates_url' %}?screen_stage=0"
     {% ifequal request.GET.screen_stage "0" %}
     class="active"
     {% endifequal %}
   >Source plates (not used for screening)</a>
+  -->
 </div>
 
 <div id="results-header">
@@ -66,7 +69,9 @@
   <tbody>
     {% for plate in display_plates %}
     <tr>
-      <td>{{ plate }}</td>
+      <td>
+        <a href="{% url 'library_plate_url' id=plate.id %}">{{ plate }}</a>
+      </td>
       <td>{{ plate.screen_stage }}</td>
       <td>{{ plate.number_of_wells }}</td>
     </tr>

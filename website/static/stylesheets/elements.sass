@@ -31,6 +31,56 @@ hr
   border: none
   background: $gray-light
 
+
 .error-message
   color: red
   font-style: italic
+
+
+.plate-96
+  width: 100%
+  border: 1px solid $gray-light
+
+  td
+    width: 100% / 12
+    position: relative
+    padding: 3px
+    border: 1px solid $gray-light
+
+    &:before
+      content: ""
+      display: block
+      padding-top: 20px
+
+    &.empty-well
+      background: $light-red
+
+  .well-title
+    position: absolute
+    top: 3px
+    left: 3px
+    width: 100%
+    font-size: 12px
+    font-weight: bold
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+
+    .parenthetical
+      font-weight: normal
+
+  .well-content
+    position: relative
+
+  &.with-images
+    img
+      position: absolute
+      top: 20px
+      left: 0
+      width: 100%
+
+    td
+      &:before
+        content: ""
+        display: block
+        padding-top: 87%

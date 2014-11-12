@@ -2,6 +2,8 @@ from django.db import models
 
 from clones.models import Clone
 
+from utils.helpers.well_tile_conversion import well_to_tile
+
 
 class LibraryPlate(models.Model):
     """
@@ -65,6 +67,15 @@ class LibraryWell(models.Model):
     def __unicode__(self):
         return '{} (intended clone: {})'.format(self.id,
                                                 str(self.intended_clone))
+
+    def get_row(self):
+        return self.well[0]
+
+    def get_column(self):
+        return int(self.well[1:])
+
+    def get_tile(self):
+        return well_to_tile(self.well)
 
 
 class LibrarySequencing(models.Model):

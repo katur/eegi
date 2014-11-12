@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load extra_template_tags %}
+
+{% block body_id %}library-plate{% endblock %}
+{% block page_title %}{{ plate }}{% endblock %}
+
+{% block content %}
+
+<table class="plate-96">
+  {% regroup wells by row as wells_by_row %}
+  {% for row in wells_by_row %}
+  <tr>
+    {% for well in row.list %}
+      <td {% if not well.intended_clone %} class="empty-well" {% endif %}>
+        <div class="well-title">
+          {{ well.well }}
+          <span class="parenthetical">({{ well.tile }})</span>
+        </div>
+        <div class="well-content">
+          {{ well.intended_clone }}
+        </div>
+      </td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

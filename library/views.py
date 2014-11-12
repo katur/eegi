@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from library.models import LibraryPlate
+from library.models import LibraryPlate, LibraryWell
+from utils.helpers.well_tile_conversion import get_96_grid
 
 
 def library_plates(request):
@@ -10,7 +11,8 @@ def library_plates(request):
         plates = sorted(LibraryPlate.objects.filter(
             screen_stage=screen_stage))
     else:
-        plates = sorted(LibraryPlate.objects.all())
+        plates = sorted(LibraryPlate.objects.filter(
+            screen_stage__gte=1))
 
     paginator = Paginator(plates, 50)
     page = request.GET.get('page')
@@ -26,3 +28,20 @@ def library_plates(request):
         'display_plates': display_plates,
     }
     return render(request, 'library_plates.html', context)
+
+
+def library_plate(request, id):
+    plate = get_object_or_404(LibraryPlate, pk=id)
+    wells = LibraryWell.objects.filter(plate=plate).order_by('well')
+    for well in wells:
+        well.row = well.get_row()
+        well.column = well.get_column()
+        well.tile = well.get_tile()
+
+    plate_template = get_96_grid()
+    context = {
+        'plate': plate,
+        'plate_template': plate_template,
+        'wells': wells,
+    }
+    return render(request, 'library_plate.html', context)

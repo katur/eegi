@@ -33,12 +33,12 @@
   {% endif %}
 </div>
 
-<table id="images">
+<table class="plate-96 with-images">
   {% for row in plate_template %}
   <tr>
     {% for position in row %}
       <td>
-        <div class="title">
+        <div class="well-title">
           {{ position.well }}
           <span class="parenthetical">({{ position.tile }})</span>
         </div>
