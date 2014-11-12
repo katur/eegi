@@ -434,8 +434,13 @@ def update_DevstarScore_table(cursor):
         legacy_score.clean()
 
         errors = []
-        if legacy_score.experiment.worm_strain.allele != legacy_row[2]:
-            errors.append('allele mismatch')
+        if (legacy_score.experiment.worm_strain.allele != legacy_row[2]):
+            if (legacy_row[2] == 'zc310' and
+                    legacy_score.experiment.worm_strain.allele == 'zu310'):
+                pass
+            else:
+                errors.append('allele mismatch')
+
         if legacy_score.experiment.library_plate.id != legacy_row[4]:
             # expID 461 has an improper RNAiPlateID in the RawDataWithScore
             # legacy table (this field is redundant and must not have
@@ -444,6 +449,7 @@ def update_DevstarScore_table(cursor):
                 pass
             else:
                 errors.append('RNAi plate mismatch')
+
         if legacy_score.count_embryo != legacy_row[10]:
             errors.append('embryo count mismatch')
 
@@ -451,6 +457,7 @@ def update_DevstarScore_table(cursor):
                 legacy_row[8] != -1 and
                 int(legacy_score.embryo_per_adult) != legacy_row[11]):
             errors.append('embryo per adult mismatch')
+
         if (legacy_score.larva_per_adult and legacy_row[9] and
                 legacy_row[9] != -1 and
                 int(legacy_score.larva_per_adult) != legacy_row[12]):
