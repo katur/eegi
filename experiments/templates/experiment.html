@@ -5,7 +5,7 @@
 {% block page_title %}Experiment {{ experiment.id }}{% endblock %}
 
 {% block content %}
-<div id="experiment-wide-info">
+<div class="cleared-spaced-spans">
   <span>
     Worm strain:
     <a href="{{ experiment.worm_strain.get_lab_website_url }}">
@@ -49,7 +49,7 @@
 
         <div class="well-content">
           <a href="{% url 'experiment_well_url' experiment well.well %}">
-            <img src="{% get_thumbnail_image experiment well.get_tile %}">
+            <img src="{% get_thumbnail_image experiment well %}">
           </a>
           {{ well.intended_clone }}
         </div>

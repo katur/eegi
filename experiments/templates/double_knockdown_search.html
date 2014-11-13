@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load extra_template_tags %}
+
+{% block body_id %}double-knockdown{% endblock %}
+{% block page_title %}Search for a double knockdown{% endblock %}
+
+{% block content %}
+
+{% if error %}
+<span class="error-message">
+  Your submission had an error: {{ error }}
+</span>
+{% endif %}
+
+{% if form.errors %}
+<span class="error-message">
+  Please correct the error{{ form.errors|pluralize }} below.
+</span>
+{% endif %}
+
+<form action="" method="post">
+  {% csrf_token %}
+
+  <table>{{ form.as_table }}</table>
+
+  <input type="submit" value="Submit">
+</form>
+
+{% endblock %}

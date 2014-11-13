@@ -26,15 +26,17 @@ def url_replace(request, field, value):
 
 
 @register.simple_tag
-def get_image(experiment, tile):
+def get_image(experiment, well):
     prefix = 'http://pleiades.bio.nyu.edu/GI_IMG/'
+    tile = well.get_tile()
     url = '{}{}/{}'.format(prefix, experiment.id, tile)
     return url
 
 
 @register.simple_tag
-def get_thumbnail_image(experiment, tile):
+def get_thumbnail_image(experiment, well):
     prefix = 'http://pleiades.bio.nyu.edu/GI_IMG/convertedImg/'
+    tile = well.get_tile()
     url = '{}{}/{}'.format(prefix, experiment.id, tile)
     url = string.replace(url, 'bmp', 'jpg')
     return url

@@ -16,3 +16,13 @@ class ExperimentFilterForm(forms.Form):
     date = forms.DateField(required=False,
                            label="Date (YYYY-MM-DD)")
     is_junk = forms.NullBooleanField(required=False)
+
+
+class DoubleKnockdownForm(forms.Form):
+    """
+    Form for finding a double knockdown.
+    """
+    query = forms.CharField()
+    target = forms.CharField()
+    screen = forms.ChoiceField(choices=[('SUP', 'SUP'), ('ENH', 'ENH')],
+                               widget=forms.RadioSelect)

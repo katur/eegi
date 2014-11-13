@@ -10,9 +10,11 @@ table.striped
     tr:nth-child(odd)
       background: $gray-lightest
 
+
 table.nice-padding
   th, td
     padding: 10px
+
 
 #results-header
   #total
@@ -26,6 +28,14 @@ table.nice-padding
 
       &:first-child
         margin-left: 0
+
+
+.cleared-spaced-spans
+  span
+    float: left
+    clear: both
+    margin-bottom: $vertical-whitespace / 2
+
 
 hr
   height: 1px

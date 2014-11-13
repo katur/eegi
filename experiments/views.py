@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.exceptions import ObjectDoesNotExist
 
 from experiments.models import Experiment
-from experiments.forms import ExperimentFilterForm
+from experiments.forms import ExperimentFilterForm, DoubleKnockdownForm
 from library.models import LibraryWell
+from worms.models import WormStrain
+from clones.models import Clone
 
 
 def experiments(request, context=None):
@@ -70,6 +73,60 @@ def experiments(request, context=None):
     return render(request, 'experiments.html', context)
 
 
+def double_knockdown_search(request):
+    error = ''
+    if request.method == 'POST':
+        form = DoubleKnockdownForm(request.POST)
+        if form.is_valid():
+            try:
+                data = form.cleaned_data
+                query = data['query']
+                target = data['target']
+                screen = data['screen']
+
+                if screen != 'ENH' and screen != 'SUP':
+                    raise Exception('screen must be ENH or SUP')
+
+                if screen == 'ENH':
+                    strains = (WormStrain.objects.filter(gene=query).exclude(
+                               permissive_temperature__isnull=True))
+                else:
+                    strains = (WormStrain.objects.filter(gene=query).exclude(
+                               restrictive_temperature__isnull=True))
+
+                if len(strains) == 0:
+                    raise Exception('No strain matches query.')
+                elif len(strains) > 1:
+                    raise Exception('Multiple strains match query.')
+                else:
+                    strain = strains[0]
+
+                if screen == 'ENH':
+                    temperature = strain.permissive_temperature
+                else:
+                    temperature = strain.restrictive_temperature
+
+                try:
+                    clone = Clone.objects.get(pk=target)
+                except ObjectDoesNotExist:
+                    raise ObjectDoesNotExist("No clone matches target.")
+
+                return redirect(double_knockdown, strain, clone, temperature)
+
+            except Exception as e:
+                error = e.message
+
+    else:
+        form = DoubleKnockdownForm(initial={'screen': 'SUP'})
+
+    context = {
+        'form': form,
+        'error': error,
+    }
+
+    return render(request, 'double_knockdown_search.html', context)
+
+
 def experiment(request, id):
     """
     Render the page to see information about a specific experiment.
@@ -100,3 +157,27 @@ def experiment_well(request, id, well):
     }
 
     return render(request, 'experiment_well.html', context)
+
+
+def double_knockdown(request, strain, clone, temperature):
+    strain = get_object_or_404(WormStrain, pk=strain)
+    clone = get_object_or_404(Clone, pk=clone)
+
+    well = LibraryWell.objects.filter(intended_clone=clone,
+                                      plate__screen_stage__gt=0)[0]
+
+    experiments = (Experiment.objects
+                   .filter(is_junk=False)
+                   .filter(worm_strain=strain)
+                   .filter(temperature=temperature)
+                   .filter(library_plate=well.plate))
+
+    context = {
+        'strain': strain,
+        'clone': clone,
+        'well': well,
+        'temperature': temperature,
+        'experiments': experiments,
+    }
+
+    return render(request, 'double_knockdown.html', context)

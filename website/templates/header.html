@@ -10,6 +10,7 @@
   {% url 'clones_url' as clones_url %}
   {% url 'library_plates_url' as library_plates_url %}
   {% url 'experiments_url' as experiments_url %}
+  {% url 'double_knockdown_search_url' as double_knockdown_search_url %}
 
   <a href="{{ home_url }}"
       {% ifequal request.path home_url %}
@@ -45,7 +46,14 @@
       {% ifequal request.path experiments_url %}
       class="active"
       {% endifequal %}>
-    Experiments
+    Plate-level Experiments
+  </a>
+
+  <a href="{{ double_knockdown_search_url }}"
+      {% ifequal request.path double_knockdown_search_url %}
+      class="active"
+      {% endifequal %}>
+    Double Knockdown Query
   </a>
 </div>
 

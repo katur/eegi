@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load extra_template_tags %}
+
+{% block body_id %}double-knockdown{% endblock %}
+{% block page_title %}
+{{ strain }}, {{ clone }}, {{ temperature|get_celsius_string }}
+{% endblock %}
+
+{% block content %}
+<div class="cleared-spaced-spans">
+  <span>Worm Strain: {{ strain }}</span>
+
+  <span>Worm Strain Genotype: {{ strain.genotype }}</span>
+
+  <span>RNAi Clone: {{ clone }}</span>
+
+  <span>Temperature: {{ temperature|get_celsius_string }}
+    {% ifequal temperature strain.restrictive_temperature %}
+      (SUP screen)
+    {% endifequal %}
+
+    {% ifequal temperature strain.permissive_temperature %}
+      (ENH screen)
+    {% endifequal %}
+  </span>
+
+  <span>
+    Clone found in well
+    {{ well.id }}.
+
+    Tests of this well:
+    <ul>
+      {% for experiment in experiments %}
+        <li>{{ experiment.id }}</li>
+        <img src="{% get_image experiment well %}" \>
+      {% endfor %}
+    </ul>
+  </span>
+</div>
+
+
+{% endblock %}
