@@ -24,19 +24,55 @@
     {% endifequal %}
   </span>
 
-  <span>
-    Clone found in well
-    {{ well.id }}.
-
-    Tests of this well:
-    <ul>
-      {% for experiment in experiments %}
-        <li>{{ experiment.id }}</li>
-        <img src="{% get_image experiment well %}" \>
-      {% endfor %}
-    </ul>
-  </span>
+  <span>Clone in library at position {{ well.id }}</span>
 </div>
 
+<table class="double-knockdown-results">
+  <th colspan="2">
+    <h3>Results</h3>
+  </th>
+
+  <tr>
+    <td>
+      <span class="title">
+        Double Knockdown
+      </span>
+
+      <div class="rotating-images">
+      {% for experiment in experiments %}
+        <div class="individual-image">
+          <span>
+            Experiment {{ experiment.id }}, well {{ well.well }}
+          </span>
+
+          <div class="image-wrapper">
+            <img src="{% get_image experiment well %}" \>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+    </td>
+
+    <td>
+      <span class="title">
+        Mutant Only
+      </span>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <span class="title">
+        RNAi Only
+      </span>
+    </td>
+
+    <td>
+      <span class="title">
+        N2 control
+      </span>
+    </td>
+  </tr>
+</table>
 
 {% endblock %}

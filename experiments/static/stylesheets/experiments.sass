@@ -31,3 +31,40 @@
         display: block
         position: relative
         padding-top: 75%
+
+.double-knockdown-results
+  width: 100%
+  float: left
+  clear: both
+
+  th
+    background: $light-red
+    padding-top: $vertical-whitespace / 2
+    padding-bottom: $vertical-whitespace / 2
+
+  td
+    width: 46%
+    padding: 2%
+
+  .rotating-images
+    .individual-image
+      display: none
+
+      &:first-child
+        display: block
+
+  .individual-image
+    position: relative
+    width: 100%
+    float: left
+
+  .image-wrapper
+    img
+      width: 100%
+      position: absolute
+
+    &:after
+      content: ''
+      display: block
+      position: relative
+      padding-top: 75%
