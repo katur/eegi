@@ -163,19 +163,21 @@ def double_knockdown(request, strain, clone, temperature):
     strain = get_object_or_404(WormStrain, pk=strain)
     clone = get_object_or_404(Clone, pk=clone)
 
-    well = LibraryWell.objects.filter(intended_clone=clone,
-                                      plate__screen_stage__gt=0)[0]
+    wells = LibraryWell.objects.filter(intended_clone=clone,
+                                       plate__screen_stage__gt=0)
 
-    experiments = (Experiment.objects
-                   .filter(is_junk=False)
-                   .filter(worm_strain=strain)
-                   .filter(temperature=temperature)
-                   .filter(library_plate=well.plate))
+    experiments = {}
+
+    for well in wells:
+        experiments[well] = (Experiment.objects
+                             .filter(is_junk=False)
+                             .filter(worm_strain=strain)
+                             .filter(temperature=temperature)
+                             .filter(library_plate=well.plate))
 
     context = {
         'strain': strain,
         'clone': clone,
-        'well': well,
         'temperature': temperature,
         'experiments': experiments,
     }

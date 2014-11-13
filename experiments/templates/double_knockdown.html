@@ -15,21 +15,22 @@
   <span>RNAi Clone: {{ clone }}</span>
 
   <span>Temperature: {{ temperature|get_celsius_string }}
-    {% ifequal temperature strain.restrictive_temperature %}
-      (SUP screen)
-    {% endifequal %}
-
-    {% ifequal temperature strain.permissive_temperature %}
-      (ENH screen)
-    {% endifequal %}
+    {% with temperature|stringformat:"s" as tstring %}
+      {% if tstring == strain.restrictive_temperature|stringformat:"s" %}
+        (SUP screen)
+      {% endif %}
+      {% if tstring == strain.permissive_temperature|stringformat:"s" %}
+        (ENH screen)
+      {% endif %}
+    {% endwith %}
   </span>
-
-  <span>Clone in library at position {{ well.id }}</span>
 </div>
 
+{% for well, expts in experiments.items %}
+{% if expts %}
 <table class="double-knockdown-results">
   <th colspan="2">
-    <h3>Results</h3>
+    <h3>Clone found in library at position {{ well }}</h3>
   </th>
 
   <tr>
@@ -39,7 +40,7 @@
       </span>
 
       <div class="rotating-images">
-      {% for experiment in experiments %}
+      {% for experiment in expts %}
         <div class="individual-image">
           <span>
             Experiment {{ experiment.id }}, well {{ well.well }}
@@ -74,5 +75,7 @@
     </td>
   </tr>
 </table>
+{% endif %}
+{% endfor %}
 
 {% endblock %}
