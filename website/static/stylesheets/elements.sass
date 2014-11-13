@@ -51,21 +51,22 @@ hr
       .well-content
         color: red
 
-  .well-title
+  .well-title,
+  .well-content
     width: 100%
+    @include ellipsis
+
+  .well-title
     font-size: 12px
     font-weight: bold
-    white-space: nowrap
-    overflow: hidden
-    text-overflow: ellipsis
 
     .parenthetical
       font-weight: normal
 
   .well-content
-    width: 100%
     position: relative
     text-align: center
+    font-size: 13px
 
   &.with-images
     background: black
