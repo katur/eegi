@@ -1,4 +1,5 @@
 import string
+from decimal import Decimal
 
 from django import template
 
@@ -28,6 +29,16 @@ def get_celsius_string(temperature):
         return unicode(temperature) + u'\xb0' + 'C'
     else:
         return None
+
+
+@register.simple_tag
+def get_screen_type(temperature, strain):
+    if Decimal(temperature) == strain.restrictive_temperature:
+        return 'SUP screen temperature'
+    elif Decimal(temperature) == strain.permissive_temperature:
+        return 'ENH screen temperature'
+    else:
+        return 'not SUP or ENH screening temperature for this strain'
 
 
 @register.simple_tag

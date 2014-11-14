@@ -9,27 +9,22 @@
 {% block content %}
 <div class="cleared-spaced-spans">
   <span>
-    Worm Strain Name: {{ strain }}
+    Worm strain:
+    <a href="{{ strain.get_lab_website_url }}">
+      {{ strain }}</a>
   </span>
 
   <span>
-    Worm Genotype: {{ strain.genotype }}
+    Worm genotype: {{ strain.genotype }}
   </span>
 
   <span>
-    RNAi Clone: {{ clone }}
+    RNAi clone: {{ clone }}
   </span>
 
   <span>
     Temperature: {{ temperature|get_celsius_string }}
-    {% with temperature|stringformat:"s" as tstring %}
-      {% if tstring == strain.restrictive_temperature|stringformat:"s" %}
-        (SUP screen)
-      {% endif %}
-      {% if tstring == strain.permissive_temperature|stringformat:"s" %}
-        (ENH screen)
-      {% endif %}
-    {% endwith %}
+    ({% get_screen_type temperature strain %})
   </span>
 </div>
 
@@ -55,9 +50,11 @@
               {% get_image_title experiment rnai_well %}
             </span>
 
-            <div class="image-wrapper">
-              <img src="{% get_thumbnail_image experiment rnai_well %}" \>
-            </div>
+            <a href="{% url 'experiment_well_url' experiment rnai_well.well %}">
+              <div class="image-wrapper">
+                <img src="{% get_thumbnail_image experiment rnai_well %}" \>
+              </div>
+            </a>
           </div>
         {% endfor %}
         </div>
@@ -72,9 +69,11 @@
                 {% get_image_title experiment l4440_well %}</span>
               </span>
 
-              <div class="image-wrapper">
-                <img src="{% get_thumbnail_image experiment l4440_well %}" \>
-              </div>
+              <a href="{% url 'experiment_well_url' experiment l4440_well.well %}">
+                <div class="image-wrapper">
+                  <img src="{% get_thumbnail_image experiment l4440_well %}" \>
+                </div>
+              </a>
             </div>
           {% endfor %}
         {% endfor %}
@@ -96,9 +95,11 @@
               {% get_image_title experiment rnai_well %}
             </span>
 
-            <div class="image-wrapper">
-              <img src="{% get_thumbnail_image experiment rnai_well %}" \>
-            </div>
+            <a href="{% url 'experiment_well_url' experiment rnai_well.well %}">
+              <div class="image-wrapper">
+                <img src="{% get_thumbnail_image experiment rnai_well %}" \>
+              </div>
+            </a>
           </div>
         {% endfor %}
         </div>
@@ -113,9 +114,11 @@
                 {% get_image_title experiment l4440_well %}
               </span>
 
-              <div class="image-wrapper">
-                <img src="{% get_thumbnail_image experiment l4440_well %}" \>
-              </div>
+              <a href="{% url 'experiment_well_url' experiment l4440_well.well %}">
+                <div class="image-wrapper">
+                  <img src="{% get_thumbnail_image experiment l4440_well %}" \>
+                </div>
+              </a>
             </div>
           {% endfor %}
         {% endfor %}

@@ -120,6 +120,12 @@ def double_knockdown_search(request):
                 if screen != 'ENH' and screen != 'SUP':
                     raise Exception('screen must be ENH or SUP')
 
+                if query == 'N2':
+                    raise Exception('query must be a mutant, not N2')
+
+                if target == 'L4440':
+                    raise Exception('target must be an RNAi clone, not L4440')
+
                 if screen == 'ENH':
                     strains = (WormStrain.objects
                                .filter(Q(gene=query) | Q(allele=query) |

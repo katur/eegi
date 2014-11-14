@@ -27,6 +27,7 @@
 
   <span>
     Temperature: {{ experiment.temperature|get_celsius_string }}
+    ({% get_screen_type experiment.temperature experiment.worm_strain %})
   </span>
 
   <span>Date: {{ experiment.date }}</span>
@@ -40,6 +41,18 @@
   <span>
     Intended RNAi Clone: {{ well.intended_clone}}
   </span>
+
+  <span>
+    <a href="{% url 'experiment_url' id=experiment.id %}">
+      Click for entire experiment plate.</a>
+  </span>
+
+  {% if well.intended_clone and experiment.worm_strain.id != "N2" %}
+  <span>
+    <a href="{% url 'double_knockdown_url' strain=experiment.worm_strain.id clone=well.intended_clone.id temperature=experiment.temperature %}">
+      Click for all replicates of this strain/clone/temp.</a>
+  </span>
+  {% endif %}
 </div>
 
 <div id="image">
