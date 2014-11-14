@@ -23,9 +23,9 @@ class DoubleKnockdownForm(forms.Form):
     Form for finding a double knockdown.
     """
     query = forms.CharField(
-        label='Mutant query (gene, allele, or strain name)')
+        label='Mutant query', help_text='gene, allele, or strain name')
     target = forms.CharField(
-        label='RNAi Target (clone; eventually cosmid/gene)')
+        label='RNAi Target', help_text='gene, cosmid, clone, or position')
     screen = forms.ChoiceField(
         choices=[('SUP', 'suppressor'), ('ENH', 'enhancer')],
         widget=forms.RadioSelect)
