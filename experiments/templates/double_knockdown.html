@@ -27,64 +27,102 @@
   </span>
 </div>
 
-{% for position, dates in data.items %}
-  {% for date, experiment_classes in dates.items %}
-    <table class="double-knockdown-results">
+{% for position, date, experiments in data %}
+  <table class="double-knockdown-results">
+    <th colspan="2">
+      <h3>
+        Clone located in plate {{ position.plate }},
+        well {{ position.well }};
+        tested on {{ date }}
+      </h3>
+    </th>
 
-      <th colspan="2">
-        <h3>
-          Clone located in plate {{ position.plate }},
-          well {{ position.well }};
-          tested on {{ date }}
-        </h3>
-      </th>
+    <tr>
+      <td>
+        <span class="title">
+          Double Knockdown
+        </span>
 
-      <tr>
-        <td>
-          <span class="title">
-            Double Knockdown
-          </span>
+        <div class="rotating-images">
+        {% for experiment in experiments|keyvalue:"mutant_rnai" %}
+          <div class="individual-image">
+            <span>
+              Experiment {{ experiment.id }}, well {{ position.well }}
+            </span>
 
-          <div class="rotating-images">
-          {% for experiment_class, experiments in experiment_classes.items %}
-          {{ experiment_class }}
-          {% for experiment in experiments %}
+            <div class="image-wrapper">
+              <img src="{% get_image experiment position %}" \>
+            </div>
+          </div>
+        {% endfor %}
+        </div>
+      </td>
+
+      <td>
+        <span class="title">
+          Mutant Only
+        </span>
+
+        <div class="rotating-images">
+        {% for experiment in experiments|keyvalue:"mutant_l4440" %}
+          <div class="individual-image">
+            <span>
+              Experiment {{ experiment.id }}, well {{ position.well }}
+            </span>
+
+            <div class="image-wrapper">
+              <img src="{% get_image experiment position %}" \>
+            </div>
+          </div>
+        {% endfor %}
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <span class="title">
+          RNAi Only
+        </span>
+
+        <div class="rotating-images">
+        {% for experiment in experiments|keyvalue:"n2_rnai" %}
+          <div class="individual-image">
+            <span>
+              Experiment {{ experiment.id }}, well {{ position.well }}
+            </span>
+
+            <div class="image-wrapper">
+              <img src="{% get_image experiment position %}" \>
+            </div>
+          </div>
+        {% endfor %}
+        </div>
+      </td>
+
+      <td>
+        <span class="title">
+          N2 control
+        </span>
+
+        <div class="rotating-images">
+        {% for experiment in experiments|keyvalue:"n2_l4440" %}
+          {% for l4440_well in l4440_wells %}
             <div class="individual-image">
               <span>
-                Experiment {{ experiment.id }}, well {{ position.well }}
+                Experiment {{ experiment.id }}, well {{ l4440_well.well }}
               </span>
 
               <div class="image-wrapper">
-                <img src="{% get_image experiment position %}" \>
+                <img src="{% get_image experiment l4440_well %}" \>
               </div>
             </div>
           {% endfor %}
-          {% endfor %}
-          </div>
-        </td>
-
-        <td>
-          <span class="title">
-            Mutant Only
-          </span>
-        </td>
-      </tr>
-
-      <tr>
-        <td>
-          <span class="title">
-            RNAi Only
-          </span>
-        </td>
-
-        <td>
-          <span class="title">
-            N2 control
-          </span>
-        </td>
-      </tr>
-    </table>
-  {% endfor %}
+        {% endfor %}
+        </div>
+      </td>
+    </tr>
+  </table>
 {% endfor %}
 
 {% endblock %}

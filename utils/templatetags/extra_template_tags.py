@@ -5,6 +5,11 @@ from django import template
 register = template.Library()
 
 
+@register.filter
+def keyvalue(dict, key):
+        return dict[key]
+
+
 @register.filter(is_safe=True)
 def get_celsius_string(temperature):
     if temperature:

@@ -5,7 +5,7 @@ from django.db.models import Q
 
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm, DoubleKnockdownForm
-from library.models import LibraryWell
+from library.models import LibraryWell, LibraryPlate
 from worms.models import WormStrain
 from clones.models import Clone
 
@@ -167,41 +167,67 @@ def double_knockdown_search(request):
 def double_knockdown(request, strain, clone, temperature):
     strain = get_object_or_404(WormStrain, pk=strain)
     clone = get_object_or_404(Clone, pk=clone)
+    n2 = get_object_or_404(WormStrain, pk='N2')
+    l4440_plate = get_object_or_404(LibraryPlate, pk='L4440')
+    l4440_wells = LibraryWell.objects.filter(plate=l4440_plate)
 
     library_positions = (LibraryWell.objects
                          .filter(intended_clone=clone,
                                  plate__screen_stage__gt=0)
                          .order_by('-plate__screen_stage'))
 
-    data = {}
+    data = []
 
-    for p in library_positions:
-        data[p] = {}
-
+    for position in library_positions:
         dates = (Experiment.objects
                  .filter(is_junk=False)
                  .filter(worm_strain=strain)
                  .filter(temperature=temperature)
-                 .filter(library_plate=p.plate)
-                 .order_by('date')
+                 .filter(library_plate=position.plate)
+                 .order_by('-date')
                  .values('date').distinct())
 
-        for d in dates:
-            data[p][str(d)] = {}
-
-            data[p][str(d)]['doubles'] = (
+        for date in dates:
+            mutant_rnai = (
                 Experiment.objects
                 .filter(is_junk=False)
                 .filter(worm_strain=strain)
                 .filter(temperature=temperature)
-                .filter(library_plate=p.plate)
-                .order_by('date'))
+                .filter(date=date['date'])
+                .filter(library_plate=position.plate))
+            n2_rnai = (
+                Experiment.objects
+                .filter(is_junk=False)
+                .filter(worm_strain=n2)
+                .filter(date=date['date'])
+                .filter(library_plate=position.plate))
+            mutant_l4440 = (
+                Experiment.objects
+                .filter(is_junk=False)
+                .filter(worm_strain=strain)
+                .filter(temperature=temperature)
+                .filter(date=date['date'])
+                .filter(library_plate=l4440_plate))
+            n2_l4440 = (
+                Experiment.objects
+                .filter(is_junk=False)
+                .filter(worm_strain=n2)
+                .filter(date=date['date'])
+                .filter(library_plate=l4440_plate))
+
+            data.append((position, date['date'], {
+                'mutant_rnai': mutant_rnai,
+                'mutant_l4440': mutant_l4440,
+                'n2_rnai': n2_rnai,
+                'n2_l4440': n2_l4440,
+            }))
 
     context = {
         'strain': strain,
         'clone': clone,
         'temperature': temperature,
         'data': data,
+        'l4440_wells': l4440_wells,
     }
 
     return render(request, 'double_knockdown.html', context)
