@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load extra_template_tags %}
 
-{% block body_id %}double-knockdown{% endblock %}
+{% block body_id %}double-knockdown-search{% endblock %}
 {% block page_title %}Search for a double knockdown{% endblock %}
 
 {% block content %}
 
 {% if error %}
 <span class="error-message">
-  Your submission had an error: {{ error }}
+  Please try again: {{ error }}
 </span>
 {% endif %}
 

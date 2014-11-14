@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm, DoubleKnockdownForm
@@ -73,6 +74,38 @@ def experiments(request, context=None):
     return render(request, 'experiments.html', context)
 
 
+def experiment(request, id):
+    """
+    Render the page to see information about a specific experiment.
+    """
+    experiment = get_object_or_404(Experiment, pk=id)
+    wells = LibraryWell.objects.filter(
+        plate=experiment.library_plate).order_by('well')
+
+    for well in wells:
+        well.row = well.get_row()
+
+    context = {
+        'experiment': experiment,
+        'wells': wells,
+    }
+
+    return render(request, 'experiment.html', context)
+
+
+def experiment_well(request, id, well):
+    experiment = get_object_or_404(Experiment, pk=id)
+    well = LibraryWell.objects.filter(
+        plate=experiment.library_plate).filter(well=well)[0]
+
+    context = {
+        'experiment': experiment,
+        'well': well,
+    }
+
+    return render(request, 'experiment_well.html', context)
+
+
 def double_knockdown_search(request):
     error = ''
     if request.method == 'POST':
@@ -88,11 +121,15 @@ def double_knockdown_search(request):
                     raise Exception('screen must be ENH or SUP')
 
                 if screen == 'ENH':
-                    strains = (WormStrain.objects.filter(gene=query).exclude(
-                               permissive_temperature__isnull=True))
+                    strains = (WormStrain.objects
+                               .filter(Q(gene=query) | Q(allele=query) |
+                                       Q(id=query))
+                               .exclude(permissive_temperature__isnull=True))
                 else:
-                    strains = (WormStrain.objects.filter(gene=query).exclude(
-                               restrictive_temperature__isnull=True))
+                    strains = (WormStrain.objects
+                               .filter(Q(gene=query) | Q(allele=query) |
+                                       Q(id=query))
+                               .exclude(restrictive_temperature__isnull=True))
 
                 if len(strains) == 0:
                     raise Exception('No strain matches query.')
@@ -125,38 +162,6 @@ def double_knockdown_search(request):
     }
 
     return render(request, 'double_knockdown_search.html', context)
-
-
-def experiment(request, id):
-    """
-    Render the page to see information about a specific experiment.
-    """
-    experiment = get_object_or_404(Experiment, pk=id)
-    wells = LibraryWell.objects.filter(
-        plate=experiment.library_plate).order_by('well')
-
-    for well in wells:
-        well.row = well.get_row()
-
-    context = {
-        'experiment': experiment,
-        'wells': wells,
-    }
-
-    return render(request, 'experiment.html', context)
-
-
-def experiment_well(request, id, well):
-    experiment = get_object_or_404(Experiment, pk=id)
-    well = LibraryWell.objects.filter(
-        plate=experiment.library_plate).filter(well=well)[0]
-
-    context = {
-        'experiment': experiment,
-        'well': well,
-    }
-
-    return render(request, 'experiment_well.html', context)
 
 
 def double_knockdown(request, strain, clone, temperature):

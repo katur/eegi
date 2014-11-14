@@ -30,7 +30,9 @@
 {% if expts %}
 <table class="double-knockdown-results">
   <th colspan="2">
-    <h3>Clone found in library at position {{ well }}</h3>
+    <h3>
+      Clone found in library in plate {{ well.plate }}, well {{ well.well }}
+    </h3>
   </th>
 
   <tr>
