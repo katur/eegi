@@ -10,14 +10,6 @@ def keyvalue(dict, key):
         return dict[key]
 
 
-@register.filter(is_safe=True)
-def get_celsius_string(temperature):
-    if temperature:
-        return unicode(temperature) + u'\xb0' + 'C'
-    else:
-        return None
-
-
 @register.filter
 def get_range(value):
     return range(value)
@@ -28,6 +20,14 @@ def url_replace(request, field, value):
     query_dict = request.GET.copy()
     query_dict[field] = value
     return query_dict.urlencode()
+
+
+@register.filter(is_safe=True)
+def get_celsius_string(temperature):
+    if temperature:
+        return unicode(temperature) + u'\xb0' + 'C'
+    else:
+        return None
 
 
 @register.simple_tag
@@ -45,3 +45,8 @@ def get_thumbnail_image(experiment, well):
     url = '{}{}/{}'.format(prefix, experiment.id, tile)
     url = string.replace(url, 'bmp', 'jpg')
     return url
+
+
+@register.simple_tag
+def get_image_title(experiment, well):
+    return 'Experiment {}, well {}'.format(str(experiment.id), well.well)

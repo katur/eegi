@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 
 from clones.models import Clone
 
@@ -47,6 +48,13 @@ class LibraryPlate(models.Model):
             # All other situations, simply order alphabetically
             else:
                 return cmp(self.id, other.id)
+
+    def get_all_wells(self):
+        return LibraryWell.objects.filter(plate=self)
+
+    def get_l4440_wells(self):
+        return LibraryWell.objects.filter(Q(plate=self),
+                                          Q(intended_clone='L4440'))
 
 
 class LibraryWell(models.Model):

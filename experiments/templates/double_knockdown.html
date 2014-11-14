@@ -27,12 +27,12 @@
   </span>
 </div>
 
-{% for position, date, experiments in data %}
+{% for rnai_well, date, experiments in data %}
   <table class="double-knockdown-results">
     <th colspan="2">
       <h3>
-        Clone located in plate {{ position.plate }},
-        well {{ position.well }};
+        Clone located in plate {{ rnai_well.plate }},
+        well {{ rnai_well.well }};
         tested on {{ date }}
       </h3>
     </th>
@@ -46,12 +46,10 @@
         <div class="rotating-images">
         {% for experiment in experiments|keyvalue:"mutant_rnai" %}
           <div class="individual-image">
-            <span>
-              Experiment {{ experiment.id }}, well {{ position.well }}
-            </span>
+            <span>{% get_image_title experiment rnai_well %}</span>
 
             <div class="image-wrapper">
-              <img src="{% get_image experiment position %}" \>
+              <img src="{% get_thumbnail_image experiment rnai_well %}" \>
             </div>
           </div>
         {% endfor %}
@@ -65,15 +63,15 @@
 
         <div class="rotating-images">
         {% for experiment in experiments|keyvalue:"mutant_l4440" %}
-          <div class="individual-image">
-            <span>
-              Experiment {{ experiment.id }}, well {{ position.well }}
-            </span>
+          {% for l4440_well in experiment.library_plate.get_l4440_wells %}
+            <div class="individual-image">
+              <span>{% get_image_title experiment l4440_well %}</span>
 
-            <div class="image-wrapper">
-              <img src="{% get_image experiment position %}" \>
+              <div class="image-wrapper">
+                <img src="{% get_thumbnail_image experiment l4440_well %}" \>
+              </div>
             </div>
-          </div>
+          {% endfor %}
         {% endfor %}
         </div>
       </td>
@@ -88,12 +86,10 @@
         <div class="rotating-images">
         {% for experiment in experiments|keyvalue:"n2_rnai" %}
           <div class="individual-image">
-            <span>
-              Experiment {{ experiment.id }}, well {{ position.well }}
-            </span>
+            <span>{% get_image_title experiment rnai_well %}</span>
 
             <div class="image-wrapper">
-              <img src="{% get_image experiment position %}" \>
+              <img src="{% get_thumbnail_image experiment rnai_well %}" \>
             </div>
           </div>
         {% endfor %}
@@ -107,14 +103,12 @@
 
         <div class="rotating-images">
         {% for experiment in experiments|keyvalue:"n2_l4440" %}
-          {% for l4440_well in l4440_wells %}
+          {% for l4440_well in experiment.library_plate.get_l4440_wells %}
             <div class="individual-image">
-              <span>
-                Experiment {{ experiment.id }}, well {{ l4440_well.well }}
-              </span>
+              <span>{% get_image_title experiment l4440_well %}</span>
 
               <div class="image-wrapper">
-                <img src="{% get_image experiment l4440_well %}" \>
+                <img src="{% get_thumbnail_image experiment l4440_well %}" \>
               </div>
             </div>
           {% endfor %}
