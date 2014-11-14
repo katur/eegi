@@ -42,17 +42,25 @@
 
 .double-knockdown-results
   width: 100%
+  margin-bottom: $vertical-whitespace * 4
+  background: black
+  color: $gray-light
   float: left
   clear: both
 
-  th
-    background: $light-red
-    padding-top: $vertical-whitespace / 2
-    padding-bottom: $vertical-whitespace / 2
+  th, td
+    width: 50%
 
-  td
-    width: 46%
-    padding: 2%
+  th
+    padding: 1% 0
+    background: $peach
+    color: black
+    text-align: center
+
+    &.table-title
+      padding-top: $vertical-whitespace 0
+      font-size: 18px
+      background: $light-red
 
   .rotating-images
     .individual-image
@@ -66,13 +74,23 @@
     width: 100%
     float: left
 
-  .image-wrapper
-    img
+    .image-title
       width: 100%
-      position: absolute
+      float: left
+      text-align: center
+      padding: 2% 0
 
-    &:after
-      content: ''
-      display: block
-      position: relative
-      padding-top: 75%
+    .image-wrapper
+      width: 100%
+      float: left
+
+      img
+        width: 90%
+        padding: 0 5%
+        position: absolute
+
+      &:after
+        content: ''
+        display: block
+        position: relative
+        padding-top: 75%
