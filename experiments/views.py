@@ -168,23 +168,40 @@ def double_knockdown(request, strain, clone, temperature):
     strain = get_object_or_404(WormStrain, pk=strain)
     clone = get_object_or_404(Clone, pk=clone)
 
-    wells = LibraryWell.objects.filter(intended_clone=clone,
-                                       plate__screen_stage__gt=0)
+    library_positions = (LibraryWell.objects
+                         .filter(intended_clone=clone,
+                                 plate__screen_stage__gt=0)
+                         .order_by('-plate__screen_stage'))
 
-    experiments = {}
+    data = {}
 
-    for well in wells:
-        experiments[well] = (Experiment.objects
-                             .filter(is_junk=False)
-                             .filter(worm_strain=strain)
-                             .filter(temperature=temperature)
-                             .filter(library_plate=well.plate))
+    for p in library_positions:
+        data[p] = {}
+
+        dates = (Experiment.objects
+                 .filter(is_junk=False)
+                 .filter(worm_strain=strain)
+                 .filter(temperature=temperature)
+                 .filter(library_plate=p.plate)
+                 .order_by('date')
+                 .values('date').distinct())
+
+        for d in dates:
+            data[p][str(d)] = {}
+
+            data[p][str(d)]['doubles'] = (
+                Experiment.objects
+                .filter(is_junk=False)
+                .filter(worm_strain=strain)
+                .filter(temperature=temperature)
+                .filter(library_plate=p.plate)
+                .order_by('date'))
 
     context = {
         'strain': strain,
         'clone': clone,
         'temperature': temperature,
-        'experiments': experiments,
+        'data': data,
     }
 
     return render(request, 'double_knockdown.html', context)
