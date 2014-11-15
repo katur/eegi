@@ -2,14 +2,15 @@ body
   float: left
   width: 100 - ($window-padding*2)
   padding: $window-padding
+  background: $site-background
 
   #header
     width: 100%
     float: left
-    margin-bottom: 40px
+    margin-bottom: $vertical-whitespace
 
     h1
-      margin-bottom: 20px
+      margin-bottom: $vertical-whitespace / 3
 
   #content
     width: 100%
@@ -17,9 +18,9 @@ body
 
     h2
       clear: both
-      margin-bottom: 30px
+      margin-bottom: $vertical-whitespace
 
   #footer
     width: 100%
     float: left
-    margin-top: 150px
+    margin-top: $vertical-whitespace * 4

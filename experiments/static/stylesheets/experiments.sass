@@ -40,57 +40,61 @@
     padding-right: 20px
 
 
-.double-knockdown-results
-  width: 100%
-  margin-bottom: $vertical-whitespace * 4
-  background: black
-  color: $gray-light
+table.double-knockdown-results
   float: left
   clear: both
+  width: 100%
+  margin-bottom: $vertical-whitespace * 4
+  background: $gray-light
 
   th, td
     width: 50%
 
+  td
+    margin-bottom: 1%
+
   th
-    padding: 1% 0
-    background: $peach
-    color: black
+    padding: 3% 0 1%
+    font-size: $base-font-size + 2
     text-align: center
 
     &.table-title
-      padding-top: $vertical-whitespace 0
-      font-size: 18px
       background: $light-red
+      padding: 1% 0
+      font-size: $base-font-size + 4
 
   .rotating-images
+    width: 94%
+    margin: 0 3%
+    float: left
+    background: black
+    color: $gray-light
+
     .individual-image
       display: none
 
       &:first-child
         display: block
 
-  .individual-image
-    position: relative
-    width: 100%
-    float: left
+      position: relative
 
-    .image-title
-      width: 100%
-      float: left
-      text-align: center
-      padding: 2% 0
+      .image-title
+        float: left
+        width: 100%
+        padding: 2% 0
+        text-align: center
 
-    .image-wrapper
-      width: 100%
-      float: left
+      .image-wrapper
+        float: left
+        width: 100%
 
-      img
-        width: 90%
-        padding: 0 5%
-        position: absolute
+        img
+          position: absolute
+          width: 90%
+          padding: 0 5%
 
-      &:after
-        content: ''
-        display: block
-        position: relative
-        padding-top: 75%
+        &:after
+          content: ''
+          display: block
+          position: relative
+          padding-top: 75%
