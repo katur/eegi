@@ -31,7 +31,7 @@ installed):
 The database is MySQL, and is named `eegi`.
 
 [Here](https://www.lucidchart.com/documents/view/4eb4bac8-5339-ae33-8c00-5ccd0a0085f4)
-is a web view of the database schema on Lucidchart, and [here](https://www.lucidchart.com/documents/view/819feb06-fb91-4262-8f39-aa8584e6c02b) 
+is a web view of the database schema on Lucidchart, and [here](https://www.lucidchart.com/documents/view/819feb06-fb91-4262-8f39-aa8584e6c02b)
 is the draft in progress of the `clones` app.
 
 [Here](https://www.lucidchart.com/publicSegments/view/53f3c896-8854-49cc-8c3a-69d30a005381)
@@ -70,7 +70,9 @@ CSS is in [SASS](http://sass-lang.com/). Run
 `sass -wc --style compressed website/static/stylesheets/styles.sass`
 to compile.
 
-Javascript is in [jQuery](http://jquery.com/).
+Javascript is in [CoffeeScript](http://coffeescript.org/). Run
+`coffee -wc --style website/static/js/website.coffee`
+to compile.
 
 Purely offline scripts to be run by the project maintainer
 (e.g. the script that migrates data from the old database)
