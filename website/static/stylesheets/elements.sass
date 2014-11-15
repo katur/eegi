@@ -53,21 +53,40 @@ table.nice-padding
 
 .plate-96
   width: 100%
-  text-align: center
+  font-size: 13px
+
+  &.with-images
+    background: black
+    color: $gray-light
 
   td
-    width: 100% / 12
     position: relative
-    padding: 3px
+    padding: 20px 0
 
-    &.empty-well
-      .well-content
-        color: red
+  .empty-well
+    .well-caption
+      color: $error-color
 
   .well-title,
-  .well-content
+  .well-caption,
+  .experiment-image-wrapper
     width: 100%
+
+  .well-title,
+  .well-caption
+    position: absolute
+    left: 0
+    text-align: center
     @include ellipsis
+
+    &.well-title
+      top: 0
+
+    &.well-caption
+      bottom: 0
+
+  .experiment-image-wrapper
+    display: block
 
   .well-title
     font-size: 12px
@@ -76,29 +95,8 @@ table.nice-padding
     .parenthetical
       font-weight: normal
 
-  .well-content
-    position: relative
-    text-align: center
-    font-size: 13px
-
-  &.with-images
-    background: black
-    color: $gray-light
-
-    img
-      position: absolute
-      top: 0
-      left: 0
-      width: 100%
-
-    .well-content
-      &:before
-        content: ""
-        display: block
-        padding-top: 80%
-
-    td
-      border: 2px solid $site-background
+//    td
+ //     border: 2px solid $site-background
 
 
 .experiment-image-wrapper
