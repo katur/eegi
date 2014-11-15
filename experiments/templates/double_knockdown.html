@@ -2,6 +2,7 @@
 {% load extra_template_tags %}
 
 {% block body_id %}double-knockdown{% endblock %}
+
 {% block page_title %}
 {{ strain }} x {{ clone }}, at {{ temperature|get_celsius_string }}
 {% endblock %}
@@ -48,13 +49,14 @@
           <div class="individual-image">
             <span class="image-title">
               {% get_image_title experiment rnai_well %}
+              <a
+                href="{% url 'experiment_well_url' experiment rnai_well.well %}">
+              click to zoom</a>
             </span>
 
-            <a href="{% url 'experiment_well_url' experiment rnai_well.well %}">
-              <div class="image-wrapper">
+              <div class="experiment-image-wrapper">
                 <img src="{% get_thumbnail_image experiment rnai_well %}" \>
               </div>
-            </a>
           </div>
         {% endfor %}
         </div>
@@ -66,14 +68,14 @@
           {% for l4440_well in experiment.library_plate.get_l4440_wells %}
             <div class="individual-image">
               <span class="image-title">
-                {% get_image_title experiment l4440_well %}</span>
+                {% get_image_title experiment l4440_well %}
+                <a href="{% url 'experiment_well_url' experiment l4440_well.well %}">
+                  click to zoom</a>
               </span>
 
-              <a href="{% url 'experiment_well_url' experiment l4440_well.well %}">
-                <div class="image-wrapper">
-                  <img src="{% get_thumbnail_image experiment l4440_well %}" \>
-                </div>
-              </a>
+              <div class="experiment-image-wrapper">
+                <img src="{% get_thumbnail_image experiment l4440_well %}" \>
+              </div>
             </div>
           {% endfor %}
         {% endfor %}
@@ -93,13 +95,13 @@
           <div class="individual-image">
             <span class="image-title">
               {% get_image_title experiment rnai_well %}
+              <a href="{% url 'experiment_well_url' experiment rnai_well.well %}">
+                click to zoom</a>
             </span>
 
-            <a href="{% url 'experiment_well_url' experiment rnai_well.well %}">
-              <div class="image-wrapper">
-                <img src="{% get_thumbnail_image experiment rnai_well %}" \>
-              </div>
-            </a>
+            <div class="experiment-image-wrapper">
+              <img src="{% get_thumbnail_image experiment rnai_well %}" \>
+            </div>
           </div>
         {% endfor %}
         </div>
@@ -112,13 +114,13 @@
             <div class="individual-image">
               <span class="image-title">
                 {% get_image_title experiment l4440_well %}
+                <a href="{% url 'experiment_well_url' experiment l4440_well.well %}">
+                  click to zoom</a>
               </span>
 
-              <a href="{% url 'experiment_well_url' experiment l4440_well.well %}">
-                <div class="image-wrapper">
-                  <img src="{% get_thumbnail_image experiment l4440_well %}" \>
-                </div>
-              </a>
+              <div class="experiment-image-wrapper">
+                <img src="{% get_thumbnail_image experiment l4440_well %}" \>
+              </div>
             </div>
           {% endfor %}
         {% endfor %}

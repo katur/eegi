@@ -16,22 +16,10 @@
 
 
 #experiment-well
-  #content
-    #image
-      position: relative
-      clear: both
-      width: 100%
-      max-width: 1300px
-
-      img
-        width: 100%
-        position: absolute
-
-      &:after
-        content: ''
-        display: block
-        position: relative
-        padding-top: 75%
+  .experiment-image-wrapper
+    clear: both
+    width: 100%
+    max-width: 1300px
 
 
 #double-knockdown-search
@@ -64,8 +52,9 @@ table.double-knockdown-results
       font-size: $base-font-size + 4
 
   .rotating-images
-    width: 94%
+    width: 88%
     margin: 0 3%
+    padding: 3%
     float: left
     background: black
     color: $gray-light
@@ -84,17 +73,6 @@ table.double-knockdown-results
         padding: 2% 0
         text-align: center
 
-      .image-wrapper
+      .experiment-image-wrapper
         float: left
         width: 100%
-
-        img
-          position: absolute
-          width: 90%
-          padding: 0 5%
-
-        &:after
-          content: ''
-          display: block
-          position: relative
-          padding-top: 75%
