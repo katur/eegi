@@ -1,21 +1,43 @@
-$(document).ready =>
+$(document).ready ->
   removePageTitleStyleIfEmpty()
   setResizeHandler()
   positionFooter()
+  initializeDoubleKnockdownPage()
 
 
-removePageTitleStyleIfEmpty = =>
+initializeDoubleKnockdownPage = ->
+  return if !$("body#double-knockdown").length
+
+  rotatingImages = $(".rotating-images")
+
+  rotatingImages.each ->
+    el = $(this)
+    el.find(".individual-image").first().addClass("show")
+
+  rotatingImages.find(".experiment-image-wrapper").click ->
+    showNextImage($(this).closest(".rotating-images"))
+
+
+showNextImage = (rotatingImage) ->
+  images = rotatingImage.find(".individual-image")
+  i = images.index($(".show"))
+  images.eq(i).removeClass("show")
+  i = (++i) % images.length
+  images.eq(i).addClass("show")
+
+
+removePageTitleStyleIfEmpty = ->
   pageTitle = $("#page-title")
   if pageTitle.is(":empty")
     pageTitle.remove()
 
 
-setResizeHandler = =>
-  $(window).resize =>
+setResizeHandler = ->
+  $(window).resize ->
     positionFooter()
 
 
-positionFooter = =>
+positionFooter = ->
   footer = $("#footer")
   footerHeight = footer.outerHeight()
   footerWidth= footer.width()
