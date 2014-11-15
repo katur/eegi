@@ -12,18 +12,30 @@ initializeDoubleKnockdownPage = ->
 
   rotatingImages.each ->
     el = $(this)
-    el.find(".individual-image").first().addClass("show")
+    firstImage = el.find(".individual-image").first()
+    addImageElement(firstImage)
+    firstImage.addClass("show")
 
   rotatingImages.find(".experiment-image-wrapper").click ->
-    showNextImage($(this).closest(".rotating-images"))
+    rotatingImage = $(this).closest(".rotating-images")
+    showNextImage(rotatingImage)
 
 
 showNextImage = (rotatingImage) ->
   images = rotatingImage.find(".individual-image")
-  i = images.index($(".show"))
+  currentImage = rotatingImage.find(".show")
+  i = images.index(currentImage)
   images.eq(i).removeClass("show")
   i = (++i) % images.length
-  images.eq(i).addClass("show")
+  nextImage = images.eq(i)
+  nextImage.addClass("show")
+  addImageElement(nextImage)
+
+
+addImageElement = (image) ->
+  imageWrapper = image.find(".experiment-image-wrapper")
+  imageSrc = imageWrapper.attr("data-src")
+  imageWrapper.html("<img src='#{imageSrc}' \>")
 
 
 removePageTitleStyleIfEmpty = ->
