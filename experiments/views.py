@@ -93,6 +93,22 @@ def experiment(request, id):
     return render(request, 'experiment.html', context)
 
 
+def experiment_tile_view(request, id):
+    """
+    Render the page to see information about a specific experiment.
+    """
+    experiment = get_object_or_404(Experiment, pk=id)
+    wells = LibraryWell.objects.filter(
+        plate=experiment.library_plate).order_by('well')
+
+    context = {
+        'experiment': experiment,
+        'wells': wells,
+    }
+
+    return render(request, 'experiment_tile_view.html', context)
+
+
 def experiment_well(request, id, well):
     experiment = get_object_or_404(Experiment, pk=id)
     well = LibraryWell.objects.filter(

@@ -34,6 +34,11 @@
   {% if experiment.comment %}
     <span>Comment: {{ experiment.comment }}</span>
   {% endif %}
+
+  <span>
+    <a href="{% url 'experiment_tile_view_url' id=experiment.id %}">
+      See fullsize thumbnail images, vertical mode</a>
+  </span>
 </div>
 
 <table class="plate-96 with-images">
@@ -58,4 +63,5 @@
   </tr>
   {% endfor %}
 </table>
+
 {% endblock %}
