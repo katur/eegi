@@ -51,17 +51,34 @@ table.nice-padding
         margin-left: 0
 
 
+.experiment-image-wrapper
+  position: relative
+
+  img
+    position: absolute
+    width: 100%
+
+  &:after
+    content: ''
+    display: block
+    position: relative
+    padding-top: 75%
+
+
 .plate-96
   width: 100%
   font-size: 13px
+
+  td
+    position: relative
+    padding: 20px 0
 
   &.with-images
     background: black
     color: $gray-light
 
-  td
-    position: relative
-    padding: 20px 0
+    td
+      border: 2px solid $site-background
 
   .empty-well
     .well-caption
@@ -94,20 +111,3 @@ table.nice-padding
 
     .parenthetical
       font-weight: normal
-
-//    td
- //     border: 2px solid $site-background
-
-
-.experiment-image-wrapper
-  position: relative
-
-  img
-    position: absolute
-    width: 100%
-
-  &:after
-    content: ''
-    display: block
-    position: relative
-    padding-top: 75%
