@@ -57,6 +57,10 @@
             <div class="experiment-image-wrapper"
               data-src="{% get_image experiment rnai_well %}">
             </div>
+
+            <span class="image-caption">
+              {{ experiment.score_summary }}
+            </span>
           </div>
         {% endfor %}
         </div>

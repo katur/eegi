@@ -204,6 +204,10 @@ def double_knockdown(request, strain, clone, temperature):
                            Q(date=date['date']),
                            Q(library_plate=library_well.plate)))
 
+            for experiment in mutant_rnai:
+                experiment.score_summary = experiment.get_score_summary(
+                    library_well)
+
             n2_rnai = (Experiment.objects.filter(
                        Q(is_junk=False),
                        Q(worm_strain=n2),

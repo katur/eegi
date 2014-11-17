@@ -1,6 +1,7 @@
 from __future__ import division
 
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 
 from worms.models import WormStrain
@@ -30,8 +31,37 @@ class Experiment(models.Model):
     def __unicode__(self):
         return str(self.id)
 
-    def get_scores():
-        pass
+    def get_scores(self, well=None):
+        if well:
+            scores = (ManualScore.objects
+                      .filter(Q(experiment=self), Q(well=well.well))
+                      .order_by('scorer', 'timestamp', 'score_code'))
+        else:
+            scores = ManualScore.objects.filter(experiment=self)
+
+        return scores
+
+    def get_score_summary(self, well):
+        scores = self.get_scores(well)
+        d = {}
+        for score in scores:
+            scorer = score.scorer
+            timestamp = score.timestamp
+            if scorer not in d:
+                d[scorer] = {}
+            if timestamp not in d[scorer]:
+                d[scorer][timestamp] = []
+            d[scorer][timestamp].append(score.score_code.short_description)
+
+        people = []
+        for s in d:
+            output = s.get_short_name() + ': '
+            for t in d[s]:
+                joined = ', '.join(str(item) for item in d[s][t])
+                output += joined
+            people.append(output)
+
+        return '; '.join(str(item) for item in people)
 
 
 class ManualScoreCode(models.Model):
@@ -75,6 +105,9 @@ class ManualScore(models.Model):
         return ('{}:{} scored {} by {}'
                 .format(str(self.experiment), self.well,
                         str(self.score_code), str(self.scorer)))
+
+    def get_short_description(self):
+        return '{} ({})'.format(self.score_code, self.scorer.get_short_name())
 
 
 class DevstarScore(models.Model):
