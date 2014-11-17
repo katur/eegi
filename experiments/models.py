@@ -30,6 +30,9 @@ class Experiment(models.Model):
     def __unicode__(self):
         return str(self.id)
 
+    def get_scores():
+        pass
+
 
 class ManualScoreCode(models.Model):
     """

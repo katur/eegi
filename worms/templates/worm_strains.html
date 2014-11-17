@@ -18,7 +18,13 @@
   <tbody>
     {% for strain in strains %}
     <tr>
-      <td><a href="{{ strain.get_lab_website_url }}">{{ strain }}</a></td>
+      <td><a href="
+      {% if user.is_authenticated %}
+        {{ strain.get_lab_website_url }}
+      {% else %}
+        {{ strain.get_wormbase_url }}
+      {% endif %}
+      ">{{ strain }}</a></td>
       <td>{{ strain.genotype }}</td>
       <td>{{ strain.permissive_temperature|get_celsius_string }}</td>
       <td>{{ strain.restrictive_temperature|get_celsius_string }}</td>

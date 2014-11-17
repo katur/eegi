@@ -24,11 +24,14 @@ class WormStrain(models.Model):
         db_table = 'WormStrain'
         ordering = ['genotype']
 
-    def get_lab_website_url(self):
-        return 'http://gunsiano.webfactional.com/strain/' + self.id
+    def __cmp__(self, other):
+        return cmp(self.genotype, other.genotype)
 
     def __unicode__(self):
         return self.id
 
-    def __cmp__(self, other):
-        return cmp(self.genotype, other.genotype)
+    def get_lab_website_url(self):
+        return 'http://gunsiano.webfactional.com/strain/' + self.id
+
+    def get_wormbase_url(self):
+        return 'http://www.wormbase.org/species/c_elegans/strain/' + self.id
