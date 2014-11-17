@@ -97,6 +97,7 @@ def experiment_well(request, id, well):
     experiment = get_object_or_404(Experiment, pk=id)
     well = LibraryWell.objects.filter(
         plate=experiment.library_plate).filter(well=well)[0]
+    experiment.score_summary = experiment.get_score_summary(well)
 
     context = {
         'experiment': experiment,

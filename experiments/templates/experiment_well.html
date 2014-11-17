@@ -9,6 +9,17 @@
 {% block content %}
 <div class="cleared-spaced-spans">
   <span>
+    Library plate:
+    <a href="{% url 'library_plate_url' id=experiment.library_plate.id %}">
+    {{ experiment.library_plate }}
+    </a>
+  </span>
+
+  <span>
+    Intended RNAi Clone: {{ well.intended_clone}}
+  </span>
+
+  <span>
     Worm strain:
     <a href="{{ experiment.worm_strain.get_lab_website_url }}">
       {{ experiment.worm_strain }}</a>
@@ -19,38 +30,33 @@
   {% endif %}
 
   <span>
-    Library plate:
-    <a href="{% url 'library_plate_url' id=experiment.library_plate.id %}">
-    {{ experiment.library_plate }}
-    </a>
-  </span>
-
-  <span>
     Temperature: {{ experiment.temperature|get_celsius_string }}
     ({% get_screen_type experiment.temperature experiment.worm_strain %})
   </span>
 
   <span>Date: {{ experiment.date }}</span>
 
-  {% if experiment.is_junk %}<span>JUNK</span>{% endif %}
+  {% if experiment.is_junk %}
+    <span>JUNK</span>
+  {% endif %}
 
   {% if experiment.comment %}
     <span>Comment: {{ experiment.comment }}</span>
   {% endif %}
 
+  {% if experiment.score_summary %}
+    <span>Scores: {{ experiment.score_summary }}</span>
+  {% endif %}
+
+  {% if well.intended_clone and experiment.worm_strain.id != "N2" %}
   <span>
-    Intended RNAi Clone: {{ well.intended_clone}}
+    <a href="{% url 'double_knockdown_url' strain=experiment.worm_strain.id clone=well.intended_clone.id temperature=experiment.temperature %}">
+      Click for view with controls and all replicates.</a>
   </span>
 
   <span>
     <a href="{% url 'experiment_url' id=experiment.id %}">
       Click for entire experiment plate.</a>
-  </span>
-
-  {% if well.intended_clone and experiment.worm_strain.id != "N2" %}
-  <span>
-    <a href="{% url 'double_knockdown_url' strain=experiment.worm_strain.id clone=well.intended_clone.id temperature=experiment.temperature %}">
-      Click for all replicates of this strain/clone/temp.</a>
   </span>
   {% endif %}
 </div>
