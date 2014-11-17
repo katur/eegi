@@ -51,12 +51,12 @@
   {% if well.intended_clone and experiment.worm_strain.id != "N2" %}
   <span>
     <a href="{% url 'double_knockdown_url' strain=experiment.worm_strain.id clone=well.intended_clone.id temperature=experiment.temperature %}">
-      Click for view with controls and all replicates.</a>
+      See with controls and all replicates.</a>
   </span>
 
   <span>
     <a href="{% url 'experiment_url' id=experiment.id %}">
-      Click for entire experiment plate.</a>
+      See entire experiment plate.</a>
   </span>
   {% endif %}
 </div>
