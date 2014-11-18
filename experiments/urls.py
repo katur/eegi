@@ -6,7 +6,7 @@ urlpatterns = patterns(
     url(r'^experiments$',
         'experiments', name='experiments_url'),
     url(r'^experiment/(?P<id>[0-9]+)$',
-        'experiment', name='experiment_url'),
+        'experiment_plate', name='experiment_plate_url'),
     url(r'^experiment_tile_view/(?P<id>[0-9]+)$',
         'experiment_tile_view', name='experiment_tile_view_url'),
     url(r'^experiment/(?P<id>[0-9]+)/(?P<well>[A-H][0-9]+)$',

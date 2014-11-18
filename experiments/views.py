@@ -21,7 +21,7 @@ def experiments(request, context=None):
         try:
             id = int(request.GET['exact_id'])
             if (id > 0):
-                return redirect(experiment, id=id)
+                return redirect(experiment_plate, id=id)
             else:
                 exact_id_errors.append('Experiment id must be positive')
 
@@ -74,7 +74,7 @@ def experiments(request, context=None):
     return render(request, 'experiments.html', context)
 
 
-def experiment(request, id):
+def experiment_plate(request, id):
     """
     Render the page to see information about a specific experiment.
     """
@@ -90,7 +90,7 @@ def experiment(request, id):
         'wells': wells,
     }
 
-    return render(request, 'experiment.html', context)
+    return render(request, 'experiment_plate.html', context)
 
 
 def experiment_tile_view(request, id):
@@ -191,7 +191,6 @@ def double_knockdown(request, strain, clone, temperature):
     strain = get_object_or_404(WormStrain, pk=strain)
     clone = get_object_or_404(Clone, pk=clone)
     n2 = get_object_or_404(WormStrain, pk='N2')
-    l4440_clone = get_object_or_404(Clone, pk='L4440')
     l4440_plate = get_object_or_404(LibraryPlate, pk='L4440')
 
     # plates_with_l4440 = LibraryPlate.objects.filter(
