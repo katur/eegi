@@ -2,6 +2,7 @@ import string
 from decimal import Decimal
 
 from django import template
+from django.core.urlresolvers import reverse
 
 register = template.Library()
 
@@ -60,4 +61,16 @@ def get_thumbnail_image(experiment, well):
 
 @register.simple_tag
 def get_image_title(experiment, well):
-    return 'Experiment {}, well {}'.format(str(experiment.id), well.well)
+    url = reverse('experiment_well_url', args=[experiment.id, well.well])
+    output = '''
+    <span class="image-title">
+      Experiment {}, well {} (<a href="{}">click to zoom</a>)
+    </span>
+    '''.format(str(experiment.id), well.well, url)
+    print output
+    return output
+
+
+@register.simple_tag
+def get_image_placement(current, length):
+    return '<span class="placement">{} of {}</span>'.format(current, length)

@@ -45,13 +45,12 @@
     <tr>
       <td>
         <div class="rotating-images">
-        {% for experiment in experiments|keyvalue:"mutant_rnai" %}
+        {% with experiments|keyvalue:"mutant_rnai" as experiments %}
+        {% for experiment in experiments %}
           <div class="individual-image">
-            <span class="image-title">
+            <span class="image-topbar">
               {% get_image_title experiment rnai_well %}
-              <a
-                href="{% url 'experiment_well_url' experiment rnai_well.well %}">
-              click to zoom</a>
+              {% get_image_placement forloop.counter experiments|length %}
             </span>
 
             <div class="experiment-image-wrapper"
@@ -63,26 +62,30 @@
             </span>
           </div>
         {% endfor %}
+        {% endwith %}
         </div>
       </td>
 
       <td>
         <div class="rotating-images">
-        {% for experiment in experiments|keyvalue:"mutant_l4440" %}
-          {% for l4440_well in experiment.library_plate.get_l4440_wells %}
+        {% with experiments|keyvalue:"mutant_l4440" as experiments %}
+        {% for experiment in experiments %}
+          {% with experiment.library_plate.get_l4440_wells as wells %}
+          {% for well in wells %}
             <div class="individual-image">
-              <span class="image-title">
-                {% get_image_title experiment l4440_well %}
-                <a href="{% url 'experiment_well_url' experiment l4440_well.well %}">
-                  click to zoom</a>
+              <span class="image-topbar">
+                {% get_image_title experiment well %}
+                {% get_image_placement forloop.counter wells|length %}
               </span>
 
               <div class="experiment-image-wrapper"
-                data-src="{% get_image experiment l4440_well %}">
+                data-src="{% get_image experiment well %}">
               </div>
             </div>
           {% endfor %}
+          {% endwith %}
         {% endfor %}
+        {% endwith %}
         </div>
       </td>
     </tr>
@@ -95,12 +98,12 @@
     <tr>
       <td>
         <div class="rotating-images">
-        {% for experiment in experiments|keyvalue:"n2_rnai" %}
+        {% with experiments|keyvalue:"n2_rnai" as experiments %}
+        {% for experiment in experiments %}
           <div class="individual-image">
-            <span class="image-title">
+            <span class="image-topbar">
               {% get_image_title experiment rnai_well %}
-              <a href="{% url 'experiment_well_url' experiment rnai_well.well %}">
-                click to zoom</a>
+              {% get_image_placement forloop.counter experiments|length %}
             </span>
 
             <div class="experiment-image-wrapper"
@@ -108,26 +111,30 @@
             </div>
           </div>
         {% endfor %}
+        {% endwith %}
         </div>
       </td>
 
       <td>
         <div class="rotating-images">
-        {% for experiment in experiments|keyvalue:"n2_l4440" %}
-          {% for l4440_well in experiment.library_plate.get_l4440_wells %}
+        {% with experiments|keyvalue:"n2_l4440" as experiments %}
+        {% for experiment in experiments %}
+          {% with experiment.library_plate.get_l4440_wells as wells %}
+          {% for well in wells %}
             <div class="individual-image">
-              <span class="image-title">
-                {% get_image_title experiment l4440_well %}
-                <a href="{% url 'experiment_well_url' experiment l4440_well.well %}">
-                  click to zoom</a>
+              <span class="image-topbar">
+                {% get_image_title experiment well %}
+                {% get_image_placement forloop.counter wells|length %}
               </span>
 
               <div class="experiment-image-wrapper"
-                data-src="{% get_image experiment l4440_well %}">
+                data-src="{% get_image experiment well %}">
               </div>
             </div>
           {% endfor %}
+          {% endwith %}
         {% endfor %}
+        {% endwith %}
         </div>
       </td>
     </tr>
