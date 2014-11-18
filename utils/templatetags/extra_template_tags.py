@@ -74,3 +74,29 @@ def get_image_title(experiment, well):
 @register.simple_tag
 def get_image_placement(current, length):
     return '<span class="placement">{} of {}</span>'.format(current, length)
+
+
+@register.simple_tag
+def get_image_html(experiment, well, current, length):
+    output = '''
+    <div class="individual-image">
+      <span class="image-topbar">
+        {}
+        {}
+      </span>
+
+      <div class="experiment-image-wrapper"
+        data-src="{}">
+      </div>
+
+      <span class="image-caption">
+        {}
+      </span>
+    </div>
+    '''.format(
+        get_image_title(experiment, well),
+        get_image_placement(current, length),
+        get_image(experiment, well),
+        experiment.score_summary
+    )
+    return output

@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.exceptions import ObjectDoesNotExist
@@ -220,10 +222,6 @@ def double_knockdown(request, strain, clone, temperature):
                            Q(date=date['date']),
                            Q(library_plate=library_well.plate)))
 
-            for experiment in mutant_rnai:
-                experiment.score_summary = experiment.get_score_summary(
-                    library_well)
-
             n2_rnai = (Experiment.objects.filter(
                        Q(is_junk=False),
                        Q(worm_strain=n2),
@@ -249,6 +247,9 @@ def double_knockdown(request, strain, clone, temperature):
             else:
                 mutant_l4440 = mutant_rnai
                 n2_l4440 = n2_rnai
+
+            for e in list(chain(mutant_rnai, n2_rnai, mutant_l4440, n2_l4440)):
+                e.score_summary = e.get_score_summary(library_well)
 
             data.append((library_well, date['date'], {
                 'mutant_rnai': mutant_rnai,

@@ -47,20 +47,7 @@
         <div class="rotating-images">
         {% with experiments|keyvalue:"mutant_rnai" as experiments %}
         {% for experiment in experiments %}
-          <div class="individual-image">
-            <span class="image-topbar">
-              {% get_image_title experiment rnai_well %}
-              {% get_image_placement forloop.counter experiments|length %}
-            </span>
-
-            <div class="experiment-image-wrapper"
-              data-src="{% get_image experiment rnai_well %}">
-            </div>
-
-            <span class="image-caption">
-              {{ experiment.score_summary }}
-            </span>
-          </div>
+          {% get_image_html experiment rnai_well forloop.counter experiments|length %}
         {% endfor %}
         {% endwith %}
         </div>
@@ -72,16 +59,7 @@
         {% for experiment in experiments %}
           {% with experiment.library_plate.get_l4440_wells as wells %}
           {% for well in wells %}
-            <div class="individual-image">
-              <span class="image-topbar">
-                {% get_image_title experiment well %}
-                {% get_image_placement forloop.counter wells|length %}
-              </span>
-
-              <div class="experiment-image-wrapper"
-                data-src="{% get_image experiment well %}">
-              </div>
-            </div>
+            {% get_image_html experiment well forloop.counter wells|length %}
           {% endfor %}
           {% endwith %}
         {% endfor %}
@@ -100,16 +78,7 @@
         <div class="rotating-images">
         {% with experiments|keyvalue:"n2_rnai" as experiments %}
         {% for experiment in experiments %}
-          <div class="individual-image">
-            <span class="image-topbar">
-              {% get_image_title experiment rnai_well %}
-              {% get_image_placement forloop.counter experiments|length %}
-            </span>
-
-            <div class="experiment-image-wrapper"
-              data-src="{% get_image experiment rnai_well %}">
-            </div>
-          </div>
+          {% get_image_html experiment rnai_well forloop.counter experiments|length %}
         {% endfor %}
         {% endwith %}
         </div>
@@ -121,16 +90,7 @@
         {% for experiment in experiments %}
           {% with experiment.library_plate.get_l4440_wells as wells %}
           {% for well in wells %}
-            <div class="individual-image">
-              <span class="image-topbar">
-                {% get_image_title experiment well %}
-                {% get_image_placement forloop.counter wells|length %}
-              </span>
-
-              <div class="experiment-image-wrapper"
-                data-src="{% get_image experiment well %}">
-              </div>
-            </div>
+            {% get_image_html experiment well forloop.counter wells|length %}
           {% endfor %}
           {% endwith %}
         {% endfor %}
