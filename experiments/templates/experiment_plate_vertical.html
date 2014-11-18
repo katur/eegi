@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% load extra_template_tags %}
 
-{% block body_id %}experiment_tile_view{% endblock %}
-{% block page_title %}Experiment {{ experiment.id }}: Tile View{% endblock %}
+{% block body_id %}experiment-plate-vertical{% endblock %}
+{% block page_title %}
+  Experiment {{ experiment.id }}: Vertical Tile View
+{% endblock %}
 
 {% block content %}
 <table class="plate-96 with-images vertical-tiles">

@@ -93,7 +93,7 @@ def experiment_plate(request, id):
     return render(request, 'experiment_plate.html', context)
 
 
-def experiment_tile_view(request, id):
+def experiment_plate_vertical(request, id):
     """
     Render the page to see information about a specific experiment.
     """
@@ -106,7 +106,7 @@ def experiment_tile_view(request, id):
         'wells': wells,
     }
 
-    return render(request, 'experiment_tile_view.html', context)
+    return render(request, 'experiment_plate_vertical.html', context)
 
 
 def experiment_well(request, id, well):
