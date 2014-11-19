@@ -5,7 +5,7 @@
 {% block page_title %}
   Vertical Tile View of Experiments:
   {% for experiment in experiments %}
-    {{ experiment.id }}
+    {{ experiment.id }}{% if not forloop.last %},{% endif %}
   {% endfor %}
 {% endblock %}
 
