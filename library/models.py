@@ -85,6 +85,9 @@ class LibraryWell(models.Model):
     def get_tile(self):
         return well_to_tile(self.well)
 
+    def is_control(self):
+        return self.intended_clone.is_control()
+
 
 class LibrarySequencing(models.Model):
     """

@@ -14,3 +14,6 @@ class Clone(models.Model):
 
     def __unicode__(self):
         return self.id
+
+    def is_control(self):
+        return self.id == 'L4440'

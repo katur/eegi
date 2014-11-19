@@ -48,7 +48,7 @@
     <span>Scores: {{ experiment.score_summary }}</span>
   {% endif %}
 
-  {% if well.intended_clone and experiment.worm_strain.id != "N2" %}
+  {% if well.intended_clone and not well.intended_clone.is_control and not experiment.worm_strain.is_control %}
   <span>
     <a href="{% url 'double_knockdown_url' experiment.worm_strain.id well.intended_clone.id experiment.temperature %}">
       See with controls and all replicates.</a>
