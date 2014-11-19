@@ -44,6 +44,13 @@ Find experiments with filters:
     {{ total_results }} total experiments.
   </span>
 
+  {% if link_to_vertical %}
+    <a class="link-to-vertical"
+        href="{{ link_to_vertical }}">
+      See all results as vertical tiles.
+    </a>
+  {% endif %}
+
   {% if total_results %}
   <div class="pagination-status">
     {% if display_experiments.has_previous %}

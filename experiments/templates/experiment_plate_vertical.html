@@ -10,7 +10,10 @@
 {% endblock %}
 
 {% block content %}
+<table id="all-vertical-tables">
+<tr>
 {% for experiment in experiments %}
+<td>
   <table class="plate-96 vertical-tiles grayscale">
     <thead>
       <tr>
@@ -41,5 +44,8 @@
       {% endfor %}
     </tbody>
   </table>
+</td>
 {% endfor %}
+</tr>
+</table>
 {% endblock %}

@@ -1,15 +1,16 @@
 from itertools import chain
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.urlresolvers import reverse
 from django.db.models import Q
+from django.shortcuts import render, redirect, get_object_or_404
 
+from clones.models import Clone
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm, DoubleKnockdownForm
 from library.models import LibraryWell, LibraryPlate
 from worms.models import WormStrain
-from clones.models import Clone
 
 
 def experiments(request, context=None):
@@ -32,6 +33,7 @@ def experiments(request, context=None):
 
     total_results = None
     display_experiments = None
+    link_to_vertical = None
 
     if len(request.GET):
         form = ExperimentFilterForm(request.GET)
@@ -54,6 +56,13 @@ def experiments(request, context=None):
                             'is_junk', 'comment'))
                 total_results = len(experiments)
 
+                if total_results > 0 and total_results < 25:
+                    ids = experiments.values_list('id')
+                    ids = (str(i[0]) for i in ids)
+                    id_string = ','.join(ids)
+                    link_to_vertical = reverse('experiment_plate_vertical_url',
+                                               args=[id_string])
+
                 paginator = Paginator(experiments, 100)
                 page = request.GET.get('page')
                 try:
@@ -71,6 +80,7 @@ def experiments(request, context=None):
         'form': form,
         'total_results': total_results,
         'display_experiments': display_experiments,
+        'link_to_vertical': link_to_vertical,
     }
 
     return render(request, 'experiments.html', context)
