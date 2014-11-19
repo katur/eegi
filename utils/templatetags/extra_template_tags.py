@@ -67,7 +67,6 @@ def get_image_title(experiment, well):
       Experiment {}, well {} (<a href="{}">click to zoom</a>)
     </span>
     '''.format(str(experiment.id), well.well, url)
-    print output
     return output
 
 
