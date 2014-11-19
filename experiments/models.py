@@ -63,6 +63,9 @@ class Experiment(models.Model):
 
         return '; '.join(str(item) for item in people)
 
+    def get_celsius_temperature(self):
+        return str(self.temperature) + 'C'
+
 
 class ManualScoreCode(models.Model):
     """

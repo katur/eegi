@@ -41,3 +41,9 @@ class WormStrain(models.Model):
             return self.get_lab_website_url()
         else:
             return self.get_wormbase_url()
+
+    def is_control(self):
+        if not self.allele:
+            return True
+        else:
+            return False

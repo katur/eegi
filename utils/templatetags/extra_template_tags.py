@@ -62,11 +62,14 @@ def get_thumbnail_image(experiment, well):
 @register.simple_tag
 def get_image_title(experiment, well):
     url = reverse('experiment_well_url', args=[experiment.id, well.well])
+    essentials = 'Experiment {}, well {}'.format(str(experiment.id), well.well)
+    if experiment.worm_strain.is_control():
+        essentials += ', ' + experiment.get_celsius_temperature()
     output = '''
     <span class="image-title">
-      Experiment {}, well {} (<a href="{}">click to zoom</a>)
+      {} (<a href="{}">more info</a>)
     </span>
-    '''.format(str(experiment.id), well.well, url)
+    '''.format(essentials, url)
     return output
 
 
