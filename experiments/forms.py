@@ -30,7 +30,7 @@ class ExperimentFilterForm(forms.Form):
                            label='Date',
                            help_text='YYYY-MM-DD')
     is_junk = forms.NullBooleanField(required=False,
-                                     initial=0,
+                                     initial=False,
                                      widget=BlankNullBooleanSelect)
 
 
