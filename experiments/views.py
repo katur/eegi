@@ -97,17 +97,21 @@ def experiment_plate(request, id):
     return render(request, 'experiment_plate.html', context)
 
 
-def experiment_plate_vertical(request, id):
+def experiment_plate_vertical(request, ids):
     """
     Render the page to see information about a specific experiment.
     """
-    experiment = get_object_or_404(Experiment, pk=id)
-    wells = LibraryWell.objects.filter(
-        plate=experiment.library_plate).order_by('well')
+    ids = ids.split('/')
+    experiments = []
+    for id in ids:
+        print id
+        experiment = get_object_or_404(Experiment, pk=id)
+        experiment.wells = LibraryWell.objects.filter(
+            plate=experiment.library_plate).order_by('well')
+        experiments.append(experiment)
 
     context = {
-        'experiment': experiment,
-        'wells': wells,
+        'experiments': experiments,
     }
 
     return render(request, 'experiment_plate_vertical.html', context)

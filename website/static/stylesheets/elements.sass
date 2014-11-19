@@ -11,28 +11,31 @@ hr
     margin-bottom: $vertical-whitespace / 2
 
 
-form
-  table
-    th
-      padding-right: 5px
-    th, td
-      padding-bottom: 5px
+form table
+  th
+    padding-right: 5px
+    text-align: left
+    padding-right: 20px
+  th, td
+    padding-bottom: 5px
 
 
-table.striped
-  thead tr
+.grayscale
+  background: $gray-lighter
+
+  thead
     background: $gray-light
     font-weight: bold
+    font-size: $base-font-size
 
+
+.striped
   tbody
-    tr:nth-child(even)
-      background: $gray-lighter
-
     tr:nth-child(odd)
       background: $gray-lightest
 
 
-table.nice-padding
+.nice-padding
   th, td
     padding: 10px
 
@@ -69,19 +72,23 @@ table.nice-padding
   width: 100%
   &.vertical-tiles
     width: 320px
+    float: left
 
-  font-size: 13px
+  font-size: $base-font-size - 3
 
-  td
+  th
+    padding: 10px
+
+  td, tr
     position: relative
     padding: 20px 0
 
-  &.with-images
+  td
     background: black
     color: $gray-light
 
-    td
-      border: 2px solid $site-background
+  td, th
+    border: 2px solid $site-background
 
   .empty-well
     .well-caption

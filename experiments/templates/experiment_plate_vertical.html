@@ -3,27 +3,43 @@
 
 {% block body_id %}experiment-plate-vertical{% endblock %}
 {% block page_title %}
-  Experiment {{ experiment.id }}: Vertical Tile View
+  Vertical Tile View of Experiments:
+  {% for experiment in experiments %}
+    {{ experiment.id }}
+  {% endfor %}
 {% endblock %}
 
 {% block content %}
-<table class="plate-96 with-images vertical-tiles">
-  {% for well in wells %}
-  <tr>
-    <td {% if not well.intended_clone %} class="empty-well" {% endif %}>
-      <div class="well-title">
-        {{ well.well }}
-        <span class="parenthetical">({{ well.get_tile }})</span>
-      </div>
+{% for experiment in experiments %}
+  <table class="plate-96 vertical-tiles grayscale">
+    <thead>
+      <tr>
+        <th>
+          <a href="{% url 'experiment_plate_url' experiment.id %}">
+            {{ experiment.id }}</a>
+        </th>
+      </tr>
+    </thead>
 
-      <a class="experiment-image-wrapper"
-        href="{% url 'experiment_well_url' experiment well.well %}">
-          <img src="{% get_thumbnail_image experiment well %}">
-      </a>
+    <tbody>
+      {% for well in experiment.wells %}
+      <tr>
+        <td {% if not well.intended_clone %} class="empty-well" {% endif %}>
+          <div class="well-title">
+            {{ well.well }}
+            <span class="parenthetical">({{ well.get_tile }})</span>
+          </div>
 
-      <div class="well-caption">{{ well.intended_clone }}</div>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+          <a class="experiment-image-wrapper"
+            href="{% url 'experiment_well_url' experiment well.well %}">
+              <img src="{% get_thumbnail_image experiment well %}">
+          </a>
+
+          <div class="well-caption">{{ well.intended_clone }}</div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endfor %}
 {% endblock %}

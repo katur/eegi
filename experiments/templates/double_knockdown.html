@@ -30,74 +30,79 @@
 </div>
 
 {% for rnai_well, date, experiments in data %}
-  <table class="double-knockdown-results">
-    <th colspan="2" class="table-title">
-      Clone located in plate {{ rnai_well.plate }},
-      well {{ rnai_well.well }};
-      tested on {{ date }}
-    </th>
+  <table class="double-knockdown-results grayscale">
+    <thead>
+      <th colspan="2">
+        Clone located in plate {{ rnai_well.plate }},
+        well {{ rnai_well.well }};
+        tested on {{ date }}
+      </th>
+    </thead>
 
-    <tr>
-      <th>Mutant ({{ strain.gene }}) + RNAi ({{ clone.id }})</th>
-      <th>Mutant ({{ strain.gene }}) + L4440 control</th>
-    </tr>
+    <tbody>
 
-    <tr>
-      <td>
-        <div class="rotating-images">
-        {% with experiments|keyvalue:"mutant_rnai" as experiments %}
-        {% for experiment in experiments %}
-          {% get_image_html experiment rnai_well forloop.counter experiments|length %}
-        {% endfor %}
-        {% endwith %}
-        </div>
-      </td>
+      <tr>
+        <th>Mutant ({{ strain.gene }}) + RNAi ({{ clone.id }})</th>
+        <th>Mutant ({{ strain.gene }}) + L4440 control</th>
+      </tr>
 
-      <td>
-        <div class="rotating-images">
-        {% with experiments|keyvalue:"mutant_l4440" as experiments %}
-        {% for experiment in experiments %}
-          {% with experiment.library_plate.get_l4440_wells as wells %}
-          {% for well in wells %}
-            {% get_image_html experiment well forloop.counter wells|length %}
+      <tr>
+        <td>
+          <div class="rotating-images">
+          {% with experiments|keyvalue:"mutant_rnai" as experiments %}
+          {% for experiment in experiments %}
+            {% get_image_html experiment rnai_well forloop.counter experiments|length %}
           {% endfor %}
           {% endwith %}
-        {% endfor %}
-        {% endwith %}
-        </div>
-      </td>
-    </tr>
+          </div>
+        </td>
 
-    <tr>
-      <th>N2 control + RNAi ({{ clone.id }})</th>
-      <th>N2 control + L4440 control</th>
-    </tr>
-
-    <tr>
-      <td>
-        <div class="rotating-images">
-        {% with experiments|keyvalue:"n2_rnai" as experiments %}
-        {% for experiment in experiments %}
-          {% get_image_html experiment rnai_well forloop.counter experiments|length %}
-        {% endfor %}
-        {% endwith %}
-        </div>
-      </td>
-
-      <td>
-        <div class="rotating-images">
-        {% with experiments|keyvalue:"n2_l4440" as experiments %}
-        {% for experiment in experiments %}
-          {% with experiment.library_plate.get_l4440_wells as wells %}
-          {% for well in wells %}
-            {% get_image_html experiment well forloop.counter wells|length %}
+        <td>
+          <div class="rotating-images">
+          {% with experiments|keyvalue:"mutant_l4440" as experiments %}
+          {% for experiment in experiments %}
+            {% with experiment.library_plate.get_l4440_wells as wells %}
+            {% for well in wells %}
+              {% get_image_html experiment well forloop.counter wells|length %}
+            {% endfor %}
+            {% endwith %}
           {% endfor %}
           {% endwith %}
-        {% endfor %}
-        {% endwith %}
-        </div>
-      </td>
-    </tr>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <th>N2 control + RNAi ({{ clone.id }})</th>
+        <th>N2 control + L4440 control</th>
+      </tr>
+
+      <tr>
+        <td>
+          <div class="rotating-images">
+          {% with experiments|keyvalue:"n2_rnai" as experiments %}
+          {% for experiment in experiments %}
+            {% get_image_html experiment rnai_well forloop.counter experiments|length %}
+          {% endfor %}
+          {% endwith %}
+          </div>
+        </td>
+
+        <td>
+          <div class="rotating-images">
+          {% with experiments|keyvalue:"n2_l4440" as experiments %}
+          {% for experiment in experiments %}
+            {% with experiment.library_plate.get_l4440_wells as wells %}
+            {% for well in wells %}
+              {% get_image_html experiment well forloop.counter wells|length %}
+            {% endfor %}
+            {% endwith %}
+          {% endfor %}
+          {% endwith %}
+          </div>
+        </td>
+      </tr>
+    </tbody>
   </table>
 {% endfor %}
 
