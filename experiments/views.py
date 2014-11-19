@@ -101,10 +101,9 @@ def experiment_plate_vertical(request, ids):
     """
     Render the page to see information about a specific experiment.
     """
-    ids = ids.split('/')
+    ids = ids.split(',')
     experiments = []
     for id in ids:
-        print id
         experiment = get_object_or_404(Experiment, pk=id)
         experiment.wells = LibraryWell.objects.filter(
             plate=experiment.library_plate).order_by('well')
