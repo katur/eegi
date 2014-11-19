@@ -1,4 +1,13 @@
 from django import forms
+from django.forms import Select, NullBooleanSelect
+
+
+class BlankNullBooleanSelect(NullBooleanSelect):
+    def __init__(self, attrs=None):
+        choices = ((u'1', u''),
+                   (u'3', u'No'),
+                   (u'2', u'Yes'))
+        Select.__init__(self, attrs, choices)
 
 
 class ExperimentFilterForm(forms.Form):
@@ -20,7 +29,9 @@ class ExperimentFilterForm(forms.Form):
     date = forms.DateField(required=False,
                            label='Date',
                            help_text='YYYY-MM-DD')
-    is_junk = forms.NullBooleanField(required=False)
+    is_junk = forms.NullBooleanField(required=False,
+                                     initial=0,
+                                     widget=BlankNullBooleanSelect)
 
 
 class DoubleKnockdownForm(forms.Form):
