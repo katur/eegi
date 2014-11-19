@@ -18,7 +18,7 @@
 
   <span>
     Library plate:
-    <a href="{% url 'library_plate_url' id=experiment.library_plate.id %}">
+    <a href="{% url 'library_plate_url' experiment.library_plate.id %}">
     {{ experiment.library_plate }}
     </a>
   </span>
@@ -36,7 +36,7 @@
   {% endif %}
 
   <span>
-    <a href="{% url 'experiment_plate_vertical_url' id=experiment.id %}">
+    <a href="{% url 'experiment_plate_vertical_url' experiment.id %}">
       See vertical view of thumbnail images</a>
   </span>
 </div>

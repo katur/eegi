@@ -23,7 +23,7 @@ def experiments(request, context=None):
         try:
             id = int(request.GET['exact_id'])
             if (id > 0):
-                return redirect(experiment_plate, id=id)
+                return redirect(experiment_plate, id)
             else:
                 exact_id_errors.append('Experiment id must be positive')
 

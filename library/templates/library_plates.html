@@ -70,7 +70,7 @@
     {% for plate in display_plates %}
     <tr>
       <td>
-        <a href="{% url 'library_plate_url' id=plate.id %}">{{ plate }}</a>
+        <a href="{% url 'library_plate_url' plate.id %}">{{ plate }}</a>
       </td>
       <td>{{ plate.screen_stage }}</td>
       <td>{{ plate.number_of_wells }}</td>

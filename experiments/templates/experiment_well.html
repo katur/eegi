@@ -10,7 +10,7 @@
 <div class="cleared-spaced-spans">
   <span>
     Library plate:
-    <a href="{% url 'library_plate_url' id=experiment.library_plate.id %}">
+    <a href="{% url 'library_plate_url' experiment.library_plate.id %}">
     {{ experiment.library_plate }}
     </a>
   </span>
@@ -50,13 +50,13 @@
 
   {% if well.intended_clone and experiment.worm_strain.id != "N2" %}
   <span>
-    <a href="{% url 'double_knockdown_url' strain=experiment.worm_strain.id clone=well.intended_clone.id temperature=experiment.temperature %}">
+    <a href="{% url 'double_knockdown_url' experiment.worm_strain.id well.intended_clone.id experiment.temperature %}">
       See with controls and all replicates.</a>
   </span>
   {% endif %}
 
   <span>
-    <a href="{% url 'experiment_plate_url' id=experiment.id %}">
+    <a href="{% url 'experiment_plate_url' experiment.id %}">
       See entire experiment plate.</a>
   </span>
 </div>

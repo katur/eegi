@@ -86,7 +86,7 @@ Find experiments with filters:
     {% for experiment in display_experiments %}
     <tr>
       <td>
-        <a href="{% url 'experiment_plate_url' id=experiment.id %}">
+        <a href="{% url 'experiment_plate_url' experiment.id %}">
           {{ experiment.id }}</a>
       </td>
       <td>{{ experiment.worm_strain }}</td>
