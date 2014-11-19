@@ -35,3 +35,9 @@ class WormStrain(models.Model):
 
     def get_wormbase_url(self):
         return 'http://www.wormbase.org/species/c_elegans/strain/' + self.id
+
+    def get_url(self, request):
+        if request.user.is_authenticated():
+            return self.get_lab_website_url()
+        else:
+            return self.get_wormbase_url()
