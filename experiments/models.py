@@ -66,6 +66,9 @@ class Experiment(models.Model):
     def get_celsius_temperature(self):
         return str(self.temperature) + 'C'
 
+    def is_mutant_control(self):
+        return self.worm_strain.is_control()
+
 
 class ManualScoreCode(models.Model):
     """

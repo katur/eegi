@@ -80,6 +80,11 @@ def get_image_placement(current, length):
 
 @register.simple_tag
 def get_image_html(experiment, well, current, length):
+    if well.is_control() or experiment.is_mutant_control():
+        scores = ""
+    else:
+        scores = experiment.score_summary
+
     output = '''
     <div class="individual-image">
       <span class="image-topbar">
@@ -99,6 +104,6 @@ def get_image_html(experiment, well, current, length):
         get_image_title(experiment, well),
         get_image_placement(current, length),
         get_image(experiment, well),
-        experiment.score_summary
+        scores
     )
     return output
