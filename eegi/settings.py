@@ -87,6 +87,7 @@ TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
 )
 
+LOGIN_URL = 'login_url'
 LOGIN_REDIRECT_URL = 'home_url'
 
 LOCKDOWN_FORM = 'lockdown.forms.LockdownForm'

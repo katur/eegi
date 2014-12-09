@@ -59,13 +59,13 @@
 
 <div id="login">
   {% if user.is_authenticated %}
-  <a href="{% url 'logout_url' %}">Logout</a>
+  <a href="{% url 'logout_url' %}?next={{ request.path }}">Logout</a>
   <a href="{% url 'admin:index' %}">Admin</a>
 
   {% else %}
 
   {% url 'login_url' as login_url %}
-  <a href="{{ login_url }}"
+  <a href="{{ login_url }}?next={{ request.path }}"
       {% ifequal request.path login_url %}
       class="active"
       {% endifequal %}>
