@@ -163,34 +163,34 @@ def double_knockdown_search(request):
                     raise Exception('target must be an RNAi clone, not L4440')
 
                 if screen == 'ENH':
-                    strains = (WormStrain.objects
+                    worms = (WormStrain.objects
                                .filter(Q(gene=query) | Q(allele=query) |
                                        Q(id=query))
                                .exclude(permissive_temperature__isnull=True))
                 else:
-                    strains = (WormStrain.objects
+                    worms = (WormStrain.objects
                                .filter(Q(gene=query) | Q(allele=query) |
                                        Q(id=query))
                                .exclude(restrictive_temperature__isnull=True))
 
-                if len(strains) == 0:
-                    raise Exception('No strain matches query.')
-                elif len(strains) > 1:
-                    raise Exception('Multiple strains match query.')
+                if len(worms) == 0:
+                    raise Exception('No worm strain matches query.')
+                elif len(worms) > 1:
+                    raise Exception('Multiple worm strains match query.')
                 else:
-                    strain = strains[0]
+                    worm = worms[0]
 
                 if screen == 'ENH':
-                    temperature = strain.permissive_temperature
+                    temperature = worm.permissive_temperature
                 else:
-                    temperature = strain.restrictive_temperature
+                    temperature = worm.restrictive_temperature
 
                 try:
                     clone = Clone.objects.get(pk=target)
                 except ObjectDoesNotExist:
                     raise ObjectDoesNotExist("No clone matches target.")
 
-                return redirect(double_knockdown, strain, clone, temperature)
+                return redirect(double_knockdown, worm, clone, temperature)
 
             except Exception as e:
                 error = e.message
@@ -206,8 +206,8 @@ def double_knockdown_search(request):
     return render(request, 'double_knockdown_search.html', context)
 
 
-def double_knockdown(request, strain, clone, temperature):
-    strain = get_object_or_404(WormStrain, pk=strain)
+def double_knockdown(request, worm, clone, temperature):
+    worm = get_object_or_404(WormStrain, pk=worm)
     clone = get_object_or_404(Clone, pk=clone)
     n2 = get_object_or_404(WormStrain, pk='N2')
     l4440_plate = get_object_or_404(LibraryPlate, pk='L4440')
@@ -225,7 +225,7 @@ def double_knockdown(request, strain, clone, temperature):
     for library_well in library_wells:
         dates = (Experiment.objects
                  .filter(is_junk=False)
-                 .filter(worm_strain=strain)
+                 .filter(worm_strain=worm)
                  .filter(temperature=temperature)
                  .filter(library_plate=library_well.plate)
                  .order_by('-date')
@@ -234,7 +234,7 @@ def double_knockdown(request, strain, clone, temperature):
         for date in dates:
             mutant_rnai = (Experiment.objects.filter(
                            Q(is_junk=False),
-                           Q(worm_strain=strain),
+                           Q(worm_strain=worm),
                            Q(temperature=temperature),
                            Q(date=date['date']),
                            Q(library_plate=library_well.plate)))
@@ -249,7 +249,7 @@ def double_knockdown(request, strain, clone, temperature):
             if library_well.plate.screen_stage == 1:
                 mutant_l4440 = (Experiment.objects.filter(
                                 Q(is_junk=False),
-                                Q(worm_strain=strain),
+                                Q(worm_strain=worm),
                                 Q(temperature=temperature),
                                 Q(date=date['date']),
                                 Q(library_plate=l4440_plate)))
@@ -276,7 +276,7 @@ def double_knockdown(request, strain, clone, temperature):
             }))
 
     context = {
-        'strain': strain,
+        'worm': worm,
         'clone': clone,
         'temperature': temperature,
         'data': data,

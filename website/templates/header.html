@@ -5,13 +5,13 @@
 </h1>
 
 <div id="menu">
-  {% url 'worm_strains_url' as worm_strains_url %}
+  {% url 'worms_url' as worms_url %}
   {% url 'clones_url' as clones_url %}
   {% url 'library_plates_url' as library_plates_url %}
   {% url 'experiments_url' as experiments_url %}
   {% url 'double_knockdown_search_url' as double_knockdown_search_url %}
 
-  <a href="{{ worm_strains_url }}"
+  <a href="{{ worms_url }}"
       {% ifequal request.path worm_strains_url %}
       class="active"
       {% endifequal %}>

@@ -4,19 +4,19 @@
 {% block body_id %}double-knockdown{% endblock %}
 
 {% block page_title %}
-{{ strain }} x {{ clone }}, at {{ temperature|get_celsius_string }}
+{{ worm }} x {{ clone }}, at {{ temperature|get_celsius_string }}
 {% endblock %}
 
 {% block content %}
 <div class="cleared-spaced-spans">
   <span>
     Worm strain:
-    <a href="{{ strain.get_lab_website_url }}">
-      {{ strain }}</a>
+    <a href="{{ worm.get_lab_website_url }}">
+      {{ worm }}</a>
   </span>
 
   <span>
-    Worm genotype: {{ strain.genotype }}
+    Worm genotype: {{ worm.genotype }}
   </span>
 
   <span>
@@ -25,7 +25,7 @@
 
   <span>
     Temperature: {{ temperature|get_celsius_string }}
-    ({% get_screen_type temperature strain %})
+    ({% get_screen_type temperature worm %})
   </span>
 </div>
 
@@ -42,8 +42,8 @@
     <tbody>
 
       <tr>
-        <th>Mutant ({{ strain.gene }}) + RNAi ({{ clone.id }})</th>
-        <th>Mutant ({{ strain.gene }}) + L4440 control</th>
+        <th>Mutant ({{ worm.gene }}) + RNAi ({{ clone.id }})</th>
+        <th>Mutant ({{ worm.gene }}) + L4440 control</th>
       </tr>
 
       <tr>

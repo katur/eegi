@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load extra_template_tags %}
 
-{% block body_id %}worm-strains{% endblock %}
+{% block body_id %}worms{% endblock %}
 {% block page_title %}Worm Strains{% endblock %}
 
 {% block content %}
 <table class="grayscale striped nice-padding">
   <thead>
     <tr>
-      <th>Strain Name</th>
+      <th>Worm Strain Name</th>
       <th>Genotype</th>
       <th>Permissive Temperature</th>
       <th>Restrictive Temperature</th>
@@ -16,12 +16,12 @@
   </thead>
 
   <tbody>
-    {% for strain in strains %}
+    {% for worm in worms %}
     <tr>
-      <td><a href="{{ strain.url }}">{{ strain }}</a></td>
-      <td>{{ strain.genotype }}</td>
-      <td>{{ strain.permissive_temperature|get_celsius_string }}</td>
-      <td>{{ strain.restrictive_temperature|get_celsius_string }}</td>
+      <td><a href="{{ worm.url }}">{{ worm }}</a></td>
+      <td>{{ worm.genotype }}</td>
+      <td>{{ worm.permissive_temperature|get_celsius_string }}</td>
+      <td>{{ worm.restrictive_temperature|get_celsius_string }}</td>
     </tr>
     {% endfor %}
   </tbody>
