@@ -34,27 +34,13 @@
   -->
 </div>
 
+
 <div id="results-header">
   <span id="total">
-    {{ plates|length }} total plates.
+    {{ plates|length }} total
   </span>
 
-  <div class="pagination-status">
-    {% if display_plates.has_previous %}
-    <a href="?{% url_replace request 'page' display_plates.previous_page_number %}">
-      previous</a>
-    {% endif %}
-
-    <span>
-      Page {{ display_plates.number }}
-      of {{ display_plates.paginator.num_pages }}.
-    </span>
-
-    {% if display_plates.has_next %}
-    <a href="?{% url_replace request 'page' display_plates.next_page_number %}">
-      next</a>
-    {% endif %}
-  </div>
+  {% include 'pagination_status.html' %}
 </div>
 
 <table class="grayscale striped nice-padding">
@@ -67,7 +53,7 @@
   </thead>
 
   <tbody>
-    {% for plate in display_plates %}
+    {% for plate in paginated %}
     <tr>
       <td>
         <a href="{% url 'library_plate_url' plate.id %}">{{ plate }}</a>

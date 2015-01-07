@@ -1,0 +1,18 @@
+{% load extra_template_tags %}
+
+<div class="pagination-status">
+  {% if paginated.has_previous %}
+  <a href="?{% url_replace request 'page' paginated.previous_page_number %}">
+    previous</a>
+  {% endif %}
+
+  <span>
+    Page {{ paginated.number }}
+    of {{ paginated.paginator.num_pages }}.
+  </span>
+
+  {% if paginated.has_next %}
+  <a href="?{% url_replace request 'page' paginated.next_page_number %}">
+    next</a>
+  {% endif %}
+</div>

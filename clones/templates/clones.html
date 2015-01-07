@@ -5,7 +5,16 @@
 {% block page_title %}RNAi Clones{% endblock %}
 
 {% block content %}
-<table class="striped">
+
+<div id="results-header">
+  <span id="total">
+    {{ clones|length }} total
+  </span>
+
+  {% include 'pagination_status.html' %}
+</div>
+
+<table class="grayscale striped nice-padding">
   <thead>
     <tr>
       <th>Clone Name</th>
@@ -13,7 +22,7 @@
   </thead>
 
   <tbody>
-    {% for clone in clones %}
+    {% for clone in paginated %}
     <tr>
       <td>{{ clone.id }}</td>
     </tr>
