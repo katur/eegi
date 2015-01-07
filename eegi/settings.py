@@ -15,10 +15,6 @@ from local_settings import (DEBUG, DATABASES, LOCKDOWN_PASSWORDS, SECRET_KEY,
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
-
 TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = ['*']
@@ -81,13 +77,19 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
-# Katherine added
+# For request objects in templates
+
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
 )
 
+
+# Login
+
 LOGIN_URL = 'login_url'
-LOGIN_REDIRECT_URL = 'home_url'
+
+
+# Site password protection
 
 LOCKDOWN_FORM = 'lockdown.forms.LockdownForm'
