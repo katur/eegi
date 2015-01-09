@@ -93,6 +93,22 @@ class ManualScoreCode(models.Model):
         else:
             return str(self.id)
 
+    def is_strong(self):
+        strong = (3, 14, 18)
+        return self.id in strong
+
+    def is_medium(self):
+        medium = (2, 13, 17)
+        return self.id in medium
+
+    def is_weak(self):
+        weak = (1, 12, 16)
+        return self.id in weak
+
+    def is_negative(self):
+        negative = (0,)
+        return self.id in negative
+
 
 class ManualScore(models.Model):
     """
@@ -116,20 +132,16 @@ class ManualScore(models.Model):
         return '{} ({})'.format(self.score_code, self.scorer.get_short_name())
 
     def is_strong(self):
-        strong = (3, 14, 18)
-        return self.score_code.id in strong
+        return self.score_code.is_strong()
 
     def is_medium(self):
-        medium = (2, 13, 17)
-        return self.score_code.id in medium
+        return self.score_code.is_medium()
 
     def is_weak(self):
-        weak = (1, 12, 16)
-        return self.score_code.id in weak
+        return self.score_code.is_weak()
 
     def is_negative(self):
-        negative = (0,)
-        return self.score_code.id in negative
+        return self.score_code.is_negative()
 
     def get_score_weight(self):
         '''
