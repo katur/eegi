@@ -164,14 +164,14 @@ def double_knockdown_search(request):
 
                 if screen == 'ENH':
                     worms = (WormStrain.objects
-                               .filter(Q(gene=query) | Q(allele=query) |
-                                       Q(id=query))
-                               .exclude(permissive_temperature__isnull=True))
+                             .filter(Q(gene=query) | Q(allele=query) |
+                                     Q(id=query))
+                             .exclude(permissive_temperature__isnull=True))
                 else:
                     worms = (WormStrain.objects
-                               .filter(Q(gene=query) | Q(allele=query) |
-                                       Q(id=query))
-                               .exclude(restrictive_temperature__isnull=True))
+                             .filter(Q(gene=query) | Q(allele=query) |
+                                     Q(id=query))
+                             .exclude(restrictive_temperature__isnull=True))
 
                 if len(worms) == 0:
                     raise Exception('No worm strain matches query.')
@@ -188,7 +188,7 @@ def double_knockdown_search(request):
                 try:
                     clone = Clone.objects.get(pk=target)
                 except ObjectDoesNotExist:
-                    raise ObjectDoesNotExist("No clone matches target.")
+                    raise ObjectDoesNotExist('No clone matches target.')
 
                 return redirect(double_knockdown, worm, clone, temperature)
 

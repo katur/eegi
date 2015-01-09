@@ -115,6 +115,48 @@ class ManualScore(models.Model):
     def get_short_description(self):
         return '{} ({})'.format(self.score_code, self.scorer.get_short_name())
 
+    def is_strong(self):
+        strong = (3, 14, 18)
+        return self.score_code.id in strong
+
+    def is_medium(self):
+        medium = (2, 13, 17)
+        return self.score_code.id in medium
+
+    def is_weak(self):
+        weak = (1, 12, 16)
+        return self.score_code.id in weak
+
+    def is_negative(self):
+        negative = (0,)
+        return self.score_code.id in negative
+
+    def get_score_weight(self):
+        '''
+        Return a weight used for capturing the most relevant score category
+        for an image. strong > medium > weak > negative > other.
+
+        Note that this weight is only used to categorize a single image
+        as being in one of these categories. In order to later determine the
+        strongest experiment from a set of images, negative and other should
+        be swapped in importance, plus 'unscored' might need to be taken
+        into account.
+        '''
+        if self.is_strong():
+            return 4
+        elif self.is_medium():
+            return 3
+        elif self.is_weak():
+            return 2
+
+        # 1 reserved for unscored
+
+        elif self.is_negative():
+            return 0
+        else:
+            # 'other' scores get -1
+            return -1
+
 
 class DevstarScore(models.Model):
     """
