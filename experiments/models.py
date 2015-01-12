@@ -146,13 +146,16 @@ class ManualScore(models.Model):
     def get_score_weight(self):
         '''
         Return a weight used for capturing the most relevant score category
-        for an image. strong > medium > weak > negative > other.
+        for an image. Note that relevance and strength do not always coincide
+        ('negative' is more relevant than 'other', since negative means that it
+        is not a sup/enh whereas other might mean any auxiliary score).
 
-        Note that this weight is only used to categorize a single image
-        as being in one of these categories. In order to later determine the
-        strongest experiment from a set of images, negative and other should
-        be swapped in importance, plus 'unscored' might need to be taken
-        into account.
+        The weights are:
+        4: strong
+        3: medium
+        2: weak
+        0: negative
+        -1: other
         '''
         if self.is_strong():
             return 4
