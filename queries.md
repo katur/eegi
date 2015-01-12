@@ -1,6 +1,17 @@
-Miscellaneous database queries
+# Miscellaneous database queries.
 
-Get pairwise weak enhancer counts by mutant:
+## ENH secondary estimates
+These queries are both just a way to get a very general sense of the size of
+the enhancer secondary. The number is not exact, for several reasons:
+
+- The sum may be inflated due to overlap between the two queries (some images
+  may be scored as both weak and medium, or weak and strong)
+- Both queries may be inflated due library plates having more than two good
+  copies
+- The strong/medium query is deflated due to not counting strong/medium paired
+  with unscored (it assumes two scored copies)
+
+### Get pairwise weak enhancer counts by mutant:
 
     SELECT E1.worm_strain_id, COUNT(DISTINCT E1.worm_strain_id, E1.id, S1.well, E2.id, S2.well)
     FROM ManualScore AS S1, ManualScore AS S2, Experiment AS E1, Experiment AS E2
@@ -14,7 +25,7 @@ Get pairwise weak enhancer counts by mutant:
     GROUP BY E1.worm_strain_id;
 
 
-Get strong or medium enhancer counts by mutant:
+Get strong or medium enhancer counts by mutant.
 
     SELECT E1.worm_strain_id, COUNT(DISTINCT E1.worm_strain_id, E1.id, S1.well, E2.id, S2.well)
     FROM ManualScore AS S1, ManualScore AS S2, Experiment AS E1, Experiment AS E2
