@@ -29,14 +29,13 @@ class Command(BaseCommand):
                         secondary_by_clone[well] = []
                     secondary_by_clone[well].append(worm)
 
-        sys.stdout.write('Before accounting for universals: \n')
+        sys.stdout.write('Total clones to cherry pick: {}\n'.format(
+            len(secondary_by_clone)))
+
+        sys.stdout.write('\n\nBreakdown before accounting for universals: \n')
         for worm in secondary_by_worm:
             sys.stdout.write('{}: {} wells\n'.format(
                 worm, len(secondary_by_worm[worm])))
-        sys.stdout.write('\n\n\n')
-
-        sys.stdout.write('Total clones to cherry pick: '.format(
-            len(secondary_by_clone)))
 
         num_universal = 0
         num_unique = 0
@@ -49,5 +48,5 @@ class Command(BaseCommand):
             else:
                 num_unique += 1
 
-        sys.stdout.write('Breakdown: {} universal, {} unique'.format(
-            num_universal, num_unique))
+        sys.stdout.write('\n\nBreakdown after: {} universal, {} unique\n'
+                         .format(num_universal, num_unique))
