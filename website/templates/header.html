@@ -12,7 +12,7 @@
   {% url 'double_knockdown_search_url' as double_knockdown_search_url %}
 
   <a href="{{ worms_url }}"
-      {% ifequal request.path worm_strains_url %}
+      {% ifequal request.path worms_url %}
       class="active"
       {% endifequal %}>
     Worm Strains
