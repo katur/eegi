@@ -37,10 +37,9 @@ class Command(BaseCommand):
             sys.stdout.write('{}: {} wells\n'.format(
                 worm, len(secondary_by_worm[worm])))
 
-        secondary_by_clone['universal'] = []
-
         num_with_two = 0
         num_with_four = 0
+        secondary_by_worm['universal'] = []
 
         for well in secondary_by_clone:
             worms = (secondary_by_clone[well])
