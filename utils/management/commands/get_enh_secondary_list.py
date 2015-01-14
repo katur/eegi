@@ -32,21 +32,34 @@ class Command(BaseCommand):
         sys.stdout.write('Total clones to cherry pick: {}\n'.format(
             len(secondary_by_clone)))
 
-        sys.stdout.write('\n\nBreakdown before accounting for universals: \n')
+        sys.stdout.write('\n\nBreakdown before accounting for universals:\n')
         for worm in secondary_by_worm:
             sys.stdout.write('{}: {} wells\n'.format(
                 worm, len(secondary_by_worm[worm])))
 
-        num_universal = 0
-        num_unique = 0
-        for well in secondary_by_clone:
-            num = len(secondary_by_clone[well])
-            if num == 0:
-                sys.stdout.write('ERROR: length 0')
-            elif num >= 3:
-                num_universal += 1
-            else:
-                num_unique += 1
+        secondary_by_clone['universal'] = []
 
-        sys.stdout.write('\n\nBreakdown after: {} universal, {} unique\n'
-                         .format(num_universal, num_unique))
+        num_with_two = 0
+        num_with_four = 0
+
+        for well in secondary_by_clone:
+            worms = (secondary_by_clone[well])
+            if len(worms) == 0:
+                sys.stdout.write('ERROR: length 0')
+            elif len(worms) >= 3:
+                if len(worms) >= 4:
+                    num_with_four += 1
+
+                secondary_by_worm['universal'].append(worm)
+                for worm in worms:
+                    secondary_by_worm[worm].remove(worm)
+            elif len(worms) >= 2:
+                num_with_two += 1
+
+        sys.stdout.write('\n\nBreakdown after accounting for universals:\n')
+        for worm in secondary_by_worm:
+            sys.stdout.write('{}: {} wells\n'.format(
+                worm, len(secondary_by_worm[worm])))
+
+        sys.stdout.write('\n\nNumber with 2: {}. With 4: {}.'.format(
+            num_with_two, num_with_four))
