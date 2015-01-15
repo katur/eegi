@@ -37,28 +37,24 @@ class Command(BaseCommand):
             sys.stdout.write('{}: {} wells\n'.format(
                 worm, len(secondary_by_worm[worm])))
 
-        num_with_two = 0
-        num_with_four = 0
         secondary_by_worm['universal'] = []
 
         for well in secondary_by_clone:
             worms = (secondary_by_clone[well])
             if len(worms) == 0:
                 sys.stdout.write('ERROR: length 0')
-            elif len(worms) >= 3:
-                if len(worms) >= 4:
-                    num_with_four += 1
 
-                secondary_by_worm['universal'].append(worm)
+            # Extract hub candidate clones from unique lists into 'univeral'
+            # list, to be tested against all mutants
+            elif len(worms) >= 13:
+                secondary_by_worm['universal'].append(well)
                 for worm in worms:
-                    secondary_by_worm[worm].remove(worm)
-            elif len(worms) >= 2:
-                num_with_two += 1
+                    secondary_by_worm[worm].remove(well)
 
         sys.stdout.write('\n\nBreakdown after accounting for universals:\n')
         for worm in secondary_by_worm:
             sys.stdout.write('{}: {} wells\n'.format(
                 worm, len(secondary_by_worm[worm])))
 
-        sys.stdout.write('\n\nNumber with 2: {}. With 4: {}.'.format(
-            num_with_two, num_with_four))
+        for well in secondary_by_worm['universal']:
+            print well
