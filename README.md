@@ -47,7 +47,7 @@ are in [README_database_migration.md](README_database_migration.md).
 The project is organized into four main apps centered around the project data:
 
 - `worms` captures the *C. elegans* strains used in the screen.
-- `clones` captures the theoretical identity of the RNAi clones,
+- `clones` captures the RNAi clones (theoretically) used in the screen,
 including mapping information.
 - `library` captures the physical RNAi stocks used in the screen,
 including sequencing results.
