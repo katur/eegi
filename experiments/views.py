@@ -382,8 +382,9 @@ def secondary_scores(request, worm, temperature):
 
     context = {
         'worm': worm,
-        'd': d,
+        'temp': temperature,
         'max_expts': max_expts,
+        'd': d,
     }
 
     return render(request, 'secondary_scores.html', context)

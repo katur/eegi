@@ -13,6 +13,7 @@
       <th>Library Plate</th>
       <th>Library Well</th>
       <th>Intended Clone</th>
+      <th>View Images</th>
       <th>Average Score</th>
       <th colspan="{{ max_expts }}">Scores</th>
     </tr>
@@ -25,6 +26,8 @@
       <td>{{ well.plate }}</td>
       <td>{{ well.well }}</td>
       <td>{{ well.intended_clone_id }}</td>
+      {% url 'double_knockdown_url' worm.id well.intended_clone_id temp as x %}
+      <td><a href="{{ x }}">click</a></td>
       <td>{{ well.avg }}</td>
       {% for experiment, score in experiments.items %}
       <td>
