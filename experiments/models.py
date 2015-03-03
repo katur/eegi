@@ -18,10 +18,10 @@ class Experiment(models.Model):
     library_plate = models.ForeignKey(LibraryPlate)
     library_plate_copy_number = models.PositiveSmallIntegerField(null=True,
                                                                  blank=True)
-    screen_level = models.PositiveSmallIntegerField()
+    screen_level = models.PositiveSmallIntegerField(db_index=True)
     temperature = models.DecimalField(max_digits=3, decimal_places=1)
     date = models.DateField()
-    is_junk = models.BooleanField(default=False)
+    is_junk = models.BooleanField(default=False, db_index=True)
     comment = models.TextField(blank=True)
 
     class Meta:

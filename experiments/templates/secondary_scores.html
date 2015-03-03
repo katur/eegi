@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load extra_template_tags %}
+
+{% block body_id %}secondary-scores{% endblock %}
+{% block page_title %}{{ screen}} Secondary Scores{% endblock %}
+
+{% block content %}
+
+<table class="grayscale striped nice-padding">
+  <thead>
+    <tr>
+      <th>Worm Strain</th>
+      <th>Library Plate</th>
+      <th>Library Well</th>
+      <th>Intended Clone</th>
+      <th>Average Score</th>
+      <th colspan="{{ max_expts }}">Scores</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for well, experiments in d.items %}
+    <tr>
+      <td>{{ worm.id }}</td>
+      <td>{{ well.plate }}</td>
+      <td>{{ well.well }}</td>
+      <td>{{ well.intended_clone_id }}</td>
+      <td>{{ well.avg }}</td>
+      {% for experiment, score in experiments.items %}
+      <td>
+        {{ experiment.id }}
+        <br>
+        {{ score }}
+      </td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

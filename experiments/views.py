@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from itertools import chain
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -7,7 +8,7 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 
 from clones.models import Clone
-from experiments.models import Experiment
+from experiments.models import Experiment, ManualScore
 from experiments.forms import ExperimentFilterForm, DoubleKnockdownForm
 from library.models import LibraryWell, LibraryPlate
 from worms.models import WormStrain
@@ -283,3 +284,51 @@ def double_knockdown(request, worm, clone, temperature):
     }
 
     return render(request, 'double_knockdown.html', context)
+
+
+def secondary_scores(request, screen, worm):
+    worm = get_object_or_404(WormStrain, pk=worm)
+    temp = worm.restrictive_temperature
+
+    scores = (ManualScore.objects.filter(
+              Q(experiment__worm_strain=worm),
+              Q(experiment__screen_level=2),
+              Q(experiment__is_junk=False),
+              Q(experiment__temperature=temp)).
+              order_by('experiment__worm_strain', 'experiment__id', 'well'))
+
+    d = {}
+    for score in scores:
+        experiment = score.experiment
+        library_well = get_object_or_404(LibraryWell, well=score.well,
+                                         plate=experiment.library_plate)
+
+        if library_well not in d:
+            d[library_well] = OrderedDict()
+
+        # Adjust weights to be the 0-3 scale that we're used to
+        weight = score.get_score_weight() - 1
+        if weight < 0:
+            weight = 0
+
+        if (experiment not in d[library_well] or
+                d[library_well][experiment] < weight):
+            d[library_well][experiment] = weight
+
+    max_expts = 0
+    for well, expts in d.iteritems():
+        well.avg = sum(x for x in expts.values()) / float(len(expts))
+        if len(expts) > max_expts:
+            max_expts = len(expts)
+
+    # Sort by highest average
+    d = OrderedDict(sorted(d.iteritems(), key=lambda x: x[0].avg,
+                           reverse=True))
+
+    context = {
+        'worm': worm,
+        'd': d,
+        'max_expts': max_expts,
+    }
+
+    return render(request, 'secondary_scores.html', context)
