@@ -9,7 +9,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from clones.models import Clone
 from experiments.models import Experiment, ManualScore
-from experiments.forms import ExperimentFilterForm, DoubleKnockdownForm
+from experiments.forms import (ExperimentFilterForm, DoubleKnockdownForm,
+                               SecondaryScoresForm)
 from library.models import LibraryWell, LibraryPlate
 from worms.models import WormStrain
 
@@ -286,15 +287,69 @@ def double_knockdown(request, worm, clone, temperature):
     return render(request, 'double_knockdown.html', context)
 
 
-def secondary_scores(request, screen, worm):
+def secondary_scores_search(request):
+    error = ''
+    if request.method == 'POST':
+        form = SecondaryScoresForm(request.POST)
+        if form.is_valid():
+            try:
+                data = form.cleaned_data
+                query = data['query']
+                screen = data['screen']
+
+                if screen != 'ENH' and screen != 'SUP':
+                    raise Exception('screen must be ENH or SUP')
+
+                if query == 'N2':
+                    raise Exception('query must be a mutant, not N2')
+
+                if screen == 'ENH':
+                    worms = (WormStrain.objects
+                             .filter(Q(gene=query) | Q(allele=query) |
+                                     Q(id=query))
+                             .exclude(permissive_temperature__isnull=True))
+                else:
+                    worms = (WormStrain.objects
+                             .filter(Q(gene=query) | Q(allele=query) |
+                                     Q(id=query))
+                             .exclude(restrictive_temperature__isnull=True))
+
+                if len(worms) == 0:
+                    raise Exception('No worm strain matches query.')
+                elif len(worms) > 1:
+                    raise Exception('Multiple worm strains match query.')
+                else:
+                    worm = worms[0]
+
+                if screen == 'ENH':
+                    temperature = worm.permissive_temperature
+                else:
+                    temperature = worm.restrictive_temperature
+
+                return redirect(secondary_scores, worm, temperature)
+
+            except Exception as e:
+                error = e.message
+
+    else:
+        form = SecondaryScoresForm(initial={'screen': 'SUP'})
+
+    context = {
+        'form': form,
+        'error': error,
+    }
+
+    return render(request, 'secondary_scores_search.html', context)
+
+
+def secondary_scores(request, worm, temperature):
     worm = get_object_or_404(WormStrain, pk=worm)
-    temp = worm.restrictive_temperature
 
     scores = (ManualScore.objects.filter(
               Q(experiment__worm_strain=worm),
               Q(experiment__screen_level=2),
               Q(experiment__is_junk=False),
-              Q(experiment__temperature=temp)).
+              Q(experiment__temperature=temperature)).
               order_by('experiment__worm_strain', 'experiment__id', 'well'))
 
     d = {}

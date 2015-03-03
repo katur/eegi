@@ -10,6 +10,7 @@
   {% url 'library_plates_url' as library_plates_url %}
   {% url 'experiments_url' as experiments_url %}
   {% url 'double_knockdown_search_url' as double_knockdown_search_url %}
+  {% url 'secondary_scores_search_url' as secondary_scores_search_url %}
 
   <a href="{{ worms_url }}"
       {% ifequal request.path worms_url %}
@@ -44,6 +45,13 @@
       class="active"
       {% endifequal %}>
     Double Knockdown Search
+  </a>
+
+  <a href="{{ secondary_scores_search_url }}"
+      {% ifequal request.path secondary_scores_search_url %}
+      class="active"
+      {% endifequal %}>
+    Summarized Secondary Scores
   </a>
 </div>
 

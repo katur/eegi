@@ -15,6 +15,8 @@ urlpatterns = patterns(
         'double_knockdown_search', name='double_knockdown_search_url'),
     url(r'^double-knockdown/([^/]+)/([^/]+)/([^/]+)$',
         'double_knockdown', name='double_knockdown_url'),
-    url(r'^secondary-scores/(SUP|ENH)/([^/]+)$',
+    url(r'^secondary-scores$',
+        'secondary_scores_search', name='secondary_scores_search_url'),
+    url(r'^secondary-scores/([^/]+)/([^/]+)$',
         'secondary_scores', name='secondary_scores_url'),
 )

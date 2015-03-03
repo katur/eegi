@@ -45,3 +45,14 @@ class DoubleKnockdownForm(forms.Form):
     screen = forms.ChoiceField(
         choices=[('SUP', 'suppressor'), ('ENH', 'enhancer')],
         widget=forms.RadioSelect)
+
+
+class SecondaryScoresForm(forms.Form):
+    """
+    Form for getting all secondary scores for a strain.
+    """
+    query = forms.CharField(label='Mutant query',
+                            help_text='gene, allele, or worm strain name')
+    screen = forms.ChoiceField(
+        choices=[('SUP', 'suppressor'), ('ENH', 'enhancer')],
+        widget=forms.RadioSelect)
