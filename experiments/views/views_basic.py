@@ -80,6 +80,20 @@ def experiments(request, context=None):
     return render(request, 'experiments.html', context)
 
 
+def experiment_grid(request, screen_level):
+    experiments = (Experiment.objects.filter(screen_level=screen_level)
+                   .prefetch_related('library_plate', 'worm_strain')
+                   .order_by('library_plate_id', 'worm_strain_id',
+                             'temperature', 'date'))
+
+    context = {
+        'experiments': experiments,
+        'screen_level': screen_level,
+    }
+
+    return render(request, 'experiment_grid.html', context)
+
+
 def experiment_plate(request, id):
     """
     Render the page to see information about a specific experiment.
