@@ -345,14 +345,47 @@ def secondary_scores_search(request):
 def secondary_scores(request, worm, temperature):
     worm = get_object_or_404(WormStrain, pk=worm)
 
+    '''
+    SELECT * FROM ManualScore
+    LEFT JOIN Experiment
+        ON ManualScore.experiment_id = Experiment.id
+    LEFT JOIN LibraryWell
+        ON LibraryWell.plate_id = Experiment.library_plate_id
+        AND LibraryWell.well = ManualScore.well
+    WHERE Experiment.screen_level=2
+        AND Experiment.is_junk=0
+        AND Experiment.temperature=22.5
+        AND Experiment.worm_strain_id="AR1"
+    ORDER BY Experiment.id, ManualScore.well;
+    '''
+
+    '''
+    SELECT Experiment.worm_strain_id, library_plate_id, ManualScore.well,
+        intended_clone_id, AVG(score_code_id)
+    FROM ManualScore
+    LEFT JOIN Experiment
+        ON ManualScore.experiment_id = Experiment.id
+    LEFT JOIN LibraryWell
+        ON LibraryWell.plate_id = Experiment.library_plate_id
+        AND LibraryWell.well = ManualScore.well
+    WHERE Experiment.screen_level=2
+        AND Experiment.is_junk=0
+        AND Experiment.temperature=22.5
+        AND Experiment.worm_strain_id="EU554"
+    GROUP BY library_plate_id, ManualScore.well;
+    '''
     scores = (ManualScore.objects.filter(
               Q(experiment__worm_strain=worm),
               Q(experiment__screen_level=2),
               Q(experiment__is_junk=False),
-              Q(experiment__temperature=temperature)).
-              order_by('experiment__worm_strain', 'experiment__id', 'well'))
+              Q(experiment__temperature=temperature))
+              .prefetch_related('experiment')
+              .prefetch_related('experiment__library_plate')
+              .order_by('experiment__id', 'well'))
 
+    print 'before'
     d = {}
+
     for score in scores:
         experiment = score.experiment
         library_well = get_object_or_404(LibraryWell, well=score.well,
@@ -362,13 +395,13 @@ def secondary_scores(request, worm, temperature):
             d[library_well] = OrderedDict()
 
         # Adjust weights to be the 0-3 scale that we're used to
-        weight = score.get_score_weight() - 1
-        if weight < 0:
-            weight = 0
+        weight = max(0, score.get_score_weight() - 1)
 
         if (experiment not in d[library_well] or
                 d[library_well][experiment] < weight):
             d[library_well][experiment] = weight
+
+    print 'after'
 
     max_expts = 0
     for well, expts in d.iteritems():
