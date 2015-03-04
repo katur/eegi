@@ -77,7 +77,7 @@ def secondary_scores(request, worm, temperature):
               Q(experiment__temperature=temperature))
               .select_related('score_code')
               .prefetch_related('experiment__library_plate')
-              .order_by('experiment__id', 'well'))
+              .order_by('-experiment__id', 'well'))
 
     # Store LibraryWells in a dictionary for fast correlation to scores.
     # w[library_plate_name][well_name] = LibraryWell object
