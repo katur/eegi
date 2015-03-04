@@ -12,7 +12,8 @@ class LibraryPlate(models.Model):
     theoretical plate, not an individual frozen stock of the plate.
     """
     id = models.CharField(max_length=20, primary_key=True)
-    screen_stage = models.PositiveSmallIntegerField(null=True, blank=True)
+    screen_stage = models.PositiveSmallIntegerField(null=True, blank=True,
+                                                    db_index=True)
     number_of_wells = models.PositiveSmallIntegerField()
 
     class Meta:
@@ -63,7 +64,7 @@ class LibraryWell(models.Model):
     well.
     """
     id = models.CharField(max_length=24, primary_key=True)
-    plate = models.ForeignKey(LibraryPlate)
+    plate = models.ForeignKey(LibraryPlate, related_name='wells')
     well = models.CharField(max_length=3)
     intended_clone = models.ForeignKey(Clone, null=True, blank=True)
     parent_library_well = models.ForeignKey('self', null=True, blank=True)

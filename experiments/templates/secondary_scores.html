@@ -20,10 +20,10 @@
   </thead>
 
   <tbody>
-    {% for well, experiments in d.items %}
+    {% for well, experiments in s.items %}
     <tr>
       <td>{{ worm.id }}</td>
-      <td>{{ well.plate }}</td>
+      <td>{{ well.plate_id }}</td>
       <td>{{ well.well }}</td>
       <td>{{ well.intended_clone_id }}</td>
       {% url 'double_knockdown_url' worm.id well.intended_clone_id temp as x %}
