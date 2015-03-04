@@ -24,7 +24,10 @@ Experiments
     {% for worm_strain in worm_strain_list %}
       {% regroup worm_strain.list by temperature as temperature_list %}
       {% for temperature in temperature_list %}
-      <td>
+      <td
+        {% if temperature.list|length != 2 %}
+          class="error-background"
+        {% endif %}>
         <b>{{ worm_strain.grouper }}</b>
         <br>
         <b>{{ library_plate.grouper }}</b>
