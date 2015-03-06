@@ -1,3 +1,4 @@
+from __future__ import division
 from collections import OrderedDict
 
 from django.db.models import Q
@@ -98,7 +99,7 @@ def secondary_scores(request, worm, temperature):
             w[plate] = {}
         w[plate][well] = library_well
 
-    # Organize the scores into s[library_well][experiment] = score_weight
+    # Organize the scores into s[library_well][experiment] = score
     s = {}
     for score in scores:
         experiment = score.experiment
@@ -114,24 +115,46 @@ def secondary_scores(request, worm, temperature):
                 s[library_well][experiment] < weight):
             s[library_well][experiment] = weight
 
-    max_expts = 0
+    def passes_criteria(scores):
+        # Assumes the 0-3 weight that we're used to
+        total = len(scores)
+        present = 0
+        maybe = 0
+        for score in scores:
+            if score == 2 or score == 3:
+                present += 1
+            elif score == 1:
+                maybe += 1
+
+        if (present / total) >= .375:
+            return True
+
+        if ((present + maybe) / total) >= .5:
+            return True
+
+        return False
+
+    num_experiment_columns = 0
     for well, expts in s.iteritems():
         well.avg = sum(x for x in expts.values()) / float(len(expts))
-        if len(expts) > max_expts:
-            max_expts = len(expts)
+        well.passes_criteria = passes_criteria(expts.values())
+        if len(expts) > num_experiment_columns:
+            num_experiment_columns = len(expts)
 
     # Sort by highest average
-    s = OrderedDict(sorted(s.iteritems(), key=lambda x: x[0].avg,
+    s = OrderedDict(sorted(s.iteritems(),
+                           key=lambda x: (x[0].passes_criteria, x[0].avg),
                            reverse=True))
 
     context = {
         'worm': worm,
         'temp': temperature,
         's': s,
-        'max_expts': max_expts,
+        'num_experiment_columns': num_experiment_columns,
     }
 
     return render(request, 'secondary_scores.html', context)
+
 
 '''
 SELECT * FROM ManualScore

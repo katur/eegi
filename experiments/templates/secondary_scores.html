@@ -14,8 +14,9 @@
       <th>Library Well</th>
       <th>Intended Clone</th>
       <th>Double Knockdown</th>
+      <th>Passes Criteria?</th>
       <th>Average Score</th>
-      <th colspan="{{ max_expts }}">Scores</th>
+      <th colspan="{{ num_experiment_columns }}">Scores</th>
     </tr>
   </thead>
 
@@ -36,6 +37,7 @@
       {% endif %}
       </td>
 
+      <td>{{ well.passes_criteria }}</td>
       <td>{{ well.avg }}</td>
 
       {% for experiment, score in experiments.items %}
