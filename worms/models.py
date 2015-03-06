@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 
 
@@ -41,6 +42,22 @@ class WormStrain(models.Model):
             return self.get_lab_website_url()
         else:
             return self.get_wormbase_url()
+
+    def get_screen_category(self, temperature):
+        '''Determine if temperature is a screen temperature for this strain.
+
+        Returns 'ENH' if temperature is this strain's permissive temperature.
+        Returns 'SUP' if temperature is this strain's restrictive temperature.
+        Returns None if temperature is not an official screen temperature for
+        this strain.
+        '''
+        temperature = Decimal(temperature)
+        if self.permissive_temperature == temperature:
+            return 'ENH'
+        elif self.restrictive_temperature == temperature:
+            return 'SUP'
+        else:
+            return None
 
     def is_control(self):
         if not self.allele:

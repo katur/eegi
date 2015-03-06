@@ -2,7 +2,10 @@
 {% load extra_template_tags %}
 
 {% block body_id %}secondary-scores{% endblock %}
-{% block page_title %}{{ screen}} Secondary Scores{% endblock %}
+
+{% block page_title %}
+  {{ worm.id }} {{ screen }} secondary scores
+{% endblock %}
 
 {% block content %}
 
@@ -10,6 +13,7 @@
   <thead>
     <tr>
       <th>Worm Strain</th>
+      <th>Worm Genotype</th>
       <th>Library Plate</th>
       <th>Library Well</th>
       <th>Intended Clone</th>
@@ -24,6 +28,7 @@
     {% for well, experiments in s.items %}
     <tr>
       <td>{{ worm.id }}</td>
+      <td>{{ worm.genotype }}</td>
       <td>{{ well.plate_id }}</td>
       <td>{{ well.well }}</td>
       <td>{{ well.intended_clone_id }}</td>

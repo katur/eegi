@@ -12,25 +12,27 @@
   {% url 'double_knockdown_search_url' as double_knockdown_search_url %}
   {% url 'secondary_scores_search_url' as secondary_scores_search_url %}
 
+
+
   <a href="{{ worms_url }}"
       {% ifequal request.path worms_url %}
       class="active"
       {% endifequal %}>
-    Worm Strains
+    Worms
   </a>
 
   <a href="{{ clones_url }}"
       {% ifequal request.path clones_url %}
       class="active"
       {% endifequal %}>
-    RNAi Clones
+    Clones
   </a>
 
   <a href="{{ library_plates_url }}"
       {% ifequal request.path library_plates_url %}
       class="active"
       {% endifequal %}>
-    RNAi Library Plates
+    Library
   </a>
 
   <a href="{{ experiments_url }}"
@@ -44,14 +46,14 @@
       {% ifequal request.path double_knockdown_search_url %}
       class="active"
       {% endifequal %}>
-    Double Knockdown Search
+    Double Knockdown
   </a>
 
   <a href="{{ secondary_scores_search_url }}"
       {% ifequal request.path secondary_scores_search_url %}
       class="active"
       {% endifequal %}>
-    Browse Positives
+    Secondary Scores
   </a>
 </div>
 

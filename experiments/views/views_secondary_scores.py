@@ -67,6 +67,7 @@ def secondary_scores_search(request):
 
 def secondary_scores(request, worm, temperature):
     worm = get_object_or_404(WormStrain, pk=worm)
+    screen = worm.get_screen_category(temperature)
 
     # Fetch the non-junk secondary scores for this worm and temperature,
     # prefetching corresponding ScoreCode and LibraryPlate for faster lookup
@@ -149,6 +150,7 @@ def secondary_scores(request, worm, temperature):
     context = {
         'worm': worm,
         'temp': temperature,
+        'screen': screen,
         's': s,
         'num_experiment_columns': num_experiment_columns,
     }
