@@ -32,6 +32,17 @@ def get_celsius_string(temperature):
         return None
 
 
+@register.filter(is_safe=True)
+def concatenate_ids_with_commas(l):
+    s = ''
+    for item in l:
+        s += str(item.id) + ','
+    if len(s) > 0:
+        s = s[:-1]
+
+    return s
+
+
 @register.simple_tag
 def get_screen_type(temperature, strain):
     if Decimal(temperature) == strain.restrictive_temperature:

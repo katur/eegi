@@ -1,10 +1,13 @@
+from collections import OrderedDict
+
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm
-from library.models import LibraryWell
+from worms.models import WormStrain
+from library.models import LibraryWell, LibraryPlate
 
 
 def experiments(request, context=None):
@@ -81,14 +84,42 @@ def experiments(request, context=None):
 
 
 def experiment_grid(request, screen_level):
-    experiments = (Experiment.objects.filter(screen_level=screen_level)
-                   .prefetch_related('library_plate', 'worm_strain')
-                   .order_by('library_plate_id', 'worm_strain_id',
-                             'temperature', 'date'))
+    worms = WormStrain.objects.all()
+    plates = LibraryPlate.objects.filter(screen_stage=screen_level)
+    experiments = (Experiment.objects
+                   .filter(screen_level=screen_level, is_junk=False)
+                   .prefetch_related('library_plate', 'worm_strain'))
+
+    header = []
+    for worm in worms:
+        if worm.permissive_temperature:
+            header.append((worm, worm.permissive_temperature))
+        if worm.restrictive_temperature:
+            header.append((worm, worm.restrictive_temperature))
+
+    e = OrderedDict()
+    for plate in plates:
+        e[plate] = OrderedDict()
+        for worm in worms:
+            if worm not in e[plate]:
+                e[plate][worm] = OrderedDict()
+            if worm.permissive_temperature:
+                e[plate][worm][worm.permissive_temperature] = []
+            if worm.restrictive_temperature:
+                e[plate][worm][worm.restrictive_temperature] = []
+
+    for experiment in experiments:
+        plate = experiment.library_plate
+        worm = experiment.worm_strain
+        temp = experiment.temperature
+
+        if temp in e[plate][worm]:
+            e[plate][worm][temp].append(experiment)
 
     context = {
-        'experiments': experiments,
         'screen_level': screen_level,
+        'header': header,
+        'e': e,
     }
 
     return render(request, 'experiment_grid.html', context)

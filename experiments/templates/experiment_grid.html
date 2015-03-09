@@ -15,35 +15,61 @@ Experiments
 
 {% block content %}
 
-<table id="experiment-results" class="grid nice-padding">
-  {% regroup experiments by library_plate as library_plate_list %}
-  {% for library_plate in library_plate_list %}
-  <tr>
-    <th>{{ library_plate.grouper }}</th>
-    {% regroup library_plate.list by worm_strain as worm_strain_list %}
-    {% for worm_strain in worm_strain_list %}
-      {% regroup worm_strain.list by temperature as temperature_list %}
-      {% for temperature in temperature_list %}
-      <td
-        {% if temperature.list|length != 2 %}
-          class="error-background"
-        {% endif %}>
-        <b>{{ worm_strain.grouper }}</b>
+<table id="experiment-grid-table" class="grid">
+  <thead>
+    <tr>
+      <th></th>
+      {% for worm, temp in header %}
+      <th>
+        {{ worm }}
         <br>
-        <b>{{ library_plate.grouper }}</b>
+        {{ worm.gene }}
         <br>
-        <b>{{ temperature.grouper }}C</b>
-        <ol>
-        {% for experiment in temperature.list %}
-          <li><a href="{% url 'experiment_plate_url' experiment.id %}">
-            {{ experiment }}</a></li>
-        {% endfor %}
-        </ol>
-      </td>
+        {{ temp|get_celsius_string }}
+      </th>
       {% endfor %}
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for plate, worms in e.items %}
+    <tr>
+      <th>{{ plate }}</th>
+      {% for worm, temperatures in worms.items %}
+        {% for temperature, experiments in temperatures.items %}
+        <td
+          {% if screen_level == '1' and experiments|length != 2 %}
+            class="error-background"
+          {% elif experiments and screen_level == '2' and experiments|length != 8 %}
+            class="error-background"
+          {% endif %}
+        >
+          {{ plate }}
+          <br>
+          {{ worm }}
+          <br>
+          {{ temperature|get_celsius_string }}
+
+          <ol>
+            {% for experiment in experiments %}
+            <li>
+            <a href="{% url 'experiment_plate_url' experiment.id %}">
+              {{ experiment }}</a>
+            </li>
+            {% endfor %}
+          </ol>
+
+          {% if experiments %}
+            <a href="
+              {% url 'experiment_plate_vertical_url' experiments|concatenate_ids_with_commas %}">
+              all</a>
+          {% endif %}
+        </td>
+        {% endfor %}
+      {% endfor %}
+    </tr>
     {% endfor %}
-  </tr>
-  {% endfor %}
+  </tbody>
 </table>
 
 {% endblock %}
