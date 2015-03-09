@@ -29,7 +29,9 @@
 
   <span>Date: {{ experiment.date }}</span>
 
-  {% if experiment.is_junk %}<span>JUNK</span>{% endif %}
+  {% if experiment.is_junk %}
+  <span class="error-message">JUNK</span>
+  {% endif %}
 
   {% if experiment.comment %}
     <span>Comment: {{ experiment.comment }}</span>
