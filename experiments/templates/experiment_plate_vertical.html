@@ -10,31 +10,40 @@
 {% endblock %}
 
 {% block content %}
-<table id="all-vertical-tables">
+<table>
+
 <tr>
 {% for experiment in experiments %}
 <td>
   <table class="plate-96 vertical-tiles grayscale">
     <thead>
       <tr>
-        <th
+        <th class="plate-info">
+          <span>
+            <a href="{% url 'experiment_plate_url' experiment.id %}">
+              {{ experiment.id }}</a>
+          </span>
+
+          <span>
+            {{ experiment.worm_strain }}
+            {% if experiment.worm_strain.genotype %}
+              : {{ experiment.worm_strain.genotype }}
+            {% endif %}
+          </span>
+
+          <span>{{ experiment.library_plate }}</span>
+
+          <span>{{ experiment.temperature|get_celsius_string }}</span>
+
+          <span>{{ experiment.date }}</span>
+
+          <span
           {% if experiment.is_junk %}
-          class="error-background"
+            class="error-message">JUNK
+          {% else %}
+            >not junk
           {% endif %}
-        >
-          <a href="{% url 'experiment_plate_url' experiment.id %}">
-            {{ experiment.id }}</a>
-          <br>
-          {{ experiment.worm_strain }}
-          {% if experiment.worm_strain.genotype %}
-            : {{ experiment.worm_strain.genotype }}
-          {% endif %}
-          <br>
-          {{ experiment.library_plate }}
-          <br>
-          {{ experiment.temperature|get_celsius_string }}
-          <br>
-          {{ experiment.date }}
+          </span>
         </th>
       </tr>
     </thead>

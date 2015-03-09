@@ -93,7 +93,7 @@ Find experiments with filters:
       <th>RNAi Library Plate</th>
       <th>Temperature</th>
       <th>Date</th>
-      <th>Is Junk</th>
+      <th>Is Junk?</th>
       <th>Comment</th>
     </tr>
   </thead>
@@ -110,7 +110,12 @@ Find experiments with filters:
       <td>{{ experiment.library_plate }}</td>
       <td>{{ experiment.temperature|get_celsius_string }}</td>
       <td>{{ experiment.date }}</td>
-      <td>{{ experiment.is_junk }}</td>
+      <td
+        {% if experiment.is_junk %}
+        class="error-message">JUNK
+        {% else %}
+          >not junk
+      {% endif %}</td>
       <td>{{ experiment.comment }}</td>
     </tr>
     {% endfor %}

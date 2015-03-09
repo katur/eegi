@@ -38,10 +38,14 @@ Experiments
       {% for worm, temperatures in worms.items %}
         {% for temperature, experiments in temperatures.items %}
         <td
-          {% if screen_level == '1' and experiments|length != 2 %}
+          {% if screen_level == '1' and experiments|length < 2 %}
             class="error-background"
-          {% elif experiments and screen_level == '2' and experiments|length != 8 %}
+          {% elif screen_level == '1' and experiments|length > 2 %}
+            class="warning-background"
+          {% elif experiments and screen_level == '2' and experiments|length < 8 %}
             class="error-background"
+          {% elif experiments and screen_level == '2' and experiments|length > 8 %}
+            class="warning-background"
           {% endif %}
         >
           {{ plate }}
