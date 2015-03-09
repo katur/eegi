@@ -54,7 +54,7 @@ Experiments
             {% for experiment in experiments %}
             <li>
             <a href="{% url 'experiment_plate_url' experiment.id %}">
-              {{ experiment }}</a>
+              _{{ experiment.id }}_</a>
             </li>
             {% endfor %}
           </ol>
