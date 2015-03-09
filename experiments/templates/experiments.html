@@ -23,6 +23,15 @@ Find an experiment by exact id:
 
 <hr>
 
+<a href="{% url 'experiment_grid_url' 1 %}">
+  View grid of all primary experiments</a>
+<br>
+<br>
+<a href="{% url 'experiment_grid_url' 2 %}">
+  View grid of all secondary experiments</a>
+
+<hr>
+
 Find experiments with filters:
 
 {% if form.errors %}
