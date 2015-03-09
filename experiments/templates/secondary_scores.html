@@ -48,7 +48,7 @@
       {% for experiment, score in experiments.items %}
       <td>
         <a href="{% url 'experiment_well_url' experiment.id well.well %}">
-          {{ experiment.id }}</a>
+          {{ experiment.id }}@{{ well.well }}</a>
         <br>
         {{ score }}
       </td>
