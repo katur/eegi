@@ -53,7 +53,7 @@ def experiments(request, context=None):
                             'is_junk', 'comment'))
                 total_results = len(experiments)
 
-                if total_results > 0 and total_results <= 40:
+                if total_results > 0:
                     ids = experiments.values_list('id')
                     ids = (str(i[0]) for i in ids)
                     id_string = ','.join(ids)
