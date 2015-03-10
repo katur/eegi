@@ -10,6 +10,9 @@ from worms.models import WormStrain
 from library.models import LibraryWell, LibraryPlate
 
 
+EXPERIMENTS_PER_PAGE = 100
+
+
 def experiments(request, context=None):
     """
     Render the page to search for experiments.
@@ -46,7 +49,7 @@ def experiments(request, context=None):
                     link_to_vertical = reverse('experiment_plate_vertical_url',
                                                args=[id_string])
 
-                paginator = Paginator(experiments, 100)
+                paginator = Paginator(experiments, EXPERIMENTS_PER_PAGE)
                 page = request.GET.get('page')
                 try:
                     display_experiments = paginator.page(page)

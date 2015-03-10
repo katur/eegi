@@ -4,12 +4,15 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from clones.models import Clone
 
 
+CLONES_PER_PAGE = 100
+
+
 def clones(request):
     """
     Render the page to see RNAi clones.
     """
     clones = Clone.objects.all()
-    paginator = Paginator(clones, 100)
+    paginator = Paginator(clones, CLONES_PER_PAGE)
     page = request.GET.get('page')
 
     try:

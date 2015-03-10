@@ -34,7 +34,7 @@
 {% ifnotequal total_results None %}
 <div id="results-header">
   <span id="total">
-    {{ total_results }} total experiments.
+    {{ total_results }} matching experiment{{ total_results|pluralize }}
   </span>
 
   {% if link_to_vertical %}

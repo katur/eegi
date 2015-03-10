@@ -4,6 +4,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from library.models import LibraryPlate, LibraryWell
 
 
+PLATES_PER_PAGE = 100
+
+
 def library_plates(request):
     screen_stage = request.GET.get('screen_stage')
     if screen_stage:
@@ -13,7 +16,7 @@ def library_plates(request):
         plates = sorted(LibraryPlate.objects.filter(
             screen_stage__gte=1))
 
-    paginator = Paginator(plates, 50)
+    paginator = Paginator(plates, PLATES_PER_PAGE)
     page = request.GET.get('page')
 
     try:
