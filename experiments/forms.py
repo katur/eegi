@@ -38,6 +38,12 @@ class ExperimentFilterForm(forms.Form):
     date = forms.DateField(required=False,
                            label='Date',
                            help_text='YYYY-MM-DD')
+    date__gte = forms.DateField(required=False,
+                                label='Min date',
+                                help_text='inclusive')
+    date__lte = forms.DateField(required=False,
+                                label='Min date',
+                                help_text='inclusive')
     is_junk = forms.NullBooleanField(required=False,
                                      initial=False,
                                      widget=BlankNullBooleanSelect)
