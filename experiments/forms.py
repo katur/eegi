@@ -14,6 +14,8 @@ class ExperimentFilterForm(forms.Form):
     """
     Form for filtering Experiment instances.
     """
+    id = forms.IntegerField(required=False,
+                            label='Exact id')
     id__gte = forms.IntegerField(required=False,
                                  label='Min id',
                                  help_text='inclusive')
@@ -25,7 +27,14 @@ class ExperimentFilterForm(forms.Form):
     worm_strain__allele = forms.CharField(required=False)
     library_plate = forms.CharField(required=False)
     temperature = forms.DecimalField(required=False,
+                                     label='Exact temp',
                                      help_text='number only')
+    temperature__gte = forms.DecimalField(required=False,
+                                          label='Min temp',
+                                          help_text='inclusive')
+    temperature__lte = forms.DecimalField(required=False,
+                                          label='Max temp',
+                                          help_text='inclusive')
     date = forms.DateField(required=False,
                            label='Date',
                            help_text='YYYY-MM-DD')

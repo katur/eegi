@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm
@@ -12,22 +12,8 @@ from library.models import LibraryWell, LibraryPlate
 
 def experiments(request, context=None):
     """
-    Render the page to navigate all experiments. Provides navigation
-    by either a specific experiment id, or various filters.
+    Render the page to search for experiments.
     """
-    exact_id_errors = []
-
-    if 'exact_id' in request.GET:
-        try:
-            id = int(request.GET['exact_id'])
-            if (id > 0):
-                return redirect(experiment_plate, id)
-            else:
-                exact_id_errors.append('Experiment id must be positive')
-
-        except ValueError:
-            exact_id_errors.append('Experiment id must be a positive integer')
-
     total_results = None
     display_experiments = None
     link_to_vertical = None
@@ -73,7 +59,6 @@ def experiments(request, context=None):
         form = ExperimentFilterForm()
 
     context = {
-        'exact_id_errors': exact_id_errors,
         'form': form,
         'total_results': total_results,
         'display_experiments': display_experiments,
