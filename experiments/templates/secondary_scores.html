@@ -9,6 +9,9 @@
 
 {% block content %}
 
+{{ s|length }} total library well{{ s|length|pluralize}}
+<br>
+{{ num_passes }} pass{{ num_passes|pluralize:"es," }} criteria
 <table class="grayscale striped nice-padding">
   <thead>
     <tr>

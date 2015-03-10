@@ -135,10 +135,13 @@ def secondary_scores(request, worm, temperature):
 
         return False
 
+    num_passes = 0
     num_experiment_columns = 0
     for well, expts in s.iteritems():
         well.avg = sum(x for x in expts.values()) / float(len(expts))
         well.passes_criteria = passes_criteria(expts.values())
+        if well.passes_criteria:
+            num_passes += 1
         if len(expts) > num_experiment_columns:
             num_experiment_columns = len(expts)
 
@@ -152,6 +155,8 @@ def secondary_scores(request, worm, temperature):
         'temp': temperature,
         'screen': screen,
         's': s,
+        'num_wells': len(s),
+        'num_passes': num_passes,
         'num_experiment_columns': num_experiment_columns,
     }
 
