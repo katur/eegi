@@ -19,8 +19,9 @@ class Experiment(models.Model):
     library_plate_copy_number = models.PositiveSmallIntegerField(null=True,
                                                                  blank=True)
     screen_level = models.PositiveSmallIntegerField(db_index=True)
-    temperature = models.DecimalField(max_digits=3, decimal_places=1)
-    date = models.DateField()
+    temperature = models.DecimalField(max_digits=3, decimal_places=1,
+                                      db_index=True)
+    date = models.DateField(db_index=True)
     is_junk = models.BooleanField(default=False, db_index=True)
     comment = models.TextField(blank=True)
 
@@ -181,6 +182,7 @@ class DevstarScore(models.Model):
     experiment = models.ForeignKey(Experiment)
     well = models.CharField(max_length=3)
 
+    # TODO: consider adding db_index=True to some of these
     area_adult = models.IntegerField(null=True, blank=True,
                                      help_text='DevStaR program output')
     area_larva = models.IntegerField(null=True, blank=True,
