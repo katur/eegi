@@ -9,8 +9,8 @@
   {% url 'clones_url' as clones_url %}
   {% url 'library_plates_url' as library_plates_url %}
   {% url 'experiments_url' as experiments_url %}
-  {% url 'double_knockdown_search_url' as double_knockdown_search_url %}
   {% url 'secondary_scores_search_url' as secondary_scores_search_url %}
+  {% url 'double_knockdown_search_url' as double_knockdown_search_url %}
 
 
 
@@ -39,14 +39,7 @@
       {% ifequal request.path experiments_url %}
       class="active"
       {% endifequal %}>
-    Plate-level Experiments
-  </a>
-
-  <a href="{{ double_knockdown_search_url }}"
-      {% ifequal request.path double_knockdown_search_url %}
-      class="active"
-      {% endifequal %}>
-    Double Knockdown
+    Experiments
   </a>
 
   <a href="{{ secondary_scores_search_url }}"
@@ -54,6 +47,13 @@
       class="active"
       {% endifequal %}>
     Secondary Scores
+  </a>
+
+  <a href="{{ double_knockdown_search_url }}"
+      {% ifequal request.path double_knockdown_search_url %}
+      class="active"
+      {% endifequal %}>
+    Double Knockdown
   </a>
 </div>
 

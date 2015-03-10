@@ -2,11 +2,11 @@
 {% load extra_template_tags %}
 
 {% block body_id %}experiments{% endblock %}
-{% block page_title %}Experiments{% endblock %}
+{% block page_title %}Experiment Plates{% endblock %}
 
 {% block content %}
 
-<h4>Grid views</h4>
+<h4>View as grid</h4>
 <a href="{% url 'experiment_grid_url' 1 %}">
   Primary screen (non-junk, official temps only)</a>
 <br>
@@ -16,7 +16,7 @@
 
 <hr>
 
-<h4>Find experiments</h4>
+<h4>Find experiment plates</h4>
 
 {% if form.errors %}
 <span class="error-message">
