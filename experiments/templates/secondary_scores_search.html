@@ -6,24 +6,26 @@
 
 {% block content %}
 
-{% if error %}
-<span class="error-message">
-  Please try again: {{ error }}
-</span>
-{% endif %}
+<div class="error-form">
+  {% if error %}
+  <span class="error-message">
+    Please try again: {{ error }}
+  </span>
+  {% endif %}
 
-{% if form.errors %}
-<span class="error-message">
-  Please correct the error{{ form.errors|pluralize }} below.
-</span>
-{% endif %}
+  {% if form.errors %}
+  <span class="error-message">
+    Please correct the error{{ form.errors|pluralize }} below.
+  </span>
+  {% endif %}
 
-<form action="" method="post">
-  {% csrf_token %}
+  <form action="" method="post">
+    {% csrf_token %}
 
-  <table>{{ form.as_table }}</table>
+    <table>{{ form.as_table }}</table>
 
-  <input type="submit" value="Submit">
-</form>
+    <input type="submit" value="Submit">
+  </form>
+</div>
 
 {% endblock %}
