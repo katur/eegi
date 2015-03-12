@@ -42,7 +42,7 @@ class ExperimentFilterForm(forms.Form):
                                 label='Min date',
                                 help_text='inclusive')
     date__lte = forms.DateField(required=False,
-                                label='Min date',
+                                label='Max date',
                                 help_text='inclusive')
     is_junk = forms.NullBooleanField(required=False,
                                      initial=False,
