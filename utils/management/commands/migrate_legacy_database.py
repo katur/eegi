@@ -15,6 +15,23 @@ from migrate_legacy_database_steps import (update_LibraryPlate_table,
                                            update_ManualScore_table_secondary)
 
 
+USAGE_MESSAGE = '''
+USAGE:
+\t./manage.py migrate_legacy_database [start end]
+
+start is inclusive, end is exclusive, and the values for start and end
+reference the steps below (dependencies in parentheses):
+0: LibraryPlate
+1: Experiment (WormStrain, 0)
+2: ManualScoreCode
+3: ManualScore (1, 2)
+4: DevstarScore (1)
+5: Clone (named RNAiClone in database)
+6: LibraryWell (0, 5)
+7: ManualScore_secondary (1, 2)
+'''
+
+
 class Command(BaseCommand):
     """
     Command to update the new database according to the legacy database.
@@ -43,17 +60,16 @@ class Command(BaseCommand):
     To update a range of tables, execute (from the project root):
     ./manage.py migrate_legacy_database start end
 
-    Where start is inclusive, end is exclusive,
-    and the values for start and end reference the steps below
-    (dependencies in parentheses):
-        0: LibraryPlate
-        1: Experiment (WormStrain, 0)
-        2: ManualScoreCode
-        3: ManualScore (1, 2)
-        4: DevstarScore (1)
-        5: Clone (named RNAiClone in database)
-        6: LibraryWell (0, 5)
-        7: ManualScore_secondary (1, 2)
+    start is inclusive, end is exclusive, and the values for start and end
+    reference the steps below (dependencies in parentheses):
+    0: LibraryPlate
+    1: Experiment (WormStrain, 0)
+    2: ManualScoreCode
+    3: ManualScore (1, 2)
+    4: DevstarScore (1)
+    5: Clone (named RNAiClone in database)
+    6: LibraryWell (0, 5)
+    7: ManualScore_secondary (1, 2)
 
 
     OUTPUT
@@ -66,13 +82,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if len(args) != 0 and len(args) != 2:
-            sys.exit(
-                'Usage:\n'
-                '\t./manage.py migrate_legacy_database\n'
-                'or\n'
-                '\t./manage.py migrate_legacy_database start end\n'
-                '(where start is inclusive and end is exclusive)\n'
-            )
+            sys.exit(USAGE_MESSAGE)
 
         steps = (
             update_LibraryPlate_table,
