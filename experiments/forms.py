@@ -23,8 +23,10 @@ class ExperimentFilterForm(forms.Form):
                                  label='Max id',
                                  help_text='inclusive')
     worm_strain = forms.CharField(required=False)
-    worm_strain__gene = forms.CharField(required=False)
-    worm_strain__allele = forms.CharField(required=False)
+    worm_strain__gene = forms.CharField(required=False,
+                                        label='Worm gene')
+    worm_strain__allele = forms.CharField(required=False,
+                                          label='Worm allele')
     library_plate = forms.CharField(required=False)
     temperature = forms.DecimalField(required=False,
                                      label='Exact temp',
