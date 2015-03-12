@@ -24,7 +24,7 @@ reference the steps below (dependencies in parentheses):
 0: LibraryPlate
 1: Experiment (WormStrain, 0)
 2: ManualScoreCode
-3: ManualScore (1, 2)
+3: ManualScore_primary (1, 2)
 4: DevstarScore (1)
 5: Clone (named RNAiClone in database)
 6: LibraryWell (0, 5)
@@ -65,7 +65,7 @@ class Command(BaseCommand):
     0: LibraryPlate
     1: Experiment (WormStrain, 0)
     2: ManualScoreCode
-    3: ManualScore (1, 2)
+    3: ManualScore_primary (1, 2)
     4: DevstarScore (1)
     5: Clone (named RNAiClone in database)
     6: LibraryWell (0, 5)
