@@ -109,8 +109,9 @@ def secondary_scores(request, worm, temperature):
         if library_well not in s:
             s[library_well] = OrderedDict()
 
-        # Adjust weights to be the 0-3 scale that we're used to
-        weight = max(0, score.get_score_weight() - 1)
+        weight = score.get_score_weight()
+        if weight == 3 or weight == 4:
+            weight -= 1
 
         if (experiment not in s[library_well] or
                 s[library_well][experiment] < weight):
@@ -127,10 +128,8 @@ def secondary_scores(request, worm, temperature):
             elif score == 1:
                 maybe += 1
 
-        if (present / total) >= .375:
-            return True
-
-        if ((present + maybe) / total) >= .5:
+        if ((present / total) >= .375 or
+                ((present + maybe) / total) >= .5):
             return True
 
         return False
