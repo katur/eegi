@@ -8,6 +8,19 @@ from worms.models import WormStrain
 from library.models import LibraryPlate
 
 
+STRONG_SCORE_CODES = (3, 14, 18)
+MEDIUM_SCORE_CODES = (2, 13, 17)
+WEAK_SCORE_CODES = (1, 12, 16)
+NEGATIVE_SCORE_CODES = (0,)
+
+STRONG_WEIGHT = 4
+MEDIUM_WEIGHT = 3
+WEAK_WEIGHT = 2
+# 1 reserved for unscored
+NEGATIVE_WEIGHT = 0
+OTHER_WEIGHT = -1
+
+
 class Experiment(models.Model):
     """
     A plate-level experiment (i.e., a flat-bottom plate in which
@@ -95,20 +108,16 @@ class ManualScoreCode(models.Model):
             return str(self.id)
 
     def is_strong(self):
-        strong = (3, 14, 18)
-        return self.id in strong
+        return self.id in STRONG_SCORE_CODES
 
     def is_medium(self):
-        medium = (2, 13, 17)
-        return self.id in medium
+        return self.id in MEDIUM_SCORE_CODES
 
     def is_weak(self):
-        weak = (1, 12, 16)
-        return self.id in weak
+        return self.id in WEAK_SCORE_CODES
 
     def is_negative(self):
-        negative = (0,)
-        return self.id in negative
+        return self.id in NEGATIVE_SCORE_CODES
 
 
 class ManualScore(models.Model):
@@ -150,28 +159,17 @@ class ManualScore(models.Model):
         for an image. Note that relevance and strength do not always coincide
         ('negative' is more relevant than 'other', since negative means that it
         is not a sup/enh whereas other might mean any auxiliary score).
-
-        The weights are:
-        4: strong
-        3: medium
-        2: weak
-        0: negative
-        -1: other
         '''
         if self.is_strong():
-            return 4
+            return STRONG_WEIGHT
         elif self.is_medium():
-            return 3
+            return MEDIUM_WEIGHT
         elif self.is_weak():
-            return 2
-
-        # 1 reserved for unscored
-
+            return WEAK_WEIGHT
         elif self.is_negative():
-            return 0
+            return NEGATIVE_WEIGHT
         else:
-            # 'other' scores get -1
-            return -1
+            return OTHER_WEIGHT
 
 
 class DevstarScore(models.Model):

@@ -110,7 +110,10 @@ def secondary_scores(request, worm, temperature):
             s[library_well] = OrderedDict()
 
         weight = score.get_score_weight()
-        if weight == 3 or weight == 4:
+
+        # Lower weak, medium, strong weights to the 1-3 scale that giselle is
+        # used to
+        if weight >= 2:
             weight -= 1
 
         if (experiment not in s[library_well] or
