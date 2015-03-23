@@ -34,7 +34,7 @@
     ({% get_screen_type experiment.temperature experiment.worm_strain %})
   </span>
 
-  <span>Date: {{ experiment.date }}</span>
+  <span>Date: {{ experiment.date|date:"SHORT_DATE_FORMAT" }}</span>
 
   {% if experiment.is_junk %}
     <span>JUNK</span>

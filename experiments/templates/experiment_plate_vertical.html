@@ -35,7 +35,7 @@
 
           <span>{{ experiment.temperature|get_celsius_string }}</span>
 
-          <span>{{ experiment.date }}</span>
+          <span>{{ experiment.date|date:"SHORT_DATE_FORMAT" }}</span>
 
           <span
           {% if experiment.is_junk %}
