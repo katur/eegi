@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
     USAGE
     From the project root:
-    ./manage.py migrate_sequencing_data tracking_numbers genewiz_output_root
+    ./manage.py migrate_genewiz_data tracking_numbers_csv genewiz_data_root
     """
     help = ('Update the sequencing information in the new database.')
 
@@ -38,8 +38,8 @@ class Command(BaseCommand):
         if len(args) != 2:
             sys.exit(
                 'Usage:\n'
-                '\t./manage.py migrate_sequencing_data '
-                'tracking_numbers genewiz_output_root\n'
+                '\t./manage.py migrate_genewiz_data '
+                'tracking_numbers_csv genewiz_data_root\n'
             )
 
         proceed = False
