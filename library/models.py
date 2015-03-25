@@ -125,6 +125,9 @@ class LibrarySequencing(models.Model):
                 .format(self.source_library_well, self.sample_plate_name,
                         self.sample_tube_number))
 
+    def is_decent_quality(self):
+        return self.crl >= 400 and self.quality_score >= 30
+
 
 class LibrarySequencingBlatResult(models.Model):
     """

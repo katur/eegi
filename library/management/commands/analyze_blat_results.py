@@ -30,19 +30,24 @@ class Command(BaseCommand):
                 b[seq] = []
             b[seq].append(blat)
 
-        num_no_clone = 0
-        num_no_clone_yes_blat = 0
+        NO_BLAT = 'intended clone, but no BLAT results (bad)'
+        NO_MATCH = 'intended clone does not match BLAT results (bad)'
+        L4440_BLAT = 'L4440 with BLAT results (bad)'
+        L4440_NO_BLAT = 'L4440, no BLAT results (good)'
+        NO_CLONE_BLAT = 'no intended clone with BLAT results (bad)'
+        NO_CLONE_NO_BLAT = 'no intended clone, no BLAT results (good)'
 
-        num_l4440 = 0
-        num_l4440_yes_blat = 0
-
-        num_other = 0
-        num_other_no_blat = 0
-        num_other_no_match = 0
-        num_other_match = {}
-        num_other_match[1] = 0
-        num_other_match[2] = 0
-        num_other_match[3] = 0
+        s = {
+            1: [],
+            2: [],
+            3: [],
+            L4440_NO_BLAT: [],
+            NO_CLONE_NO_BLAT: [],
+            NO_BLAT: [],
+            NO_MATCH: [],
+            L4440_BLAT: [],
+            NO_CLONE_BLAT: [],
+        }
 
         for seq in seqs:
             if seq.source_library_well:
@@ -51,40 +56,38 @@ class Command(BaseCommand):
                 intended_clone = None
 
             if not intended_clone:
-                num_no_clone += 1
                 if seq in b:
-                    num_no_clone_yes_blat += 1
+                    s[NO_CLONE_BLAT].append(seq)
+                else:
+                    s[NO_CLONE_NO_BLAT].append(seq)
 
             elif intended_clone.is_control():
-                num_l4440 += 1
                 if seq in b:
-                    num_l4440_yes_blat += 1
+                    s[L4440_BLAT].append(seq)
+                else:
+                    s[L4440_NO_BLAT].append(seq)
 
             else:
-                num_other += 1
                 if seq not in b:
-                    num_other_no_blat += 1
+                    s[NO_BLAT].append(seq)
                 else:
                     match = get_match(b[seq], intended_clone)
                     if not match:
-                        num_other_no_match += 1
+                        s[NO_MATCH].append(seq)
                     else:
                         rank = match.hit_rank
-                        num_other_match[rank] += 1
+                        s[rank].append(seq)
 
-        sys.stdout.write('{} seq results with no intended clone '
-                         '({} of these have BLAT results)\n'
-                         '{} seq results for L4440 '
-                         '({} of these have BLAT results)\n'
-                         '\n'
-                         '{} seq results with (non-L4440) intended clones\n'
-                         'Of these, {} have no BLAT, {} have no match.\n'
-                         'Of matches, {} rank 1, {} rank 2, {} rank 3.\n'
-                         .format(num_no_clone, num_no_clone_yes_blat,
-                                 num_l4440, num_l4440_yes_blat,
-                                 num_other, num_other_no_blat,
-                                 num_other_no_match, num_other_match[1],
-                                 num_other_match[2], num_other_match[3]))
+        for name, l in s.iteritems():
+            sys.stdout.write(
+                'Category {}:\n'
+                '\t{} total\n'
+                '\t{} "decent"\n'
+                '\t{} average CRL\n'
+                '\t{} average quality score\n\n'
+                .format(name, len(l), get_number_decent(l),
+                        get_avg_crl(l), get_avg_qs(l))
+            )
 
 
 def get_match(blat_results, intended_clone):
@@ -92,3 +95,22 @@ def get_match(blat_results, intended_clone):
         if x.clone_hit == intended_clone:
             return x
     return None
+
+
+def avg(l):
+    if l:
+        return sum(l) / len(l)
+    else:
+        return 0
+
+
+def get_avg_crl(l):
+    return avg([x.crl for x in l])
+
+
+def get_avg_qs(l):
+    return avg([x.quality_score for x in l])
+
+
+def get_number_decent(l):
+    return sum([x.is_decent_quality() for x in l])
