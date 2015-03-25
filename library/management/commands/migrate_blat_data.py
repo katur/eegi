@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 
 from clones.models import Clone
-from library.models import LibraryWell, LibrarySequencing
+from library.models import LibrarySequencing, LibrarySequencingBlatResult
 
 
 class Command(BaseCommand):
@@ -27,7 +27,10 @@ class Command(BaseCommand):
 
         proceed = False
         while not proceed:
-            sys.stdout.write('This script modifies the database. '
+            sys.stdout.write('This script modifies the database '
+                             '(it truncates LibrarySequencingBlatResult, '
+                             'and then repopulates it according to the '
+                             'provided csv).'
                              'Proceed? (yes/no): ')
             response = raw_input()
             if response == 'no':
@@ -39,6 +42,8 @@ class Command(BaseCommand):
                 continue
             else:
                 proceed = True
+
+        LibrarySequencingBlatResult.objects.all().delete()
 
         with open(args[0], 'rb') as csvfile:
             reader = csv.DictReader(csvfile, delimiter='\t')
@@ -80,6 +85,15 @@ class Command(BaseCommand):
                 except ValueError:
                     sys.exit('hit_rank {} not convertible to int'
                              .format(hit_rank))
+
+                result = LibrarySequencingBlatResult(
+                    library_sequencing=sequencing,
+                    clone_hit=clone,
+                    e_value=e_value,
+                    bit_score=bit_score,
+                    hit_rank=hit_rank
+                )
+                result.save()
 
             sys.stdout.write('{} sjj clones not present in database\n'
                              .format(len(absent)))
