@@ -124,3 +124,22 @@ class LibrarySequencing(models.Model):
         return ('Sequence of {}, seq plate {}, seq tube {}'
                 .format(self.source_library_well, self.sample_plate_name,
                         self.sample_tube_number))
+
+
+class LibrarySequencingBlatResult(models.Model):
+    """
+    A BLAT result from a particular LibrarySequencing.
+    """
+    library_sequencing = models.ForeignKey(LibrarySequencing)
+    clone_hit = models.ForeignKey(Clone)
+    e_value = models.FloatField()
+    bit_score = models.IntegerField()
+    hit_rank = models.PositiveSmallIntegerField()
+
+    class Meta:
+        db_table = 'LibrarySequencingBlatResult'
+        ordering = ['library_sequencing', 'hit_rank']
+
+    def __unicode__(self):
+        return ('BLAT result for sequencing result <{}>, hitting clone <{}>'
+                .format(self.library_sequencing, self.clone_hit))
