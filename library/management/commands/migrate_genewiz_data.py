@@ -8,11 +8,10 @@ import xlrd
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 
-from library.models import LibraryWell, LibrarySequencing
-
 from eegi.local_settings import LEGACY_DATABASE
-
+from library.models import LibraryWell, LibrarySequencing
 from utils.helpers.well_tile_conversion import get_well_name
+from utils.helpers.scripting import require_db_write_acknowledgement
 
 
 class Command(BaseCommand):
@@ -42,20 +41,7 @@ class Command(BaseCommand):
                 'tracking_numbers_csv genewiz_data_root\n'
             )
 
-        proceed = False
-        while not proceed:
-            sys.stdout.write('This script modifies the database. '
-                             'Proceed? (yes/no): ')
-            response = raw_input()
-            if response == 'no':
-                sys.stdout.write('Okay. Goodbye!\n')
-                sys.exit(0)
-            elif response != 'yes':
-                sys.stdout.write('Please try again, '
-                                 'responding "yes" or "no"\n')
-                continue
-            else:
-                proceed = True
+        require_db_write_acknowledgement()
 
         tracking_numbers = args[0]
         genewiz_output_root = args[1]

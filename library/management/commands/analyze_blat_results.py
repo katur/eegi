@@ -2,7 +2,6 @@ import sys
 
 from django.core.management.base import BaseCommand
 
-from clones.models import Clone
 from library.models import LibrarySequencing, LibrarySequencingBlatResult
 
 

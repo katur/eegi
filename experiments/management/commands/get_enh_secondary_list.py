@@ -2,10 +2,9 @@ import sys
 
 from django.core.management.base import BaseCommand
 
-from worms.models import WormStrain
+from experiments.helpers import get_condensed_primary_scores
 from library.models import LibraryWell
-
-from utils.helpers.scores import get_condensed_primary_scores
+from worms.models import WormStrain
 
 
 class Command(BaseCommand):

@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 
 from clones.models import Clone
 from library.models import LibrarySequencing, LibrarySequencingBlatResult
+from utils.helpers.scripting import require_db_write_acknowledgement
 
 
 class Command(BaseCommand):
@@ -25,23 +26,7 @@ class Command(BaseCommand):
                 '\t./manage.py migrate_blat_results blat_csv\n'
             )
 
-        proceed = False
-        while not proceed:
-            sys.stdout.write('This script modifies the database '
-                             '(it truncates LibrarySequencingBlatResult, '
-                             'and then repopulates it according to the '
-                             'provided csv).'
-                             'Proceed? (yes/no): ')
-            response = raw_input()
-            if response == 'no':
-                sys.stdout.write('Okay. Goodbye!\n')
-                sys.exit(0)
-            elif response != 'yes':
-                sys.stdout.write('Please try again, '
-                                 'responding "yes" or "no"\n')
-                continue
-            else:
-                proceed = True
+        require_db_write_acknowledgement()
 
         LibrarySequencingBlatResult.objects.all().delete()
 
@@ -51,8 +36,8 @@ class Command(BaseCommand):
 
             for row in reader:
                 query_pk = row['query_pk']
-                clone_hit = row['clone_hit']
-                e_value = row['e_value']
+                clone_hit = row['clone']
+                e_value = row['BLAT_e-value']
                 bit_score = row['bit_score']
                 hit_rank = row['hit_rank']
 

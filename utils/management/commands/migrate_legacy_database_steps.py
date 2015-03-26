@@ -13,6 +13,10 @@ import sys
 
 from django.core.exceptions import ObjectDoesNotExist
 
+from clones.models import Clone
+from library.models import LibraryPlate, LibraryWell
+from experiments.models import (Experiment, ManualScoreCode, ManualScore,
+                                DevstarScore)
 from utils.helpers.well_tile_conversion import (tile_to_well,
                                                 get_three_character_well)
 from utils.helpers.time_conversion import get_timestamp, get_timestamp_from_ymd
@@ -25,11 +29,6 @@ from utils.helpers.object_getters import (get_worm_strain, get_library_plate,
                                           get_library_well)
 from utils.helpers.comparisons import (update_or_save_object,
                                        compare_floats_for_equality)
-
-from clones.models import Clone
-from library.models import LibraryPlate, LibraryWell
-from experiments.models import (Experiment, ManualScoreCode, ManualScore,
-                                DevstarScore)
 
 
 def sync_rows(cursor, legacy_query, sync_row_function, **kwargs):

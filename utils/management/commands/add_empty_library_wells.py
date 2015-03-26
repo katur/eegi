@@ -1,35 +1,22 @@
 import sys
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.management.base import BaseCommand
+
+from library.models import LibraryWell
 from utils.helpers.well_tile_conversion import (get_96_well_set,
                                                 get_384_position,
                                                 is_ahringer_96_plate)
 from utils.helpers.name_getters import get_library_well_name
 from utils.helpers.object_getters import get_library_plate
-
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.management.base import BaseCommand
-
-from library.models import LibraryWell
+from utils.helpers.scripting import require_db_write_acknowledgement
 
 
 class Command(BaseCommand):
     help = ('Add empty wells to LibraryWell')
 
     def handle(self, *args, **options):
-        proceed = False
-        while not proceed:
-            sys.stdout.write('This script modifies the database. '
-                             'Proceed? (yes/no): ')
-            response = raw_input()
-            if response == 'no':
-                sys.stdout.write('Okay. Goodbye!\n')
-                sys.exit(0)
-            elif response != 'yes':
-                sys.stdout.write('Please try again, '
-                                 'responding "yes" or "no"\n')
-                continue
-            else:
-                proceed = True
+        require_db_write_acknowledgement()
 
         wells_96 = get_96_well_set()
 

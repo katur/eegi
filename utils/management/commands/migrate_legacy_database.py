@@ -4,7 +4,7 @@ import sys
 from django.core.management.base import BaseCommand, CommandError
 
 from eegi.local_settings import LEGACY_DATABASE, LEGACY_DATABASE_2
-
+from utils.helpers.scripting import require_db_write_acknowledgement
 from migrate_legacy_database_steps import (update_LibraryPlate_table,
                                            update_Experiment_table,
                                            update_ManualScoreCode_table,
@@ -110,20 +110,7 @@ class Command(BaseCommand):
             start = 0
             end = len(steps)
 
-        proceed = False
-        while not proceed:
-            sys.stdout.write('This script modifies the database. '
-                             'Proceed? (yes/no): ')
-            response = raw_input()
-            if response == 'no':
-                sys.stdout.write('Okay. Goodbye!\n')
-                sys.exit(0)
-            elif response != 'yes':
-                sys.stdout.write('Please try again, '
-                                 'responding "yes" or "no"\n')
-                continue
-            else:
-                proceed = True
+        require_db_write_acknowledgement()
 
         legacy_db = MySQLdb.connect(host=LEGACY_DATABASE['HOST'],
                                     user=LEGACY_DATABASE['USER'],
