@@ -134,9 +134,9 @@ class ManualScore(models.Model):
         db_table = 'ManualScore'
 
     def __unicode__(self):
-        return ('{}:{} scored {} by {}'
-                .format(str(self.experiment), self.well,
-                        str(self.score_code), str(self.scorer)))
+        return ('{}@{} scored {} by {}'
+                .format(self.experiment_id, self.well,
+                        self.score_code, self.scorer))
 
     def get_short_description(self):
         return '{} ({})'.format(self.score_code, self.scorer.get_short_name())
@@ -220,8 +220,8 @@ class DevstarScore(models.Model):
         db_table = 'DevstarScore'
 
     def __unicode__(self):
-        return ('{}:{} DevStaR score'
-                .format(str(self.experiment), self.well))
+        return ('{}@{} DevStaR score'
+                .format(self.experiment_id, self.well))
 
     def clean(self):
         # Set the fields calculated from the DevStaR fields (resets if already

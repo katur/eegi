@@ -53,7 +53,7 @@
         <a href="{% url 'experiment_well_url' experiment.id well.well %}">
           {{ experiment.id }}@{{ well.well }}</a>
         <br>
-        {{ score }}
+        {{ score.score_code }} by {{ score.scorer }}
       </td>
       {% endfor %}
     </tr>

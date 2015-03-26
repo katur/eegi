@@ -81,6 +81,10 @@ def secondary_scores(request, worm, temperature):
               .prefetch_related('experiment__library_plate')
               .order_by('-experiment__id', 'well'))
 
+    library_wells = (LibraryWell.objects.filter(
+                     Q(plate__in=scores.values('experiment__library_plate')
+                       .distinct())))
+
     # Store LibraryWells in a dictionary for fast correlation to scores.
     # w[library_plate_name][well_name] = LibraryWell object
     #
@@ -89,9 +93,6 @@ def secondary_scores(request, worm, temperature):
     # to execute a single query between Experiment (plate-level),
     # ManualScore (well-level), and LibraryWell (well-level).
     # Should figure out a way to do this faster.
-    library_wells = (LibraryWell.objects.filter(
-                     Q(plate__in=scores.values('experiment__library_plate')
-                       .distinct())))
     w = {}
     for library_well in library_wells:
         plate = library_well.plate_id
@@ -111,24 +112,18 @@ def secondary_scores(request, worm, temperature):
 
         weight = score.get_score_weight()
 
-        # Lower weak, medium, strong weights to the 1-3 scale that giselle is
-        # used to
-        if weight >= 2:
-            weight -= 1
-
         if (experiment not in s[library_well] or
-                s[library_well][experiment] < weight):
-            s[library_well][experiment] = weight
+                s[library_well][experiment].get_score_weight() < weight):
+            s[library_well][experiment] = score
 
     def passes_criteria(scores):
-        # Assumes the 0-3 weight that we're used to
         total = len(scores)
         present = 0
         maybe = 0
         for score in scores:
-            if score == 2 or score == 3:
+            if score.is_strong() or score.is_medium():
                 present += 1
-            elif score == 1:
+            elif score.is_weak():
                 maybe += 1
 
         if ((present / total) >= .375 or
@@ -140,8 +135,22 @@ def secondary_scores(request, worm, temperature):
     num_passes = 0
     num_experiment_columns = 0
     for well, expts in s.iteritems():
-        well.avg = sum(x for x in expts.values()) / float(len(expts))
-        well.passes_criteria = passes_criteria(expts.values())
+        scores = expts.values()
+
+        # TODO: below will be better once fix weights to reflect the 0-3 scale
+        # well.avg = sum(x.get_score_weight() for x in scores) / float(len(expts))
+
+        total_weight = 0
+        for score in scores:
+            weight = score.get_score_weight()
+            if weight >= 2:
+                weight -= 1
+            if weight < 0:
+                weight = 0
+            total_weight += weight
+        well.avg = total_weight / float(len(expts))
+
+        well.passes_criteria = passes_criteria(scores)
         if well.passes_criteria:
             num_passes += 1
         if len(expts) > num_experiment_columns:
