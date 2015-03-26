@@ -6,7 +6,7 @@ import sys
 import xlrd
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 
 from eegi.local_settings import LEGACY_DATABASE
 from library.models import LibraryWell, LibrarySequencing
@@ -15,31 +15,25 @@ from utils.helpers.scripting import require_db_write_acknowledgement
 
 
 class Command(BaseCommand):
-    """
-    Command to migrate the sequencing data.
+    args = 'tracking_numbers_csv genewiz_data_root'
+    help = ('''
+Migrate genewiz sequencing data to the new database.'
 
-    REQUIREMENTS
-    Requires connection info for legacy database in local_settings, in format:
-    LEGACY_DATABASE = {
-        'NAME': 'GenomeWideGI',
-        'HOST': 'localhost',
-        'USER': 'my_username',
-        'PASSWORD': 'my_password',
-    }
 
-    USAGE
-    From the project root:
-    ./manage.py migrate_genewiz_data tracking_numbers_csv genewiz_data_root
-    """
-    help = ('Update the sequencing information in the new database.')
+REQUIREMENTS
+
+Requires connection info for legacy database in local_settings, in format:
+LEGACY_DATABASE = {
+    'NAME': 'GenomeWideGI',
+    'HOST': 'localhost',
+    'USER': 'my_username',
+    'PASSWORD': 'my_password',
+}
+''')
 
     def handle(self, *args, **options):
         if len(args) != 2:
-            sys.exit(
-                'Usage:\n'
-                '\t./manage.py migrate_genewiz_data '
-                'tracking_numbers_csv genewiz_data_root\n'
-            )
+            raise CommandError()
 
         require_db_write_acknowledgement()
 

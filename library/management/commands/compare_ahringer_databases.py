@@ -1,32 +1,24 @@
 import sys
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 
 from clones.models import Clone
 
 
 class Command(BaseCommand):
-    """
-    Command to compare the Ahringer library database as listed in the database
-    (derived from Huey-Ling's version in GenomeWideGI), to that currently
-    listed online at Source BioScience:
-    http://www.lifesciences.sourcebioscience.com/clone-products/non-mammalian/
-        c-elegans/c-elegans-rnai-library/celegans-database/
-
-    USAGE
-    From the project root:
-    ./manage.py compare_ahringer_databases
-        materials/ahringer_plates/sourcebioscience_c_elegans_database
-    """
-    help = ('Compare ahringer databases.')
+    args = 'sourcebioscience_file'
+    help = ('''
+Compare the Ahringer library as listed in the database (derived from
+Huey-Ling's version in GenomeWideGI), to that currently listed online
+at Source BioScience:
+    http://www.lifesciences.sourcebioscience.com/clone-products/non
+        -mammalian/c-elegans/c-elegans-rnai-library/celegans-database/
+''')
 
     def handle(self, *args, **options):
         if len(args) != 1:
-            sys.exit(
-                'Usage:\n'
-                '\t./manage.py compare_ahringer_databases input\n'
-            )
+            raise CommandError()
 
         ahringer_db = set()
         ahringer_online = set()

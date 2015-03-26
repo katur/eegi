@@ -1,18 +1,9 @@
-import sys
-
 from django.core.management.base import BaseCommand
 
 from library.models import LibrarySequencing, LibrarySequencingBlatResult
 
 
 class Command(BaseCommand):
-    """
-    Command to compare the BLAT results to the intended clones.
-
-    USAGE
-    From the project root:
-        ./manage.py analyze_blat_results
-    """
     help = ('Compare BLAT results to intended clones.')
 
     def handle(self, *args, **options):
@@ -77,7 +68,7 @@ class Command(BaseCommand):
                         s[rank].append(seq)
 
         for name, l in s.iteritems():
-            sys.stdout.write(
+            self.stdout.write(
                 'Category {}:\n'
                 '\t{} total\n'
                 '\t{} "decent"\n'

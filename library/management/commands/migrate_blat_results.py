@@ -2,7 +2,7 @@ import csv
 import sys
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 
 from clones.models import Clone
 from library.models import LibrarySequencing, LibrarySequencingBlatResult
@@ -10,21 +10,12 @@ from utils.helpers.scripting import require_db_write_acknowledgement
 
 
 class Command(BaseCommand):
-    """
-    Command to migrate the sequencing data.
-
-    USAGE
-    From the project root:
-        ./manage.py migrate_blat_results blat_csv
-    """
+    args = 'blat_csv'
     help = ('Migrate blat results from csv to the database.')
 
     def handle(self, *args, **options):
         if len(args) != 1:
-            sys.exit(
-                'Usage:\n'
-                '\t./manage.py migrate_blat_results blat_csv\n'
-            )
+            raise CommandError()
 
         require_db_write_acknowledgement()
 
