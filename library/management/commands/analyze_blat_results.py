@@ -37,9 +37,6 @@ class Command(BaseCommand):
         NO_CLONE_NO_BLAT = 'no intended clone, no BLAT results (good)'
 
         s = {
-            1: [],
-            2: [],
-            3: [],
             L4440_NO_BLAT: [],
             NO_CLONE_NO_BLAT: [],
             NO_BLAT: [],
@@ -75,6 +72,8 @@ class Command(BaseCommand):
                         s[NO_MATCH].append(seq)
                     else:
                         rank = match.hit_rank
+                        if rank not in s:
+                            s[rank] = []
                         s[rank].append(seq)
 
         for name, l in s.iteritems():
