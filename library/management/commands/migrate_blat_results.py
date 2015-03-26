@@ -14,15 +14,15 @@ class Command(BaseCommand):
 
     USAGE
     From the project root:
-        ./manage.py migrate_blat_data blat_csv
+        ./manage.py migrate_blat_results blat_csv
     """
-    help = ('Migrate blat data from csv to the database.')
+    help = ('Migrate blat results from csv to the database.')
 
     def handle(self, *args, **options):
         if len(args) != 1:
             sys.exit(
                 'Usage:\n'
-                '\t./manage.py migrate_blat_data blat_csv\n'
+                '\t./manage.py migrate_blat_results blat_csv\n'
             )
 
         proceed = False
@@ -95,5 +95,5 @@ class Command(BaseCommand):
                 )
                 result.save()
 
-            sys.stdout.write('{} sjj clones not present in database\n'
+            sys.stdout.write('{} clones not present in database\n'
                              .format(len(absent)))
