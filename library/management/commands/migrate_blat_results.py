@@ -8,10 +8,16 @@ from clones.models import Clone
 from library.models import LibrarySequencing, LibrarySequencingBlatResult
 from utils.helpers.scripting import require_db_write_acknowledgement
 
+HELP = '''
+Migrate the BLAT hits of our sequencing results to the database.
+
+The input file is the csv provided by Firoz.
+'''
+
 
 class Command(BaseCommand):
-    args = 'blat_csv'
-    help = ('Migrate blat results from csv to the database.')
+    args = 'input_file'
+    help = HELP
 
     def handle(self, *args, **options):
         if len(args) != 1:

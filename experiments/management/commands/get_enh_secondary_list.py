@@ -7,8 +7,15 @@ from library.models import LibraryWell
 from worms.models import WormStrain
 
 
+HELP = '''
+Get the list of clones to be cherry picked for the ENH secondary.
+
+This list is based on the manual scores of the ENH primary.
+'''
+
+
 class Command(BaseCommand):
-    help = ('Get ENH cherry picking list')
+    help = HELP
 
     def handle(self, *args, **options):
         enhancer_worms = WormStrain.objects.exclude(

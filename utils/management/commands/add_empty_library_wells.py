@@ -11,9 +11,19 @@ from utils.helpers.name_getters import get_library_well_name
 from utils.helpers.object_getters import get_library_plate
 from utils.helpers.scripting import require_db_write_acknowledgement
 
+HELP = '''
+Add empty wells (i.e., wells without intended clones) to LibraryWell.
+
+It is useful to have empty wells represented in the database, if with no
+intended clone. This is because these wells are still photographed,
+and there are cases where despite there being no intended clone according
+to the library creator, we do have bacteria that grows in the well,
+whose identity can be resolved through sequencing.
+'''
+
 
 class Command(BaseCommand):
-    help = ('Add empty wells to LibraryWell')
+    help = HELP
 
     def handle(self, *args, **options):
         require_db_write_acknowledgement()

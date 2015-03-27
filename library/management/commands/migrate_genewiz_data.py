@@ -13,23 +13,31 @@ from library.models import LibraryWell, LibrarySequencing
 from utils.helpers.well_tile_conversion import get_well_name
 from utils.helpers.scripting import require_db_write_acknowledgement
 
+HELP = '''
+Migrate the Genewiz sequencing data from the Genewiz output files to the
+database.
+
+This script requires that LEGACY_DATABASE be defined in local_settings.py,
+to connect to the GenomeWideGI legacy database.
+
+tracking_numbers should be a csv dump of the Google Doc in which we
+kept track of our Genewiz tracking numbers, which is necessary so that this
+script examines only the GI data (and not data from Genewiz for other lab
+members).
+
+genewiz_data should be the root of a directory containing the Genewiz
+output. Inside that directory are several Perl scripts that HueyLing used
+to make the Genewiz output more convenient to parse. The only one of
+these Perl scripts that is required to have been run before using this script
+is rmDateFromSeqAB1.pl, which removes the date from certain filenames.
+Otherwise, this script is flexible about dealing with Genewiz's Excel
+format, or Huey-Ling's text file format.
+'''
+
 
 class Command(BaseCommand):
-    args = 'tracking_numbers_csv genewiz_data_root'
-    help = ('''
-Migrate genewiz sequencing data to the new database.'
-
-
-REQUIREMENTS
-
-Requires connection info for legacy database in local_settings, in format:
-LEGACY_DATABASE = {
-    'NAME': 'GenomeWideGI',
-    'HOST': 'localhost',
-    'USER': 'my_username',
-    'PASSWORD': 'my_password',
-}
-''')
+    args = 'tracking_numbers genewiz_data'
+    help = HELP
 
     def handle(self, *args, **options):
         if len(args) != 2:

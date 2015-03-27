@@ -5,16 +5,22 @@ from django.core.management.base import BaseCommand, CommandError
 
 from clones.models import Clone
 
+HELP = '''
+Compare the Ahringer library as listed in the database (which was derived from
+Huey-Ling's version in GenomeWideGI), to that currently listed online
+at Source BioScience.
+
+The input file should be copied from this Source BioScience webpage:
+
+http://www.lifesciences.sourcebioscience.com/clone-products/non-mammalian/
+    c-elegans/c-elegans-rnai-library/celegans-database/
+
+'''
+
 
 class Command(BaseCommand):
-    args = 'sourcebioscience_file'
-    help = ('''
-Compare the Ahringer library as listed in the database (derived from
-Huey-Ling's version in GenomeWideGI), to that currently listed online
-at Source BioScience:
-    http://www.lifesciences.sourcebioscience.com/clone-products/non
-        -mammalian/c-elegans/c-elegans-rnai-library/celegans-database/
-''')
+    args = 'input_file'
+    help = HELP
 
     def handle(self, *args, **options):
         if len(args) != 1:

@@ -4,23 +4,22 @@ from django.core.management.base import BaseCommand, CommandError
 
 from eegi.local_settings import LEGACY_DATABASE, LEGACY_DATABASE_2
 from utils.helpers.scripting import require_db_write_acknowledgement
-from migrate_legacy_database_steps import (update_LibraryPlate_table,
-                                           update_Experiment_table,
-                                           update_ManualScoreCode_table,
-                                           update_ManualScore_table,
-                                           update_DevstarScore_table,
-                                           update_Clone_table,
-                                           update_LibraryWell_table,
-                                           update_ManualScore_table_secondary)
+from utils.helpers.migrate_legacy_database_steps import (
+    update_LibraryPlate_table,
+    update_Experiment_table,
+    update_ManualScoreCode_table,
+    update_ManualScore_table,
+    update_DevstarScore_table,
+    update_Clone_table,
+    update_LibraryWell_table,
+    update_ManualScore_table_secondary
+)
 
+HELP = '''
+Sync the database according to any changes in the legacy database.
 
-class Command(BaseCommand):
-    args = '[start end]'
-    help = '''
-Update the new database according to the legacy database.
-
-Optionally provide start and end args, where start is inclusive,
-end is exclusive, and the values for start and end
+Optionally provide start and end args to limit which tables are synced.
+start is inclusive, end is exclusive, and the values for start and end
 reference the steps below (dependencies in parentheses):
 
     0: LibraryPlate
@@ -33,31 +32,29 @@ reference the steps below (dependencies in parentheses):
     7: ManualScore_secondary (1, 2)
 
 
-REQUIREMENTS
+Requirements:
+    Several steps require that the WormStrain table is already populated
+    (this table is small enough that I populated it by hand, referencing
+    written records about the worm strains used in the screen).
 
-Some steps require that the WormStrain table is already populated
-(small enough that I populated it by hand).
+    Steps 0-6 require that LEGACY_DATABASE be defined in local_settings.py,
+    to connect to the GenomeWideGI legacy database.
 
-Steps 0-6 requires connection info for legacy database GenomeWideGI
-in local_settings.LEGACY_DATABASE, format:
-LEGACY_DATABASE = {
-    'NAME': 'GenomeWideGI',
-    'HOST': 'localhost',
-    'USER': 'my_username',
-    'PASSWORD': 'my_password',
-}
-
-Step 7 requires connection info for legacy database GWGI2
-in local_settings.LEGACY_DATABASE_2, same format as above.
+    Step 7 requires that LEGACY_DATABASE_2 be defined in local_settings.py,
+    to connect to the GWGI2 database.
 
 
-OUTPUT
+Output:
+    Stdout reports whether or not a particular large step had changes.
 
-Stdout reports whether or not a particular large step had changes.
-
-Stderr reports every change (such as an added row), and thus can get
-    quite long; consider redirecting with 2> stderr.out.
+    Stderr reports every change (such as an added row), and thus can get
+        quite long; consider redirecting with 2> stderr.out.
 '''
+
+
+class Command(BaseCommand):
+    args = '[start end]'
+    help = HELP
 
     def handle(self, *args, **options):
         steps = (
@@ -73,7 +70,7 @@ Stderr reports every change (such as an added row), and thus can get
 
         if args:
             if len(args) != 2:
-                raise CommandError('This command takes 0 or 2 args')
+                raise CommandError()
             try:
                 start = int(args[0])
                 end = int(args[1])

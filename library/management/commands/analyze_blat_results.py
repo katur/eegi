@@ -2,9 +2,16 @@ from django.core.management.base import BaseCommand
 
 from library.models import LibrarySequencing, LibrarySequencingBlatResult
 
+HELP = '''
+Compare BLAT hits of our sequencing results to the intended clones.
+
+The purpose do of this is that intended clones that are not found in the
+BLAT results will be resequenced.
+'''
+
 
 class Command(BaseCommand):
-    help = ('Compare BLAT results to intended clones.')
+    help = HELP
 
     def handle(self, *args, **options):
         seqs = (LibrarySequencing.objects.all()
