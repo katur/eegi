@@ -6,17 +6,17 @@ from django.core.exceptions import ObjectDoesNotExist
 def update_or_save_object(new_object, recorded_objects, fields_to_compare,
                           alternate_pk=False):
     """
-    Bring the database up to speed regarding a new object.
+    Bring the database up to speed regarding new_object.
 
-    If the new object is not present in the database, add it (and print
+    If new_object is not present in the database, add it (and print
     warning to syserr).
 
-    If the new object is already present in the database (according to
+    If new_object is already present in the database (according to
     alternate_pk if specified, pk otherwise), compare the provided
     fields_to_compare. If any of these fields do not match, update them
     (and print updates to syserr).
 
-    Returns True if the object was already present and matched
+    Returns True if new_object was already present and matched
     on all provided fields. Returns False otherwise.
     """
     try:
@@ -42,7 +42,7 @@ def compare_fields(old_object, new_object, fields, update=False):
     Compare two objects on the provided fields.
     Any differences are printed to stderr.
 
-    If 'update' is True, old object is updated to match
+    If 'update' is True, old_object is updated to match
     new_object on these fields.
     """
     differences = []

@@ -13,6 +13,10 @@ NUMBER_OF_COLUMNS_384 = 24
 def get_well_name(row_name, column_name):
     """
     Get well name (e.g. 'A05') from a row (e.g. 'A') and a column (e.g. 4).
+
+    row_name should be a capital letter.
+
+    column_name should be an integer.
     """
     return '{}{}'.format(row_name, str(column_name).zfill(2))
 

@@ -1,6 +1,32 @@
 from experiments.models import ManualScore
 
 
+def get_condensed_primary_scores(worm, library_well, screen):
+    '''
+    Get a summarization of scores for a particular worm / library well
+    combination.
+
+    First, each image is binned as strong, medium, weak, negative, or
+    other (where precedance follows the order given, i.e., being scored as
+    strong outweighs also being scored as medium, or being scored as negative
+    outweighs being scored as other).
+
+    Second, the strongest two images are selected, where
+    strong > medium > weak > unscored > other > negative.
+
+    A list of length two is returned, where
+    4: strong
+    3: medium
+    2: weak
+    1: unscored
+    -1: other
+    -2: negative
+    '''
+    scores = get_primary_scores_by_screen(worm, library_well, screen)
+    condensed = condense_scores(scores)
+    return get_top_two_scores(condensed)
+
+
 def get_primary_scores_by_screen(worm, library_well, screen):
     '''
     Get all primary scores for a particular worm, library well,
@@ -89,29 +115,3 @@ def get_top_two_scores(condensed_scores):
     elif len(condensed_scores) == 1:
         condensed_scores.append(1)
     return condensed_scores[0:2]
-
-
-def get_condensed_primary_scores(worm, library_well, screen):
-    '''
-    Get a summarization of scores for a particular worm / library well
-    combination.
-
-    First, each image is binned as strong, medium, weak, negative, or
-    other (where precedance follows the order given, i.e., being scored as
-    strong outweighs also being scored as medium, or being scored as negative
-    outweighs being scored as other).
-
-    Second, the strongest two images are selected, where
-    strong > medium > weak > unscored > other > negative.
-
-    A list of length two is returned, where
-    4: strong
-    3: medium
-    2: weak
-    1: unscored
-    -1: other
-    -2: negative
-    '''
-    scores = get_primary_scores_by_screen(worm, library_well, screen)
-    condensed = condense_scores(scores)
-    return get_top_two_scores(condensed)
