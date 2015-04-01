@@ -1,5 +1,3 @@
-import sys
-
 from django.core.management.base import NoArgsCommand
 
 from experiments.helpers import get_condensed_primary_scores
@@ -35,12 +33,12 @@ class Command(NoArgsCommand):
                         secondary_by_clone[well] = []
                     secondary_by_clone[well].append(worm)
 
-        sys.stdout.write('Total clones to cherry pick: {}\n'.format(
+        self.stdout.write('Total clones to cherry pick: {}\n'.format(
             len(secondary_by_clone)))
 
-        sys.stdout.write('\n\nBreakdown before accounting for universals:\n')
+        self.stdout.write('\n\nBreakdown before accounting for universals:\n')
         for worm in secondary_by_worm:
-            sys.stdout.write('{}: {} wells\n'.format(
+            self.stdout.write('{}: {} wells\n'.format(
                 worm, len(secondary_by_worm[worm])))
 
         secondary_by_worm['universal'] = []
@@ -48,7 +46,7 @@ class Command(NoArgsCommand):
         for well in secondary_by_clone:
             worms = (secondary_by_clone[well])
             if len(worms) == 0:
-                sys.stdout.write('ERROR: length 0')
+                self.stdout.write('ERROR: length 0')
 
             # Extract hub candidate clones from unique lists into 'univeral'
             # list, to be tested against all mutants
@@ -57,9 +55,9 @@ class Command(NoArgsCommand):
                 for worm in worms:
                     secondary_by_worm[worm].remove(well)
 
-        sys.stdout.write('\n\nBreakdown after accounting for universals:\n')
+        self.stdout.write('\n\nBreakdown after accounting for universals:\n')
         for worm in secondary_by_worm:
-            sys.stdout.write('{}: {} wells\n'.format(
+            self.stdout.write('{}: {} wells\n'.format(
                 worm, len(secondary_by_worm[worm])))
 
         for well in secondary_by_worm['universal']:

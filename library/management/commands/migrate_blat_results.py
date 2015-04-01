@@ -1,6 +1,5 @@
 import csv
 import os.path
-import sys
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
@@ -45,32 +44,33 @@ class Command(BaseCommand):
                 try:
                     sequencing = LibrarySequencing.objects.get(pk=query_pk)
                 except ObjectDoesNotExist:
-                    sys.exit('query_pk {} not found in LibrarySequencing'
-                             .format(query_pk))
+                    raise CommandError('query_pk {} not found in '
+                                       'LibrarySequencing'
+                                       .format(query_pk))
 
                 try:
                     clone = Clone.objects.get(pk=clone_hit)
                 except ObjectDoesNotExist:
-                    sys.exit('clone_hit {} not present in database'
-                             .format(clone_hit))
+                    raise CommandError('clone_hit {} not present in database'
+                                       .format(clone_hit))
 
                 try:
                     e_value = float(e_value)
                 except ValueError:
-                    sys.exit('e_value {} not convertible to float'
-                             .format(e_value))
+                    raise CommandError('e_value {} not convertible to float'
+                                       .format(e_value))
 
                 try:
                     bit_score = int(float(bit_score))
                 except ValueError:
-                    sys.exit('bit_score {} not convertible to int'
-                             .format(bit_score))
+                    raise CommandError('bit_score {} not convertible to int'
+                                       .format(bit_score))
 
                 try:
                     hit_rank = int(hit_rank)
                 except ValueError:
-                    sys.exit('hit_rank {} not convertible to int'
-                             .format(hit_rank))
+                    raise CommandError('hit_rank {} not convertible to int'
+                                       .format(hit_rank))
 
                 result = LibrarySequencingBlatResult(
                     library_sequencing=sequencing,

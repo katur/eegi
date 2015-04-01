@@ -1,5 +1,4 @@
 import os.path
-import sys
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
@@ -49,16 +48,16 @@ class Command(BaseCommand):
                     ahringer_online.add(clone)
 
                 except ObjectDoesNotExist:
-                    sys.exit('{} not in db\n'.format(clone_name))
+                    raise CommandError('{} not in db\n'.format(clone_name))
 
         ahringer_online_only = ahringer_online.difference(ahringer_db)
         ahringer_db_only = ahringer_db.difference(ahringer_online)
 
-        sys.stdout.write('{} sjj clones listed online\n'
-                         '{} sjj clones in database\n'
-                         '{} sjj clones online ONLY\n'
-                         '{} sjj clones in database ONLY\n'
-                         .format(len(ahringer_online),
-                                 len(ahringer_db),
-                                 len(ahringer_online_only),
-                                 len(ahringer_db_only)))
+        self.stdout.write('{} sjj clones listed online\n'
+                          '{} sjj clones in database\n'
+                          '{} sjj clones online ONLY\n'
+                          '{} sjj clones in database ONLY\n'
+                          .format(len(ahringer_online),
+                                  len(ahringer_db),
+                                  len(ahringer_online_only),
+                                  len(ahringer_db_only)))
