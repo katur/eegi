@@ -11,7 +11,7 @@ from utils.helpers.well_tile_conversion import (
     get_96_well_set, get_384_position, is_ahringer_96_plate)
 
 HELP = '''
-Add empty wells (i.e., wells without intended clones) to LibraryWell.
+Add empty library wells (i.e., wells without intended clones) to the database.
 
 It is useful to have empty wells represented in the database, if with no
 intended clone. This is because these wells are still photographed,
