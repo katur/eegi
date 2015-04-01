@@ -197,7 +197,7 @@ class Command(BaseCommand):
         try:
             qscrl_file = open(qscrl_txt, 'rb')
             with qscrl_file:
-                qscrl_reader = csv.dictreader(qscrl_file, delimiter='\t')
+                qscrl_reader = csv.DictReader(qscrl_file, delimiter='\t')
                 for row in qscrl_reader:
                     # need tracking number and tube label because they are the
                     # fields that genewiz uses to uniquely define sequences,
