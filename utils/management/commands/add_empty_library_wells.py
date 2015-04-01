@@ -4,12 +4,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 
 from library.models import LibraryWell
-from utils.helpers.well_tile_conversion import (get_96_well_set,
-                                                get_384_position,
-                                                is_ahringer_96_plate)
 from utils.helpers.name_getters import get_library_well_name
 from utils.helpers.object_getters import get_library_plate
 from utils.helpers.scripting import require_db_write_acknowledgement
+from utils.helpers.well_tile_conversion import (
+    get_96_well_set, get_384_position, is_ahringer_96_plate)
 
 HELP = '''
 Add empty wells (i.e., wells without intended clones) to LibraryWell.

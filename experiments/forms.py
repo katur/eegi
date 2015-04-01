@@ -1,13 +1,12 @@
 from django import forms
-from django.forms import Select, NullBooleanSelect
 
 
-class BlankNullBooleanSelect(NullBooleanSelect):
+class BlankNullBooleanSelect(forms.NullBooleanSelect):
     def __init__(self, attrs=None):
         choices = ((u'1', u'All'),
                    (u'3', u'No'),
                    (u'2', u'Yes'))
-        Select.__init__(self, attrs, choices)
+        forms.Select.__init__(self, attrs, choices)
 
 
 class ExperimentFilterForm(forms.Form):

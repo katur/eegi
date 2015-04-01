@@ -4,8 +4,8 @@ from collections import OrderedDict
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 
-from experiments.models import ManualScore
 from experiments.forms import SecondaryScoresForm
+from experiments.models import ManualScore
 from library.models import LibraryWell
 from worms.models import WormStrain
 

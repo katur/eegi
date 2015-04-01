@@ -6,8 +6,8 @@ from django.shortcuts import render, get_object_or_404
 
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm
-from worms.models import WormStrain
 from library.models import LibraryWell, LibraryPlate
+from worms.models import WormStrain
 
 
 EXPERIMENTS_PER_PAGE = 100

@@ -1,6 +1,7 @@
 from django.contrib import admin
-from utils.admin import ReadOnlyAdmin
+
 from clones.models import Clone
+from utils.admin import ReadOnlyAdmin
 
 
 class CloneAdmin(ReadOnlyAdmin):

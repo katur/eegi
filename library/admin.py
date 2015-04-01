@@ -1,8 +1,9 @@
 # from django.forms import Textarea
 # from django.db import models
 from django.contrib import admin
-from utils.admin import ReadOnlyAdmin
+
 from library.models import LibraryPlate, LibraryWell, LibrarySequencing
+from utils.admin import ReadOnlyAdmin
 
 
 class LibraryPlateAdmin(ReadOnlyAdmin):

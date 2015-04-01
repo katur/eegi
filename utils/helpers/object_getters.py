@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
-from worms.models import WormStrain
 from clones.models import Clone
-from library.models import LibraryPlate, LibraryWell
 from experiments.models import Experiment, ManualScoreCode
+from library.models import LibraryPlate, LibraryWell
+from worms.models import WormStrain
 
 
 def get_worm_strain(mutant, mutantAllele):

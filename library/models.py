@@ -2,7 +2,6 @@ from django.db import models
 from django.db.models import Q
 
 from clones.models import Clone
-
 from utils.helpers.well_tile_conversion import well_to_tile
 
 
