@@ -13,7 +13,7 @@ from utils.helpers.scripting import require_db_write_acknowledgement
 from utils.helpers.well_tile_conversion import get_well_name
 
 HELP = '''
-Migrate the Genewiz sequencing data from the Genewiz output files to the
+Sync the Genewiz sequencing data from the Genewiz output files to the
 database.
 
 This script requires that LEGACY_DATABASE be defined in local_settings.py,
@@ -46,8 +46,8 @@ class Command(BaseCommand):
         if not os.path.isfile(tracking_numbers):
             raise CommandError('tracking_numbers file not found')
 
-        genewiz_root = args[1]
-        if not os.path.isdir(genewiz_root):
+        self.genewiz_root = args[1]
+        if not os.path.isdir(self.genewiz_root):
             raise CommandError('genewiz_root directory not found')
 
         require_db_write_acknowledgement()
@@ -65,19 +65,19 @@ class Command(BaseCommand):
             reader = csv.DictReader(csvfile)
 
             for row in reader:
-                self.process_tracking_number(row['tracking_number'].strip(),
-                                             genewiz_root)
+                tracking_number = row['tracking_number'].strip()
+                self.process_tracking_number(tracking_number)
 
         # Retrieve all the sequencing objects just recorded
-        all_sequences = LibrarySequencing.objects.all()
+        self.sequences = LibrarySequencing.objects.all()
 
         # Create a dictionary to translate from sequencing well to tube number
         # (choose SeqPlateID=1 because it happens to have all 96 wells)
         cursor.execute('SELECT tubeNum, Seq96well FROM SeqPlate '
                        'WHERE SeqPlateID=1')
-        seq_well_to_tube = {}
+        self.seq_well_to_tube = {}
         for row in cursor.fetchall():
-            seq_well_to_tube[row[1]] = row[0]
+            self.seq_well_to_tube[row[1]] = row[0]
 
         # Process source information for plates 1-56
         # (from the legacy database)
@@ -87,8 +87,7 @@ class Command(BaseCommand):
         legacy_rows = cursor.fetchall()
 
         for row in legacy_rows:
-            self.process_source_information(row, all_sequences,
-                                            seq_well_to_tube)
+            self.process_source_information(row)
 
         # Process source information plates 57-66
         # (not in legacy database; entire plate sequenced)
@@ -111,8 +110,7 @@ class Command(BaseCommand):
             for library_well in library_wells:
                 row = (source_plate_id, library_well.well, seq_plate_number,
                        library_well.well)
-                self.process_source_information(row, all_sequences,
-                                                seq_well_to_tube)
+                self.process_source_information(row)
 
         # Process plates 67-on
         # (not in legacy database; only certain columns sequenced)
@@ -189,13 +187,12 @@ class Command(BaseCommand):
                     source_well = get_well_name(letter, source_column)
                     row = (source_plate_id, source_well, seq_plate_number,
                            seq_well)
-                    self.process_source_information(row, all_sequences,
-                                                    seq_well_to_tube)
+                    self.process_source_information(row)
 
-    def process_tracking_number(self, tracking_number, genewiz_root):
-        qscrl_txt = ('{}/{}_qscrl.txt'.format(genewiz_root,
+    def process_tracking_number(self, tracking_number):
+        qscrl_txt = ('{}/{}_qscrl.txt'.format(self.genewiz_root,
                                               tracking_number))
-        qscrl_xls = ('{}/{}_qscrl.xls'.format(genewiz_root,
+        qscrl_xls = ('{}/{}_qscrl.xls'.format(self.genewiz_root,
                                               tracking_number))
         try:
             qscrl_file = open(qscrl_txt, 'rb')
@@ -205,7 +202,7 @@ class Command(BaseCommand):
                     # need tracking number and tube label because they are the
                     # fields that genewiz uses to uniquely define sequences,
                     # in the case of resequencing.
-                    self.process_qscrl_row(row, genewiz_root)
+                    self.process_qscrl_row(row)
 
         except IOError:
             try:
@@ -219,7 +216,7 @@ class Command(BaseCommand):
                         cell_value = sheet.cell_value(row_index, col_index)
                         row[keys[col_index]] = cell_value
 
-                    self.process_qscrl_row(row, genewiz_root)
+                    self.process_qscrl_row(row)
 
             except IOError as e:
                 self.stderr.write('QSCRL file missing or could not be open '
@@ -228,7 +225,7 @@ class Command(BaseCommand):
                                           e.strerror))
                 return
 
-    def process_qscrl_row(self, row, genewiz_root):
+    def process_qscrl_row(self, row):
         '''
         Process a row of QSCRL information.
 
@@ -252,7 +249,7 @@ class Command(BaseCommand):
         if '_R' in tube_label:
             dna_name += '_R'
 
-        seq_filepath = ('{}/{}_seq/{}_*.seq'.format(genewiz_root,
+        seq_filepath = ('{}/{}_seq/{}_*.seq'.format(self.genewiz_root,
                                                     tracking_number,
                                                     dna_name))
         try:
@@ -293,8 +290,7 @@ class Command(BaseCommand):
             )
             new_sequence.save()
 
-    def process_source_information(self, row, all_sequences,
-                                   seq_well_to_tube):
+    def process_source_information(self, row):
         # The plate and well that the sequencing result came from
         source_plate_id = row[0]
         source_well = row[1]
@@ -302,7 +298,7 @@ class Command(BaseCommand):
         # Identifying information for the plate/tube that were sequenced
         sample_plate_name = 'JL' + str(row[2])
         sample_well = row[3]
-        sample_tube_number = seq_well_to_tube[sample_well]
+        sample_tube_number = self.seq_well_to_tube[sample_well]
 
         # Legacy clone and legacy tracking just for double checking
         if len(row) > 4:
@@ -312,7 +308,7 @@ class Command(BaseCommand):
             legacy_clone = None
             legacy_tracking = None
 
-        sequences = all_sequences.filter(
+        sequences = self.sequences.filter(
             sample_plate_name=sample_plate_name,
             sample_tube_number=sample_tube_number)
 
