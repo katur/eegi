@@ -2,7 +2,7 @@ import MySQLdb
 
 from django.core.management.base import BaseCommand, CommandError
 
-from dbmigration.helpers.migrate_legacy_database_steps import (
+from dbmigration.helpers.sync_legacy_database_steps import (
     update_LibraryPlate_table, update_Experiment_table,
     update_ManualScoreCode_table, update_ManualScore_table,
     update_DevstarScore_table, update_Clone_table,
