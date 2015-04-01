@@ -1,7 +1,7 @@
 import sys
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.management.base import BaseCommand
+from django.core.management.base import NoArgsCommand
 
 from dbmigration.helpers.name_getters import get_library_well_name
 from dbmigration.helpers.object_getters import get_library_plate
@@ -21,10 +21,10 @@ whose identity can be resolved through sequencing.
 '''
 
 
-class Command(BaseCommand):
+class Command(NoArgsCommand):
     help = HELP
 
-    def handle(self, *args, **options):
+    def handle_noargs(self, **options):
         require_db_write_acknowledgement()
 
         wells_96 = get_96_well_set()

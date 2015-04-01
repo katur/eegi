@@ -2,6 +2,7 @@ import csv
 # import datetime
 import glob
 import MySQLdb
+import os.path
 import sys
 import xlrd
 
@@ -41,12 +42,17 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if len(args) != 2:
-            raise CommandError()
-
-        require_db_write_acknowledgement()
+            raise CommandError('Command requires 2 arguments')
 
         tracking_numbers = args[0]
-        genewiz_output_root = args[1]
+        if not os.path.isfile(tracking_numbers):
+            raise CommandError('tracking_numbers file not found')
+
+        genewiz_data = args[1]
+        if not os.path.isdir(genewiz_data):
+            raise CommandError('genewiz_data directory not found')
+
+        require_db_write_acknowledgement()
 
         # First add all raw genewiz output, including actual sequence and
         # various quality scores, for GI sequences only (distinguished
@@ -56,7 +62,7 @@ class Command(BaseCommand):
             reader = csv.DictReader(csvfile)
 
             for row in reader:
-                process_genewiz_tracking_number(genewiz_output_root,
+                process_genewiz_tracking_number(genewiz_data,
                                                 row['tracking_number'].strip())
 
         # Retrieve all the sequencing objects just recorded
@@ -312,7 +318,7 @@ def process_genewiz_tracking_number(genewiz_output_root, tracking_number):
             return
 
 
-def process_qscrl_row(row, genewiz_output_root, tracking_number):
+def process_qscrl_row(row, genewiz_data, tracking_number):
     tracking_number = row['trackingNumber']
     tube_label = row['TubeLabel']
     dna_name = row['DNAName']
@@ -332,7 +338,7 @@ def process_qscrl_row(row, genewiz_output_root, tracking_number):
     if '_R' in tube_label:
         dna_name += '_R'
 
-    seq_filepath = ('{}/{}_seq/{}_*.seq'.format(genewiz_output_root,
+    seq_filepath = ('{}/{}_seq/{}_*.seq'.format(genewiz_data,
                                                 tracking_number,
                                                 dna_name))
     try:

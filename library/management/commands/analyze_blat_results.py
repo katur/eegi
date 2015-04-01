@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand
+from django.core.management.base import NoArgsCommand
 
 from library.models import LibrarySequencing, LibrarySequencingBlatResult
 
@@ -10,10 +10,10 @@ BLAT results will be resequenced.
 '''
 
 
-class Command(BaseCommand):
+class Command(NoArgsCommand):
     help = HELP
 
-    def handle(self, *args, **options):
+    def handle_noargs(self, **options):
         seqs = (LibrarySequencing.objects.all()
                 .select_related('source_library_well',
                                 'source_library_well__intended_clone'))

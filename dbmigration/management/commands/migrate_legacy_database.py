@@ -65,7 +65,7 @@ class Command(BaseCommand):
 
         if args:
             if len(args) != 2:
-                raise CommandError()
+                raise CommandError('Command requires 0 or 2 arguments')
             try:
                 start = int(args[0])
                 end = int(args[1])

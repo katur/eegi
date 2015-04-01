@@ -1,3 +1,4 @@
+import os.path
 import sys
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -24,7 +25,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if len(args) != 1:
-            raise CommandError()
+            raise CommandError('Command requires 1 argument')
+
+        filename = args[0]
+        if not os.path.isfile(filename):
+            raise CommandError('File not found')
 
         ahringer_db = set()
         ahringer_online = set()
@@ -32,7 +37,7 @@ class Command(BaseCommand):
         for clone in Clone.objects.filter(id__startswith='sjj'):
             ahringer_db.add(clone)
 
-        with open(args[0], 'rb') as f:
+        with open(filename, 'rb') as f:
             # Skip header
             f.readline()
 

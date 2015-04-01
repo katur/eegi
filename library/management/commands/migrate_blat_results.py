@@ -1,4 +1,5 @@
 import csv
+import os.path
 import sys
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -21,15 +22,18 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if len(args) != 1:
-            raise CommandError()
+            raise CommandError('Command requires 1 argument')
+
+        filename = args[0]
+        if not os.path.isfile(filename):
+            raise CommandError('File not found')
 
         require_db_write_acknowledgement()
 
         LibrarySequencingBlatResult.objects.all().delete()
 
-        with open(args[0], 'rb') as csvfile:
+        with open(filename, 'rb') as csvfile:
             reader = csv.DictReader(csvfile, delimiter='\t')
-            absent = set()
 
             for row in reader:
                 query_pk = row['query_pk']
@@ -47,8 +51,8 @@ class Command(BaseCommand):
                 try:
                     clone = Clone.objects.get(pk=clone_hit)
                 except ObjectDoesNotExist:
-                    absent.add(clone_hit)
-                    continue
+                    sys.exit('clone_hit {} not present in database'
+                             .format(clone_hit))
 
                 try:
                     e_value = float(e_value)
@@ -76,6 +80,3 @@ class Command(BaseCommand):
                     hit_rank=hit_rank
                 )
                 result.save()
-
-            sys.stdout.write('{} clones not present in database\n'
-                             .format(len(absent)))

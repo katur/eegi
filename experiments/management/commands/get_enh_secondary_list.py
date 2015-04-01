@@ -1,6 +1,6 @@
 import sys
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import NoArgsCommand
 
 from experiments.helpers import get_condensed_primary_scores
 from library.models import LibraryWell
@@ -14,10 +14,10 @@ This list is based on the manual scores of the ENH primary.
 '''
 
 
-class Command(BaseCommand):
+class Command(NoArgsCommand):
     help = HELP
 
-    def handle(self, *args, **options):
+    def handle_noargs(self, **options):
         enhancer_worms = WormStrain.objects.exclude(
             permissive_temperature__isnull=True)
         wells = LibraryWell.objects.filter(plate__screen_stage=1)
