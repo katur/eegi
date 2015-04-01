@@ -32,6 +32,7 @@ INSTALLED_APPS = (
 
     'website',
     'utils',
+    'dbmigration',
     'worms',
     'clones',
     'library',

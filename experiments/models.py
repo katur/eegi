@@ -1,11 +1,11 @@
 from __future__ import division
 
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
-from django.contrib.auth.models import User
 
-from worms.models import WormStrain
 from library.models import LibraryPlate
+from worms.models import WormStrain
 
 
 STRONG_SCORE_CODES = (3, 14, 18)

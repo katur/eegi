@@ -50,7 +50,7 @@ tables).
 
 ## Migrating Empty LibraryWells
 
-After using the main script to migrate the LibraryWell table, 
+After using the main script to migrate the LibraryWell table,
 another script is used to add rows to representing 'empty' wells in the database:
 
     ./manage.py add_empty_LibraryWells
@@ -59,12 +59,12 @@ This is separate from the main script because empty wells were not represented
 in the previous database's library tables.
 
 After running this script, you should re-run the LibraryWell step of the main
-script, to resolve empty well parents of rearrayed plates. The legacy 
-database did not represent "empty wells" in its library 
+script, to resolve empty well parents of rearrayed plates. The legacy
+database did not represent "empty wells" in its library
 tables, but it did not enforce foreign key constraints, and therefore allowed
-some "impossible" parent relationships between LibraryWells (parent wells that 
-themselves did not have rows in the database). The main script ignores these 
-impossiblilities (by leaving parent null), because the new database does 
+some "impossible" parent relationships between LibraryWells (parent wells that
+themselves did not have rows in the database). The main script ignores these
+impossiblilities (by leaving parent null), because the new database does
 enforce FK constraints. However, a handful of these are resolved once
 the empty library wells are accounted for.
 
@@ -77,8 +77,8 @@ after this point.
 
 ## Migrating Sequencing Data
 
-A third script is used to migrate sequencing data. The reason this script is 
-separate is that it uses a very different approach than the other database migration 
+A third script is used to migrate sequencing data. The reason this script is
+separate is that it uses a very different approach than the other database migration
 steps (since the legacy database did not store raw sequencing data, nor is it up to date).
 
 To migrate the sequencing data, first copy all the genewiz sequencing output to your

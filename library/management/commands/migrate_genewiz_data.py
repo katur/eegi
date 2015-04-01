@@ -10,8 +10,8 @@ from django.core.management.base import BaseCommand, CommandError
 
 from eegi.local_settings import LEGACY_DATABASE
 from library.models import LibraryWell, LibrarySequencing
-from utils.helpers.well_tile_conversion import get_well_name
 from utils.helpers.scripting import require_db_write_acknowledgement
+from utils.helpers.well_tile_conversion import get_well_name
 
 HELP = '''
 Migrate the Genewiz sequencing data from the Genewiz output files to the

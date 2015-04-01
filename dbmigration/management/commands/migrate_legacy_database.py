@@ -2,12 +2,12 @@ import MySQLdb
 
 from django.core.management.base import BaseCommand, CommandError
 
-from eegi.local_settings import LEGACY_DATABASE, LEGACY_DATABASE_2
-from utils.helpers.migrate_legacy_database_steps import (
+from dbmigration.helpers.migrate_legacy_database_steps import (
     update_LibraryPlate_table, update_Experiment_table,
     update_ManualScoreCode_table, update_ManualScore_table,
     update_DevstarScore_table, update_Clone_table,
     update_LibraryWell_table, update_ManualScore_table_secondary)
+from eegi.local_settings import LEGACY_DATABASE, LEGACY_DATABASE_2
 from utils.helpers.scripting import require_db_write_acknowledgement
 
 HELP = '''
