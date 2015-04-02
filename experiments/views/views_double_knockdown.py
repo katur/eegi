@@ -80,10 +80,6 @@ def double_knockdown(request, worm, clone, temperature):
     clone = get_object_or_404(Clone, pk=clone)
     n2 = get_object_or_404(WormStrain, pk='N2')
     l4440_plate = get_object_or_404(LibraryPlate, pk='L4440')
-
-    # plates_with_l4440 = LibraryPlate.objects.filter(
-    #    librarywell__intended_clone=l4440_clone)
-
     library_wells = (LibraryWell.objects
                      .filter(intended_clone=clone,
                              plate__screen_stage__gt=0)

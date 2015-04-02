@@ -8,10 +8,24 @@ from library.models import LibraryPlate
 from worms.models import WormStrain
 
 
-STRONG_SCORE_CODES = (3, 14, 18)
-MEDIUM_SCORE_CODES = (2, 13, 17)
-WEAK_SCORE_CODES = (1, 12, 16)
-NEGATIVE_SCORE_CODES = (0,)
+STRONG = 'Strong'
+MEDIUM = 'Medium'
+WEAK = 'Weak'
+NEGATIVE = 'Negative'
+OTHER = 'Other'
+UNSCORED = 'Unscored'
+
+RELEVANCE_PER_REPLICATE = (OTHER, NEGATIVE, WEAK, MEDIUM, STRONG)
+RELEVANCE_ACROSS_REPLICATES = (NEGATIVE, OTHER, UNSCORED, WEAK, MEDIUM, STRONG)
+
+WEIGHTS = {
+    STRONG: 3,
+    MEDIUM: 2,
+    WEAK: 1,
+    UNSCORED: 0,
+    OTHER: 0,
+    NEGATIVE: 0,
+}
 
 STRONG_WEIGHT = 4
 MEDIUM_WEIGHT = 3
@@ -93,6 +107,11 @@ class ManualScoreCode(models.Model):
     short_description = models.CharField(max_length=50, blank=True)
     legacy_description = models.CharField(max_length=100, blank=True)
 
+    STRONG_CODES = (3, 14, 18)
+    MEDIUM_CODES = (2, 13, 17)
+    WEAK_CODES = (1, 12, 16)
+    NEGATIVE_CODES = (0,)
+
     class Meta:
         db_table = 'ManualScoreCode'
         ordering = ['id']
@@ -108,16 +127,20 @@ class ManualScoreCode(models.Model):
             return str(self.id)
 
     def is_strong(self):
-        return self.id in STRONG_SCORE_CODES
+        return self.id in ManualScoreCode.STRONG_CODES
 
     def is_medium(self):
-        return self.id in MEDIUM_SCORE_CODES
+        return self.id in ManualScoreCode.MEDIUM_CODES
 
     def is_weak(self):
-        return self.id in WEAK_SCORE_CODES
+        return self.id in ManualScoreCode.WEAK_CODES
 
     def is_negative(self):
-        return self.id in NEGATIVE_SCORE_CODES
+        return self.id in ManualScoreCode.NEGATIVE_CODES
+
+    def is_other(self):
+        return (not self.is_strong() and not self.is_medium()
+                and not self.is_weak() and not self.is_negative())
 
 
 class ManualScore(models.Model):
@@ -153,6 +176,9 @@ class ManualScore(models.Model):
     def is_negative(self):
         return self.score_code.is_negative()
 
+    def is_other(self):
+        return self.score_code.is_other()
+
     def get_score_weight(self):
         '''
         Return a weight used for capturing the most relevant score category
@@ -170,6 +196,24 @@ class ManualScore(models.Model):
             return NEGATIVE_WEIGHT
         else:
             return OTHER_WEIGHT
+
+    def get_category(self):
+        if self.is_strong():
+            return STRONG
+        elif self.is_medium():
+            return MEDIUM
+        elif self.is_weak():
+            return WEAK
+        elif self.is_negative():
+            return NEGATIVE
+        elif self.is_other():
+            return OTHER
+
+    def get_relevance_per_replicate(self):
+        return RELEVANCE_PER_REPLICATE.index(self.get_category())
+
+    def get_relevance_across_replicates(self):
+        return RELEVANCE_ACROSS_REPLICATES.index(self.get_category())
 
 
 class DevstarScore(models.Model):
