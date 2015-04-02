@@ -3,7 +3,7 @@ from experiments.models import ManualScore
 
 def get_condensed_primary_scores(worm, library_well, screen):
     '''
-    Get a summarization of scores for a particular worm / library well
+    Get a summary of scores for a particular worm / library well
     combination.
 
     First, each image is binned as strong, medium, weak, negative, or
