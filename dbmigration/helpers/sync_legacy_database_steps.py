@@ -397,7 +397,9 @@ def update_DevstarScore_table(cursor):
     fields_to_compare = ('area_adult', 'area_larva', 'area_embryo',
                          'count_adult', 'count_larva', 'is_bacteria_present',
                          'count_embryo', 'larva_per_adult',
-                         'embryo_per_adult', 'survival', 'lethality',)
+                         'embryo_per_adult', 'survival', 'lethality',
+                         'selected_for_scoring', 'gi_score_larva_per_adult',
+                         'gi_score_survival')
 
     legacy_query = ('SELECT expID, 96well, '
                     'mutantAllele, targetRNAiClone, RNAiPlateID, '
@@ -407,7 +409,8 @@ def update_DevstarScore_table(cursor):
                     'machineCall, machineDetectBac, '
                     'GIscoreLarvaePerWorm, GIscoreSurvival '
                     'FROM RawDataWithScore '
-                    'LIMIT 1000000')
+                    'WHERE (expID < 40000 OR expID>=50000) '
+                    'LIMIT 10000000')
 
     def sync_score_row(legacy_row):
         # Build the object using the minimimum fields
@@ -418,6 +421,12 @@ def update_DevstarScore_table(cursor):
         if count_larva == -1:
             count_larva = None
 
+        machine_call = legacy_row[15]
+        if machine_call:
+            selected_for_scoring = True
+        else:
+            selected_for_scoring = False
+
         legacy_score = DevstarScore(
             experiment=get_experiment(legacy_row[0]),
             well=get_three_character_well(legacy_row[1]),
@@ -427,6 +436,9 @@ def update_DevstarScore_table(cursor):
             count_adult=count_adult,
             count_larva=count_larva,
             is_bacteria_present=legacy_row[16],
+            selected_for_scoring=selected_for_scoring,
+            gi_score_larva_per_adult=legacy_row[17],
+            gi_score_survival=legacy_row[18]
         )
 
         # Clean the object to populate the fields derived from other fields
