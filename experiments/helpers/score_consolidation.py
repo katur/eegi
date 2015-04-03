@@ -1,5 +1,5 @@
 from experiments.models import ManualScore
-from library.models import LibraryWell
+from library.helpers import get_organized_library_wells
 from worms.models import WormStrain
 
 
@@ -91,33 +91,6 @@ def get_secondary_list(screen, criteria):
     return (secondary_list_by_worm, secondary_list_by_clone)
 
 
-def get_organized_library_wells(screen_level=None):
-    '''
-    Get library wells organized as:
-
-        l[library_plate][well] = library_well
-
-    Optionally provide a screen_level, to limit to the Primary or Secondary
-    screen.
-
-    '''
-    library_wells = LibraryWell.objects.select_related('plate')
-    if screen_level:
-        library_wells = library_wells.filter(plate__screen_stage=screen_level)
-    else:
-        library_wells = library_wells.all()
-
-    l = {}
-    for library_well in library_wells:
-        plate = library_well.plate
-        well = library_well.well
-        if plate not in l:
-            l[plate] = {}
-        l[plate][well] = library_well
-
-    return l
-
-
 def get_organized_primary_scores(screen, screen_level=None):
     '''
     Get primary scores for a particular screen ('ENH' or 'SUP'), organized as:
@@ -125,7 +98,7 @@ def get_organized_primary_scores(screen, screen_level=None):
         s[worm][library_well][experiment] = [scores]
 
     '''
-    l = get_organized_library_wells(screen_level=1)
+    w = get_organized_library_wells(screen_level=1)
 
     worms = WormStrain.objects
     if screen == 'ENH':
@@ -135,8 +108,6 @@ def get_organized_primary_scores(screen, screen_level=None):
 
     s = {}
     for worm in worms:
-        print worm
-        s[worm] = {}
         scores = (ManualScore.objects.filter(
                   experiment__worm_strain=worm,
                   experiment__temperature=worm.permissive_temperature,
@@ -144,18 +115,31 @@ def get_organized_primary_scores(screen, screen_level=None):
                   experiment__screen_level=1)
                   .prefetch_related('score_code', 'experiment',
                                     'experiment__library_plate'))
-        for score in scores:
-            experiment = score.experiment
-            plate = experiment.library_plate
-            well = score.well
-            library_well = l[plate][well]
+        s[worm] = organize_scores(scores, w)
 
-            if library_well not in s[worm]:
-                s[worm][library_well] = {}
+    return s
 
-            if experiment not in s[worm][library_well]:
-                s[worm][library_well][experiment] = []
 
-            s[worm][library_well][experiment].append(score)
+def organize_scores(scores, w):
+    '''
+    Organize a list of scores, consulting organized library_wells w, into:
+
+        s[library_well][experiment] = [scores]
+    '''
+    s = {}
+
+    for score in scores:
+        experiment = score.experiment
+        plate = experiment.library_plate
+        well = score.well
+        library_well = w[plate][well]
+
+        if library_well not in s:
+            s[library_well] = {}
+
+        if experiment not in s[library_well]:
+            s[library_well][experiment] = []
+
+        s[library_well][experiment].append(score)
 
     return s

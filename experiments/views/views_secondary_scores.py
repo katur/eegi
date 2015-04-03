@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from experiments.forms import SecondaryScoresForm
 from experiments.models import ManualScore
+from library.helpers import organize_library_wells
 from library.models import LibraryWell
 from worms.models import WormStrain
 
@@ -81,31 +82,23 @@ def secondary_scores(request, worm, temperature):
               .prefetch_related('experiment__library_plate')
               .order_by('-experiment__id', 'well'))
 
-    library_wells = (LibraryWell.objects.filter(
-                     Q(plate__in=scores.values('experiment__library_plate')
-                       .distinct())))
-
-    # Store LibraryWells in a dictionary for fast correlation to scores.
-    # w[library_plate_name][well_name] = LibraryWell object
+    # Store LibraryWells in a fast lookup dictionary.
     #
     # TODO: I do this because I have not figured out how to easily translate
     # raw SQL output including a JOIN into multiple Django objects, in order
     # to execute a single query between Experiment (plate-level),
     # ManualScore (well-level), and LibraryWell (well-level).
     # Should figure out a way to do this faster.
-    w = {}
-    for library_well in library_wells:
-        plate = library_well.plate_id
-        well = library_well.well
-        if plate not in w:
-            w[plate] = {}
-        w[plate][well] = library_well
+    library_wells = (LibraryWell.objects.filter(
+                     Q(plate__in=scores.values('experiment__library_plate')
+                       .distinct())))
+    w = organize_library_wells(library_wells)
 
     # Organize the scores into s[library_well][experiment] = score
     s = {}
     for score in scores:
         experiment = score.experiment
-        library_well = w[experiment.library_plate_id][score.well]
+        library_well = w[experiment.library_plate][score.well]
 
         if library_well not in s:
             s[library_well] = OrderedDict()
@@ -138,7 +131,8 @@ def secondary_scores(request, worm, temperature):
         scores = expts.values()
 
         # TODO: below will be better once fix weights to reflect the 0-3 scale
-        # well.avg = sum(x.get_score_weight() for x in scores) / float(len(expts))
+        # well.avg =
+        # sum(x.get_score_weight() for x in scores) / float(len(expts))
 
         total_weight = 0
         for score in scores:
