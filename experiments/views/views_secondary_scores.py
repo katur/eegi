@@ -6,10 +6,64 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from experiments.forms import SecondaryScoresForm
 from experiments.helpers.scores import (passes_sup_positive_criteria,
-                                        get_average_weight)
+                                        get_average_weight,
+                                        organize_scores)
 from experiments.models import ManualScore
 from library.helpers import get_organized_library_wells
 from worms.models import WormStrain
+
+
+def secondary_scores(request, worm, temperature):
+    '''
+    Render page displaying the secondary scores for a particular worm,
+    sorted with positives on top.
+
+    '''
+    worm = get_object_or_404(WormStrain, pk=worm)
+    screen = worm.get_screen_category(temperature)
+
+    # TODO: Try to speed this up with a single query between Experiment
+    # (plate-level), ManualScore (well-level), and LibraryWell (well-level).
+    w = get_organized_library_wells(2)
+    scores = (ManualScore.objects.filter(
+              Q(experiment__worm_strain=worm),
+              Q(experiment__screen_level=2),
+              Q(experiment__is_junk=False),
+              Q(experiment__temperature=temperature))
+              .select_related('score_code')
+              .prefetch_related('experiment__library_plate')
+              .order_by('experiment__id', 'well'))
+
+    s = organize_scores(scores, w, most_relevant=True)
+
+    num_passes = 0
+    num_experiment_columns = 0
+    for well, expts in s.iteritems():
+        scores = expts.values()
+        well.avg = get_average_weight(scores)
+
+        well.passes_criteria = passes_sup_positive_criteria(scores)
+        if well.passes_criteria:
+            num_passes += 1
+
+        if len(expts) > num_experiment_columns:
+            num_experiment_columns = len(expts)
+
+    s = OrderedDict(sorted(s.iteritems(),
+                           key=lambda x: (x[0].passes_criteria, x[0].avg),
+                           reverse=True))
+
+    context = {
+        'worm': worm,
+        'temp': temperature,
+        'screen': screen,
+        's': s,
+        'num_wells': len(s),
+        'num_passes': num_passes,
+        'num_experiment_columns': num_experiment_columns,
+    }
+
+    return render(request, 'secondary_scores.html', context)
 
 
 def secondary_scores_search(request):
@@ -69,76 +123,3 @@ def secondary_scores_search(request):
     }
 
     return render(request, 'secondary_scores_search.html', context)
-
-
-def secondary_scores(request, worm, temperature):
-    '''
-    Render page displaying the secondary scores for a particular worm,
-    sorted with positives on top.
-
-    '''
-    worm = get_object_or_404(WormStrain, pk=worm)
-    screen = worm.get_screen_category(temperature)
-
-    # Store LibraryWells in a fast lookup dictionary.
-    #
-    # TODO: I do this because I have not figured out how to easily translate
-    # raw SQL output including a JOIN into multiple Django objects, in order
-    # to execute a single query between Experiment (plate-level),
-    # ManualScore (well-level), and LibraryWell (well-level).
-    # Should figure out a way to do this faster.
-    w = get_organized_library_wells(2)
-
-    # Fetch the non-junk secondary scores for this worm and temperature,
-    # prefetching corresponding ScoreCode and LibraryPlate for faster lookup
-    # later on.
-    scores = (ManualScore.objects.filter(
-              Q(experiment__worm_strain=worm),
-              Q(experiment__screen_level=2),
-              Q(experiment__is_junk=False),
-              Q(experiment__temperature=temperature))
-              .select_related('score_code')
-              .prefetch_related('experiment__library_plate')
-              .order_by('-experiment__id', 'well'))
-
-    # Organize the scores into s[library_well][experiment] = score
-    s = {}
-    for score in scores:
-        experiment = score.experiment
-        library_well = w[experiment.library_plate][score.well]
-
-        if library_well not in s:
-            s[library_well] = OrderedDict()
-
-        if (experiment not in s[library_well] or
-                s[library_well][experiment].get_relevance_per_replicate() <
-                score.get_relevance_per_replicate()):
-            s[library_well][experiment] = score
-
-    num_passes = 0
-    num_experiment_columns = 0
-    for well, expts in s.iteritems():
-        scores = expts.values()
-        well.avg = get_average_weight(scores)
-
-        well.passes_criteria = passes_sup_positive_criteria(scores)
-        if well.passes_criteria:
-            num_passes += 1
-        if len(expts) > num_experiment_columns:
-            num_experiment_columns = len(expts)
-
-    s = OrderedDict(sorted(s.iteritems(),
-                           key=lambda x: (x[0].passes_criteria, x[0].avg),
-                           reverse=True))
-
-    context = {
-        'worm': worm,
-        'temp': temperature,
-        'screen': screen,
-        's': s,
-        'num_wells': len(s),
-        'num_passes': num_passes,
-        'num_experiment_columns': num_experiment_columns,
-    }
-
-    return render(request, 'secondary_scores.html', context)

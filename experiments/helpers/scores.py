@@ -1,4 +1,6 @@
 from __future__ import division
+from collections import OrderedDict
+
 from experiments.models import ManualScore
 from library.helpers import get_organized_library_wells
 from worms.models import WormStrain
@@ -83,7 +85,7 @@ def sort_scores_by_relevance_across_replicates(scores):
                   reverse=True)
 
 
-def organize_scores(scores, w):
+def organize_scores(scores, library_wells, most_relevant=False):
     '''
     Organize a list of scores, consulting organized library_wells w, into:
 
@@ -95,20 +97,27 @@ def organize_scores(scores, w):
         experiment = score.experiment
         plate = experiment.library_plate
         well = score.well
-        library_well = w[plate][well]
+        library_well = library_wells[plate][well]
 
         if library_well not in s:
-            s[library_well] = {}
+            s[library_well] = OrderedDict()
 
-        if experiment not in s[library_well]:
-            s[library_well][experiment] = []
+        if most_relevant:
+            if (experiment not in s[library_well] or
+                    s[library_well][experiment].get_relevance_per_replicate() <
+                    score.get_relevance_per_replicate()):
+                s[library_well][experiment] = score
 
-        s[library_well][experiment].append(score)
+        else:
+            if experiment not in s[library_well]:
+                s[library_well][experiment] = []
+            s[library_well][experiment].append(score)
 
     return s
 
 
-def get_organized_primary_scores(screen, screen_level=None):
+def get_organized_primary_scores(screen, screen_level=None,
+                                 most_relevant=False):
     '''
     Get primary scores for a particular screen ('ENH' or 'SUP'), organized as:
 
@@ -132,7 +141,7 @@ def get_organized_primary_scores(screen, screen_level=None):
                   experiment__screen_level=1)
                   .prefetch_related('score_code', 'experiment',
                                     'experiment__library_plate'))
-        s[worm] = organize_scores(scores, w)
+        s[worm] = organize_scores(scores, w, most_relevant)
 
     return s
 

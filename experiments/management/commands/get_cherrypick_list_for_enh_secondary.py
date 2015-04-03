@@ -20,9 +20,9 @@ class Command(NoArgsCommand):
             len(secondary_by_clone)))
 
         self.stdout.write('\n\nBreakdown before accounting for universals:\n')
-        for worm in secondary_by_worm:
+        for worm in sorted(secondary_by_worm):
             self.stdout.write('{}: {} wells\n'.format(
-                worm, len(secondary_by_worm[worm])))
+                worm.genotype, len(secondary_by_worm[worm])))
 
         secondary_by_worm['universal'] = []
 
@@ -39,6 +39,11 @@ class Command(NoArgsCommand):
                     secondary_by_worm[worm].remove(well)
 
         self.stdout.write('\n\nBreakdown after accounting for universals:\n')
-        for worm in secondary_by_worm:
+        for key in sorted(secondary_by_worm):
+            if hasattr(key, 'genotype'):
+                label = key.genotype
+            else:
+                label = key
+
             self.stdout.write('{}: {} wells\n'.format(
-                worm, len(secondary_by_worm[worm])))
+                label, len(secondary_by_worm[key])))

@@ -27,7 +27,10 @@ class WormStrain(models.Model):
         ordering = ['genotype']
 
     def __cmp__(self, other):
-        return cmp(self.genotype, other.genotype)
+        if hasattr(other, 'genotype'):
+            return cmp(self.genotype, other.genotype)
+        else:
+            return cmp(self.genotype, str(other))
 
     def __unicode__(self):
         return self.id
