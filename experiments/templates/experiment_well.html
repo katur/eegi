@@ -37,7 +37,7 @@
   <span>Date: {{ experiment.date|date:"SHORT_DATE_FORMAT" }}</span>
 
   {% if experiment.is_junk %}
-    <span>JUNK</span>
+  <span class="error-message">JUNK</span>
   {% endif %}
 
   {% if experiment.comment %}
