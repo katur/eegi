@@ -3,6 +3,28 @@ from library.helpers import get_organized_library_wells
 from worms.models import WormStrain
 
 
+def passes_enh_primary_criteria(countable_scores):
+    '''
+    Determine if a set of countable primary scores (i.e., one most relevant
+    score per primary replicate) passes the criteria to make it into
+    the Enhancer secondary screen.
+
+    '''
+    is_positive = False
+    num_weaks = 0
+    for score in countable_scores:
+        if score.is_strong() or score.is_medium():
+            is_positive = True
+            break
+        if score.is_weak():
+            num_weaks += 1
+
+    if num_weaks >= 2:
+        is_positive = True
+
+    return is_positive
+
+
 def get_most_relevant_score_per_replicate(scores):
     '''
     From multiple scores for a single replicate, get the most relevant.
@@ -14,7 +36,7 @@ def get_most_relevant_score_per_replicate(scores):
     return scores[0]
 
 
-def sort_by_relevance_across_replicates(scores):
+def sort_scores_by_relevance_across_replicates(scores):
     '''
     From scores across replicates (a single, most relevant score per
     replicate), sort by the most relevant.
@@ -79,7 +101,7 @@ def get_organized_primary_scores(screen, screen_level=None):
     return s
 
 
-def get_secondary_list(screen, passes_criteria):
+def get_clones_for_secondary(screen, passes_criteria):
     '''
     Get the list of clones to include in the secondary, for the provided
     screen.
@@ -126,20 +148,9 @@ def get_secondary_list(screen, passes_criteria):
     return (secondary_list_by_worm, secondary_list_by_clone)
 
 
-def get_enhancer_secondary_list():
+def get_clones_for_enh_secondary():
     '''
-    Get the list of clones to include in the Enhancer Secondary screen.
+    Get the list of clones to include in the Enhancer secondary screen.
 
     '''
-    def passes_enhancer_criteria(countable_scores):
-        is_positive = False
-        num_weaks = 0
-        for score in countable_scores:
-            if score.is_strong() or score.is_medium():
-                is_positive = True
-                break
-            if score.is_weak():
-                num_weaks += 1
-
-        return is_positive or num_weaks >= 2
-    return get_secondary_list('ENH', passes_enhancer_criteria)
+    return get_clones_for_secondary('ENH', passes_enh_primary_criteria)
