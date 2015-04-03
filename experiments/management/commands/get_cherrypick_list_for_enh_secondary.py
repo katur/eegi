@@ -4,9 +4,9 @@ from experiments.helpers.scores import get_clones_for_enh_secondary
 
 
 HELP = '''
-Get the list of clones to be cherry picked for the ENH secondary.
+Get the clones to be cherry-picked for the Enhancer secondary screen.
 
-This list is based on the manual scores of the ENH primary.
+This list is based on the manual scores of the Enhancer primary screen.
 '''
 
 
