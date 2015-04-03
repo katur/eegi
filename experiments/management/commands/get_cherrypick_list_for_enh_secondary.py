@@ -1,6 +1,7 @@
 from django.core.management.base import NoArgsCommand
 
-from experiments.helpers.scores import get_clones_for_enh_secondary
+from experiments.helpers.scores import (get_clones_for_secondary,
+                                        passes_enh_secondary_criteria)
 
 
 HELP = '''
@@ -14,7 +15,8 @@ class Command(NoArgsCommand):
     help = HELP
 
     def handle_noargs(self, **options):
-        secondary_by_worm, secondary_by_clone = get_clones_for_enh_secondary()
+        secondary_by_worm, secondary_by_clone = get_clones_for_secondary(
+            'ENH', passes_enh_secondary_criteria)
 
         self.stdout.write('Total clones to cherry pick: {}\n'.format(
             len(secondary_by_clone)))
