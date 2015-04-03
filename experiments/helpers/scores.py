@@ -25,26 +25,61 @@ def sort_by_relevance_across_replicates(scores):
                   reverse=True)
 
 
-def get_enhancer_secondary_list():
+def organize_scores(scores, w):
     '''
-    Get the list of clones to include in the Enhancer Secondary screen.
+    Organize a list of scores, consulting organized library_wells w, into:
+
+        s[library_well][experiment] = [scores]
+    '''
+    s = {}
+
+    for score in scores:
+        experiment = score.experiment
+        plate = experiment.library_plate
+        well = score.well
+        library_well = w[plate][well]
+
+        if library_well not in s:
+            s[library_well] = {}
+
+        if experiment not in s[library_well]:
+            s[library_well][experiment] = []
+
+        s[library_well][experiment].append(score)
+
+    return s
+
+
+def get_organized_primary_scores(screen, screen_level=None):
+    '''
+    Get primary scores for a particular screen ('ENH' or 'SUP'), organized as:
+
+        s[worm][library_well][experiment] = [scores]
 
     '''
-    def enhancer_criteria(countable_scores):
-        is_positive = False
-        num_weaks = 0
-        for score in countable_scores:
-            if score.is_strong() or score.is_medium():
-                is_positive = True
-                break
-            if score.is_weak():
-                num_weaks += 1
+    w = get_organized_library_wells(screen_level=1)
 
-        return is_positive or num_weaks >= 2
-    return get_secondary_list('ENH', enhancer_criteria)
+    worms = WormStrain.objects
+    if screen == 'ENH':
+        worms = worms.exclude(permissive_temperature__isnull=True)
+    elif screen == 'SUP':
+        worms = worms.exclude(restrictive_temperature__isnull=True)
+
+    s = {}
+    for worm in worms:
+        scores = (ManualScore.objects.filter(
+                  experiment__worm_strain=worm,
+                  experiment__temperature=worm.permissive_temperature,
+                  experiment__is_junk=False,
+                  experiment__screen_level=1)
+                  .prefetch_related('score_code', 'experiment',
+                                    'experiment__library_plate'))
+        s[worm] = organize_scores(scores, w)
+
+    return s
 
 
-def get_secondary_list(screen, criteria):
+def get_secondary_list(screen, passes_criteria):
     '''
     Get the list of clones to include in the secondary, for the provided
     screen.
@@ -79,7 +114,7 @@ def get_secondary_list(screen, criteria):
                 score = get_most_relevant_score_per_replicate(scores)
                 s[worm][library_well][experiment] = score
 
-            if criteria(experiments.values()):
+            if passes_criteria(experiments.values()):
                 if worm not in secondary_list_by_worm:
                     secondary_list_by_worm[worm] = []
                 secondary_list_by_worm[worm].append(library_well)
@@ -91,55 +126,20 @@ def get_secondary_list(screen, criteria):
     return (secondary_list_by_worm, secondary_list_by_clone)
 
 
-def get_organized_primary_scores(screen, screen_level=None):
+def get_enhancer_secondary_list():
     '''
-    Get primary scores for a particular screen ('ENH' or 'SUP'), organized as:
-
-        s[worm][library_well][experiment] = [scores]
+    Get the list of clones to include in the Enhancer Secondary screen.
 
     '''
-    w = get_organized_library_wells(screen_level=1)
+    def passes_enhancer_criteria(countable_scores):
+        is_positive = False
+        num_weaks = 0
+        for score in countable_scores:
+            if score.is_strong() or score.is_medium():
+                is_positive = True
+                break
+            if score.is_weak():
+                num_weaks += 1
 
-    worms = WormStrain.objects
-    if screen == 'ENH':
-        worms = worms.exclude(permissive_temperature__isnull=True)
-    elif screen == 'SUP':
-        worms = worms.exclude(restrictive_temperature__isnull=True)
-
-    s = {}
-    for worm in worms:
-        scores = (ManualScore.objects.filter(
-                  experiment__worm_strain=worm,
-                  experiment__temperature=worm.permissive_temperature,
-                  experiment__is_junk=False,
-                  experiment__screen_level=1)
-                  .prefetch_related('score_code', 'experiment',
-                                    'experiment__library_plate'))
-        s[worm] = organize_scores(scores, w)
-
-    return s
-
-
-def organize_scores(scores, w):
-    '''
-    Organize a list of scores, consulting organized library_wells w, into:
-
-        s[library_well][experiment] = [scores]
-    '''
-    s = {}
-
-    for score in scores:
-        experiment = score.experiment
-        plate = experiment.library_plate
-        well = score.well
-        library_well = w[plate][well]
-
-        if library_well not in s:
-            s[library_well] = {}
-
-        if experiment not in s[library_well]:
-            s[library_well][experiment] = []
-
-        s[library_well][experiment].append(score)
-
-    return s
+        return is_positive or num_weaks >= 2
+    return get_secondary_list('ENH', passes_enhancer_criteria)

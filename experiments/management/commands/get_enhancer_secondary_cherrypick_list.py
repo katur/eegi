@@ -1,6 +1,6 @@
 from django.core.management.base import NoArgsCommand
 
-from experiments.helpers.score_consolidation import get_enhancer_secondary_list
+from experiments.helpers.scores import get_enhancer_secondary_list
 
 
 HELP = '''
