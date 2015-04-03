@@ -114,8 +114,8 @@ def get_secondary_candidates(screen, passes_criteria):
 
     # TODO: deal with cases of only one replicated tested
 
-    secondary_list_by_worm = {}
-    secondary_list_by_clone = {}
+    candidates_by_worm = {}
+    candidates_by_clone = {}
 
     for worm, library_wells in s.iteritems():
         for library_well, experiments in library_wells.iteritems():
@@ -126,15 +126,15 @@ def get_secondary_candidates(screen, passes_criteria):
                 s[worm][library_well][experiment] = score
 
             if passes_criteria(experiments.values()):
-                if worm not in secondary_list_by_worm:
-                    secondary_list_by_worm[worm] = []
-                secondary_list_by_worm[worm].append(library_well)
+                if worm not in candidates_by_worm:
+                    candidates_by_worm[worm] = []
+                candidates_by_worm[worm].append(library_well)
 
-                if library_well not in secondary_list_by_clone:
-                    secondary_list_by_clone[library_well] = []
-                secondary_list_by_clone[library_well].append(worm)
+                if library_well not in candidates_by_clone:
+                    candidates_by_clone[library_well] = []
+                candidates_by_clone[library_well].append(worm)
 
-    return (secondary_list_by_worm, secondary_list_by_clone)
+    return (candidates_by_worm, candidates_by_clone)
 
 
 def get_organized_scores_all_worms(screen, screen_level,
