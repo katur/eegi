@@ -6,10 +6,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from experiments.forms import SecondaryScoresForm
 from experiments.helpers.scores import (passes_sup_positive_criteria,
-                                        get_average_weight,
-                                        organize_scores)
-from experiments.models import ManualScore
-from library.helpers import get_organized_library_wells
+                                        get_average_score_weight,
+                                        get_organized_scores_specific_worm)
 from worms.models import WormStrain
 
 
@@ -24,23 +22,14 @@ def secondary_scores(request, worm, temperature):
 
     # TODO: Try to speed this up with a single query between Experiment
     # (plate-level), ManualScore (well-level), and LibraryWell (well-level).
-    w = get_organized_library_wells(2)
-    scores = (ManualScore.objects.filter(
-              Q(experiment__worm_strain=worm),
-              Q(experiment__screen_level=2),
-              Q(experiment__is_junk=False),
-              Q(experiment__temperature=temperature))
-              .select_related('score_code')
-              .prefetch_related('experiment__library_plate')
-              .order_by('experiment__id', 'well'))
-
-    s = organize_scores(scores, w, most_relevant=True)
+    s = get_organized_scores_specific_worm(worm, screen, screen_level=2,
+                                           most_relevant_only=True)
 
     num_passes = 0
     num_experiment_columns = 0
     for well, expts in s.iteritems():
         scores = expts.values()
-        well.avg = get_average_weight(scores)
+        well.avg = get_average_score_weight(scores)
 
         well.passes_criteria = passes_sup_positive_criteria(scores)
         if well.passes_criteria:

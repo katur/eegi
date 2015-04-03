@@ -1,6 +1,10 @@
 from django.core.management.base import NoArgsCommand
 
-from library.models import LibrarySequencing, LibrarySequencingBlatResult
+from experiments.helpers.scores import get_sup_secondary_positive_library_wells
+from library.models import LibrarySequencing
+from library.helpers import (categorize_sequences_by_blat_results,
+                             get_avg_crl, get_avg_qs,
+                             get_number_decent_quality)
 
 HELP = '''
 Compare BLAT hits of our sequencing results to the intended clones.
@@ -13,100 +17,34 @@ BLAT results will be resequenced.
 class Command(NoArgsCommand):
     help = HELP
 
-    def handle_noargs(self, **options):
-        seqs = (LibrarySequencing.objects.all()
-                .select_related('source_library_well',
-                                'source_library_well__intended_clone'))
-        blats = (LibrarySequencingBlatResult.objects.all()
-                 .select_related('library_sequencing', 'clone_hit'))
-
-        b = {}
-        for blat in blats:
-            seq = blat.library_sequencing
-            if seq not in b:
-                b[seq] = []
-            b[seq].append(blat)
-
-        NO_BLAT = 'intended clone, but no BLAT results (bad)'
-        NO_MATCH = 'intended clone does not match BLAT results (bad)'
-        L4440_BLAT = 'L4440 with BLAT results (bad)'
-        L4440_NO_BLAT = 'L4440, no BLAT results (good)'
-        NO_CLONE_BLAT = 'no intended clone with BLAT results (bad)'
-        NO_CLONE_NO_BLAT = 'no intended clone, no BLAT results (good)'
-
-        s = {
-            L4440_NO_BLAT: [],
-            NO_CLONE_NO_BLAT: [],
-            NO_BLAT: [],
-            NO_MATCH: [],
-            L4440_BLAT: [],
-            NO_CLONE_BLAT: [],
-        }
-
-        for seq in seqs:
-            if seq.source_library_well:
-                intended_clone = seq.source_library_well.intended_clone
-            else:
-                intended_clone = None
-
-            if not intended_clone:
-                if seq in b:
-                    s[NO_CLONE_BLAT].append(seq)
-                else:
-                    s[NO_CLONE_NO_BLAT].append(seq)
-
-            elif intended_clone.is_control():
-                if seq in b:
-                    s[L4440_BLAT].append(seq)
-                else:
-                    s[L4440_NO_BLAT].append(seq)
-
-            else:
-                if seq not in b:
-                    s[NO_BLAT].append(seq)
-                else:
-                    match = get_match(b[seq], intended_clone)
-                    if not match:
-                        s[NO_MATCH].append(seq)
-                    else:
-                        rank = match.hit_rank
-                        if rank not in s:
-                            s[rank] = []
-                        s[rank].append(seq)
-
-        for name, l in s.iteritems():
+    def print_categories(self, header, s):
+        self.stdout.write('============='
+                          ' {} '
+                          '============='
+                          .format(header))
+        for category, seqs in sorted(s.iteritems()):
             self.stdout.write(
                 'Category {}:\n'
                 '\t{} total\n'
-                '\t{} "decent"\n'
-                '\t{} average CRL\n'
-                '\t{} average quality score\n\n'
-                .format(name, len(l), get_number_decent(l),
-                        get_avg_crl(l), get_avg_qs(l))
+                '\t\t{} "decent"\n'
+                '\t\t{} average CRL\n'
+                '\t\t{} average quality score\n\n'
+                .format(category,
+                        len(seqs),
+                        get_number_decent_quality(seqs),
+                        get_avg_crl(seqs),
+                        get_avg_qs(seqs))
             )
 
+    def handle_noargs(self, **options):
+        seq_starter = (LibrarySequencing.objects
+                       .select_related('source_library_well',
+                                       'source_library_well__intended_clone'))
+        seqs = seq_starter.all()
+        s = categorize_sequences_by_blat_results(seqs)
+        self.print_categories('ALL SEQUENCES', s)
 
-def get_match(blat_results, intended_clone):
-    for x in blat_results:
-        if x.clone_hit == intended_clone:
-            return x
-    return None
-
-
-def avg(l):
-    if l:
-        return sum(l) / len(l)
-    else:
-        return 0
-
-
-def get_avg_crl(l):
-    return avg([x.crl for x in l])
-
-
-def get_avg_qs(l):
-    return avg([x.quality_score for x in l])
-
-
-def get_number_decent(l):
-    return sum([x.is_decent_quality() for x in l])
+        positives = get_sup_secondary_positive_library_wells()
+        seqs = seq_starter.filter(source_library_well__in=positives)
+        s = categorize_sequences_by_blat_results(seqs)
+        self.print_categories('POSITIVES ONLY', s)
