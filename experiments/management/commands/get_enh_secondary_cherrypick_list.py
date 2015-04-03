@@ -1,13 +1,14 @@
 from django.core.management.base import NoArgsCommand
 
-from experiments.helpers.scores import (get_clones_for_secondary,
+from experiments.helpers.scores import (get_secondary_candidates,
                                         passes_enh_secondary_criteria)
 
 
 HELP = '''
-Get the clones to be cherry-picked for the Enhancer secondary screen.
+Get the library wells to be cherry-picked for the Enhancer Secondary screen.
 
-This list is based on the manual scores of the Enhancer primary screen.
+This list is based on the manual scores of the Enhancer Primary screen.
+
 '''
 
 
@@ -15,7 +16,7 @@ class Command(NoArgsCommand):
     help = HELP
 
     def handle_noargs(self, **options):
-        secondary_by_worm, secondary_by_clone = get_clones_for_secondary(
+        secondary_by_worm, secondary_by_clone = get_secondary_candidates(
             'ENH', passes_enh_secondary_criteria)
 
         self.stdout.write('Total clones to cherry pick: {}\n'.format(

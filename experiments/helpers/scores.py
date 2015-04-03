@@ -88,9 +88,9 @@ def passes_enh_secondary_criteria(scores):
     return is_positive
 
 
-def get_clones_for_secondary(screen, passes_criteria):
+def get_secondary_candidates(screen, passes_criteria):
     '''
-    Get the list of clones to include in the secondary.
+    Get the list of library wells to include in the secondary.
 
     Returns:
         A 2-tuple of:
