@@ -11,28 +11,20 @@ from worms.models import WormStrain
 STRONG = 'Strong'
 MEDIUM = 'Medium'
 WEAK = 'Weak'
-NEGATIVE = 'Negative'
 OTHER = 'Other'
+NEGATIVE = 'Negative'
 UNSCORED = 'Unscored'
 
-RELEVANCE_PER_REPLICATE = (OTHER, NEGATIVE, WEAK, MEDIUM, STRONG)
-RELEVANCE_ACROSS_REPLICATES = (NEGATIVE, OTHER, UNSCORED, WEAK, MEDIUM, STRONG)
-
-WEIGHTS = {
+SCORE_WEIGHTS = {
     STRONG: 3,
     MEDIUM: 2,
     WEAK: 1,
-    UNSCORED: 0,
     OTHER: 0,
     NEGATIVE: 0,
 }
 
-STRONG_WEIGHT = 4
-MEDIUM_WEIGHT = 3
-WEAK_WEIGHT = 2
-# 1 reserved for unscored
-NEGATIVE_WEIGHT = 0
-OTHER_WEIGHT = -1
+RELEVANCE_PER_REPLICATE = (OTHER, NEGATIVE, WEAK, MEDIUM, STRONG)
+RELEVANCE_ACROSS_REPLICATES = (NEGATIVE, OTHER, UNSCORED, WEAK, MEDIUM, STRONG)
 
 
 class Experiment(models.Model):
@@ -179,24 +171,6 @@ class ManualScore(models.Model):
     def is_other(self):
         return self.score_code.is_other()
 
-    def get_score_weight(self):
-        '''
-        Return a weight used for capturing the most relevant score category
-        for an image. Note that relevance and strength do not always coincide
-        ('negative' is more relevant than 'other', since negative means that it
-        is not a sup/enh whereas other might mean any auxiliary score).
-        '''
-        if self.is_strong():
-            return STRONG_WEIGHT
-        elif self.is_medium():
-            return MEDIUM_WEIGHT
-        elif self.is_weak():
-            return WEAK_WEIGHT
-        elif self.is_negative():
-            return NEGATIVE_WEIGHT
-        else:
-            return OTHER_WEIGHT
-
     def get_category(self):
         if self.is_strong():
             return STRONG
@@ -208,6 +182,15 @@ class ManualScore(models.Model):
             return NEGATIVE
         elif self.is_other():
             return OTHER
+
+    def get_weight(self):
+        '''
+        Return a weight used for capturing the most relevant score category
+        for an image. Note that relevance and strength do not always coincide
+        ('negative' is more relevant than 'other', since negative means that it
+        is not a sup/enh whereas other might mean any auxiliary score).
+        '''
+        return SCORE_WEIGHTS[self.get_category()]
 
     def get_relevance_per_replicate(self):
         return RELEVANCE_PER_REPLICATE.index(self.get_category())

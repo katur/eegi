@@ -5,13 +5,18 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 
 from experiments.forms import SecondaryScoresForm
+from experiments.helpers.scores import (passes_sup_positive_criteria,
+                                        get_average_weight)
 from experiments.models import ManualScore
-from library.helpers import organize_library_wells
-from library.models import LibraryWell
+from library.helpers import get_organized_library_wells
 from worms.models import WormStrain
 
 
 def secondary_scores_search(request):
+    '''
+    Render page to search for secondary scores for a particular mutant.
+
+    '''
     error = ''
     if request.method == 'POST':
         form = SecondaryScoresForm(request.POST)
@@ -67,8 +72,22 @@ def secondary_scores_search(request):
 
 
 def secondary_scores(request, worm, temperature):
+    '''
+    Render page displaying the secondary scores for a particular worm,
+    sorted with positives on top.
+
+    '''
     worm = get_object_or_404(WormStrain, pk=worm)
     screen = worm.get_screen_category(temperature)
+
+    # Store LibraryWells in a fast lookup dictionary.
+    #
+    # TODO: I do this because I have not figured out how to easily translate
+    # raw SQL output including a JOIN into multiple Django objects, in order
+    # to execute a single query between Experiment (plate-level),
+    # ManualScore (well-level), and LibraryWell (well-level).
+    # Should figure out a way to do this faster.
+    w = get_organized_library_wells(2)
 
     # Fetch the non-junk secondary scores for this worm and temperature,
     # prefetching corresponding ScoreCode and LibraryPlate for faster lookup
@@ -82,18 +101,6 @@ def secondary_scores(request, worm, temperature):
               .prefetch_related('experiment__library_plate')
               .order_by('-experiment__id', 'well'))
 
-    # Store LibraryWells in a fast lookup dictionary.
-    #
-    # TODO: I do this because I have not figured out how to easily translate
-    # raw SQL output including a JOIN into multiple Django objects, in order
-    # to execute a single query between Experiment (plate-level),
-    # ManualScore (well-level), and LibraryWell (well-level).
-    # Should figure out a way to do this faster.
-    library_wells = (LibraryWell.objects.filter(
-                     Q(plate__in=scores.values('experiment__library_plate')
-                       .distinct())))
-    w = organize_library_wells(library_wells)
-
     # Organize the scores into s[library_well][experiment] = score
     s = {}
     for score in scores:
@@ -103,54 +110,23 @@ def secondary_scores(request, worm, temperature):
         if library_well not in s:
             s[library_well] = OrderedDict()
 
-        weight = score.get_score_weight()
-
         if (experiment not in s[library_well] or
-                s[library_well][experiment].get_score_weight() < weight):
+                s[library_well][experiment].get_relevance_per_replicate() <
+                score.get_relevance_per_replicate()):
             s[library_well][experiment] = score
-
-    def passes_criteria(scores):
-        total = len(scores)
-        present = 0
-        maybe = 0
-        for score in scores:
-            if score.is_strong() or score.is_medium():
-                present += 1
-            elif score.is_weak():
-                maybe += 1
-
-        if ((present / total) >= .375 or
-                ((present + maybe) / total) >= .5):
-            return True
-
-        return False
 
     num_passes = 0
     num_experiment_columns = 0
     for well, expts in s.iteritems():
         scores = expts.values()
+        well.avg = get_average_weight(scores)
 
-        # TODO: below will be better once fix weights to reflect the 0-3 scale
-        # well.avg =
-        # sum(x.get_score_weight() for x in scores) / float(len(expts))
-
-        total_weight = 0
-        for score in scores:
-            weight = score.get_score_weight()
-            if weight >= 2:
-                weight -= 1
-            if weight < 0:
-                weight = 0
-            total_weight += weight
-        well.avg = total_weight / float(len(expts))
-
-        well.passes_criteria = passes_criteria(scores)
+        well.passes_criteria = passes_sup_positive_criteria(scores)
         if well.passes_criteria:
             num_passes += 1
         if len(expts) > num_experiment_columns:
             num_experiment_columns = len(expts)
 
-    # Sort by highest average
     s = OrderedDict(sorted(s.iteritems(),
                            key=lambda x: (x[0].passes_criteria, x[0].avg),
                            reverse=True))

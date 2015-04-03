@@ -3,7 +3,7 @@ from library.models import LibraryWell
 
 def get_organized_library_wells(screen_level=None):
     '''
-    Get library wells organized as:
+    Fetch all library wells, organized as:
 
         l[library_plate][well] = library_well
 
@@ -21,6 +21,11 @@ def get_organized_library_wells(screen_level=None):
 
 
 def organize_library_wells(library_wells):
+    '''
+    Organize library_wells into:
+        l[library_plate][well] = library_well
+
+    '''
     l = {}
     for library_well in library_wells:
         plate = library_well.plate
