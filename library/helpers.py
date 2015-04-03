@@ -1,5 +1,12 @@
 from library.models import LibraryWell, LibrarySequencingBlatResult
 
+NO_BLAT = 'intended clone, no BLAT results (bad)'
+NO_MATCH = 'intended clone, does not match BLAT results (bad)'
+L4440_BLAT = 'L4440 with BLAT results (bad)'
+L4440_NO_BLAT = 'L4440, no BLAT results (good)'
+NO_CLONE_BLAT = 'no intended clone with BLAT results (bad)'
+NO_CLONE_NO_BLAT = 'no intended clone, no BLAT results (good)'
+
 
 def get_organized_library_wells(screen_level=None):
     '''
@@ -57,14 +64,6 @@ def get_organized_blat_results():
 
 
 def categorize_sequences_by_blat_results(seqs):
-    # Define categories for organizing results
-    NO_BLAT = 'intended clone, but no BLAT results (bad)'
-    NO_MATCH = 'intended clone does not match BLAT results (bad)'
-    L4440_BLAT = 'L4440 with BLAT results (bad)'
-    L4440_NO_BLAT = 'L4440, no BLAT results (good)'
-    NO_CLONE_BLAT = 'no intended clone with BLAT results (bad)'
-    NO_CLONE_NO_BLAT = 'no intended clone, no BLAT results (good)'
-
     s = {
         L4440_NO_BLAT: [],
         NO_CLONE_NO_BLAT: [],
@@ -111,6 +110,18 @@ def categorize_sequences_by_blat_results(seqs):
                     s[rank].append(seq)
 
     return s
+
+
+def get_wells_to_resequence(s):
+    wells_to_resequence = []
+
+    for key in s:
+        if ((isinstance(key, int) and key > 1) or
+                key == NO_BLAT or key == NO_MATCH):
+            wells_to_resequence.extend(
+                [x.source_library_well for x in s[key]])
+
+    return sorted(wells_to_resequence)
 
 
 def get_match(blat_results, intended_clone):

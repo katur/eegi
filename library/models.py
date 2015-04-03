@@ -72,6 +72,9 @@ class LibraryWell(models.Model):
         db_table = 'LibraryWell'
         ordering = ['id']
 
+    def __cmp__(self, other):
+        return cmp(self.id, other.id)
+
     def __unicode__(self):
         return '{} (intended clone: {})'.format(self.id,
                                                 str(self.intended_clone))
