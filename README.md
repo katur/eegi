@@ -39,7 +39,7 @@ is a the same schema view as a pdf.
 
 Notes on migrating the data from the old database
 (`GenomeWideGI` on pleiades)
-are in [README_database_migration.md](README_database_migration.md).
+are in [README_database_migration.md](dbmigration/README_database_migration.md).
 
 
 ## Apps
