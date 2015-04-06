@@ -29,8 +29,7 @@ class Command(NoArgsCommand):
                 'Category {}:\n'
                 '\t{} total\n'
                 '\t\t{} "decent"\n'
-                '\t\t{} average CRL\n'
-                '\t\t{} average quality score\n\n'
+                '\t\t{} avg CRL, {} avg quality score\n\n'
                 .format(category,
                         len(seqs),
                         get_number_decent_quality(seqs),
