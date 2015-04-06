@@ -4,6 +4,7 @@ from collections import OrderedDict
 from django.db.models import Count
 
 from experiments.models import ManualScore, Experiment
+from experiments.helpers.criteria import passes_sup_positive_criteria
 from library.helpers import get_organized_library_wells
 from library.models import LibraryPlate
 from worms.models import WormStrain
@@ -41,51 +42,6 @@ def sort_scores_by_relevance_across_replicates(scores):
     return sorted(scores,
                   key=lambda x: x.get_relevance_across_replicates(),
                   reverse=True)
-
-
-def passes_sup_positive_criteria(scores):
-    '''
-    Determine if a set of countable secondary scores (i.e., one most relevant
-    score per secondary replicate) passes the criteria to make it a
-    positive.
-
-    '''
-    total = len(scores)
-    present = 0
-    maybe = 0
-    for score in scores:
-        if score.is_strong() or score.is_medium():
-            present += 1
-        elif score.is_weak():
-            maybe += 1
-
-    if ((present / total) >= .375 or
-            ((present + maybe) / total) >= .5):
-        return True
-
-    return False
-
-
-def passes_enh_secondary_criteria(scores):
-    '''
-    Determine if a set of countable primary scores (i.e., one most relevant
-    score per primary replicate) passes the criteria to make it into
-    the Enhancer secondary screen.
-
-    '''
-    is_positive = False
-    num_weaks = 0
-    for score in scores:
-        if score.is_strong() or score.is_medium():
-            is_positive = True
-            break
-        if score.is_weak():
-            num_weaks += 1
-
-    if num_weaks >= 2:
-        is_positive = True
-
-    return is_positive
 
 
 def get_secondary_candidates(screen, passes_criteria):

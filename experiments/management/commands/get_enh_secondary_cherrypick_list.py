@@ -1,7 +1,7 @@
 from django.core.management.base import NoArgsCommand
 
-from experiments.helpers.scores import (get_secondary_candidates,
-                                        passes_enh_secondary_criteria)
+from experiments.helpers.scores import get_secondary_candidates
+from experiments.helpers.criteria import passes_enh_secondary_criteria
 
 
 HELP = '''
