@@ -45,7 +45,14 @@
       {% endif %}
       </td>
 
-      <td>{{ well.passes_criteria }}</td>
+      <td class="
+        {% if well.passes_criteria %}
+          success-message
+        {% else %}
+          error-message
+        {% endif %}"
+        >{{ well.passes_criteria }}
+      </td>
       <td>{{ well.avg }}</td>
 
       {% for experiment, score in experiments.items %}
