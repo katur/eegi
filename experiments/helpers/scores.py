@@ -196,8 +196,7 @@ def get_secondary_candidates(screen, passes_criteria):
     return (candidates_by_worm, candidates_by_clone)
 
 
-def get_library_wells_that_pass_score_criteria(screen, screen_level,
-                                               passes_criteria):
+def get_positives_across_all_worms(screen, screen_level, passes_criteria):
     if screen != 'SUP' and screen != 'ENH':
         raise Exception('screen must be SUP or ENH')
 
@@ -210,6 +209,25 @@ def get_library_wells_that_pass_score_criteria(screen, screen_level,
             scores = expts.values()
             if passes_criteria(scores):
                 passing_library_wells.add(well)
+
+    return passing_library_wells
+
+
+def get_positives_specific_worm(worm, screen, screen_level, passes_criteria):
+    if screen != 'SUP' and screen != 'ENH':
+        raise Exception('screen must be SUP or ENH')
+
+    s = get_organized_scores_specific_worm(worm, screen,
+                                           screen_level=screen_level,
+                                           most_relevant_only=True)
+    passing_library_wells = set()
+
+    for well, expts in s.iteritems():
+        scores = expts.values()
+        if passes_criteria(scores):
+            well.scores = scores
+            well.avg = get_average_score_weight(scores)
+            passing_library_wells.add(well)
 
     return passing_library_wells
 

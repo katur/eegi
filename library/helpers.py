@@ -112,18 +112,6 @@ def categorize_sequences_by_blat_results(seqs):
     return s
 
 
-def get_wells_to_resequence(s):
-    wells_to_resequence = []
-
-    for key in s:
-        if ((isinstance(key, int) and key > 1) or
-                key == NO_BLAT or key == NO_MATCH):
-            wells_to_resequence.extend(
-                [x.source_library_well for x in s[key]])
-
-    return sorted(wells_to_resequence)
-
-
 def get_match(blat_results, intended_clone):
     for x in blat_results:
         if x.clone_hit == intended_clone:

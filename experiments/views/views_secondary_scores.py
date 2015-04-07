@@ -5,8 +5,8 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 
 from experiments.forms import SecondaryScoresForm
-from experiments.helpers.scores import (passes_sup_positive_criteria,
-                                        get_average_score_weight,
+from experiments.helpers.criteria import passes_sup_positive_criteria
+from experiments.helpers.scores import (get_average_score_weight,
                                         get_organized_scores_specific_worm)
 from worms.models import WormStrain
 
