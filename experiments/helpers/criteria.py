@@ -24,6 +24,19 @@ def passes_sup_positive_criteria(scores):
     return False
 
 
+def passes_sup_high_confidence_criteria(scores):
+    total = len(scores)
+    present = 0
+    for score in scores:
+        if score.is_strong() or score.is_medium():
+            present += 1
+
+    if (present / total) >= .375:
+        return True
+
+    return False
+
+
 def passes_enh_secondary_criteria(scores):
     '''
     Determine if a set of countable primary scores (i.e., one most relevant

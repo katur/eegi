@@ -1,6 +1,10 @@
 from django.core.management.base import NoArgsCommand
 
-from experiments.helpers.scores import get_sup_secondary_positive_library_wells
+from experiments.helpers.scores import (
+    get_library_wells_that_pass_score_criteria)
+from experiments.helpers.criteria import (
+    passes_sup_positive_criteria,
+    passes_sup_high_confidence_criteria)
 from library.models import LibrarySequencing
 from library.helpers import (categorize_sequences_by_blat_results,
                              get_avg_crl,
@@ -45,10 +49,17 @@ class Command(NoArgsCommand):
         s_all = categorize_sequences_by_blat_results(seqs_all)
         self.print_categories('ALL SEQUENCES', s_all)
 
-        positives = get_sup_secondary_positive_library_wells()
+        positives = get_library_wells_that_pass_score_criteria(
+            'SUP', 2, passes_sup_positive_criteria)
         seqs_pos = seq_starter.filter(source_library_well__in=positives)
         s_pos = categorize_sequences_by_blat_results(seqs_pos)
         self.print_categories('POSITIVES ONLY', s_pos)
+
+        high_confidence = get_library_wells_that_pass_score_criteria(
+            'SUP', 2, passes_sup_high_confidence_criteria)
+        seqs_high = seq_starter.filter(source_library_well__in=high_confidence)
+        s_high = categorize_sequences_by_blat_results(seqs_high)
+        self.print_categories('HIGH CONFIDENCE', s_high)
 
         reseq_wells = get_wells_to_resequence(s_pos)
         self.stdout.write('{} wells to resequence:\n'.format(len(reseq_wells)))

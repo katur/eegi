@@ -4,7 +4,6 @@ from collections import OrderedDict
 from django.db.models import Count
 
 from experiments.models import ManualScore, Experiment
-from experiments.helpers.criteria import passes_sup_positive_criteria
 from library.helpers import get_organized_library_wells
 from library.models import LibraryPlate
 from worms.models import WormStrain
@@ -12,7 +11,7 @@ from worms.models import WormStrain
 
 def get_average_score_weight(scores):
     '''
-    Get the average weight of scores
+    Get the average weight of scores.
 
     '''
     total_weight = 0
@@ -42,55 +41,6 @@ def sort_scores_by_relevance_across_replicates(scores):
     return sorted(scores,
                   key=lambda x: x.get_relevance_across_replicates(),
                   reverse=True)
-
-
-def get_secondary_candidates(screen, passes_criteria):
-    '''
-    Get the list of library wells to include in the secondary.
-
-    Returns:
-        A 2-tuple of:
-            1) a dictionary of the clones organized by worm
-            2) a dictionary of the clones organized by clone
-        These two dictionaries can then be used to organize the clones into
-        plates, including any universal plates.
-
-    Args:
-        screen: Either 'ENH' or 'SUP'.
-
-        criteria: A function that determines the criteria for a library well
-            making it into the secondary. This function takes a list of
-            scores, where each score should be the most relevant score
-            for a particular replicate. It should return True if the list
-            of countable scores passes the criteria, or False otherwise.
-
-    '''
-    # Get all primary scores for the particular screen
-    s = get_organized_scores_all_worms(screen, 1)
-
-    # TODO: deal with cases of only one replicated tested
-
-    candidates_by_worm = {}
-    candidates_by_clone = {}
-
-    for worm, library_wells in s.iteritems():
-        for library_well, experiments in library_wells.iteritems():
-            for experiment, scores in experiments.iteritems():
-                # Replace all scores for this experiment with the most
-                # relevant score only.
-                score = get_most_relevant_score_per_replicate(scores)
-                s[worm][library_well][experiment] = score
-
-            if passes_criteria(experiments.values()):
-                if worm not in candidates_by_worm:
-                    candidates_by_worm[worm] = []
-                candidates_by_worm[worm].append(library_well)
-
-                if library_well not in candidates_by_clone:
-                    candidates_by_clone[library_well] = []
-                candidates_by_clone[library_well].append(worm)
-
-    return (candidates_by_worm, candidates_by_clone)
 
 
 def get_organized_scores_all_worms(screen, screen_level,
@@ -197,23 +147,71 @@ def organize_scores(scores, library_wells, most_relevant_only=False):
     return s
 
 
-def get_sup_secondary_positive_library_wells():
+def get_secondary_candidates(screen, passes_criteria):
     '''
-    Get the set of library wells that are positive for any worm
-    in the Suppressor Secondary screen.
+    Get the list of library wells to include in the secondary.
+
+    Returns:
+        A 2-tuple of:
+            1) a dictionary of the clones organized by worm
+            2) a dictionary of the clones organized by clone
+        These two dictionaries can then be used to organize the clones into
+        plates, including any universal plates.
+
+    Args:
+        screen: Either 'ENH' or 'SUP'.
+
+        criteria: A function that determines the criteria for a library well
+            making it into the secondary. This function takes a list of
+            scores, where each score should be the most relevant score
+            for a particular replicate. It should return True if the list
+            of countable scores passes the criteria, or False otherwise.
 
     '''
-    s = get_organized_scores_all_worms('SUP', screen_level=2,
+    # Get all primary scores for the particular screen
+    s = get_organized_scores_all_worms(screen, 1)
+
+    # TODO: deal with cases of only one replicated tested
+
+    candidates_by_worm = {}
+    candidates_by_clone = {}
+
+    for worm, library_wells in s.iteritems():
+        for library_well, experiments in library_wells.iteritems():
+            for experiment, scores in experiments.iteritems():
+                # Replace all scores for this experiment with the most
+                # relevant score only.
+                score = get_most_relevant_score_per_replicate(scores)
+                s[worm][library_well][experiment] = score
+
+            if passes_criteria(experiments.values()):
+                if worm not in candidates_by_worm:
+                    candidates_by_worm[worm] = []
+                candidates_by_worm[worm].append(library_well)
+
+                if library_well not in candidates_by_clone:
+                    candidates_by_clone[library_well] = []
+                candidates_by_clone[library_well].append(worm)
+
+    return (candidates_by_worm, candidates_by_clone)
+
+
+def get_library_wells_that_pass_score_criteria(screen, screen_level,
+                                               passes_criteria):
+    if screen != 'SUP' and screen != 'ENH':
+        raise Exception('screen must be SUP or ENH')
+
+    s = get_organized_scores_all_worms(screen, screen_level=screen_level,
                                        most_relevant_only=True)
-    positive_library_wells = set()
+    passing_library_wells = set()
 
     for worm, wells in s.iteritems():
         for well, expts in wells.iteritems():
             scores = expts.values()
-            if passes_sup_positive_criteria(scores):
-                positive_library_wells.add(well)
+            if passes_criteria(scores):
+                passing_library_wells.add(well)
 
-    return positive_library_wells
+    return passing_library_wells
 
 
 def get_primary_single_replicate_experiments():

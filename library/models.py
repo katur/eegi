@@ -66,6 +66,9 @@ class LibraryWell(models.Model):
     plate = models.ForeignKey(LibraryPlate, related_name='wells')
     well = models.CharField(max_length=3)
     intended_clone = models.ForeignKey(Clone, null=True, blank=True)
+    sequence_verified_clone = models.ForeignKey(Clone, default=None,
+                                                null=True, blank=True,
+                                                related_name='seq_clone')
     parent_library_well = models.ForeignKey('self', null=True, blank=True)
 
     class Meta:
