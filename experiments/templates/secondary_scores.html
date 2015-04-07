@@ -12,6 +12,9 @@
 {{ s|length }} total library well{{ s|length|pluralize}}
 <br>
 {{ num_passes }} pass{{ num_passes|pluralize:"es," }} criteria
+<br>
+{{ num_passes_stringent }} pass{{ num_passes_stringent|pluralize:"es," }}
+stringent criteria
 <table class="grayscale striped nice-padding">
   <thead>
     <tr>
@@ -22,6 +25,7 @@
       <th>Intended Clone</th>
       <th>Double Knockdown</th>
       <th>Passes Criteria?</th>
+      <th>Passes Stringent Criteria?</th>
       <th>Average Score</th>
       <th colspan="{{ num_experiment_columns }}">Scores</th>
     </tr>
@@ -53,6 +57,15 @@
         {% endif %}"
         >{{ well.passes_criteria }}
       </td>
+      <td class="
+        {% if well.passes_stringent_criteria %}
+          success-message
+        {% else %}
+          error-message
+        {% endif %}"
+        >{{ well.passes_stringent_criteria }}
+      </td>
+
       <td>{{ well.avg }}</td>
 
       {% for experiment, score in experiments.items %}

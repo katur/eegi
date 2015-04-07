@@ -5,7 +5,8 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 
 from experiments.forms import SecondaryScoresForm
-from experiments.helpers.criteria import passes_sup_positive_criteria
+from experiments.helpers.criteria import (
+    passes_sup_positive_criteria, passes_sup_high_confidence_criteria)
 from experiments.helpers.scores import (get_average_score_weight,
                                         get_organized_scores_specific_worm)
 from worms.models import WormStrain
@@ -26,20 +27,29 @@ def secondary_scores(request, worm, temperature):
                                            most_relevant_only=True)
 
     num_passes = 0
+    num_passes_stringent = 0
     num_experiment_columns = 0
     for well, expts in s.iteritems():
         scores = expts.values()
         well.avg = get_average_score_weight(scores)
 
         well.passes_criteria = passes_sup_positive_criteria(scores)
+        well.passes_stringent_criteria = passes_sup_high_confidence_criteria(
+            scores)
         if well.passes_criteria:
             num_passes += 1
+
+        if well.passes_stringent_criteria:
+            num_passes_stringent += 1
 
         if len(expts) > num_experiment_columns:
             num_experiment_columns = len(expts)
 
     s = OrderedDict(sorted(s.iteritems(),
-                           key=lambda x: (x[0].passes_criteria, x[0].avg),
+                           key=lambda x: (
+                               x[0].passes_stringent_criteria,
+                               x[0].passes_criteria,
+                               x[0].avg),
                            reverse=True))
 
     context = {
@@ -49,6 +59,7 @@ def secondary_scores(request, worm, temperature):
         's': s,
         'num_wells': len(s),
         'num_passes': num_passes,
+        'num_passes_stringent': num_passes_stringent,
         'num_experiment_columns': num_experiment_columns,
     }
 
