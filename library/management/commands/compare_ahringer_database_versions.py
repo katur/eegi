@@ -6,14 +6,19 @@ from django.core.management.base import BaseCommand, CommandError
 from clones.models import Clone
 
 HELP = '''
-Compare the Ahringer library as listed in the database (which was derived from
-Huey-Ling's version in GenomeWideGI), to that currently listed online
-at Source BioScience.
+Get some quick stats comparing the Ahringer library as listed in the database
+to another version.
 
-The input file should be copied from this Source BioScience webpage:
+Currently, this is useful for comparing the library as listed in the database
+(currently derived from Huey-Ling's version in GenomeWideGI)
+to that currently listed online at Source BioScience:
 
-http://www.lifesciences.sourcebioscience.com/clone-products/non-mammalian/
-    c-elegans/c-elegans-rnai-library/celegans-database/
+    http://www.lifesciences.sourcebioscience.com/clone-products/non-mammalian/
+        c-elegans/c-elegans-rnai-library/celegans-database/
+
+The input_file is currently at:
+
+    materials/ahringer_plates/sourcebioscience_c_elegans_database
 
 '''
 
@@ -53,11 +58,11 @@ class Command(BaseCommand):
         ahringer_online_only = ahringer_online.difference(ahringer_db)
         ahringer_db_only = ahringer_db.difference(ahringer_online)
 
-        self.stdout.write('{} sjj clones listed online\n'
-                          '{} sjj clones in database\n'
-                          '{} sjj clones online ONLY\n'
+        self.stdout.write('{} sjj clones in database\n'
+                          '{} sjj clones in input_file\n'
                           '{} sjj clones in database ONLY\n'
-                          .format(len(ahringer_online),
-                                  len(ahringer_db),
-                                  len(ahringer_online_only),
-                                  len(ahringer_db_only)))
+                          '{} sjj clones in input_file ONLY\n'
+                          .format(len(ahringer_db),
+                                  len(ahringer_online),
+                                  len(ahringer_db_only),
+                                  len(ahringer_online_only)))
