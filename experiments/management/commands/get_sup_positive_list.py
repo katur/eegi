@@ -60,9 +60,9 @@ class Command(NoArgsCommand):
             num_interactions_by_clone += len(pos_verified_clones)
             w[worm] = pos_verified_clones
 
-        self.stdout.write('{} library wells both positive and verified; '
-                          '{} when calculated across worm strains '
-                          '(should be equal)'
+        self.stdout.write('{} library wells both positive and verified '
+                          '({} when calculated across worm strains; '
+                          'should be equal)'
                           .format(len(verified), len(verified_doublecheck)))
 
         self.stdout.write('{} interactions by well\n'
