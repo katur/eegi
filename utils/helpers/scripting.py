@@ -5,7 +5,7 @@ def require_db_write_acknowledgement():
     proceed = False
 
     while not proceed:
-        sys.stdout.write('This script modifies the database. '
+        sys.stdout.write('This script may modify the database. '
                          'Proceed? (yes/no): ')
         response = raw_input()
         if response == 'no':
