@@ -44,6 +44,7 @@ Output:
 
     Stderr reports every change (such as an added row), and thus can get
         quite long; consider redirecting with 2> stderr.out.
+
 '''
 
 
