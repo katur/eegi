@@ -1,5 +1,3 @@
-import time
-
 from django.core.management.base import NoArgsCommand
 
 from experiments.helpers.scores import get_positives_specific_worm
@@ -20,7 +18,6 @@ class Command(NoArgsCommand):
     help = HELP
 
     def handle_noargs(self, **options):
-        start = time.time()
         # Get and categorize the sequences corresponding to high confidence
         # positives
         seqs = (LibrarySequencing.objects
@@ -79,6 +76,3 @@ class Command(NoArgsCommand):
         for worm in sorted(w):
             for clone in sorted(w[worm]):
                 self.stdout.write('{},{}'.format(worm.gene, clone))
-
-        end = time.time()
-        self.stdout.write(str(end - start))
