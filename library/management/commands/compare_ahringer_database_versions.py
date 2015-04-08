@@ -16,7 +16,7 @@ to that currently listed online at Source BioScience:
     http://www.lifesciences.sourcebioscience.com/clone-products/non-mammalian/
         c-elegans/c-elegans-rnai-library/celegans-database/
 
-The input_file is currently at:
+The input_file (copied/pasted from the aforementioned link) is currently at:
 
     materials/ahringer_plates/sourcebioscience_c_elegans_database
 
