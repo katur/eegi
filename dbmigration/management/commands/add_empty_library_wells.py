@@ -13,11 +13,15 @@ from utils.helpers.well_tile_conversion import (
 HELP = '''
 Add empty library wells (i.e., wells without intended clones) to the database.
 
+These empty library wells are not added while syncing with the legacy database,
+because the legacy database does not include empty wells.
+
 It is useful to have empty wells represented in the database, if with no
 intended clone. This is because these wells are still photographed,
 and there are cases where despite there being no intended clone according
 to the library creator, we do have bacteria that grows in the well,
 whose identity can be resolved through sequencing.
+
 '''
 
 
