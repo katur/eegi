@@ -110,8 +110,8 @@ class Command(NoArgsCommand):
                           .format(num_interactions_by_well,
                                   num_interactions_by_clone))
 
-        for worm in w:
-            self.stdout.write('{}: {}'.format(worm, len(w[worm])))
+        for worm in sorted(w):
+            self.stdout.write('{}: {}'.format(worm.gene, len(w[worm])))
 
         for worm in sorted(w):
             for clone in sorted(w[worm]):
