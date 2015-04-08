@@ -29,10 +29,9 @@ class Command(NoArgsCommand):
         seqs_blat = categorize_sequences_by_blat_results(seqs)
 
         reseq_wells = get_wells_to_resequence(seqs_blat)
-        self.stdout.write('{} wells to resequence\n\n'
-                          .format(len(reseq_wells)))
-        for reseq_well in reseq_wells:
-            self.stdout.write('{}\n'.format(reseq_well))
+        for i, reseq_well in enumerate(reseq_wells):
+            self.stdout.write('{},{},{}\n'.format(i+1, reseq_well.plate,
+                                                  reseq_well.well))
 
 
 def get_wells_to_resequence(s):
