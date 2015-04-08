@@ -9,9 +9,16 @@ from library.models import LibrarySequencing, LibrarySequencingBlatResult
 from utils.helpers.scripting import require_db_write_acknowledgement
 
 HELP = '''
-Migrate the BLAT hits of our sequencing results to the database.
+Import the BLAT hits of our sequencing results to the database.
 
-The input file is the csv provided by Firoz.
+This script starts by clearing the LibrarySequencingBlatResult table.
+It is okay to do this because no other tables depend on
+LibrarySequencingBlatResult.
+
+The input_file is the csv provided by Firoz. It is currently at:
+
+    materials/sequencing/blat_results_from_firoz/BLAT_RES_eegi_seq3_all_ranking.txt
+
 '''
 
 
