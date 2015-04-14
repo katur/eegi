@@ -1,7 +1,8 @@
 from django.core.management.base import NoArgsCommand
 
 from experiments.helpers.scores import get_positives_across_all_worms
-from experiments.helpers.criteria import passes_sup_positive_criteria
+from experiments.helpers.criteria import (
+    passes_sup_positive_percentage_criteria)
 from library.helpers import (categorize_sequences_by_blat_results,
                              NO_BLAT, NO_MATCH)
 from library.models import LibrarySequencing
@@ -21,7 +22,7 @@ class Command(NoArgsCommand):
 
     def handle_noargs(self, **options):
         positives = get_positives_across_all_worms(
-            'SUP', 2, passes_sup_positive_criteria)
+            'SUP', 2, passes_sup_positive_percentage_criteria)
         seqs = (LibrarySequencing.objects
                 .filter(source_library_well__in=positives)
                 .select_related('source_library_well',

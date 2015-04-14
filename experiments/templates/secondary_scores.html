@@ -11,10 +11,18 @@
 
 {{ s|length }} total library well{{ s|length|pluralize}}
 <br>
-{{ num_passes }} pass{{ num_passes|pluralize:"es," }} criteria
-<br>
 {{ num_passes_stringent }} pass{{ num_passes_stringent|pluralize:"es," }}
-stringent criteria
+criteria A (stringent):
+0.375 m/s
+<br>
+{{ num_passes_percentage }} pass{{ num_passes_percentage|pluralize:"es," }}
+criteria B (percentage-based):
+0.375 m/s OR 0.625 w/m/s OR 0.5 w/m/s with at least one m/s
+<br>
+{{ num_passes_count }} pass{{ num_passes_count|pluralize:"es," }}
+critera C (count-based):
+3 m/s OR 4 w/m/s
+
 <table class="grayscale striped nice-padding">
   <thead>
     <tr>
@@ -24,8 +32,9 @@ stringent criteria
       <th>Library Well</th>
       <th>Intended Clone</th>
       <th>Double Knockdown</th>
-      <th>Passes Criteria?</th>
-      <th>Passes Stringent Criteria?</th>
+      <th>Passes Criteria A?</th>
+      <th>Passes Criteria B?</th>
+      <th>Passes Criteria C?</th>
       <th>Average Score</th>
       <th colspan="{{ num_experiment_columns }}">Scores</th>
     </tr>
@@ -50,23 +59,33 @@ stringent criteria
       </td>
 
       <td class="
-        {% if well.passes_criteria %}
+        {% if well.passes_stringent %}
           success-message
         {% else %}
           error-message
         {% endif %}"
-        >{{ well.passes_criteria }}
-      </td>
-      <td class="
-        {% if well.passes_stringent_criteria %}
-          success-message
-        {% else %}
-          error-message
-        {% endif %}"
-        >{{ well.passes_stringent_criteria }}
+        >{{ well.passes_stringent }}
       </td>
 
-      <td>{{ well.avg }}</td>
+      <td class="
+        {% if well.passes_percentage %}
+          success-message
+        {% else %}
+          error-message
+        {% endif %}"
+        >{{ well.passes_percentage }}
+      </td>
+
+      <td class="
+        {% if well.passes_count %}
+          success-message
+        {% else %}
+          error-message
+        {% endif %}"
+        >{{ well.passes_count }}
+      </td>
+
+      <td>{{ well.avg|floatformat }}</td>
 
       {% for experiment, score in experiments.items %}
       <td>

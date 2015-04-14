@@ -20,8 +20,10 @@ the enhancer secondary. The number is not exact, for several reasons:
     AND S1.well = S2.well
     AND E1.worm_strain_id = E2.worm_strain_id
     AND E1.is_junk = 0 AND E2.is_junk = 0
-    AND ((S1.score_code_id=12 AND S2.score_code_id=12) OR (S1.score_code_id=16 AND S2.score_code_id=16)
-    OR (S1.score_code_id=12 AND S2.score_code_id=16) OR (S1.score_code_id=16 AND S2.score_code_id=12))
+    AND ((S1.score_code_id=12 AND S2.score_code_id=12)
+    OR (S1.score_code_id=16 AND S2.score_code_id=16)
+    OR (S1.score_code_id=12 AND S2.score_code_id=16)
+    OR (S1.score_code_id=16 AND S2.score_code_id=12))
     GROUP BY E1.worm_strain_id;
 
 
@@ -36,6 +38,8 @@ Get strong or medium enhancer counts by mutant.
     AND E1.id < E2.id
     AND S1.experiment_id = E1.id AND S2.experiment_id = E2.id
     AND S1.well = S2.well
-    AND (S1.score_code_id=13 OR S2.score_code_id=13 OR S1.score_code_id=14 OR S2.score_code_id=14
-    OR S1.score_code_id=17 OR S2.score_code_id=17 OR S1.score_code_id=18 OR S2.score_code_id=18)
+    AND (S1.score_code_id=13 OR S2.score_code_id=13
+    OR S1.score_code_id=14 OR S2.score_code_id=14
+    OR S1.score_code_id=17 OR S2.score_code_id=17
+    OR S1.score_code_id=18 OR S2.score_code_id=18)
     GROUP BY E1.worm_strain_id;

@@ -1,7 +1,7 @@
 from django.core.management.base import NoArgsCommand
 
 from experiments.helpers.scores import get_positives_specific_worm
-from experiments.helpers.criteria import passes_sup_high_confidence_criteria
+from experiments.helpers.criteria import passes_sup_stringent_criteria
 from library.models import LibrarySequencing
 from library.helpers import categorize_sequences_by_blat_results
 from worms.models import WormStrain
@@ -42,7 +42,7 @@ class Command(NoArgsCommand):
         w = {}
         for worm in worms:
             positives = get_positives_specific_worm(
-                worm, 'SUP', 2, passes_sup_high_confidence_criteria)
+                worm, 'SUP', 2, passes_sup_stringent_criteria)
             pos_verified = positives.intersection(verified)
 
             verified_doublecheck.update(pos_verified)
