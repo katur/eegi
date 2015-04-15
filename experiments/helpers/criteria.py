@@ -3,27 +3,30 @@ from __future__ import division
 
 def passes_sup_stringent_criteria(scores):
     total = len(scores)
-    present = 0
+    yes = 0
     for score in scores:
         if score.is_strong() or score.is_medium():
-            present += 1
+            yes += 1
 
-    if (present / total) >= .375:
+    if (yes / total) >= .375:
         return True
 
     return False
 
 
 def passes_sup_positive_count_criteria(scores):
-    present = 0
+    yes = 0
     maybe = 0
     for score in scores:
         if score.is_strong() or score.is_medium():
-            present += 1
+            yes += 1
         elif score.is_weak():
             maybe += 1
 
-    if present >= 3 or (present + maybe) >= 4:
+    if (
+            yes >= 3 or
+            (yes >= 1 and yes + maybe >= 4) or
+            maybe >= 5):
         return True
 
     return False
@@ -37,18 +40,21 @@ def passes_sup_positive_percentage_criteria(scores):
 
     '''
     total = len(scores)
-    present = 0
+    yes = 0
     maybe = 0
     for score in scores:
         if score.is_strong() or score.is_medium():
-            present += 1
+            yes += 1
         elif score.is_weak():
             maybe += 1
 
+    yes = yes / total
+    maybe = maybe / total
+
     if (
-            ((present / total) >= .375) or
-            (((present + maybe) / total) >= .625) or
-            (((present + maybe) / total) >= .5 and present >= 1)):
+            yes >= .375 or
+            (yes >= .125 and yes + maybe >= .5) or
+            maybe >= .625):
         return True
 
     return False
