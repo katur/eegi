@@ -39,14 +39,23 @@ def passes_sup_positive_percentage_criteria(scores):
     positive.
 
     '''
-    total = len(scores)
+    total = 0
     yes = 0
     maybe = 0
     for score in scores:
+        if not score.is_other():
+            total += 1
+
         if score.is_strong() or score.is_medium():
             yes += 1
         elif score.is_weak():
             maybe += 1
+
+    if not total:
+        return False
+
+    if total < 8:
+        return passes_sup_positive_count_criteria(scores)
 
     yes = yes / total
     maybe = maybe / total

@@ -18,7 +18,7 @@ criteria A (stringent):
 {{ num_passes_percentage }} pass{{ num_passes_percentage|pluralize:"es," }}
 criteria B (percentage-based):
 (0.375 m/s) OR (0.5 w/m/s AND 0.125 m/s) OR (0.625 w).
-NOTE: below 8 scorable replicates, becomes count-based.
+NOTE: if < 8 scorable replicates, becomes count-based.
 <br>
 {{ num_passes_count }} pass{{ num_passes_count|pluralize:"es," }}
 criteria C (count-based):

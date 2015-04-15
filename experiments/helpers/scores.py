@@ -14,11 +14,16 @@ def get_average_score_weight(scores):
     Get the average weight of scores.
 
     '''
+    num_countable = 0
     total_weight = 0
     for score in scores:
-        weight = score.get_weight()
-        total_weight += weight
-    return total_weight / len(scores)
+        if not score.is_other():
+            num_countable += 1
+            total_weight += score.get_weight()
+    if num_countable:
+        return total_weight / num_countable
+    else:
+        return 0
 
 
 def get_most_relevant_score_per_replicate(scores):
