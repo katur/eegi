@@ -14,19 +14,24 @@ class ExperimentFilterForm(forms.Form):
     Form for filtering Experiment instances.
     """
     id = forms.IntegerField(required=False,
-                            label='Exact id')
+                            label='Exact id',
+                            help_text='e.g. 32412')
     id__gte = forms.IntegerField(required=False,
                                  label='Min id',
                                  help_text='inclusive')
     id__lte = forms.IntegerField(required=False,
                                  label='Max id',
                                  help_text='inclusive')
-    worm_strain = forms.CharField(required=False)
+    worm_strain = forms.CharField(required=False,
+                                  help_text='e.g. TH48')
     worm_strain__gene = forms.CharField(required=False,
-                                        label='Worm gene')
+                                        label='Worm gene',
+                                        help_text='e.g. mbk-2')
     worm_strain__allele = forms.CharField(required=False,
-                                          label='Worm allele')
-    library_plate = forms.CharField(required=False)
+                                          label='Worm allele',
+                                          help_text='e.g. dd5')
+    library_plate = forms.CharField(required=False,
+                                    help_text='e.g. II-3-B2')
     temperature = forms.DecimalField(required=False,
                                      label='Exact temp',
                                      help_text='number only')
