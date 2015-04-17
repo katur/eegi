@@ -78,7 +78,7 @@ class Experiment(models.Model):
             output = s.get_short_name() + ': '
             for t in d[s]:
                 joined = ', '.join(str(item) for item in d[s][t])
-                output += joined
+                output += str(t) + ': ' + joined + '; '
             people.append(output)
 
         return '; '.join(str(item) for item in people)
