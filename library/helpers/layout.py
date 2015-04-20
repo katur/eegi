@@ -40,6 +40,14 @@ def well_to_tile(well):
     return index_to_tile(index)
 
 
+def tile_to_well(tile):
+    """
+    Convert a tile (e.g. 'Tile000020.bmp') to a well (e.g. 'B05').
+    """
+    index = tile_to_index(tile)
+    return index_to_well(index)
+
+
 def well_to_index(well):
     """
     Convert a well (e.g. 'B05') to a 0-indexed 'snake' position in the plate
@@ -62,33 +70,6 @@ def well_to_index(well):
     return overall_index
 
 
-def index_to_tile(index):
-    """
-    Convert a 0-indexed 'snake' position in the plate (e.g. 19)
-    to a tile (e.g. 'Tile000020.bmp').
-    """
-    return 'Tile0000{}.bmp'.format(str(index + 1).zfill(2))
-
-
-def tile_to_well(tile):
-    """
-    Convert a tile (e.g. 'Tile000020.bmp') to a well (e.g. 'B05').
-    """
-    index = tile_to_index(tile)
-    return index_to_well(index)
-
-
-def tile_to_index(tile):
-    """
-    Convert a tile (e.g. 'Tile000020.bmp') to a 0-indexed 'snake' position
-    in the plate (e.g. 19)
-    """
-    if not re.match('Tile0000\d\d.bmp', tile):
-        raise ValueError('Improper tile string')
-    index = int(tile[8:10]) - 1
-    return index
-
-
 def index_to_well(index):
     """
     Convert a 0-indexed 'snake' position in the plate (e.g. 19)
@@ -104,6 +85,25 @@ def index_to_well(index):
 
     column = position_from_left + 1
     return get_well_name(row, column)
+
+
+def tile_to_index(tile):
+    """
+    Convert a tile (e.g. 'Tile000020.bmp') to a 0-indexed 'snake' position
+    in the plate (e.g. 19)
+    """
+    if not re.match('Tile0000\d\d.bmp', tile):
+        raise ValueError('Improper tile string')
+    index = int(tile[8:10]) - 1
+    return index
+
+
+def index_to_tile(index):
+    """
+    Convert a 0-indexed 'snake' position in the plate (e.g. 19)
+    to a tile (e.g. 'Tile000020.bmp').
+    """
+    return 'Tile0000{}.bmp'.format(str(index + 1).zfill(2))
 
 
 def get_96_grid():
