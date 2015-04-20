@@ -1,14 +1,14 @@
 import re
 from random import randint
 
-ROWS = 'ABCDEFGH'
-BACKWARDS_ROWS = 'BDFH'
-NUMBER_OF_ROWS = len(ROWS)
-NUMBER_OF_COLUMNS = 12
+ROWS_96 = 'ABCDEFGH'
+BACKWARDS_ROWS_96 = 'BDFH'
+NUMBER_OF_ROWS_96 = len(ROWS_96)
+NUMBER_OF_COLS_96 = 12
 
 ROWS_384 = 'ABCDEFGHIJKLMNOP'
 NUMBER_OF_ROWS_384 = len(ROWS_384)
-NUMBER_OF_COLUMNS_384 = 24
+NUMBER_OF_COLS_384 = 24
 
 
 def get_well_name(row, column):
@@ -58,11 +58,11 @@ def well_to_index(well):
     row = well[0]
     column = int(well[1:])
     position_from_left = column - 1
-    assert position_from_left >= 0 and position_from_left < NUMBER_OF_COLUMNS
+    assert position_from_left >= 0 and position_from_left < NUMBER_OF_COLS_96
 
-    min_row_index = (ord(row) - 65) * NUMBER_OF_COLUMNS
-    if row in BACKWARDS_ROWS:
-        index_in_row = NUMBER_OF_COLUMNS - 1 - position_from_left
+    min_row_index = (ord(row) - 65) * NUMBER_OF_COLS_96
+    if row in BACKWARDS_ROWS_96:
+        index_in_row = NUMBER_OF_COLS_96 - 1 - position_from_left
     else:
         index_in_row = position_from_left
 
@@ -75,11 +75,11 @@ def index_to_well(index):
     Convert a 0-indexed 'snake' position in the plate (e.g. 19)
     to a well (e.g. 'B05')
     """
-    row = ROWS[index / NUMBER_OF_COLUMNS]
-    index_in_row = index % NUMBER_OF_COLUMNS
+    row = ROWS_96[index / NUMBER_OF_COLS_96]
+    index_in_row = index % NUMBER_OF_COLS_96
 
-    if row in BACKWARDS_ROWS:
-        position_from_left = NUMBER_OF_COLUMNS - 1 - index_in_row
+    if row in BACKWARDS_ROWS_96:
+        position_from_left = NUMBER_OF_COLS_96 - 1 - index_in_row
     else:
         position_from_left = index_in_row
 
@@ -112,10 +112,10 @@ def get_96_grid():
     where each element is a dictionary containing 'well' name and 'tile' name.
     """
     plate = []
-    for row_index in range(NUMBER_OF_ROWS):
+    for row_index in range(NUMBER_OF_ROWS_96):
         plate.append([])
-        for column_index in range(NUMBER_OF_COLUMNS):
-            row_name = ROWS[row_index]
+        for column_index in range(NUMBER_OF_COLS_96):
+            row_name = ROWS_96[row_index]
             column_name = column_index + 1
             well = get_well_name(row_name, column_name)
             position_info = {
@@ -128,8 +128,8 @@ def get_96_grid():
 
 
 def get_random_96_well():
-    r = ROWS[randint(0, len(ROWS) - 1)]
-    c = randint(1, 12)
+    r = ROWS_96[randint(0, NUMBER_OF_ROWS_96 - 1)]
+    c = randint(1, NUMBER_OF_COLS_96)
     return get_well_name(r, c)
 
 
@@ -157,14 +157,14 @@ def get_96_well_set():
     """
     Get set of all standard 96-plate well names: 'A01', ..., 'H12'
     """
-    return get_well_set(ROWS, range(1, NUMBER_OF_COLUMNS + 1))
+    return get_well_set(ROWS_96, range(1, NUMBER_OF_COLS_96 + 1))
 
 
 def get_384_well_set():
     """
     Get set of all standard 384-plate well names: 'A01', ..., 'P24'
     """
-    return get_well_set(ROWS_384, range(1, NUMBER_OF_COLUMNS_384 + 1))
+    return get_well_set(ROWS_384, range(1, NUMBER_OF_COLS_384 + 1))
 
 
 def get_well_set(rows, columns):
@@ -191,7 +191,7 @@ def get_384_position(child_quadrant, child_position):
         odd_column = False
 
     child_row = child_position[0]
-    child_row_index = ROWS.index(child_row)
+    child_row_index = ROWS_96.index(child_row)
     parent_row_index = child_row_index * 2
     if not odd_row:
         parent_row_index += 1
