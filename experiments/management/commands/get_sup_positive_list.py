@@ -1,9 +1,9 @@
 from django.core.management.base import NoArgsCommand
 
-from experiments.helpers.scores import get_positives_specific_worm
 from experiments.helpers.criteria import passes_sup_stringent_criteria
+from experiments.helpers.scores import get_positives_specific_worm
+from library.helpers.sequencing import categorize_sequences_by_blat_results
 from library.models import LibrarySequencing
-from library.helpers import categorize_sequences_by_blat_results
 from worms.models import WormStrain
 
 HELP = '''

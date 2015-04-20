@@ -1,13 +1,12 @@
 from django.core.management.base import NoArgsCommand
 
-from experiments.helpers.scores import get_positives_across_all_worms
 from experiments.helpers.criteria import (passes_sup_positive_criteria,
                                           passes_sup_high_confidence_criteria)
+from experiments.helpers.scores import get_positives_across_all_worms
+from library.helpers.sequencing import (categorize_sequences_by_blat_results,
+                                        get_avg_crl, get_avg_qs,
+                                        get_number_decent_quality)
 from library.models import LibrarySequencing
-from library.helpers import (categorize_sequences_by_blat_results,
-                             get_avg_crl,
-                             get_avg_qs,
-                             get_number_decent_quality)
 
 HELP = '''
 Print to stdout a categorized summary of our sequencing results, according to

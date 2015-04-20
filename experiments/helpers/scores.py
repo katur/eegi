@@ -4,7 +4,7 @@ from collections import OrderedDict
 from django.db.models import Count
 
 from experiments.models import ManualScore, Experiment
-from library.helpers import get_organized_library_wells
+from library.helpers.basic import get_organized_library_wells
 from library.models import LibraryPlate
 from worms.models import WormStrain
 

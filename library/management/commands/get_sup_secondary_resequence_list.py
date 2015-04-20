@@ -1,10 +1,10 @@
 from django.core.management.base import NoArgsCommand
 
-from experiments.helpers.scores import get_positives_across_all_worms
 from experiments.helpers.criteria import (
     passes_sup_positive_percentage_criteria)
-from library.helpers import (categorize_sequences_by_blat_results,
-                             NO_BLAT, NO_MATCH)
+from experiments.helpers.scores import get_positives_across_all_worms
+from library.helpers.sequencing import (categorize_sequences_by_blat_results,
+                                        NO_BLAT, NO_MATCH)
 from library.models import LibrarySequencing
 
 HELP = '''

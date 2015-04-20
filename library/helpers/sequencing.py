@@ -1,4 +1,4 @@
-from library.models import LibraryWell, LibrarySequencingBlatResult
+from library.models import LibrarySequencingBlatResult
 
 NO_BLAT = 'intended clone, no BLAT results (bad)'
 NO_MATCH = 'intended clone, does not match BLAT results (bad)'
@@ -6,42 +6,6 @@ L4440_BLAT = 'L4440 with BLAT results (bad)'
 L4440_NO_BLAT = 'L4440, no BLAT results (good)'
 NO_CLONE_BLAT = 'no intended clone with BLAT results (bad)'
 NO_CLONE_NO_BLAT = 'no intended clone, no BLAT results (good)'
-
-
-def get_organized_library_wells(screen_level=None):
-    '''
-    Fetch all library wells, organized as:
-
-        l[library_plate][well] = library_well
-
-    Optionally provide a screen_level, to limit to the Primary or Secondary
-    screen.
-
-    '''
-    wells = LibraryWell.objects.select_related('plate')
-    if screen_level:
-        wells = wells.filter(plate__screen_stage=screen_level)
-    else:
-        wells = wells.all()
-
-    return organize_library_wells(wells)
-
-
-def organize_library_wells(library_wells):
-    '''
-    Organize library_wells into:
-        l[library_plate][well] = library_well
-
-    '''
-    l = {}
-    for library_well in library_wells:
-        plate = library_well.plate
-        well = library_well.well
-        if plate not in l:
-            l[plate] = {}
-        l[plate][well] = library_well
-
-    return l
 
 
 def get_organized_blat_results():
