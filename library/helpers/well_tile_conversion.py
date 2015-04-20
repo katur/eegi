@@ -1,4 +1,5 @@
 import re
+from random import randint
 
 ROWS = 'ABCDEFGH'
 BACKWARDS_ROWS = 'BDFH'
@@ -10,7 +11,7 @@ NUMBER_OF_ROWS_384 = len(ROWS_384)
 NUMBER_OF_COLUMNS_384 = 24
 
 
-def get_well_name(row_name, column_name):
+def get_well_name(row, column):
     """
     Get well name (e.g. 'A05') from a row (e.g. 'A') and a column (e.g. 4).
 
@@ -18,7 +19,7 @@ def get_well_name(row_name, column_name):
 
     column_name should be an integer.
     """
-    return '{}{}'.format(row_name, str(column_name).zfill(2))
+    return '{}{}'.format(row, str(column).zfill(2))
 
 
 def get_three_character_well(well):
@@ -26,9 +27,9 @@ def get_three_character_well(well):
     Return a well in 3-character format (e.g. 'A05'), whether the input is
     in 3-character format or 2-character format (e.g. 'A5').
     """
-    row_name = well[0]
-    column_name = int(well[1:])
-    return get_well_name(row_name, column_name)
+    row = well[0]
+    column = int(well[1:])
+    return get_well_name(row, column)
 
 
 def well_to_tile(well):
@@ -124,6 +125,32 @@ def get_96_grid():
             plate[row_index].append(position_info)
 
     return plate
+
+
+def get_random_96_well():
+    r = ROWS[randint(0, len(ROWS) - 1)]
+    c = randint(1, 12)
+    return get_well_name(r, c)
+
+
+def get_random_96_wells(count):
+    '''
+    Get 'count' random, unique 96 wells.
+    Count must be <= 96.
+
+    '''
+    if count < 0 or count > 96:
+        raise ValueError('count must be between 0 and 96, inclusive')
+
+    wells = []
+    for i in range(count):
+        found = False
+        while not found:
+            well = get_random_96_well()
+            if well not in wells:
+                found = True
+                wells.append(well)
+    return wells
 
 
 def get_96_well_set():
