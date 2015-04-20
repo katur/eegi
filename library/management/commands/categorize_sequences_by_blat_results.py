@@ -1,7 +1,7 @@
 from django.core.management.base import NoArgsCommand
 
-from experiments.helpers.criteria import (passes_sup_positive_criteria,
-                                          passes_sup_high_confidence_criteria)
+from experiments.helpers.criteria import (
+    passes_sup_positive_percentage_criteria, passes_sup_stringent_criteria)
 from experiments.helpers.scores import get_positives_across_all_worms
 from library.helpers.sequencing import (categorize_sequences_by_blat_results,
                                         get_avg_crl, get_avg_qs,
@@ -74,7 +74,7 @@ class Command(NoArgsCommand):
 
         # Categorize sequences for SUP positives
         positives = get_positives_across_all_worms(
-            'SUP', 2, passes_sup_positive_criteria)
+            'SUP', 2, passes_sup_positive_percentage_criteria)
         seqs_pos = seq_starter.filter(source_library_well__in=positives)
         seqs_pos_blat = categorize_sequences_by_blat_results(seqs_pos)
         self.print_categories('SEQUENCES CORRESPONDING TO POSITIVES ONLY',
@@ -82,7 +82,7 @@ class Command(NoArgsCommand):
 
         # Categorize sequences for SUP high confidence positives
         high_conf = get_positives_across_all_worms(
-            'SUP', 2, passes_sup_high_confidence_criteria)
+            'SUP', 2, passes_sup_stringent_criteria)
         seqs_high = seq_starter.filter(source_library_well__in=high_conf)
         seqs_high_blat = categorize_sequences_by_blat_results(seqs_high)
         self.print_categories('SEQUENCES CORRESPONDING TO HIGH CONFIDENCE '
