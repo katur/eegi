@@ -5,10 +5,10 @@ from django.core.management.base import NoArgsCommand
 
 from dbmigration.helpers.name_getters import get_library_well_name
 from dbmigration.helpers.object_getters import get_library_plate
+from library.helpers.well_tile_conversion import (
+    get_96_well_set, get_384_position, is_ahringer_96_plate)
 from library.models import LibraryWell
 from utils.helpers.scripting import require_db_write_acknowledgement
-from utils.helpers.well_tile_conversion import (
-    get_96_well_set, get_384_position, is_ahringer_96_plate)
 
 HELP = '''
 Add empty library wells (i.e., wells without intended clones) to the database.

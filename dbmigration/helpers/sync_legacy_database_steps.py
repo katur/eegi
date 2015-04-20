@@ -14,12 +14,6 @@ import sys
 from django.core.exceptions import ObjectDoesNotExist
 
 from clones.models import Clone
-from experiments.models import (
-    Experiment, ManualScoreCode, ManualScore, DevstarScore)
-from library.models import LibraryPlate, LibraryWell
-from utils.helpers.well_tile_conversion import (
-    tile_to_well, get_three_character_well)
-
 from dbmigration.helpers.name_getters import (
     get_ahringer_384_plate_name, get_vidal_clone_name, get_library_well_name)
 from dbmigration.helpers.object_getters import (
@@ -27,6 +21,11 @@ from dbmigration.helpers.object_getters import (
     get_user, get_clone, get_library_well)
 from dbmigration.helpers.sync_objects import (
     update_or_save_object, compare_floats_for_equality)
+from experiments.models import (
+    Experiment, ManualScoreCode, ManualScore, DevstarScore)
+from library.helpers.well_tile_conversion import (
+    tile_to_well, get_three_character_well)
+from library.models import LibraryPlate, LibraryWell
 from utils.helpers.time_conversion import (
     get_timestamp, get_timestamp_from_ymd)
 
