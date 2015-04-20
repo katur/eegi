@@ -8,7 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 
 from eegi.local_settings import LEGACY_DATABASE
-from library.helpers.well_tile_conversion import get_well_name
+from library.helpers.layout import get_well_name
 from library.models import LibraryWell, LibrarySequencing
 from utils.helpers.scripting import require_db_write_acknowledgement
 
