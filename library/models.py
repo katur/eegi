@@ -1,3 +1,5 @@
+import re
+
 from django.db import models
 from django.db.models import Q
 
@@ -31,23 +33,23 @@ class LibraryPlate(models.Model):
             return cmp(self.screen_stage, other.screen_stage)
 
         # Then by id
-        else:
+        if self.id.isdecimal() and other.id.isdecimal():
+            return cmp(int(self.id), int(other.id))
+
+        elif self.is_ahringer_96_plate() and other.is_ahringer_96_plate():
             self_parts = self.id.split('-')
             other_parts = other.id.split('-')
 
-            # 1st token numeric comparison
-            if self_parts[0].isdigit() and other_parts[0].isdigit():
-                return cmp(int(self_parts[0]), int(other_parts[0]))
-
-            # 2nd token numeric comparison (if 1st token match)
-            elif (self_parts[0] == other_parts[0]
-                  and len(self_parts) > 1 and len(other_parts) > 1
-                  and self_parts[1].isdigit() and other_parts[1].isdigit()):
+            if (self_parts[0] != other_parts[0]):
+                return cmp(self_parts[0], other_parts[0])
+            elif (self_parts[1] != other_parts[1]):
                 return cmp(int(self_parts[1]), int(other_parts[1]))
+            else:  # chromosome and number match
+                return cmp(self_parts[2], other_parts[2])
 
-            # All other situations, simply order alphabetically
-            else:
-                return cmp(self.id, other.id)
+        # All other situations, simply order alphabetically
+        else:
+            return cmp(self.id, other.id)
 
     def get_all_wells(self):
         return LibraryWell.objects.filter(plate=self)
@@ -55,6 +57,15 @@ class LibraryPlate(models.Model):
     def get_l4440_wells(self):
         return LibraryWell.objects.filter(Q(plate=self),
                                           Q(intended_clone='L4440'))
+
+    def is_ahringer_96_plate(self):
+        '''
+        Determine if a plate name matches the correct format for an Ahringer
+        plate (in 96-format).
+
+        '''
+        return re.match('(I|II|III|IV|V|X)-[1-9][0-3]?-[AB][12]',
+                        self.id)
 
 
 class LibraryWell(models.Model):
@@ -76,7 +87,10 @@ class LibraryWell(models.Model):
         ordering = ['id']
 
     def __cmp__(self, other):
-        return cmp(self.id, other.id)
+        if self.plate == other.plate:
+            return cmp(self.well, other.well)
+        else:
+            return cmp(self.plate, other.plate)
 
     def __unicode__(self):
         return '{} (intended clone: {})'.format(self.id,

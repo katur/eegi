@@ -110,28 +110,9 @@ def get_plate_assignment_rows(plates):
 
     for plate_index, plate in enumerate(plates):
         for well, item in plate:
-            rows.append((item, plate_index, well))
+            rows.append((plate_index, well, item))
 
     return rows
-
-
-def print_source_destination(plates, stream, include_header=True):
-    '''
-    Print a plate assignment to a stream. Expects that each item assigned to
-    the plate has attributes 'plate' and 'well'. Each row printed gives:
-
-        source plate, source well, destination plate, destination well
-
-    'plates' param must be in format as returned by assign_to_plates
-
-    '''
-    rows = get_plate_assignment_rows(plates)
-    if include_header:
-        stream.write('source_plate, source_well, destination_plate, '
-                     'destination_well')
-    for row in rows:
-        stream.write('{},{},{},{}\n'.format(row[0].plate, row[0].well,
-                                            row[1], row[2]))
 
 
 def get_empties_from_list_of_lists(l):

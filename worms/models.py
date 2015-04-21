@@ -47,6 +47,9 @@ class WormStrain(models.Model):
         else:
             return self.get_wormbase_url()
 
+    def get_short_genotype(self):
+        return self.genotype.split()[0]
+
     def get_screen_category(self, temperature):
         '''Determine if temperature is a screen temperature for this strain.
 

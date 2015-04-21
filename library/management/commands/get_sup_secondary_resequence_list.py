@@ -4,7 +4,7 @@ from experiments.helpers.criteria import (
     passes_sup_positive_percentage_criteria)
 from experiments.helpers.scores import get_positives_across_all_worms
 from library.helpers.plate_design import (assign_to_plates,
-                                          print_source_destination)
+                                          get_plate_assignment_rows)
 from library.helpers.sequencing import (categorize_sequences_by_blat_results,
                                         NO_BLAT, NO_MATCH)
 from library.models import LibrarySequencing
@@ -33,7 +33,14 @@ class Command(NoArgsCommand):
 
         reseq_wells = get_wells_to_resequence(seqs_blat)
         assigned = assign_to_plates(reseq_wells)
-        print_source_destination(assigned, self.stdout)
+        rows = get_plate_assignment_rows(assigned)
+
+        self.stdout.write('source_plate, source_well, '
+                          'destination_plate, destination_well\n')
+        for row in rows:
+            self.stdout.write('{},{},{},{}\n'
+                              .format(row[2].plate, row[2].well,
+                                      row[0], row[1]))
 
         # TODO: add new seq plates to database
 
