@@ -1,5 +1,4 @@
 import random
-import sys
 
 from library.helpers.constants import (ROWS_96, COLS_96, NUM_WELLS_96,
                                        ROWS_384, COLS_384, NUM_WELLS_384)
@@ -99,14 +98,17 @@ def assign_to_plates(l, vertical=False, num_empties=0,
     return zipped
 
 
-def print_plate_assignment(plates):
-    sys.stdout.write('plate, well, item\n')
-    count = 1
-    for plate_i, plate in enumerate(plates):
+def get_plate_assignment_rows(plates, include_header=False):
+    rows = []
+
+    if include_header:
+        rows.append(('item', 'plate', 'well'))
+
+    for plate_index, plate in enumerate(plates):
         for well, item in plate:
-            sys.stdout.write('{},{},{}\n'
-                             .format(plate_i, well, item))
-            count += 1
+            rows.append((item, plate_index, well))
+
+    return rows
 
 
 def get_empties_from_list_of_lists(l):
