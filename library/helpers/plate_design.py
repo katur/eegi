@@ -1,4 +1,5 @@
 import random
+import sys
 
 from library.helpers.constants import (ROWS_96, COLS_96, NUM_WELLS_96,
                                        ROWS_384, COLS_384, NUM_WELLS_384)
@@ -49,8 +50,8 @@ def get_random_wells(count, is_384=False):
     return wells
 
 
-def assign_to_plates(l, vertical=False,
-                     num_empties=0, already_used_empties=[]):
+def assign_to_plates(l, vertical=False, num_empties=0,
+                     already_used_empties=[]):
     '''
     Assign the items of l to 96-format plates.
 
@@ -70,7 +71,7 @@ def assign_to_plates(l, vertical=False,
     empties = []
 
     for item in l:
-        if not plates or len(plates[-1]) >= 96:
+        if not plates or len(plates[-1]) >= NUM_WELLS_96:
             plates.append([])
 
             if num_empties:
@@ -91,7 +92,21 @@ def assign_to_plates(l, vertical=False,
 
         current_plate.append(item)
 
-    return plates
+    zipped = []
+    for plate in plates:
+        zipped.append(zip(well_list, plate))
+
+    return zipped
+
+
+def print_plate_assignment(plates):
+    sys.stdout.write('plate, well, item\n')
+    count = 1
+    for plate_i, plate in enumerate(plates):
+        for well, item in plate:
+            sys.stdout.write('{},{},{}\n'
+                             .format(plate_i, well, item))
+            count += 1
 
 
 def get_empties_from_list_of_lists(l):
