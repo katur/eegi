@@ -25,7 +25,8 @@ from dbmigration.helpers.sync_objects import (update_or_save_object,
                                               compare_floats_for_equality)
 from experiments.models import (Experiment, ManualScoreCode,
                                 ManualScore, DevstarScore)
-from library.helpers.layout import tile_to_well, get_three_character_well
+from library.helpers.tile_conversion import tile_to_well
+from library.helpers.well_naming import get_three_character_well
 from library.models import LibraryPlate, LibraryWell
 from utils.helpers.time_conversion import get_timestamp, get_timestamp_from_ymd
 
