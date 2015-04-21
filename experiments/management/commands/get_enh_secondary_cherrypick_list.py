@@ -1,4 +1,6 @@
-from django.core.management.base import NoArgsCommand
+from optparse import make_option
+
+from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import passes_enh_secondary_criteria
 from experiments.helpers.scores import get_secondary_candidates
@@ -14,26 +16,37 @@ This list is based on the manual scores of the Enhancer Primary screen.
 '''
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = HELP
+    option_list = BaseCommand.option_list + (
+        make_option('--summary', action='store_true',
+                    help='Print summary of counts only'),
+    )
 
-    def handle_noargs(self, **options):
+    def handle(self, **options):
+        if options['summary']:
+            summary_mode = True
+        else:
+            summary_mode = False
+
         candidates_by_worm, candidates_by_clone = get_secondary_candidates(
             'ENH', passes_enh_secondary_criteria)
 
-        # Print information about the number of clones per worm
-        self.stdout.write('Total clones to cherry pick: {}\n'.format(
-            len(candidates_by_clone)))
+        # If in summary mode, print information re: the breakdown
+        if summary_mode:
+            self.stdout.write('Total clones to cherry pick: {}\n'.format(
+                len(candidates_by_clone)))
 
-        self.stdout.write('\n\nBreakdown before accounting for universals:\n')
-        for worm in sorted(candidates_by_worm):
-            self.stdout.write('{}: {} wells\n'.format(
-                worm.genotype, len(candidates_by_worm[worm])))
+            self.stdout.write('\n\nBreakdown before accounting '
+                              'for universals:\n')
+
+            for worm in sorted(candidates_by_worm):
+                self.stdout.write('{}: {} wells\n'.format(
+                    worm.genotype, len(candidates_by_worm[worm])))
 
         # Move relevant clones into 'universal' list, to be tested against
         # all mutants
         candidates_by_worm['universal'] = []
-
         for well in candidates_by_clone:
             worms = (candidates_by_clone[well])
             if len(worms) == 0:
@@ -44,18 +57,23 @@ class Command(NoArgsCommand):
                 for worm in worms:
                     candidates_by_worm[worm].remove(well)
 
-        # Print information about the number of clones per worm, now that
-        # some have been consolidated to the universal plate
+        # If in summary mode, print again information re: the breakdown
+        # (now accounting for universal plates)
         cherrypick_list = []
-        self.stdout.write('\n\nBreakdown after accounting for universals:\n')
+
+        if summary_mode:
+            self.stdout.write('\n\nBreakdown after accounting '
+                              'for universals:\n')
+
         for k in sorted(candidates_by_worm):
             if hasattr(k, 'get_short_genotype'):
                 label = k.get_short_genotype()
             else:
                 label = k
 
-            self.stdout.write('{}: {} wells\n'.format(
-                label, len(candidates_by_worm[k])))
+            if summary_mode:
+                self.stdout.write('{}: {} wells\n'.format(
+                    label, len(candidates_by_worm[k])))
 
             assigned = assign_to_plates(sorted(candidates_by_worm[k]))
             rows = get_plate_assignment_rows(assigned)
@@ -66,9 +84,11 @@ class Command(NoArgsCommand):
                                         label + '_E' + str(row[0]),
                                         row[1]))
 
-        # Print cherry-picking list
+        if summary_mode:
+            return
+
         cherrypick_list.sort()
-        self.stdout.write('\n\nsource_plate, source_well, '
+        self.stdout.write('source_plate, source_well, '
                           'destination_plate, destination_well\n')
         for row in cherrypick_list:
             self.stdout.write(','.join([str(x) for x in row]) + '\n')
