@@ -36,16 +36,16 @@ class Command(BaseCommand):
             'ENH', passes_enh_secondary_criteria)
 
         if summary_mode:
-            self.stdout.write('Total clones to cherry pick: {}\n'.format(
+            self.stdout.write('Total clones to cherry pick: {}'.format(
                 len(candidates_by_clone)))
 
             self.stdout.write('\n\nBreakdown before accounting '
-                              'for universals:\n')
+                              'for universals:')
             total = 0
             for worm in sorted(candidates_by_worm):
                 num_candidates = len(candidates_by_worm[worm])
                 total += num_candidates
-                self.stdout.write('\t{}: {} wells\n'.format(
+                self.stdout.write('\t{}: {} wells'.format(
                     worm.genotype, num_candidates))
             self.stdout.write('Total: {} wells'.format(total))
 
@@ -53,17 +53,14 @@ class Command(BaseCommand):
         candidates_by_worm['universal'] = []
         for well in candidates_by_clone:
             worms = (candidates_by_clone[well])
-            if len(worms) == 0:
-                self.stdout.write('ERROR: length 0')
-
-            elif len(worms) >= 4:
+            if len(worms) >= 4:
                 candidates_by_worm['universal'].append(well)
                 for worm in worms:
                     candidates_by_worm[worm].remove(well)
 
         if summary_mode:
             self.stdout.write('\n\nBreakdown after accounting '
-                              'for universals:\n')
+                              'for universals:')
             total = 0
             for worm in sorted(candidates_by_worm):
                 if hasattr(worm, 'genotype'):
@@ -73,7 +70,7 @@ class Command(BaseCommand):
 
                 num_candidates = len(candidates_by_worm[worm])
                 total += num_candidates
-                self.stdout.write('\t{}: {} wells\n'.format(
+                self.stdout.write('\t{}: {} wells'.format(
                     label, num_candidates))
             self.stdout.write('Total: {} wells'.format(total))
 
@@ -98,7 +95,7 @@ class Command(BaseCommand):
             cherrypick_list.sort()
 
             self.stdout.write('source_plate, source_well, '
-                              'destination_plate, destination_well\n')
+                              'destination_plate, destination_well')
 
             for row in cherrypick_list:
-                self.stdout.write(','.join([str(x) for x in row]) + '\n')
+                self.stdout.write(','.join([str(x) for x in row]))
