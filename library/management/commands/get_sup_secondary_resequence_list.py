@@ -1,4 +1,4 @@
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import (
     passes_sup_positive_percentage_criteria)
@@ -19,10 +19,10 @@ does not agree with the intended clone.
 '''
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = HELP
 
-    def handle_noargs(self, **options):
+    def handle(self, **options):
         positives = get_positives_across_all_worms(
             'SUP', 2, passes_sup_positive_percentage_criteria)
         seqs = (LibrarySequencing.objects
@@ -36,13 +36,11 @@ class Command(NoArgsCommand):
         rows = get_plate_assignment_rows(assigned)
 
         self.stdout.write('source_plate, source_well, '
-                          'destination_plate, destination_well\n')
+                          'destination_plate, destination_well')
         for row in rows:
-            self.stdout.write('{},{},{},{}\n'
+            self.stdout.write('{},{},{},{}'
                               .format(row[2].plate, row[2].well,
                                       row[0], row[1]))
-
-        # TODO: add new seq plates to database
 
 
 def get_wells_to_resequence(s):
