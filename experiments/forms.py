@@ -62,7 +62,9 @@ class DoubleKnockdownForm(forms.Form):
     query = forms.CharField(label='Mutant query',
                             help_text='gene, allele, or worm strain name')
     target = forms.CharField(label='RNAi Target',
-                             help_text='gene, cosmid, clone, or position')
+                             help_text=('clone (once mapping database '
+                                        'is complete, will also accept gene, '
+                                        'cosmid, and position)'))
     screen = forms.ChoiceField(
         choices=[('SUP', 'suppressor'), ('ENH', 'enhancer')],
         widget=forms.RadioSelect)

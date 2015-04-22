@@ -42,18 +42,18 @@
     Experiments
   </a>
 
-  <a href="{{ secondary_scores_search_url }}"
-      {% ifequal request.path secondary_scores_search_url %}
-      class="active"
-      {% endifequal %}>
-    Secondary Scores
-  </a>
-
   <a href="{{ double_knockdown_search_url }}"
       {% ifequal request.path double_knockdown_search_url %}
       class="active"
       {% endifequal %}>
     Double Knockdown
+  </a>
+
+  <a href="{{ secondary_scores_search_url }}"
+      {% ifequal request.path secondary_scores_search_url %}
+      class="active"
+      {% endifequal %}>
+    Secondary Scores
   </a>
 </div>
 
