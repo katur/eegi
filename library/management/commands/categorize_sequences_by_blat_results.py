@@ -1,4 +1,4 @@
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import (
     passes_sup_positive_percentage_criteria, passes_sup_stringent_criteria)
@@ -9,7 +9,7 @@ from library.helpers.sequencing import (categorize_sequences_by_blat_results,
 from library.models import LibrarySequencing
 
 HELP = '''
-Print to stdout a categorized summary of our sequencing results, according to
+Write to stdout a categorized summary of our sequencing results, according to
 how high up the intended clone appears in the BLAT hits.
 
 The purpose of this script is to get a general sense of the quality of the
@@ -37,7 +37,7 @@ This categorization is done for:
 '''
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = HELP
 
     def print_categories(self, header, s):
@@ -62,7 +62,7 @@ class Command(NoArgsCommand):
             )
         self.stdout.write('(TOTAL: {})\n\n'.format(running_total))
 
-    def handle_noargs(self, **options):
+    def handle(self, **options):
         seq_starter = (LibrarySequencing.objects
                        .select_related('source_library_well',
                                        'source_library_well__intended_clone'))
