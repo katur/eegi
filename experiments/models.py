@@ -1,4 +1,5 @@
 from __future__ import division
+import datetime
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -77,8 +78,9 @@ class Experiment(models.Model):
         for s in d:
             output = s.get_short_name() + ': '
             for t in d[s]:
+                t_string = t.strftime('%Y-%m-%d %H:%M:%S')
                 joined = ', '.join(str(item) for item in d[s][t])
-                output += str(t) + ': ' + joined + '; '
+                output += joined + ' (' + t_string + ');'
             people.append(output)
 
         return '; '.join(str(item) for item in people)
