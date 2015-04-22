@@ -17,7 +17,19 @@ just those that are sequence-verified, and to the more stringent
 class Command(BaseCommand):
     help = HELP
 
+    def add_arguments(self, parser):
+        parser.add_argument('--summary',
+                            dest='summary',
+                            action='store_true',
+                            default=False,
+                            help='Print summary only')
+
     def handle(self, **options):
+        if options['summary']:
+            summary_mode = True
+        else:
+            summary_mode = False
+
         # Get and categorize the sequences corresponding to high confidence
         # positives
         seqs = (LibrarySequencing.objects
@@ -57,20 +69,19 @@ class Command(BaseCommand):
             num_interactions_by_clone += len(pos_verified_clones)
             w[worm] = pos_verified_clones
 
-        self.stdout.write('{} library wells both positive and verified '
-                          .format(len(verified_doublecheck)))
+        if summary_mode:
+            self.stdout.write('{} library wells both positive and verified\n'
+                              '{} interactions by well\n'
+                              '{} interactions by clone'
+                              .format(len(verified_doublecheck),
+                                      num_interactions_by_well,
+                                      num_interactions_by_clone))
 
-        self.stdout.write('{} interactions by well\n'
-                          '{} interactions by clone'
-                          .format(num_interactions_by_well,
-                                  num_interactions_by_clone))
+            self.stdout.write('Breakdown by worm:')
+            for worm in sorted(w):
+                self.stdout.write('\t{}: {}'.format(worm.gene, len(w[worm])))
 
-        self.stdout.write('Breakdown by worm:')
-        for worm in sorted(w):
-            self.stdout.write('\t{}: {}'.format(worm.gene, len(w[worm])))
-
-        self.stdout.write('\n')
-
-        for worm in sorted(w):
-            for clone in sorted(w[worm]):
-                self.stdout.write('{},{}'.format(worm.gene, clone))
+        else:
+            for worm in sorted(w):
+                for clone in sorted(w[worm]):
+                    self.stdout.write('{},{}'.format(worm.gene, clone))
