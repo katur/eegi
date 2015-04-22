@@ -27,10 +27,10 @@ class Command(BaseCommand):
     help = HELP
 
     def add_arguments(self, parser):
-        parser.add_argument('filename', type=argparse.FileType('r'))
+        parser.add_argument('file', type=argparse.FileType('r'))
 
     def handle(self, **options):
-        f = options['filename']
+        f = options['file']
 
         ahringer_db = set()
         ahringer_online = set()
