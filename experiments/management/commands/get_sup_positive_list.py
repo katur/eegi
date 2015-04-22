@@ -1,4 +1,4 @@
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import passes_sup_stringent_criteria
 from experiments.helpers.scores import get_positives_specific_worm
@@ -14,10 +14,10 @@ just those that are sequence-verified, and to the more stringent
 '''
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = HELP
 
-    def handle_noargs(self, **options):
+    def handle(self, **options):
         # Get and categorize the sequences corresponding to high confidence
         # positives
         seqs = (LibrarySequencing.objects

@@ -1,5 +1,3 @@
-from optparse import make_option
-
 from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import passes_enh_secondary_criteria
@@ -18,10 +16,13 @@ This list is based on the manual scores of the Enhancer Primary screen.
 
 class Command(BaseCommand):
     help = HELP
-    option_list = BaseCommand.option_list + (
-        make_option('--summary', action='store_true',
-                    help='Print summary of counts only'),
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument('--summary',
+                            dest='summary',
+                            action='store_true',
+                            default=False,
+                            help='Print summary of counts only')
 
     def handle(self, **options):
         if options['summary']:
@@ -92,5 +93,3 @@ class Command(BaseCommand):
                           'destination_plate, destination_well\n')
         for row in cherrypick_list:
             self.stdout.write(','.join([str(x) for x in row]) + '\n')
-
-        # TODO: add new library plates to database
