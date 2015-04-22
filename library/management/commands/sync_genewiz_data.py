@@ -1,3 +1,4 @@
+import argparse
 import csv
 import glob
 import MySQLdb
@@ -39,18 +40,15 @@ format, or Huey-Ling's text file format. This directory currently lives at:
 
 
 class Command(BaseCommand):
-    args = 'tracking_numbers genewiz_root'
     help = HELP
 
-    def handle(self, *args, **options):
-        if len(args) != 2:
-            raise CommandError('Command requires 2 arguments')
+    def add_arguments(self, parser):
+        parser.add_argument('tracking_numbers', type=argparse.FileType('r'))
+        parser.add_argument('genewiz_root')
 
-        tracking_numbers = args[0]
-        if not os.path.isfile(tracking_numbers):
-            raise CommandError('tracking_numbers file not found')
-
-        self.genewiz_root = args[1]
+    def handle(self, **options):
+        tracking_numbers = options['tracking_numbers']
+        self.genewiz_root = options['genewiz_root']
         if not os.path.isdir(self.genewiz_root):
             raise CommandError('genewiz_root directory not found')
 
@@ -65,12 +63,11 @@ class Command(BaseCommand):
         # Add raw genewiz data to database (sequence and quality scores).
         # Use tracking_numbers to limit to GI sequences only
         # (as opposed to sequences for other lab members)
-        with open(tracking_numbers, 'rb') as csvfile:
-            reader = csv.DictReader(csvfile)
+        reader = csv.DictReader(tracking_numbers)
 
-            for row in reader:
-                tracking_number = row['tracking_number'].strip()
-                self.process_tracking_number(tracking_number)
+        for row in reader:
+            tracking_number = row['tracking_number'].strip()
+            self.process_tracking_number(tracking_number)
 
         # Retrieve all the sequencing objects just recorded
         self.sequences = LibrarySequencing.objects.all()
