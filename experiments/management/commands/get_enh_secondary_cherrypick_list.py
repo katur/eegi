@@ -30,23 +30,26 @@ class Command(BaseCommand):
         else:
             summary_mode = False
 
+        # Get all enhancery secondary candidates, organized both by worm
+        # and by clone
         candidates_by_worm, candidates_by_clone = get_secondary_candidates(
             'ENH', passes_enh_secondary_criteria)
 
-        # If in summary mode, print information re: the breakdown
         if summary_mode:
             self.stdout.write('Total clones to cherry pick: {}\n'.format(
                 len(candidates_by_clone)))
 
             self.stdout.write('\n\nBreakdown before accounting '
                               'for universals:\n')
-
+            total = 0
             for worm in sorted(candidates_by_worm):
-                self.stdout.write('{}: {} wells\n'.format(
-                    worm.genotype, len(candidates_by_worm[worm])))
+                num_candidates = len(candidates_by_worm[worm])
+                total += num_candidates
+                self.stdout.write('\t{}: {} wells\n'.format(
+                    worm.genotype, num_candidates))
+            self.stdout.write('Total: {} wells'.format(total))
 
-        # Move relevant clones into 'universal' list, to be tested against
-        # all mutants
+        # Move relevant clones from individual worm lists to 'universal' list
         candidates_by_worm['universal'] = []
         for well in candidates_by_clone:
             worms = (candidates_by_clone[well])
@@ -58,38 +61,44 @@ class Command(BaseCommand):
                 for worm in worms:
                     candidates_by_worm[worm].remove(well)
 
-        # If in summary mode, print again information re: the breakdown
-        # (now accounting for universal plates)
-        cherrypick_list = []
-
         if summary_mode:
             self.stdout.write('\n\nBreakdown after accounting '
                               'for universals:\n')
+            total = 0
+            for k in sorted(candidates_by_worm):
+                if hasattr(k, 'get_short_genotype'):
+                    label = k.get_short_genotype()
+                else:
+                    label = k
 
-        for k in sorted(candidates_by_worm):
-            if hasattr(k, 'get_short_genotype'):
-                label = k.get_short_genotype()
-            else:
-                label = k
+                num_candidates = len(candidates_by_worm[k])
+                total += num_candidates
+                self.stdout.write('\t{}: {} wells\n'.format(
+                    label, num_candidates))
+            self.stdout.write('Total: {} wells'.format(total))
 
-            if summary_mode:
-                self.stdout.write('{}: {} wells\n'.format(
-                    label, len(candidates_by_worm[k])))
+        else:
+            cherrypick_list = []
 
-            assigned = assign_to_plates(sorted(candidates_by_worm[k]))
-            rows = get_plate_assignment_rows(assigned)
+            for worm, candidates in candidates_by_worm.iteritems():
+                if hasattr(worm, 'get_short_genotype'):
+                    label = worm.get_short_genotype()
+                else:
+                    label = worm
 
-            for row in rows:
-                cherrypick_list.append((row[2].plate,
-                                        row[2].well,
-                                        label + '_E' + str(row[0]),
-                                        row[1]))
+                assigned = assign_to_plates(sorted(candidates))
+                rows = get_plate_assignment_rows(assigned)
 
-        if summary_mode:
-            return
+                for row in rows:
+                    cherrypick_list.append((row[2].plate,
+                                            row[2].well,
+                                            label + '_E' + str(row[0]),
+                                            row[1]))
 
-        cherrypick_list.sort()
-        self.stdout.write('source_plate, source_well, '
-                          'destination_plate, destination_well\n')
-        for row in cherrypick_list:
-            self.stdout.write(','.join([str(x) for x in row]) + '\n')
+            cherrypick_list.sort()
+
+            self.stdout.write('source_plate, source_well, '
+                              'destination_plate, destination_well\n')
+
+            for row in cherrypick_list:
+                self.stdout.write(','.join([str(x) for x in row]) + '\n')
