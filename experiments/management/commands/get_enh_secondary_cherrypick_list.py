@@ -65,13 +65,13 @@ class Command(BaseCommand):
             self.stdout.write('\n\nBreakdown after accounting '
                               'for universals:\n')
             total = 0
-            for k in sorted(candidates_by_worm):
-                if hasattr(k, 'get_short_genotype'):
-                    label = k.get_short_genotype()
+            for worm in sorted(candidates_by_worm):
+                if hasattr(worm, 'genotype'):
+                    label = worm.genotype
                 else:
-                    label = k
+                    label = worm
 
-                num_candidates = len(candidates_by_worm[k])
+                num_candidates = len(candidates_by_worm[worm])
                 total += num_candidates
                 self.stdout.write('\t{}: {} wells\n'.format(
                     label, num_candidates))
@@ -81,8 +81,8 @@ class Command(BaseCommand):
             cherrypick_list = []
 
             for worm, candidates in candidates_by_worm.iteritems():
-                if hasattr(worm, 'get_short_genotype'):
-                    label = worm.get_short_genotype()
+                if hasattr(worm, 'allele'):
+                    label = worm.allele
                 else:
                     label = worm
 
