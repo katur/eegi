@@ -1,3 +1,5 @@
+from operator import itemgetter
+
 from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import passes_enh_secondary_criteria
@@ -24,11 +26,16 @@ class Command(BaseCommand):
                             default=False,
                             help='Print summary of counts only')
 
+        parser.add_argument('--tech_format',
+                            dest='tech_format',
+                            action='store_true',
+                            default=False,
+                            help=('Print the list with spacing more amenable '
+                                  'to the physical cherry-picking process'))
+
     def handle(self, **options):
-        if options['summary']:
-            summary_mode = True
-        else:
-            summary_mode = False
+        summary_mode = options['summary']
+        tech_mode = options['tech_format']
 
         # Get all enhancery secondary candidates, organized both by worm
         # and by clone
@@ -89,13 +96,24 @@ class Command(BaseCommand):
                 for row in rows:
                     cherrypick_list.append((row[2].plate,
                                             row[2].well,
-                                            label + '_E' + str(row[0]),
+                                            label + '_E' + str(row[0] + 1),
                                             row[1]))
-
-            cherrypick_list.sort()
 
             self.stdout.write('source_plate, source_well, '
                               'destination_plate, destination_well')
 
+            cherrypick_list.sort(key=itemgetter(0, 2, 1))
+
+            # Break the list into chunks based on orig/dest plate
+            current = (cherrypick_list[0][0], cherrypick_list[0][2])
+            count = 0
             for row in cherrypick_list:
+                new = (row[0], row[2])
+                if tech_mode and new != current:
+                    self.stdout.write('\n')
+                    count += 1
+                    current = new
                 self.stdout.write(','.join([str(x) for x in row]))
+
+            if tech_mode:
+                self.stdout.write('\n{} plate setups'.format(count))
