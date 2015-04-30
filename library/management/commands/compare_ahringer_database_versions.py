@@ -18,7 +18,7 @@ to that currently listed online at Source BioScience:
 
 The input_file (copied/pasted from the aforementioned link) is currently at:
 
-    materials/ahringer_plates/sourcebioscience_c_elegans_database
+    materials/ahringer_plates/sbs_ahringer_orig.csv
 
 '''
 
@@ -42,7 +42,7 @@ class Command(BaseCommand):
         f.readline()
 
         for line in f:
-            row = line.split()
+            row = line.split(',')
             clone_name = 'sjj_' + row[3]
             try:
                 clone = Clone.objects.get(pk=clone_name)
