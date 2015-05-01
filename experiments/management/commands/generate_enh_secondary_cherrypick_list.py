@@ -7,7 +7,8 @@ from library.helpers.plate_design import (assign_to_plates,
 
 
 HELP = '''
-Get the library wells to be cherry-picked for the Enhancer Secondary screen.
+Get the library wells to be cherry-picked for the Enhancer Secondary screen,
+and assign to new plates.
 
 This list is based on the manual scores of the Enhancer Primary screen.
 
@@ -26,13 +27,6 @@ class Command(BaseCommand):
                             default=False,
                             help='Print summary of counts only')
 
-        parser.add_argument('--tech_format',
-                            dest='tech_format',
-                            action='store_true',
-                            default=False,
-                            help=('Print the list with spacing more amenable '
-                                  'to the physical cherry-picking process'))
-
     def print_candidates_by_worm(self, candidates_by_worm):
         total = 0
         for worm in sorted(candidates_by_worm):
@@ -45,7 +39,6 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         summary_mode = options['summary']
-        tech_mode = options['tech_format']
 
         # Get all enhancery secondary candidates, organized by worm and clone
         candidates_by_worm, candidates_by_clone = get_secondary_candidates(
@@ -69,8 +62,9 @@ class Command(BaseCommand):
         if summary_mode:
             self.stdout.write('\n\nAfter accounting for universals:')
             self.print_candidates_by_worm(candidates_by_worm)
+            return
 
-        # Create cherry pick list, including empty wells
+        # Create official cherry pick list, including randomized empty wells
         cherrypick_list = []
         for worm, candidates in candidates_by_worm.iteritems():
             label = worm.allele if hasattr(worm, 'allele') else worm
@@ -101,39 +95,9 @@ class Command(BaseCommand):
             key=lambda x: (x[2].split('_')[0], int(x[2].split('E')[1]),
                            int(x[3][1:]), x[3][0]))
 
-        # Keep track of source/destination plate combos in order
-        # to partition results by this (helps techs to cherry pick)
-        num_combos = 0
-        previous_combo = (cherrypick_list[0][0], cherrypick_list[0][2])
-
-        # Printing and analysis
-        if not summary_mode:
-            self.stdout.write('source_plate, source_well, '
-                              'destination_plate, destination_well')
-
-        destination_plates = set()
-        empties = []
+        # Print the list
+        self.stdout.write('source_plate, source_well, '
+                          'destination_plate, destination_well')
 
         for row in cherrypick_list:
-            source_plate = row[0]
-            destination_plate = row[2]
-
-            destination_plates.add(destination_plate)
-            if source_plate is None:
-                empties.append(row)
-
-            current_combo = (source_plate, destination_plate)
-            if current_combo != previous_combo:
-                num_combos += 1
-                previous_combo = current_combo
-                if tech_mode:
-                    self.stdout.write('\n')
-
-            if not summary_mode:
-                self.stdout.write(','.join([str(x) for x in row]))
-
-        if tech_mode or summary_mode:
-            self.stdout.write('\n\n{} destination plates.'
-                              '\n\n{} origin/destination combos.'
-                              .format(len(destination_plates),
-                                      num_combos))
+            self.stdout.write(','.join([str(x) for x in row]))
