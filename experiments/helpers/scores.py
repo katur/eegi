@@ -5,7 +5,6 @@ from django.db.models import Count
 
 from experiments.models import ManualScore, Experiment
 from library.helpers.retrieval import get_organized_library_wells
-from library.models import LibraryPlate
 from worms.models import WormStrain
 
 
@@ -237,24 +236,35 @@ def get_positives_specific_worm(worm, screen, screen_level, passes_criteria):
     return passing_library_wells
 
 
-def get_primary_single_replicate_experiments():
+def get_primary_single_replicate_experiments(screen):
     '''
-    Get primary experiments that don't have a second replicate.
+    Get primary experiments that have only a single replicate.
     '''
-    experiments = Experiment.objects.filter(
-        is_junk=False, screen_level=1)
+    if screen == 'SUP':
+        worms = WormStrain.objects.filter(
+            restrictive_temperature__isnull=False)
+    else:
+        worms = WormStrain.objects.filter(
+            permissive_temperature__isnull=False)
 
-    plate_replicate_counts = (experiments.values('library_plate')
-                              .annotate(num_replicates=Count('id')))
+    singles = {}
+    for worm in worms:
+        if screen == 'SUP':
+            experiments = (Experiment.objects
+                           .filter(is_junk=False, screen_level=1,
+                                   worm_strain=worm,
+                                   temperature=worm.restrictive_temperature)
+                           .order_by('library_plate'))
+        else:
+            experiments = (Experiment.objects
+                           .filter(is_junk=False, screen_level=1,
+                                   worm_strain=worm,
+                                   temperature=worm.permissive_temperature)
+                           .order_by('library_plate'))
 
-    single_replicate_plates = [x['library_plate'] for x in
-                               plate_replicate_counts if
-                               x['num_replicates'] == 1]
+        annotated = experiments.values('library_plate').annotate(Count('id'))
 
-    single_replicate_experiments = []
-    for plate_string in single_replicate_plates:
-        plate = LibraryPlate.objects.get(pk=plate_string)
-        experiment = experiments.get(library_plate=plate)
-        single_replicate_experiments.append(experiment)
+        singles[worm] = [x['library_plate'] for x in annotated
+                         if x['id__count'] == 1]
 
-    return single_replicate_experiments
+    return singles
