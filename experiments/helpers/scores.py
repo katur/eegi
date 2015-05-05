@@ -247,7 +247,8 @@ def get_primary_single_replicate_experiments(screen):
         worms = WormStrain.objects.filter(
             permissive_temperature__isnull=False)
 
-    singles = {}
+    singles = set()
+
     for worm in worms:
         if screen == 'SUP':
             experiments = (Experiment.objects
@@ -264,7 +265,10 @@ def get_primary_single_replicate_experiments(screen):
 
         annotated = experiments.values('library_plate').annotate(Count('id'))
 
-        singles[worm] = [x['library_plate'] for x in annotated
+        single_plates = [x['library_plate'] for x in annotated
                          if x['id__count'] == 1]
+
+        for plate in single_plates:
+            singles.add(experiments.get(library_plate=plate))
 
     return singles
