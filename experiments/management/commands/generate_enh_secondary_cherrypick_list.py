@@ -102,32 +102,33 @@ class Command(BaseCommand):
             key=lambda x: (x[2].split('_')[0], int(x[2].split('E')[1]),
                            int(x[3][1:]), x[3][0]))
 
-        # Double check and print empty wells in summary mode
-        if summary_mode:
-            self.stdout.write('\n\nEmpty wells analysis issues:\n')
-            e = {}
-            for row in cherrypick_list:
-                if row[0] is None:
-                    if row[2] not in e:
-                        e[row[2]] = set()
-                    e[row[2]].add(row[3])
-
-            seen = set()
-            for plate, wells in e.iteritems():
-                wells = tuple(sorted(wells))
-                if is_symmetric(wells):
-                    self.stdout.write('{}:{} pattern is symmetric!'
-                                      .format(plate, wells))
-
-                if wells in seen:
-                    self.stdout.write('{}:{} pattern already seen!'
-                                      .format(plate, wells))
-
-                seen.add(wells)
-            return
-
         # Print the list
-        self.stdout.write('source_plate, source_well, '
-                          'destination_plate, destination_well')
+        if not summary_mode:
+            self.stdout.write('source_plate, source_well, '
+                              'destination_plate, destination_well')
+            for row in cherrypick_list:
+                self.stdout.write(','.join([str(x) for x in row]))
+
+        # Quick fix for empty_wells check up to this point not accounting
+        # for not-full plates potentially having the same plate pattern,
+        # despite the "chosen" empty wells differing.
+        # If the printed list says "TRASH THIS" at the bottom, try again!
+        e = {}
         for row in cherrypick_list:
-            self.stdout.write(','.join([str(x) for x in row]))
+            if row[0] is None:
+                if row[2] not in e:
+                    e[row[2]] = set()
+                e[row[2]].add(row[3])
+
+        seen = set()
+        for plate, wells in e.iteritems():
+            wells = tuple(sorted(wells))
+            if is_symmetric(wells):
+                self.stdout.write('TRASH THIS. {}:{} pattern is symmetric!'
+                                  .format(plate, wells))
+
+            if wells in seen:
+                self.stdout.write('TRASH THIS. {}:{} pattern already seen!'
+                                  .format(plate, wells))
+
+            seen.add(wells)
