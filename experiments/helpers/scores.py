@@ -155,6 +155,10 @@ def get_secondary_candidates(screen, passes_criteria):
     '''
     Get the list of library wells to include in the secondary.
 
+    TODO: this has not yet been implemented for SUP screen. The
+    secondary candidate selection for the SUP screen predated this
+    codebase.
+
     Returns:
         A 2-tuple of:
             1) a dictionary of the clones organized by worm
@@ -175,12 +179,10 @@ def get_secondary_candidates(screen, passes_criteria):
     # Get all primary scores for the particular screen
     s = get_organized_scores_all_worms(screen, 1)
 
-    # TODO: deal with cases of only one replicated tested
-
     candidates_by_worm = {}
     candidates_by_clone = {}
 
-    singles = get_primary_single_replicate_experiments('ENH')
+    singles = get_primary_single_replicate_experiments(screen)
 
     for worm, library_wells in s.iteritems():
         for library_well, experiments in library_wells.iteritems():
