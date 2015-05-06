@@ -8,14 +8,12 @@ from library.helpers.well_naming import get_well_name, is_proper_well_name
 
 
 def get_well_list(vertical=False, is_384=False):
-    '''
-    Get a list of wells.
+    '''Get a list of wells.
 
     vertical param determines whether to list first by column or by row.
 
     is_384 param determines if the well list should be for 384-format plates,
     or 96-format plates.
-
     '''
     if is_384:
         rows = ROWS_384
@@ -31,15 +29,13 @@ def get_well_list(vertical=False, is_384=False):
 
 
 def get_well_list_vertical(rows, columns):
-    '''
-    Get a list of all wells derived from the provided rows and columns,
+    '''Get a list of all wells derived from the provided rows and columns,
     listed in 'vertical' order:
 
         ['A01', 'B01', ..., 'H01',
          'A02', 'B02', ..., 'H02',
          ...,
          'A12', 'B12', ..., 'H12']
-
     '''
     wells = []
     for row in rows:
@@ -49,15 +45,13 @@ def get_well_list_vertical(rows, columns):
 
 
 def get_well_list_horizontal(rows, columns):
-    '''
-    Get a list of all wells derived from the provided rows and columns,
+    '''Get a list of all wells derived from the provided rows and columns,
     listed in 'horizontal' order:
 
         ['A01', 'A02', ..., 'A12',
          'B01', 'B02', ..., 'B12',
          ...,
          'H01', 'H02', ..., 'H12']
-
     '''
     wells = []
     for column in columns:
@@ -67,26 +61,18 @@ def get_well_list_horizontal(rows, columns):
 
 
 def get_96_well_set():
-    '''
-    Get a set of all standard 96-plate well names: 'A01', ..., 'H12'
-
-    '''
+    '''Get a set of all standard 96-plate well names: 'A01', ..., 'H12' '''
     return get_well_set(ROWS_96, COLS_96)
 
 
 def get_384_well_set():
-    '''
-    Get a set of all standard 384-plate well names: 'A01', ..., 'P24'
-
-    '''
+    '''Get a set of all standard 384-plate well names: 'A01', ..., 'P24' '''
     return get_well_set(ROWS_384, COLS_384)
 
 
 def get_well_set(rows, columns):
-    '''
-    Get a set of all well names made from combining the provided rows
+    '''Get a set of all well names made from combining the provided rows
     and columns. Expects integer columns, no more than 2 digits.
-
     '''
     wells = set()
     for row in rows:
@@ -96,10 +82,8 @@ def get_well_set(rows, columns):
 
 
 def get_96_grid():
-    '''
-    Get a 2D array representing a 96-well plate (8 rows, 12 columns),
+    '''Get a 2D array representing a 96-well plate (8 rows, 12 columns),
     where each element is a dictionary containing 'well' name and 'tile' name.
-
     '''
     plate = []
     for row_index in range(NUM_ROWS_96):
@@ -118,10 +102,9 @@ def get_96_grid():
 
 
 def get_384_position(child_quadrant, child_position):
-    '''
-    Get the 384-format position corresponding to a 96-format 'child' position,
-    using the child's quadrant (A1, A2, B1, or B2) and the child's position.
-
+    '''Get the 384-format position corresponding to a 96-format 'child'
+    position, using the child's quadrant (A1, A2, B1, or B2) and the
+    child's position.
     '''
     if child_quadrant[0] == 'A':
         odd_row = True
@@ -149,10 +132,8 @@ def get_384_position(child_quadrant, child_position):
 
 
 def get_symmetric_well(well):
-    '''
-    Get the well that is symmetric to the provided well (i.e., in the same
-    position if the plate were flipped 180 degrees).
-
+    '''Get the well that is symmetric to the provided well (i.e., in the
+    same position if the plate were flipped 180 degrees).
     '''
     if not is_proper_well_name(well):
         raise ValueError('{} is an improper well name'.format(well))
@@ -164,10 +145,8 @@ def get_symmetric_well(well):
 
 
 def is_symmetric(wells):
-    '''
-    Determine if a list of wells create a symmetrical pattern (i.e., for
-    each well present in wells, its symmetric well is present)
-
+    '''Determine if a list of wells create a symmetrical pattern (i.e.,
+    for each well present in wells, its symmetric well is present)
     '''
     for well in wells:
         s = get_symmetric_well(well)
@@ -178,10 +157,8 @@ def is_symmetric(wells):
 
 
 def is_ahringer_96_plate(plate_name):
-    '''
-    Determine if a plate name matches the correct format for an Ahringer
+    '''Determine if a plate name matches the correct format for an Ahringer
     plate (in 96-format).
-
     '''
     return re.match('(I|II|III|IV|V|X)-[1-9][0-3]?-[AB][12]', plate_name)
 
