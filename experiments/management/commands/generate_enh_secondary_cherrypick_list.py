@@ -1,3 +1,5 @@
+import re
+
 from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import passes_enh_secondary_criteria
@@ -62,18 +64,20 @@ class Command(BaseCommand):
         if summary_mode:
             self.stdout.write('\n\nAfter accounting for universals:')
             self.print_candidates_by_worm(candidates_by_worm)
-            return
 
         # Create official cherry pick list, including randomized empty wells
         cherrypick_list = []
         for worm, candidates in candidates_by_worm.iteritems():
             label = worm.allele if hasattr(worm, 'allele') else worm
+
             if label == 'universal':
                 num_empties = 1
             else:
                 num_empties = 2
+
             assigned = assign_to_plates(sorted(candidates),
                                         num_empties=num_empties)
+
             rows = get_plate_assignment_rows(assigned)
 
             for row in rows:
@@ -94,6 +98,13 @@ class Command(BaseCommand):
         cherrypick_list.sort(
             key=lambda x: (x[2].split('_')[0], int(x[2].split('E')[1]),
                            int(x[3][1:]), x[3][0]))
+
+        if summary_mode:
+            self.stdout.write('Empty wells:\n')
+            for row in cherrypick_list:
+                if re.search('^None', row):
+                    self.stdout.write(','.join([str(x) for x in row]))
+            return
 
         # Print the list
         self.stdout.write('source_plate, source_well, '
