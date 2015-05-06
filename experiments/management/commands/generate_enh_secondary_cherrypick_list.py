@@ -83,6 +83,7 @@ class Command(BaseCommand):
 
             assigned = assign_to_plates(
                 sorted(candidates),
+                vertical=True,
                 empties_per_plate=empties_per_plate,
                 empties_limit=empties_limit,
                 already_used_empties=already_used_empties)

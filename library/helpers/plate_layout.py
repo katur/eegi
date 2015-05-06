@@ -32,14 +32,12 @@ def get_well_list_vertical(rows, columns):
     '''Get a list of all wells derived from the provided rows and columns,
     listed in 'vertical' order:
 
-        ['A01', 'B01', ..., 'H01',
-         'A02', 'B02', ..., 'H02',
-         ...,
+        ['A01', 'B01', ..., 'H01', 'A02', 'B02', ..., 'H02', ...,
          'A12', 'B12', ..., 'H12']
     '''
     wells = []
-    for row in rows:
-        for column in columns:
+    for column in columns:
+        for row in rows:
             wells.append(get_well_name(row, column))
     return wells
 
@@ -48,14 +46,12 @@ def get_well_list_horizontal(rows, columns):
     '''Get a list of all wells derived from the provided rows and columns,
     listed in 'horizontal' order:
 
-        ['A01', 'A02', ..., 'A12',
-         'B01', 'B02', ..., 'B12',
-         ...,
+        ['A01', 'A02', ..., 'A12', 'B01', 'B02', ..., 'B12', ...,
          'H01', 'H02', ..., 'H12']
     '''
     wells = []
-    for column in columns:
-        for row in rows:
+    for row in rows:
+        for column in columns:
             wells.append(get_well_name(row, column))
     return wells
 
