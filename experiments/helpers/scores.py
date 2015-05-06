@@ -180,6 +180,8 @@ def get_secondary_candidates(screen, passes_criteria):
     candidates_by_worm = {}
     candidates_by_clone = {}
 
+    singles = get_primary_single_replicate_experiments('ENH')
+
     for worm, library_wells in s.iteritems():
         for library_well, experiments in library_wells.iteritems():
             for experiment, scores in experiments.iteritems():
@@ -188,7 +190,7 @@ def get_secondary_candidates(screen, passes_criteria):
                 score = get_most_relevant_score_per_replicate(scores)
                 s[worm][library_well][experiment] = score
 
-            if passes_criteria(experiments.values()):
+            if passes_criteria(experiments.values(), singles):
                 if worm not in candidates_by_worm:
                     candidates_by_worm[worm] = []
                 candidates_by_worm[worm].append(library_well)

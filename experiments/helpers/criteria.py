@@ -69,7 +69,7 @@ def passes_sup_positive_count_criteria(scores):
     return False
 
 
-def passes_enh_secondary_criteria(scores):
+def passes_enh_secondary_criteria(scores, singles=[]):
     '''
     Determine if a set of countable primary scores (i.e., one most relevant
     score per primary replicate) passes the criteria to make it into
@@ -86,6 +86,9 @@ def passes_enh_secondary_criteria(scores):
             num_weaks += 1
 
     if num_weaks >= 2:
+        is_positive = True
+
+    if num_weaks == 1 and scores[0].experiment in singles:
         is_positive = True
 
     return is_positive
