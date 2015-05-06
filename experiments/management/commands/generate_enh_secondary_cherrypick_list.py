@@ -73,13 +73,18 @@ class Command(BaseCommand):
 
             if label == 'universal':
                 empties_per_plate = 1
+                empties_limit = 9
             elif label == 'it57':
                 empties_per_plate = 0
+                empties_limit = None
             else:
                 empties_per_plate = 2
+                empties_limit = None
 
             assigned = assign_to_plates(
-                sorted(candidates), empties_per_plate=empties_per_plate,
+                sorted(candidates),
+                empties_per_plate=empties_per_plate,
+                empties_limit=empties_limit,
                 already_used_empties=already_used_empties)
 
             rows = get_plate_assignment_rows(assigned)

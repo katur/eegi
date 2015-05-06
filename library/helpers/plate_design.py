@@ -49,7 +49,9 @@ def get_random_wells(count, is_384=False):
     return wells
 
 
-def assign_to_plates(l, vertical=False, empties_per_plate=0,
+def assign_to_plates(l, vertical=False,
+                     empties_per_plate=0,
+                     empties_limit=None,
                      already_used_empties=set()):
     '''
     Assign the items of l to 96-format plates.
@@ -79,14 +81,22 @@ def assign_to_plates(l, vertical=False, empties_per_plate=0,
                     break
         return empties
 
+    print empties_limit
+    print vertical
+    print '\n'
     well_list = get_well_list(vertical=vertical)
     plates = []
     empties = []
+    empties_so_far = 0
 
     for item in l:
         if not plates or len(plates[-1]) >= NUM_WELLS_96:
+            if empties_limit:
+                while empties_so_far + empties_per_plate > empties_limit:
+                    empties_per_plate -= 1
             empties = add_new_plate(plates, empties_per_plate,
                                     already_used_empties)
+            empties_so_far += len(empties)
 
         current_well = well_list[len(plates[-1])]
 
@@ -94,8 +104,13 @@ def assign_to_plates(l, vertical=False, empties_per_plate=0,
             plates[-1].append(None)
 
             if len(plates[-1]) >= NUM_WELLS_96:
+                if empties_limit:
+                    while empties_so_far + empties_per_plate > empties_limit:
+                        empties_per_plate -= 1
                 empties = add_new_plate(plates, empties_per_plate,
                                         already_used_empties)
+                empties_so_far += len(empties)
+
             current_well = well_list[len(plates[-1])]
 
         plates[-1].append(item)
