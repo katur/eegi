@@ -63,6 +63,7 @@ class Command(BaseCommand):
         if summary_mode:
             self.stdout.write('\n\nAfter accounting for universals:')
             self.print_candidates_by_worm(candidates_by_worm)
+            return
 
         # Create official cherry pick list, including randomized empty wells
         cherrypick_list = []
@@ -103,11 +104,10 @@ class Command(BaseCommand):
                            int(x[3][1:]), x[3][0]))
 
         # Print the list
-        if not summary_mode:
-            self.stdout.write('source_plate, source_well, '
-                              'destination_plate, destination_well')
-            for row in cherrypick_list:
-                self.stdout.write(','.join([str(x) for x in row]))
+        self.stdout.write('source_plate, source_well, '
+                          'destination_plate, destination_well')
+        for row in cherrypick_list:
+            self.stdout.write(','.join([str(x) for x in row]))
 
         # Quick fix for empty_wells check up to this point not accounting
         # for not-full plates potentially having the same plate pattern,
