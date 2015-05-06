@@ -28,15 +28,11 @@ class Command(BaseCommand):
         previous_combo = (None, None)
 
         destination_plates = set()
-        empties = []
 
         for line in f:
             row = line.split(',')
             source_plate = row[0]
             destination_plate = row[2]
-
-            if source_plate is None:
-                empties.append(row)
 
             destination_plates.add(destination_plate)
 
