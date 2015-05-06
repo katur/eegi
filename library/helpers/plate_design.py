@@ -2,7 +2,7 @@ import random
 
 from library.helpers.constants import (ROWS_96, COLS_96, NUM_WELLS_96,
                                        ROWS_384, COLS_384, NUM_WELLS_384)
-from library.helpers.plate_layout import get_well_list
+from library.helpers.plate_layout import get_well_list, is_symmetric
 from library.helpers.well_naming import get_well_name
 
 
@@ -73,9 +73,8 @@ def assign_to_plates(l, vertical=False, num_empties=0,
         if num_empties:
             while True:
                 empties = get_random_wells(num_empties)
-                # TODO: check for empties being symmetric with itself or
-                # to any in already_used_empties
-                if empties not in already_used_empties:
+                if (not is_symmetric(empties) and
+                        empties not in already_used_empties):
                     already_used_empties.append(empties)
                     break
         return empties
