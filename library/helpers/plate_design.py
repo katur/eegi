@@ -81,9 +81,6 @@ def assign_to_plates(l, vertical=False,
                     break
         return empties
 
-    print empties_limit
-    print vertical
-    print '\n'
     well_list = get_well_list(vertical=vertical)
     plates = []
     empties = []
