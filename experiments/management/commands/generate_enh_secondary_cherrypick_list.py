@@ -1,11 +1,10 @@
-import re
-
 from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import passes_enh_secondary_criteria
 from experiments.helpers.scores import get_secondary_candidates
 from library.helpers.plate_design import (assign_to_plates,
                                           get_plate_assignment_rows)
+from library.helpers.plate_layout import is_symmetric
 
 
 HELP = '''
@@ -72,6 +71,8 @@ class Command(BaseCommand):
 
             if label == 'universal':
                 num_empties = 1
+            elif label == 'it57':
+                num_empties = 0
             else:
                 num_empties = 2
 
@@ -99,16 +100,30 @@ class Command(BaseCommand):
             key=lambda x: (x[2].split('_')[0], int(x[2].split('E')[1]),
                            int(x[3][1:]), x[3][0]))
 
+        # Double check and print empty wells in summary mode
         if summary_mode:
-            self.stdout.write('Empty wells:\n')
+            self.stdout.write('\n\nEmpty wells:\n')
+            e = {}
             for row in cherrypick_list:
-                if re.search('^None', row):
-                    self.stdout.write(','.join([str(x) for x in row]))
+                if row[0] is None:
+                    if row[2] not in e:
+                        e[row[2]] = set()
+                    e[row[2]].add(row[3])
+
+            seen = set()
+            for plate, wells in e.iteritems():
+                wells = tuple(sorted(wells))
+                self.stdout.write('\t{}: {}'.format(plate, wells))
+                if wells in seen:
+                    self.stdout.write('ERROR: already seen!')
+                seen.add(wells)
+
+                if is_symmetric(wells):
+                    self.stdout.write('ERROR: symmetric!')
             return
 
         # Print the list
         self.stdout.write('source_plate, source_well, '
                           'destination_plate, destination_well')
-
         for row in cherrypick_list:
             self.stdout.write(','.join([str(x) for x in row]))
