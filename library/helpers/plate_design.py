@@ -50,7 +50,7 @@ def get_random_wells(count, is_384=False):
 
 
 def assign_to_plates(l, vertical=False, num_empties=0,
-                     already_used_empties=[]):
+                     already_used_empties=set()):
     '''
     Assign the items of l to 96-format plates.
 
@@ -72,10 +72,10 @@ def assign_to_plates(l, vertical=False, num_empties=0,
         empties = []
         if num_empties:
             while True:
-                empties = get_random_wells(num_empties)
+                empties = tuple(sorted(get_random_wells(num_empties)))
                 if (not is_symmetric(empties) and
                         empties not in already_used_empties):
-                    already_used_empties.append(empties)
+                    already_used_empties.add(empties)
                     break
         return empties
 
@@ -98,6 +98,9 @@ def assign_to_plates(l, vertical=False, num_empties=0,
             current_well = well_list[len(plates[-1])]
 
         plates[-1].append(item)
+
+    while len(plates[-1]) < 96:
+        plates[-1].append(None)
 
     zipped = []
     for plate in plates:

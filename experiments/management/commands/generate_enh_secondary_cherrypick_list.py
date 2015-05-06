@@ -66,6 +66,7 @@ class Command(BaseCommand):
 
         # Create official cherry pick list, including randomized empty wells
         cherrypick_list = []
+        already_used_empties = set()
         for worm, candidates in candidates_by_worm.iteritems():
             label = worm.allele if hasattr(worm, 'allele') else worm
 
@@ -76,8 +77,9 @@ class Command(BaseCommand):
             else:
                 num_empties = 2
 
-            assigned = assign_to_plates(sorted(candidates),
-                                        num_empties=num_empties)
+            assigned = assign_to_plates(
+                sorted(candidates), num_empties=num_empties,
+                already_used_empties=already_used_empties)
 
             rows = get_plate_assignment_rows(assigned)
 
@@ -102,7 +104,7 @@ class Command(BaseCommand):
 
         # Double check and print empty wells in summary mode
         if summary_mode:
-            self.stdout.write('\n\nEmpty wells:\n')
+            self.stdout.write('\n\nEmpty wells analysis issues:\n')
             e = {}
             for row in cherrypick_list:
                 if row[0] is None:
@@ -113,13 +115,15 @@ class Command(BaseCommand):
             seen = set()
             for plate, wells in e.iteritems():
                 wells = tuple(sorted(wells))
-                self.stdout.write('\t{}: {}'.format(plate, wells))
-                if wells in seen:
-                    self.stdout.write('ERROR: already seen!')
-                seen.add(wells)
-
                 if is_symmetric(wells):
-                    self.stdout.write('ERROR: symmetric!')
+                    self.stdout.write('{}:{} pattern is symmetric!'
+                                      .format(plate, wells))
+
+                if wells in seen:
+                    self.stdout.write('{}:{} pattern already seen!'
+                                      .format(plate, wells))
+
+                seen.add(wells)
             return
 
         # Print the list
