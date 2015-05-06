@@ -4,7 +4,7 @@ from library.helpers.constants import (ROWS_96, COLS_96,
                                        NUM_ROWS_96, NUM_COLS_96,
                                        ROWS_384, COLS_384)
 from library.helpers.tile_conversion import well_to_tile
-from library.helpers.well_naming import get_well_name
+from library.helpers.well_naming import get_well_name, is_proper_well_name
 
 
 def get_well_list(vertical=False, is_384=False):
@@ -146,6 +146,35 @@ def get_384_position(child_quadrant, child_position):
         parent_column -= 1
 
     return get_well_name(parent_row, parent_column)
+
+
+def get_symmetric_well(well):
+    '''
+    Get the well that is symmetric to the provided well (i.e., in the same
+    position if the plate were flipped 180 degrees).
+
+    '''
+    if not is_proper_well_name(well):
+        raise ValueError('{} is an improper well name'.format(well))
+
+    row_idx = (NUM_ROWS_96 - 1) - ROWS_96.index(well[0])
+    row = ROWS_96[row_idx]
+    col = (NUM_COLS_96 + 1) - int(well[1:])
+    return get_well_name(row, col)
+
+
+def is_symmetric(wells):
+    '''
+    Determine if a list of wells create a symmetrical pattern (i.e., for
+    each well present in wells, its symmetric well is present)
+
+    '''
+    for well in wells:
+        s = get_symmetric_well(well)
+        if s not in wells:
+            return False
+
+    return True
 
 
 def is_ahringer_96_plate(plate_name):
