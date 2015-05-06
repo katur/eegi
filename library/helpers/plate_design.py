@@ -49,30 +49,30 @@ def get_random_wells(count, is_384=False):
     return wells
 
 
-def assign_to_plates(l, vertical=False, num_empties=0,
+def assign_to_plates(l, vertical=False, empties_per_plate=0,
                      already_used_empties=set()):
     '''
     Assign the items of l to 96-format plates.
 
     Fill order determined by optional 'vertical' parameter.
 
-    Optionally assign num_empties random, empty wells per plate
+    Optionally assign empties_per_plate random, empty wells per plate
     (defaults to 0). If there are empty wells to be assigned, enforces
     that no two plates will have the same pattern (and that no plate
     will have a pattern already existing in optional parameter
     already_used_empties).
 
     '''
-    def add_new_plate(plates, num_empties, already_used_empties):
+    def add_new_plate(plates, empties_per_plate, already_used_empties):
         '''
         Add a new plate to plates, generating new empty wells.
 
         '''
         plates.append([])
         empties = []
-        if num_empties:
+        if empties_per_plate:
             while True:
-                empties = tuple(sorted(get_random_wells(num_empties)))
+                empties = tuple(sorted(get_random_wells(empties_per_plate)))
                 if (not is_symmetric(empties) and
                         empties not in already_used_empties):
                     already_used_empties.add(empties)
@@ -85,7 +85,8 @@ def assign_to_plates(l, vertical=False, num_empties=0,
 
     for item in l:
         if not plates or len(plates[-1]) >= NUM_WELLS_96:
-            empties = add_new_plate(plates, num_empties, already_used_empties)
+            empties = add_new_plate(plates, empties_per_plate,
+                                    already_used_empties)
 
         current_well = well_list[len(plates[-1])]
 
@@ -93,7 +94,7 @@ def assign_to_plates(l, vertical=False, num_empties=0,
             plates[-1].append(None)
 
             if len(plates[-1]) >= NUM_WELLS_96:
-                empties = add_new_plate(plates, num_empties,
+                empties = add_new_plate(plates, empties_per_plate,
                                         already_used_empties)
             current_well = well_list[len(plates[-1])]
 

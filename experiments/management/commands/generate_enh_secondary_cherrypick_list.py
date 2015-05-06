@@ -71,14 +71,14 @@ class Command(BaseCommand):
             label = worm.allele if hasattr(worm, 'allele') else worm
 
             if label == 'universal':
-                num_empties = 1
+                empties_per_plate = 1
             elif label == 'it57':
-                num_empties = 0
+                empties_per_plate = 0
             else:
-                num_empties = 2
+                empties_per_plate = 2
 
             assigned = assign_to_plates(
-                sorted(candidates), num_empties=num_empties,
+                sorted(candidates), empties_per_plate=empties_per_plate,
                 already_used_empties=already_used_empties)
 
             rows = get_plate_assignment_rows(assigned)
