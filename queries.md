@@ -27,7 +27,7 @@ the enhancer secondary. The number is not exact, for several reasons:
     GROUP BY E1.worm_strain_id;
 
 
-Get strong or medium enhancer counts by mutant.
+### Get strong or medium enhancer counts by mutant:
 
     SELECT E1.worm_strain_id, COUNT(DISTINCT E1.worm_strain_id, E1.id, S1.well, E2.id, S2.well)
     FROM ManualScore AS S1, ManualScore AS S2, Experiment AS E1, Experiment AS E2
@@ -43,3 +43,30 @@ Get strong or medium enhancer counts by mutant.
     OR S1.score_code_id=17 OR S2.score_code_id=17
     OR S1.score_code_id=18 OR S2.score_code_id=18)
     GROUP BY E1.worm_strain_id;
+
+
+### More queries:
+
+    SELECT LibraryWell.id, intended_clone_id, COUNT(*) FROM LibraryWell
+    LEFT JOIN LibraryPlate
+    ON LibraryPlate.id = LibraryWell.plate_id
+    WHERE screen_stage=2
+    AND intended_clone_id IS NOT NULL
+    AND intended_clone_id != "L4440"
+    GROUP BY intended_clone_id
+    HAVING COUNT(*) > 1
+    ORDER BY COUNT(*) DESC;
+
+    SELECT A.id, B.id, A.intended_clone_id
+    FROM LibraryWell AS A, LibraryWell AS B, LibraryPlate AS C, LibraryPlate AS
+    D
+    WHERE A.id != B.id
+    AND C.id != D.id
+    AND A.plate_id = C.id
+    AND B.plate_id = D.id
+    AND A.intended_clone_id = B.intended_clone_id
+    AND A.intended_clone_id IS NOT NULL
+    AND A.intended_clone_id != "L4440"
+    AND B.id LIKE "universal%"
+    AND C.screen_stage=2
+    AND D.screen_stage=2;
