@@ -48,15 +48,30 @@ are in [README_database_migration.md](dbmigration/README_database_migration.md).
 The project is organized into four main apps centered around the project data:
 
 - `worms` captures the *C. elegans* strains used in the screen.
-- `clones` captures the RNAi clones (theoretically) used in the screen,
-including mapping information.
+- `clones` captures the RNAi feeding clones used in the screen, including
+information about what genes these clones target.
 - `library` captures the physical RNAi stocks used in the screen,
 including sequencing results.
-- `experiments` captures the actual experiments,
-including human and machine scores of results.
+- `experiments` captures the actual experiments, including human and
+machine scores of results.
 
-There is also an app `website` for aspects of the website that are common
-between apps, and an app `utils` for general utilities and helper functions.
+
+There are several other, organizational apps:
+
+- `website` holds aspects of the website that are common to all apps (e.g.,
+the templates and stylesheets for the home page, footer, etc)
+- `utils` holds some general utilities and helper functions.
+- `dbmigration` holds the functionality for syncing the database according to
+the legacy database
+
+
+Finally, an explanation of these top level directories (which are not apps):
+
+- `materials` holds various input files (Genewiz sequencing output, the
+official Ahringer RNAi library Excel database, etc.)
+- `backups` holds MySQL database backups, schema backups, etc.
+- `antiquated` holds old code related to this project, but that predates
+this Django project
 
 
 ## Code
@@ -78,4 +93,5 @@ to compile.
 Purely offline scripts to be run by the project maintainer
 (e.g. the script that migrates data from the old database)
 live in the standard location: `appname/management/commands/scriptname.py`,
-to be run with `./manage.py scriptname`.
+to be run with `./manage.py scriptname`. To browse these scripts,
+run `./manage.py help`.
