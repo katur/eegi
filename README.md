@@ -1,8 +1,9 @@
 # Genome-Wide EEGI (Early Embryogenesis Genetic Interactions) Project
 
-Django-based web interface and programs for a genome-wide *Caenorhabditis elegans* screen,
-which used millions of pairwise gene knockdown experiments to uncover
-suppressor and enhancer phenotypes to reveal genetic interactions.
+Django-based web interface and programs for a genome-wide
+*Caenorhabditis elegans* screen, which used millions of pairwise gene
+knockdown experiments to uncover suppressor and enhancer phenotypes to
+reveal genetic interactions.
 
 
 ## Dependencies
@@ -13,8 +14,7 @@ Package dependencies, including Django itself,
 are listed in `requirements.txt`.
 These should be [pip](https://pypi.python.org/pypi/pip)-installed into a fresh
 [Python virtual environment](http://virtualenv.readthedocs.org/)
-wherever the project runs (for development or production).
-I use
+wherever the project runs (for development or production). I use
 [virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/)
 to make working with Python virtual environments easier.
 
