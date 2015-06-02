@@ -45,7 +45,7 @@ the enhancer secondary. The number is not exact, for several reasons:
     GROUP BY E1.worm_strain_id;
 
 
-### More queries:
+## More, miscellaneous queries:
 
     SELECT LibraryWell.id, intended_clone_id, COUNT(*) FROM LibraryWell
     LEFT JOIN LibraryPlate
@@ -58,8 +58,8 @@ the enhancer secondary. The number is not exact, for several reasons:
     ORDER BY COUNT(*) DESC;
 
     SELECT A.id, B.id, A.intended_clone_id
-    FROM LibraryWell AS A, LibraryWell AS B, LibraryPlate AS C, LibraryPlate AS
-    D
+    FROM LibraryWell AS A, LibraryWell AS B,
+    LibraryPlate AS C, LibraryPlate AS D
     WHERE A.id != B.id
     AND C.id != D.id
     AND A.plate_id = C.id
