@@ -21,12 +21,10 @@ class ExperimentAdmin(admin.ModelAdmin):
         'date',
         'temperature',
         'worm_strain',
-        'library_plate',
     )
 
     search_fields = (
         'id',
-        'worm_strain__id',
         'library_plate__id',
     )
 
@@ -35,12 +33,13 @@ class ManualScoreCodeAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'short_description',
-        'description',
+        'legacy_description',
     )
 
     search_fields = (
         'short_description',
         'description',
+        'legacy_description',
     )
 
 
@@ -53,14 +52,12 @@ class ManualScoreAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        'experiment__worm_strain',
-        'score_code',
         'scorer',
+        'timestamp',
     )
 
     search_fields = (
         'experiment__id',
-        'experiment__worm_strain',
     )
 
 
