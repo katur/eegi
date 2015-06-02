@@ -2,6 +2,7 @@
 *local_settings.py
 backups/
 materials/
+staticfiles/
 
 # Redirected command-line output
 *.out
