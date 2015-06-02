@@ -221,7 +221,7 @@ class DevstarScore(models.Model):
     count_larva = models.IntegerField(null=True, blank=True,
                                       help_text='DevStaR program output')
     count_embryo = models.IntegerField(null=True, blank=True,
-                                       help_text='area_embryo / 70')
+                                       help_text='area_embryo // 70')
 
     larva_per_adult = models.FloatField(
         null=True, blank=True, default=None,
