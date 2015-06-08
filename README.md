@@ -67,11 +67,11 @@ the legacy database
 
 Finally, an explanation of these top level directories (which are not apps):
 
-- `materials` holds various input files (Genewiz sequencing output, the
-official Ahringer RNAi library Excel database, etc.)
-- `backups` holds MySQL database backups, schema backups, etc.
-- `antiquated` holds old code related to this project, but that predates
-this Django project
+- `materials`, excluded from the repo, holds various input files (Genewiz 
+sequencing output, the official Ahringer RNAi library Excel database, etc.)
+- `backups`, excluded from the repo, holds MySQL database backups, schema 
+backups, etc.
+- `antiquated` holds older code that predates this Django project
 
 
 ## Code
