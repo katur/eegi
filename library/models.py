@@ -10,9 +10,10 @@ from library.helpers.tile_conversion import well_to_tile
 class LibraryPlate(models.Model):
     """A plate of RNAi feeding clones.
 
-    Note that while we may have multiple copies of the same library plate,
-    we only represent one copy. This is because, historically, we did not
-    keep track of which copy was used in which experiment.
+    Note that while we may have multiple frozen replicates of the same library
+    plate, we only represent one copy in the database. This is because,
+    historically, we did not keep track of which copy was used in which
+    experiment.
     """
     id = models.CharField(max_length=20, primary_key=True)
     screen_stage = models.PositiveSmallIntegerField(null=True, blank=True,
