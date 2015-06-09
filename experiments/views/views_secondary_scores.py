@@ -15,11 +15,9 @@ from worms.models import WormStrain
 
 
 def secondary_scores(request, worm, temperature):
-    '''
-    Render page displaying the secondary scores for a particular worm,
+    """Render the page displaying the secondary scores for a particular worm,
     sorted with positives on top.
-
-    '''
+    """
     worm = get_object_or_404(WormStrain, pk=worm)
     screen = worm.get_screen_category(temperature)
 
@@ -78,10 +76,8 @@ def secondary_scores(request, worm, temperature):
 
 
 def secondary_scores_search(request):
-    '''
-    Render page to search for secondary scores for a particular mutant.
-
-    '''
+    """Render the page to search for secondary scores for a particular mutant.
+    """
     error = ''
     if request.method == 'POST':
         form = SecondaryScoresForm(request.POST)

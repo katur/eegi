@@ -8,6 +8,7 @@ PLATES_PER_PAGE = 100
 
 
 def library_plates(request):
+    """Render the page listing all library plates."""
     screen_stage = request.GET.get('screen_stage')
     if screen_stage:
         plates = sorted(LibraryPlate.objects.filter(
@@ -35,6 +36,7 @@ def library_plates(request):
 
 
 def library_plate(request, id):
+    """Render the page showing the contents of a single library plate."""
     plate = get_object_or_404(LibraryPlate, pk=id)
     wells = LibraryWell.objects.filter(plate=plate).order_by('well')
     for well in wells:

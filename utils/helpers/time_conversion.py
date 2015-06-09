@@ -4,8 +4,7 @@ from django.utils import timezone
 
 
 def get_timestamp(year, month, day, time, ymd):
-    """
-    Return a datetime.datetime object from an integer year,
+    """Return a datetime.datetime object from an integer year,
     a 3-letter-string month (e.g. 'Jan'), an integer day,
     and a string time in format '00:00:00'.
 
@@ -37,8 +36,7 @@ def get_timestamp(year, month, day, time, ymd):
 
 
 def get_timestamp_from_ymd(ymd, time):
-    """
-    Return a datetime.datetime timezone aware object from a ymd-format date
+    """Return a datetime.datetime timezone-aware object from a ymd-format date
     and time.
     """
     try:

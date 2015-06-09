@@ -2,10 +2,7 @@ from django.db import models
 
 
 class Clone(models.Model):
-    """
-    An RNAi clone.
-    """
-    # The name of this strain on Wormbase.org
+    """An RNAi clone used in the screen."""
     id = models.CharField(max_length=30, primary_key=True)
 
     class Meta:

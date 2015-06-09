@@ -12,6 +12,7 @@ from worms.models import WormStrain
 
 
 def double_knockdown_search(request):
+    """Render the page to search for a double knockdown."""
     error = ''
     if request.method == 'POST':
         form = DoubleKnockdownForm(request.POST)
@@ -76,6 +77,7 @@ def double_knockdown_search(request):
 
 
 def double_knockdown(request, worm, clone, temperature):
+    """Render the page displaying the images of a double knockdown search."""
     worm = get_object_or_404(WormStrain, pk=worm)
     clone = get_object_or_404(Clone, pk=clone)
     n2 = get_object_or_404(WormStrain, pk='N2')

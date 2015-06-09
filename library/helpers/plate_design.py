@@ -7,10 +7,7 @@ from library.helpers.well_naming import get_well_name
 
 
 def get_random_well(is_384=False):
-    '''
-    Get a 96-format random well.
-
-    '''
+    """Get a random 96-format well."""
     if is_384:
         rows = ROWS_384
         cols = COLS_384
@@ -24,11 +21,10 @@ def get_random_well(is_384=False):
 
 
 def get_random_wells(count, is_384=False):
-    '''
-    Get random, unique wells (number determined by count parameter).
-    count must be between 0 and number of wells in a plate, inclusive.
+    """Get unique, random wells (number determined by count parameter).
 
-    '''
+    count must be between 0 and number of wells in a plate, inclusive.
+    """
     if is_384:
         upper = NUM_WELLS_384
     else:
@@ -53,8 +49,7 @@ def assign_to_plates(l, vertical=False,
                      empties_per_plate=0,
                      empties_limit=None,
                      already_used_empties=set()):
-    '''
-    Assign the items of l to 96-format plates.
+    """Assign the items of l to 96-format plates.
 
     Fill order determined by optional 'vertical' parameter.
 
@@ -63,13 +58,9 @@ def assign_to_plates(l, vertical=False,
     that no two plates will have the same pattern (and that no plate
     will have a pattern already existing in optional parameter
     already_used_empties).
-
-    '''
+    """
     def add_new_plate(plates, empties_per_plate, already_used_empties):
-        '''
-        Add a new plate to plates, generating new empty wells.
-
-        '''
+        """Add a new plate to plates, generating new empty wells."""
         plates.append([])
         empties = []
         if empties_per_plate:
@@ -123,13 +114,12 @@ def assign_to_plates(l, vertical=False,
 
 
 def get_plate_assignment_rows(plates):
-    '''
-    Get rows corresponding to a plate assignment. Each rows lists the item,
-    the plate assigned to, and the well assigned to.
+    """Transform nested dictionary 'plates' to rows for nicer tabular output
 
-    'plates' param must be in format as returned by assign_to_plates
+    Each rows lists the item, the plate assigned to, and the well assigned to.
 
-    '''
+    Parameter 'plates' must be in format as returned by assign_to_plates.
+    """
     rows = []
 
     for plate_index, plate in enumerate(plates):
@@ -140,12 +130,10 @@ def get_plate_assignment_rows(plates):
 
 
 def get_empties_from_list_of_lists(l):
-    '''
-    List the positions in which a list of lists is 'None'.
+    """List the positions in which a list of lists is 'None'.
 
     This is useful for cherry picking, to list the empty wills separately.
-
-    '''
+    """
     e = []
     for outer_i, nested_l in enumerate(l):
         empties = [i for i, item in enumerate(nested_l) if item is None]

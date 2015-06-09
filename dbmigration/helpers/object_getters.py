@@ -8,12 +8,7 @@ from worms.models import WormStrain
 
 
 def get_worm_strain(mutant, mutantAllele):
-    """
-    Get a worm strain from new database,
-    from its mutant gene and mutant allele.
-
-    Exists with an error if the worm strain is not present.
-    """
+    """Get a worm strain from its mutant gene and mutant allele."""
     try:
         if mutant == 'N2':
             gene = None
@@ -33,11 +28,7 @@ def get_worm_strain(mutant, mutantAllele):
 
 
 def get_library_plate(library_plate_name):
-    """
-    Get a library plate from the new database, from its plate name.
-
-    Exits with an error if the plate is not present.
-    """
+    """Get a library plate from its plate name."""
     try:
         return LibraryPlate.objects.get(id=library_plate_name)
 
@@ -47,6 +38,7 @@ def get_library_plate(library_plate_name):
 
 
 def get_experiment(experiment_id):
+    """Get an experiment from its id."""
     try:
         return Experiment.objects.get(id=experiment_id)
     except ObjectDoesNotExist:
@@ -55,6 +47,7 @@ def get_experiment(experiment_id):
 
 
 def get_score_code(score_code_id):
+    """Get a score code from its id."""
     try:
         return ManualScoreCode.objects.get(id=score_code_id)
     except ObjectDoesNotExist:
@@ -63,6 +56,7 @@ def get_score_code(score_code_id):
 
 
 def get_user(username):
+    """Get a user from its username."""
     if username == 'Julie':
         username = 'julie'
     if username == 'patricia':
@@ -76,6 +70,7 @@ def get_user(username):
 
 
 def get_clone(clone_name):
+    """Get a clone from its clone name."""
     try:
         return Clone.objects.get(id=clone_name)
     except ObjectDoesNotExist:
@@ -84,6 +79,7 @@ def get_clone(clone_name):
 
 
 def get_library_well(library_well_name):
+    """Get a library well from its name."""
     try:
         return LibraryWell.objects.get(id=library_well_name)
     except ObjectDoesNotExist:

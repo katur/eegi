@@ -1,5 +1,4 @@
-"""
-This module contains the individual steps used to migrate data from the legacy
+"""This module contains the steps used to migrate data from the legacy
 database to the new database.
 
 Each step works more or less the same way. Records are queried from the old
@@ -32,10 +31,8 @@ from utils.helpers.time_conversion import get_timestamp, get_timestamp_from_ymd
 
 
 def sync_rows(cursor, legacy_query, sync_row_function, **kwargs):
-    """
-    Sync the rows from a query to the legacy database
-    to the current database, according to
-    sync_row_function(legacy_row, **kwargs).
+    """Sync the rows from a query to the legacy database to the current
+    database, according to sync_row_function(legacy_row, **kwargs).
     """
     cursor.execute(legacy_query)
     legacy_rows = cursor.fetchall()
@@ -57,8 +54,7 @@ def sync_rows(cursor, legacy_query, sync_row_function, **kwargs):
 
 
 def update_LibraryPlate_table(cursor):
-    """
-    Update the LibraryPlate table according to distinct plates recorded
+    """Update the LibraryPlate table according to distinct plates recorded
     in legacy tables RNAiPlate and CherryPickRNAiPlate.
 
     Find original Ahringer 384-well plates through the chromosome and
@@ -129,8 +125,7 @@ def update_LibraryPlate_table(cursor):
 
 
 def update_Experiment_table(cursor):
-    """
-    Update the Experiment table according to legacy table RawData.
+    """Update the Experiment table according to legacy table RawData.
 
     Several datatype transforms occur from the old to the new schema:
 
@@ -178,9 +173,8 @@ def update_Experiment_table(cursor):
 
 
 def update_ManualScoreCode_table(cursor):
-    """
-    Update the ManualScoreCode table according to the legacy table of the same
-    name.
+    """Update the ManualScoreCode table according to the legacy table of
+    the same name.
 
     We've made these decisions about migrating score codes and scores
         into the new database:
@@ -218,8 +212,7 @@ def update_ManualScoreCode_table(cursor):
 
 
 def update_ManualScore_table(cursor):
-    """
-    Update the ManualScore table according to the legacy table of the same
+    """Update the ManualScore table according to the legacy table of the same
     name.
 
     Requires that ScoreYear, ScoreMonth, ScoreDate, and ScoreTime
@@ -374,8 +367,8 @@ def update_ManualScore_table_secondary(cursor):
 
 
 def update_DevstarScore_table(cursor):
-    """
-    Update the DevstarScore table according to legacy table RawDataWithScore.
+    """Update the DevstarScore table according to legacy table
+    RawDataWithScore.
 
     Redundant fields (mutantAllele, targetRNAiClone, RNAiPlateID) are excluded.
 
@@ -496,8 +489,7 @@ def update_DevstarScore_table(cursor):
 
 
 def update_Clone_table(cursor):
-    """
-    Update the Clone table, according to the distinct clones in legacy
+    """Update the Clone table, according to the distinct clones in legacy
     table RNAiPlate.
 
     Find the distinct Ahringer clone names (in 'sjj_X' format) and
@@ -534,8 +526,7 @@ def update_Clone_table(cursor):
 
 
 def update_LibraryWell_table(cursor):
-    """
-    Update the LibraryWell table to reflect the clone layout of all plates:
+    """Update the LibraryWell table to reflect the clone layout of all plates:
     source plates (Ahringer 384 and original Orfeome plates e.g. GHR-10001),
     primary plates, and secondary plates. Also update the parent LibraryWells
     of primary and secondary plates.

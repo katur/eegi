@@ -71,6 +71,9 @@ def get_missing_wells(present, complete):
 
 
 def get_384_parent_well(well):
+    """Get the 384 format well from which a particular 96 format well is
+    derived, assuming standard Ahringer naming.
+    """
     child_plate_parts = well.plate.id.split('-')
     parent_plate_name = child_plate_parts[0] + '-' + child_plate_parts[1]
     parent_plate = get_library_plate(parent_plate_name)

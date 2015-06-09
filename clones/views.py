@@ -8,9 +8,7 @@ CLONES_PER_PAGE = 100
 
 
 def clones(request):
-    """
-    Render the page to see RNAi clones.
-    """
+    """Render the page listing all RNAi clones."""
     clones = Clone.objects.all()
     paginator = Paginator(clones, CLONES_PER_PAGE)
     page = request.GET.get('page')

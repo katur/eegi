@@ -1,5 +1,4 @@
 from __future__ import division
-import datetime
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -29,9 +28,10 @@ RELEVANCE_ACROSS_REPLICATES = (NEGATIVE, OTHER, UNSCORED, WEAK, MEDIUM, STRONG)
 
 
 class Experiment(models.Model):
-    """
-    A plate-level experiment (i.e., a flat-bottom plate in which
-    worms and RNAi clones were put at a specific temperature).
+    """A plate-level experiment.
+
+    I.e., a flat-bottom plate in which worms and RNAi clones were combined
+    and put at a specific temperature.
     """
     id = models.PositiveIntegerField(primary_key=True)
     worm_strain = models.ForeignKey(WormStrain)
@@ -93,8 +93,8 @@ class Experiment(models.Model):
 
 
 class ManualScoreCode(models.Model):
-    """
-    A score category that can be assigned to an image by a human.
+    """A score category that can be assigned to an image manually by a
+    human.
     """
     id = models.IntegerField(primary_key=True)
     description = models.CharField(max_length=100, blank=True)
@@ -138,8 +138,8 @@ class ManualScoreCode(models.Model):
 
 
 class ManualScore(models.Model):
-    """
-    A score that was assigned to an image by a human.
+    """A score that was assigned to a particular experiment image by a
+    human.
     """
     experiment = models.ForeignKey(Experiment)
     well = models.CharField(max_length=3)
@@ -186,12 +186,14 @@ class ManualScore(models.Model):
             return OTHER
 
     def get_weight(self):
-        '''
-        Return a weight used for capturing the most relevant score category
-        for an image. Note that relevance and strength do not always coincide
-        ('negative' is more relevant than 'other', since negative means that it
-        is not a sup/enh whereas other might mean any auxiliary score).
-        '''
+        """Returns a relevance weight for this score.
+
+        Note that relevance and strength do not always coincide
+        (a 'negative' score is more relevant than an 'other' score, since
+        'negative' means that it does not indicate a genetic interaction,
+        whereas 'other' may be any auxiliary score, such as an experiment
+        problem or a phenotype unrelated to sup/enh).
+        """
         return SCORE_WEIGHTS[self.get_category()]
 
     def get_relevance_per_replicate(self):
@@ -202,8 +204,7 @@ class ManualScore(models.Model):
 
 
 class DevstarScore(models.Model):
-    """
-    Information about an image determined by the DevStaR computer vision
+    """Information about an image determined by the DevStaR computer vision
     program.
     """
     experiment = models.ForeignKey(Experiment)

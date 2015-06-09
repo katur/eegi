@@ -9,10 +9,7 @@ from worms.models import WormStrain
 
 
 def get_average_score_weight(scores):
-    '''
-    Get the average weight of scores.
-
-    '''
+    """Get the average weight of scores."""
     num_countable = 0
     total_weight = 0
     for score in scores:
@@ -26,10 +23,7 @@ def get_average_score_weight(scores):
 
 
 def get_most_relevant_score_per_replicate(scores):
-    '''
-    From multiple scores for a single replicate, get the most relevant.
-
-    '''
+    """From multiple scores for a single replicate, get the most relevant."""
     scores.sort(
         key=lambda x: x.get_relevance_per_replicate(),
         reverse=True)
@@ -37,11 +31,8 @@ def get_most_relevant_score_per_replicate(scores):
 
 
 def sort_scores_by_relevance_across_replicates(scores):
-    '''
-    From scores across replicates (a single, most relevant score per
-    replicate), sort by the most relevant.
-
-    '''
+    """From scores across replicates (a single, most relevant score per
+    replicate), sort by the most relevant."""
     return sorted(scores,
                   key=lambda x: x.get_relevance_across_replicates(),
                   reverse=True)
@@ -49,8 +40,7 @@ def sort_scores_by_relevance_across_replicates(scores):
 
 def get_organized_scores_all_worms(screen, screen_level,
                                    most_relevant_only=False):
-    '''
-    Fetch all scores for a particular screen ('ENH' or 'SUP')
+    """Fetch all scores for a particular screen ('ENH' or 'SUP')
     and screen_level (1 for primary, 2 for secondary),
     organized as:
 
@@ -59,8 +49,7 @@ def get_organized_scores_all_worms(screen, screen_level,
     Or, if most_relevant_only is set to True:
 
         s[worm][library_well][experiment] = most_relevant_score
-
-    '''
+    """
     w = get_organized_library_wells(screen_level=screen_level)
 
     worms = WormStrain.objects
@@ -80,8 +69,7 @@ def get_organized_scores_all_worms(screen, screen_level,
 def get_organized_scores_specific_worm(worm, screen, screen_level,
                                        most_relevant_only=False,
                                        library_wells=None):
-    '''
-    Fetch all scores for a particular worm, screen ('ENH' or 'SUP'),
+    """Fetch all scores for a particular worm, screen ('ENH' or 'SUP'),
     and screen level (1 for primary, 2 for secondary),
     organized as:
 
@@ -90,8 +78,7 @@ def get_organized_scores_specific_worm(worm, screen, screen_level,
     Or, if most_relevant_only is set to True:
 
         s[library_well][experiment] = most_relevant_score
-
-    '''
+    """
     scores = ManualScore.objects.filter(
         experiment__screen_level=screen_level,
         experiment__is_junk=False,
@@ -116,16 +103,14 @@ def get_organized_scores_specific_worm(worm, screen, screen_level,
 
 
 def organize_scores(scores, library_wells, most_relevant_only=False):
-    '''
-    Organize a list of scores, consulting organized library_wells w, into:
+    """Organize a list of scores, consulting organized library_wells w, into:
 
         s[library_well][experiment] = [scores]
 
     Or, if most_relevant_only is set to True:
 
         s[library_well][experiment] = most_relevant_score
-
-    '''
+    """
     s = {}
 
     for score in scores:
@@ -152,8 +137,7 @@ def organize_scores(scores, library_wells, most_relevant_only=False):
 
 
 def get_secondary_candidates(screen, passes_criteria):
-    '''
-    Get the list of library wells to include in the secondary.
+    """Get the list of library wells to include in the secondary.
 
     TODO: this has not yet been implemented for SUP screen. The
     secondary candidate selection for the SUP screen predated this
@@ -174,8 +158,7 @@ def get_secondary_candidates(screen, passes_criteria):
             scores, where each score should be the most relevant score
             for a particular replicate. It should return True if the list
             of countable scores passes the criteria, or False otherwise.
-
-    '''
+    """
     # Get all primary scores for the particular screen
     s = get_organized_scores_all_worms(screen, 1)
 
@@ -241,9 +224,7 @@ def get_positives_specific_worm(worm, screen, screen_level, passes_criteria):
 
 
 def get_primary_single_replicate_experiments(screen):
-    '''
-    Get primary experiments that have only a single replicate.
-    '''
+    """Get primary experiments that have only a single replicate."""
     if screen == 'SUP':
         worms = WormStrain.objects.filter(
             restrictive_temperature__isnull=False)

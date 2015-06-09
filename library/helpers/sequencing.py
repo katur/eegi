@@ -9,11 +9,10 @@ NO_CLONE_NO_BLAT = 'no intended clone, no BLAT results (good)'
 
 
 def get_organized_blat_results():
-    '''
-    Fetch all blat results, organized as:
+    """Fetch all blat results from the database, organized as:
 
         b[sequencing_result] = blats
-    '''
+    """
     blats = (LibrarySequencingBlatResult.objects.all()
              .select_related('library_sequencing', 'clone_hit'))
 

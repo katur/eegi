@@ -8,9 +8,11 @@ from library.helpers.tile_conversion import well_to_tile
 
 
 class LibraryPlate(models.Model):
-    """
-    A library plate of RNAi feeding clones. This plate represents the
-    theoretical plate, not an individual frozen stock of the plate.
+    """A plate of RNAi feeding clones.
+
+    Note that while we may have multiple copies of the same library plate,
+    we only represent one copy. This is because, historically, we did not
+    keep track of which copy was used in which experiment.
     """
     id = models.CharField(max_length=20, primary_key=True)
     screen_stage = models.PositiveSmallIntegerField(null=True, blank=True,
@@ -59,19 +61,18 @@ class LibraryPlate(models.Model):
                                           Q(intended_clone='L4440'))
 
     def is_ahringer_96_plate(self):
-        '''
-        Determine if a plate name matches the correct format for an Ahringer
-        plate (in 96-format).
-
-        '''
+        """Determine if a plate name is in the correct format for an Ahringer
+        96-format plate.
+        """
         return re.match('(I|II|III|IV|V|X)-[1-9][0-3]?-[AB][12]',
                         self.id)
 
 
 class LibraryWell(models.Model):
-    """
-    A well in a library plate, including the clone intended on being in the
-    well.
+    """A well in a LibraryPlate.
+
+    Includes the clone intended on being in this position (according to
+    whoever designed the library), separate from a sequence-verified clone.
     """
     id = models.CharField(max_length=24, primary_key=True)
     plate = models.ForeignKey(LibraryPlate, related_name='wells')
@@ -110,9 +111,7 @@ class LibraryWell(models.Model):
 
 
 class LibrarySequencing(models.Model):
-    """
-    A Genewiz sequencing result from a particular LibraryWell.
-    """
+    """A Genewiz sequencing result from a particular LibraryWell."""
     source_library_well = models.ForeignKey(LibraryWell, null=True, blank=True)
     library_plate_copy_number = models.PositiveSmallIntegerField(null=True,
                                                                  blank=True)
@@ -149,9 +148,7 @@ class LibrarySequencing(models.Model):
 
 
 class LibrarySequencingBlatResult(models.Model):
-    """
-    A BLAT result from a particular LibrarySequencing.
-    """
+    """A BLAT result from a particular LibrarySequencing result."""
     library_sequencing = models.ForeignKey(LibrarySequencing)
     clone_hit = models.ForeignKey(Clone)
     e_value = models.FloatField()

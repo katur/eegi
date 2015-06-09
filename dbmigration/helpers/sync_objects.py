@@ -5,8 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 def update_or_save_object(new_object, recorded_objects, fields_to_compare,
                           alternate_pk=False):
-    """
-    Bring the database up to speed regarding new_object.
+    """Update the database to represent new_object.
 
     If new_object is not present in the database, add it (and print
     warning to syserr).
@@ -38,8 +37,7 @@ def update_or_save_object(new_object, recorded_objects, fields_to_compare,
 
 
 def compare_fields(old_object, new_object, fields, update=False):
-    """
-    Compare two objects on the provided fields.
+    """Compare two objects on the provided fields.
     Any differences are printed to stderr.
 
     If 'update' is True, old_object is updated to match
@@ -74,8 +72,8 @@ def compare_fields(old_object, new_object, fields, update=False):
 
 
 def compare_floats_for_equality(x, y, error_margin=0.001):
-    """
-    Compare two floats for equality, allowing them to differ by error_margin.
+    """Compare two floats for equality, allowing them to differ by
+    error_margin.
     """
     if x is None and y is None:
         return True
@@ -88,8 +86,7 @@ def compare_floats_for_equality(x, y, error_margin=0.001):
 
 
 def compare_fields_for_equality(x, y):
-    """
-    Compare two fields for equality, allowing wiggle room for floats/longs.
+    """Compare two fields for equality, allowing wiggle room for floats/longs.
     """
     if isinstance(x, float) or isinstance(x, long):
         return compare_floats_for_equality(x, y)

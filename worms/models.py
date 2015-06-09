@@ -4,9 +4,10 @@ from django.db import models
 
 
 class WormStrain(models.Model):
-    """
-    A worm strain used in this experiment. Can be either a
-    temperature-sensitive mutant, or a control strain.
+    """A worm strain used in this experiment.
+
+    Either a temperature-sensitive mutant, or a control strain (control strain
+    signified by no allele).
     """
     # The name of this strain (e.g. KK300)
     id = models.CharField(max_length=10, primary_key=True)
@@ -51,13 +52,13 @@ class WormStrain(models.Model):
         return self.genotype.split()[0]
 
     def get_screen_category(self, temperature):
-        '''Determine if temperature is a screen temperature for this strain.
+        """Determine if temperature is a screen temperature for this strain.
 
         Returns 'ENH' if temperature is this strain's permissive temperature.
         Returns 'SUP' if temperature is this strain's restrictive temperature.
         Returns None if temperature is not an official screen temperature for
         this strain.
-        '''
+        """
         temperature = Decimal(temperature)
         if self.permissive_temperature == temperature:
             return 'ENH'

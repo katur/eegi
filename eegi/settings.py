@@ -1,5 +1,4 @@
-"""
-Django settings for Early Embryo Genetic Interactions project.
+"""Django settings for Early Embryo Genetic Interactions project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/dev/topics/settings/

@@ -10,9 +10,7 @@ class BlankNullBooleanSelect(forms.NullBooleanSelect):
 
 
 class ExperimentFilterForm(forms.Form):
-    """
-    Form for filtering Experiment instances.
-    """
+    """Form for filtering Experiment instances."""
     id = forms.IntegerField(required=False,
                             label='Exact id',
                             help_text='e.g. 32412')
@@ -56,9 +54,7 @@ class ExperimentFilterForm(forms.Form):
 
 
 class DoubleKnockdownForm(forms.Form):
-    """
-    Form for finding a double knockdown.
-    """
+    """Form for finding a double knockdown."""
     query = forms.CharField(label='Mutant query',
                             help_text='gene, allele, or worm strain name')
     target = forms.CharField(label='RNAi Target',
@@ -71,9 +67,7 @@ class DoubleKnockdownForm(forms.Form):
 
 
 class SecondaryScoresForm(forms.Form):
-    """
-    Form for getting all secondary scores for a strain.
-    """
+    """Form for getting all secondary scores for a strain."""
     query = forms.CharField(label='Mutant query',
                             help_text='gene, allele, or worm strain name')
     screen = forms.ChoiceField(

@@ -1,26 +1,13 @@
 from __future__ import division
 
 
-def passes_sup_stringent_criteria(scores):
-    total = len(scores)
-    yes = 0
-    for score in scores:
-        if score.is_strong() or score.is_medium():
-            yes += 1
-
-    if (yes / total) >= .375:
-        return True
-
-    return False
-
-
 def passes_sup_positive_percentage_criteria(scores):
-    '''
-    Determine if a set of countable secondary scores (i.e., one most relevant
-    score per secondary replicate) passes the criteria to make it a
-    positive.
+    """Determine if a set of suppressor secondary scores passes the
+    percentage-based criteria for a positive suppressor.
 
-    '''
+    The scores should be for the same worm + library well combination, and
+    should include just the most relevant score per replicate.
+    """
     total = 0
     yes = 0
     maybe = 0
@@ -52,6 +39,12 @@ def passes_sup_positive_percentage_criteria(scores):
 
 
 def passes_sup_positive_count_criteria(scores):
+    """Determine if a set of suppressor secondary scores passes the
+    count-based criteria for a positive suppressor.
+
+    The scores should be for the same worm + library well combination, and
+    should include just the most relevant score per replicate.
+    """
     yes = 0
     maybe = 0
     for score in scores:
@@ -69,13 +62,32 @@ def passes_sup_positive_count_criteria(scores):
     return False
 
 
-def passes_enh_secondary_criteria(scores, singles=[]):
-    '''
-    Determine if a set of countable primary scores (i.e., one most relevant
-    score per primary replicate) passes the criteria to make it into
-    the Enhancer secondary screen.
+def passes_sup_stringent_criteria(scores):
+    """Determine if a set of suppressor secondary scores passes the
+    stringent criteria for a positive suppressor.
 
-    '''
+    The scores should be for the same worm + library well combination, and
+    should include just the most relevant score per replicate.
+    """
+    total = len(scores)
+    yes = 0
+    for score in scores:
+        if score.is_strong() or score.is_medium():
+            yes += 1
+
+    if (yes / total) >= .375:
+        return True
+
+    return False
+
+
+def passes_enh_secondary_criteria(scores, singles=[]):
+    """Determine if a set of enhancer primary scores passes the criteria
+    to make it into the enhancer secondary screen.
+
+    The scores should be for the same worm + library well combination, and
+    should include just the most relevant score per replicate.
+    """
     is_positive = False
     num_weaks = 0
     for score in scores:

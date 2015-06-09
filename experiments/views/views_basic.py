@@ -14,9 +14,7 @@ EXPERIMENTS_PER_PAGE = 100
 
 
 def experiments(request, context=None):
-    """
-    Render the page to search for experiments.
-    """
+    """Render the page to search for experiments."""
     total_results = None
     display_experiments = None
     link_to_vertical = None
@@ -72,6 +70,7 @@ def experiments(request, context=None):
 
 
 def experiment_grid(request, screen_level):
+    """Render the page showing all experiments as a grid."""
     worms = WormStrain.objects.all()
     plates = LibraryPlate.objects.filter(screen_stage=screen_level)
     experiments = (Experiment.objects
@@ -114,8 +113,8 @@ def experiment_grid(request, screen_level):
 
 
 def experiment_plate(request, id):
-    """
-    Render the page to see information about a specific experiment.
+    """Render the page to see the images and information for a particular
+    experiment.
     """
     experiment = get_object_or_404(Experiment, pk=id)
     experiment.worm_strain.url = experiment.worm_strain.get_url(request)
@@ -135,9 +134,7 @@ def experiment_plate(request, id):
 
 
 def experiment_plate_vertical(request, ids):
-    """
-    Render the page to see information about a specific experiment.
-    """
+    """Render the page to view the images of experiments vertically."""
     ids = ids.split(',')
     experiments = []
     for id in ids:
@@ -154,6 +151,9 @@ def experiment_plate_vertical(request, ids):
 
 
 def experiment_well(request, id, well):
+    """Render the page to see the image and information for a particular
+    experiment well.
+    """
     experiment = get_object_or_404(Experiment, pk=id)
     experiment.worm_strain.url = experiment.worm_strain.get_url(request)
 

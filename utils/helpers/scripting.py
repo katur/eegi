@@ -2,6 +2,9 @@ import sys
 
 
 def require_db_write_acknowledgement():
+    """Warn the command line user that proceeding modifies the database,
+    requiring acknowledgement.
+    """
     proceed = False
 
     while not proceed:
