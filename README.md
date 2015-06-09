@@ -31,12 +31,12 @@ installed):
 The database is MySQL, and is named `eegi`.
 
 [Here](https://www.lucidchart.com/documents/view/4eb4bac8-5339-ae33-8c00-5ccd0a0085f4)
-is a web view of the database schema on Lucidchart, and
-[here](https://www.lucidchart.com/documents/view/819feb06-fb91-4262-8f39-aa8584e6c02b)
-is the schema for the clone mapping database.
+is a web view of the database schema on Lucidchart
+([here](https://www.lucidchart.com/publicSegments/view/53f3c896-8854-49cc-8c3a-69d30a005381)
+as a pdf).
 
-[Here](https://www.lucidchart.com/publicSegments/view/53f3c896-8854-49cc-8c3a-69d30a005381)
-is a the same schema view as a pdf.
+[Here](https://www.lucidchart.com/documents/view/819feb06-fb91-4262-8f39-aa8584e6c02b)
+is the schema for Firoz's clone mapping database, related to this project.
 
 Notes on migrating the data from the old database
 (`GenomeWideGI` on pleiades)
@@ -67,9 +67,9 @@ the legacy database
 
 Finally, an explanation of these top level directories (which are not apps):
 
-- `materials`, excluded from the repo, holds various input files (Genewiz 
+- `materials`, excluded from the repo, holds various input files (Genewiz
 sequencing output, the official Ahringer RNAi library Excel database, etc.)
-- `backups`, excluded from the repo, holds MySQL database backups, schema 
+- `backups`, excluded from the repo, holds MySQL database backups, schema
 backups, etc.
 - `antiquated` holds older code that predates this Django project
 
