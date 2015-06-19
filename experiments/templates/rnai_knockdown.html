@@ -4,11 +4,12 @@
 {% block body_id %}rnai-knockdown{% endblock %}
 
 {% block page_title %}
-N2 with {{ clone }} knockdown, {{ temperature|get_celsius_string }}
+RNAi knockdown of {{ clone }}, with control N2 worms, at
+{{ temperature|get_celsius_string }}
 {% endblock %}
 
 {% block content %}
-{% for library_well, experiments in data.items %}
+{% for library_well, experiments in data %}
   <table class="double-knockdown-results grayscale">
     <thead>
       <th>

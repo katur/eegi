@@ -72,7 +72,7 @@ class RNAiKnockdownForm(forms.Form):
                              help_text=('clone (once mapping database '
                                         'is complete, will also accept gene, '
                                         'cosmid, and position)'))
-    temperature = forms.DecimalField(label='Temp')
+    temperature = forms.DecimalField(label='Temperature')
 
 
 class MutantKnockdownForm(forms.Form):

@@ -96,7 +96,7 @@ def rnai_knockdown(request, clone, temperature):
                              plate__screen_stage__gt=0)
                      .order_by('-plate__screen_stage'))
 
-    data = {}
+    data = []
     for library_well in library_wells:
         experiments = (Experiment.objects
                        .filter(is_junk=False, worm_strain=n2,
@@ -104,7 +104,7 @@ def rnai_knockdown(request, clone, temperature):
                                library_plate=library_well.plate)
                        .order_by('-id'))
         if experiments:
-            data[library_well] = experiments
+            data.append((library_well, experiments))
 
     context = {
         'clone': clone,
@@ -118,11 +118,11 @@ def rnai_knockdown(request, clone, temperature):
 def mutant_knockdown(request, worm, temperature):
     """Render the page displaying control bacteria (L4440) with a mutant
     knockdown."""
-    worm = get_object_or_404(WormStrain, pk=worm)
     l4440 = get_object_or_404(Clone, pk='L4440')
+    worm = get_object_or_404(WormStrain, pk=worm)
     plates = LibraryPlate.objects.filter(screen_stage__gt=0)
 
-    data = {}
+    data = []
     for plate in plates:
         l4440_wells = plate.wells.filter(intended_clone=l4440)
         if l4440_wells:
@@ -130,9 +130,11 @@ def mutant_knockdown(request, worm, temperature):
                            .filter(is_junk=False, worm_strain=worm,
                                    temperature=temperature,
                                    library_plate=plate)
-                           .order_by('-id'))
+                           .order_by('id'))
             for experiment in experiments:
-                data[experiment] = l4440_wells
+                data.append((experiment, l4440_wells))
+
+    data.sort(key=lambda x: x[0].id)
 
     context = {
         'worm': worm,
