@@ -66,6 +66,24 @@ class DoubleKnockdownForm(forms.Form):
         widget=forms.RadioSelect)
 
 
+class RNAiKnockdownForm(forms.Form):
+    """Form for finding wildtype worms tested with a single RNAi clone."""
+    target = forms.CharField(label='RNAi Target',
+                             help_text=('clone (once mapping database '
+                                        'is complete, will also accept gene, '
+                                        'cosmid, and position)'))
+    temperature = forms.DecimalField(label='Temp')
+
+
+class MutantKnockdownForm(forms.Form):
+    """Form for finding a mutant worm with the control bacteria."""
+    query = forms.CharField(label='Mutant query',
+                            help_text='gene, allele, or worm strain name')
+    screen = forms.ChoiceField(
+        choices=[('SUP', 'suppressor'), ('ENH', 'enhancer')],
+        widget=forms.RadioSelect)
+
+
 class SecondaryScoresForm(forms.Form):
     """Form for getting all secondary scores for a strain."""
     query = forms.CharField(label='Mutant query',

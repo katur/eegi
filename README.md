@@ -87,7 +87,7 @@ CSS is in [SASS](http://sass-lang.com/). Run
 to compile.
 
 Javascript is in [CoffeeScript](http://coffeescript.org/). Run
-`coffee -wc --style website/static/js/website.coffee`
+`coffee -wc website/static/js/website.coffee`
 to compile.
 
 Purely offline scripts to be run by the project maintainer

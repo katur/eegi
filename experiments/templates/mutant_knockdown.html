@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load extra_template_tags %}
+
+{% block body_id %}mutant-knockdown{% endblock %}
+
+{% block page_title %}
+L4440 with {{ worm }} knockdown, {{ temperature|get_celsius_string }}
+{% endblock %}
+
+{% block content %}
+{% for experiment, wells in data.items %}
+  <table class="double-knockdown-results grayscale">
+    <thead>
+      <th>
+        Experiment {{ experiment.id }}
+      </th>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>
+          <div class="rotating-images">
+          {% for well in wells %}
+            {% get_image_html experiment well forloop.counter wells|length %}
+          {% endfor %}
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+{% endfor %}
+
+{% endblock %}

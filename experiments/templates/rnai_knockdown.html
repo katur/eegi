@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load extra_template_tags %}
+
+{% block body_id %}rnai-knockdown{% endblock %}
+
+{% block page_title %}
+N2 with {{ clone }} knockdown, {{ temperature|get_celsius_string }}
+{% endblock %}
+
+{% block content %}
+{% for library_well, experiments in data.items %}
+  <table class="double-knockdown-results grayscale">
+    <thead>
+      <th>
+        Clone located in plate {{ library_well.plate }},
+        well {{ library_well.well }}
+      </th>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>
+          <div class="rotating-images">
+          {% for experiment in experiments %}
+            {% get_image_html experiment library_well forloop.counter experiments|length %}
+          {% endfor %}
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+{% endfor %}
+
+{% endblock %}

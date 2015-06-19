@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load extra_template_tags %}
+
+{% block body_id %}single-knockdown-search{% endblock %}
+{% block page_title %}Search for a Single Knockdown{% endblock %}
+
+{% block content %}
+
+<div class="single-knockdown-section error-form">
+  {% if error %}
+  <span class="error-message">
+    Please try again: {{ error }}
+  </span>
+  {% endif %}
+
+  <h4>RNAi knockdown, with control worms (N2)</h4>
+  {% if rnai_form.errors %}
+  <span class="error-message">
+    Please correct the error{{ rnai_form.errors|pluralize }} below.
+  </span>
+  {% endif %}
+
+  <form action="" method="post">
+    {% csrf_token %}
+
+    <table>{{ rnai_form.as_table }}</table>
+
+    <input type="submit" name="rnai" value="Submit">
+  </form>
+</div>
+
+<div class="single-knockdown-section error-form">
+  <h4>Mutant knockdown, with control bacteria (L4440)</h4>
+  {% if mutant_form.errors %}
+  <span class="error-message">
+    Please correct the error{{ mutant_form.errors|pluralize }} below.
+  </span>
+  {% endif %}
+
+  <form action="" method="post">
+    {% csrf_token %}
+
+    <table>{{ mutant_form.as_table }}</table>
+
+    <input type="submit" name="mutant" value="Submit">
+  </form>
+</div>
+
+{% endblock %}

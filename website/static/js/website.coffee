@@ -6,7 +6,7 @@ $(document).ready ->
 
 
 initializeDoubleKnockdownPage = ->
-  return if !$("body#double-knockdown").length
+  # return if !$("body#double-knockdown").length
 
   rotatingImages = $(".rotating-images")
 
