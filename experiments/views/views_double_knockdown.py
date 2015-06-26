@@ -22,7 +22,7 @@ def double_knockdown(request, worm, clone, temperature):
                              plate__screen_stage__gt=0)
                      .order_by('-plate__screen_stage'))
 
-    # 'data' holds the experiments in the format needed by the template:
+    # Each element of 'data' is in format (as needed by the template):
     #   (library_well, date, {
     #       'mutant_rnai': experiment,
     #       'n2_rnai': experiment,
