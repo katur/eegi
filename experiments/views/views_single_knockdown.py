@@ -9,6 +9,68 @@ from library.models import LibraryWell, LibraryPlate
 from worms.models import WormStrain
 
 
+def rnai_knockdown(request, clone, temperature):
+    """Render the page displaying control worms (N2) with an RNAi knockdown."""
+    clone = get_object_or_404(Clone, pk=clone)
+    n2 = get_object_or_404(WormStrain, pk='N2')
+    library_wells = (LibraryWell.objects
+                     .filter(intended_clone=clone,
+                             plate__screen_stage__gt=0)
+                     .order_by('-plate__screen_stage'))
+
+    # Each element of 'data' is in format (as needed by the template):
+    #   (library_well, (experiments_ordered_by_id))
+    data = []
+    for library_well in library_wells:
+        experiments = (Experiment.objects
+                       .filter(is_junk=False, worm_strain=n2,
+                               temperature=temperature,
+                               library_plate=library_well.plate)
+                       .order_by('-id'))
+        if experiments:
+            data.append((library_well, experiments))
+
+    context = {
+        'clone': clone,
+        'temperature': temperature,
+        'data': data,
+    }
+
+    return render(request, 'rnai_knockdown.html', context)
+
+
+def mutant_knockdown(request, worm, temperature):
+    """Render the page displaying control bacteria (L4440) with a mutant
+    knockdown."""
+    l4440 = get_object_or_404(Clone, pk='L4440')
+    worm = get_object_or_404(WormStrain, pk=worm)
+    plates = LibraryPlate.objects.filter(screen_stage__gt=0)
+
+    # Each element of 'data' is in format (as needed by the template):
+    #   (experiment, l4440_wells)
+    data = []
+    for plate in plates:
+        l4440_wells = plate.wells.filter(intended_clone=l4440)
+        if l4440_wells:
+            experiments = (Experiment.objects
+                           .filter(is_junk=False, worm_strain=worm,
+                                   temperature=temperature,
+                                   library_plate=plate)
+                           .order_by('id'))
+            for experiment in experiments:
+                data.append((experiment, l4440_wells))
+
+    data.sort(key=lambda x: x[0].id)
+
+    context = {
+        'worm': worm,
+        'temperature': temperature,
+        'data': data,
+    }
+
+    return render(request, 'mutant_knockdown.html', context)
+
+
 def single_knockdown_search(request):
     """Render the page to search for a single knockdown."""
     error = ''
@@ -85,61 +147,3 @@ def single_knockdown_search(request):
     }
 
     return render(request, 'single_knockdown_search.html', context)
-
-
-def rnai_knockdown(request, clone, temperature):
-    """Render the page displaying control worms (N2) with an RNAi knockdown."""
-    clone = get_object_or_404(Clone, pk=clone)
-    n2 = get_object_or_404(WormStrain, pk='N2')
-    library_wells = (LibraryWell.objects
-                     .filter(intended_clone=clone,
-                             plate__screen_stage__gt=0)
-                     .order_by('-plate__screen_stage'))
-
-    data = []
-    for library_well in library_wells:
-        experiments = (Experiment.objects
-                       .filter(is_junk=False, worm_strain=n2,
-                               temperature=temperature,
-                               library_plate=library_well.plate)
-                       .order_by('-id'))
-        if experiments:
-            data.append((library_well, experiments))
-
-    context = {
-        'clone': clone,
-        'temperature': temperature,
-        'data': data,
-    }
-
-    return render(request, 'rnai_knockdown.html', context)
-
-
-def mutant_knockdown(request, worm, temperature):
-    """Render the page displaying control bacteria (L4440) with a mutant
-    knockdown."""
-    l4440 = get_object_or_404(Clone, pk='L4440')
-    worm = get_object_or_404(WormStrain, pk=worm)
-    plates = LibraryPlate.objects.filter(screen_stage__gt=0)
-
-    data = []
-    for plate in plates:
-        l4440_wells = plate.wells.filter(intended_clone=l4440)
-        if l4440_wells:
-            experiments = (Experiment.objects
-                           .filter(is_junk=False, worm_strain=worm,
-                                   temperature=temperature,
-                                   library_plate=plate)
-                           .order_by('id'))
-            for experiment in experiments:
-                data.append((experiment, l4440_wells))
-
-    data.sort(key=lambda x: x[0].id)
-
-    context = {
-        'worm': worm,
-        'temperature': temperature,
-        'data': data,
-    }
-
-    return render(request, 'mutant_knockdown.html', context)
