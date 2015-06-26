@@ -11,71 +11,6 @@ from library.models import LibraryWell, LibraryPlate
 from worms.models import WormStrain
 
 
-def double_knockdown_search(request):
-    """Render the page to search for a double knockdown."""
-    error = ''
-    if request.method == 'POST':
-        form = DoubleKnockdownForm(request.POST)
-        if form.is_valid():
-            try:
-                data = form.cleaned_data
-                query = data['query']
-                target = data['target']
-                screen = data['screen']
-
-                if screen != 'ENH' and screen != 'SUP':
-                    raise Exception('screen must be ENH or SUP')
-
-                if query == 'N2':
-                    raise Exception('query must be a mutant, not N2')
-
-                if target == 'L4440':
-                    raise Exception('target must be an RNAi clone, not L4440')
-
-                if screen == 'ENH':
-                    worms = (WormStrain.objects
-                             .filter(Q(gene=query) | Q(allele=query) |
-                                     Q(id=query))
-                             .exclude(permissive_temperature__isnull=True))
-                else:
-                    worms = (WormStrain.objects
-                             .filter(Q(gene=query) | Q(allele=query) |
-                                     Q(id=query))
-                             .exclude(restrictive_temperature__isnull=True))
-
-                if len(worms) == 0:
-                    raise Exception('No worm strain matches query.')
-                elif len(worms) > 1:
-                    raise Exception('Multiple worm strains match query.')
-                else:
-                    worm = worms[0]
-
-                if screen == 'ENH':
-                    temperature = worm.permissive_temperature
-                else:
-                    temperature = worm.restrictive_temperature
-
-                try:
-                    clone = Clone.objects.get(pk=target)
-                except ObjectDoesNotExist:
-                    raise ObjectDoesNotExist('No clone matches target.')
-
-                return redirect(double_knockdown, worm, clone, temperature)
-
-            except Exception as e:
-                error = e.message
-
-    else:
-        form = DoubleKnockdownForm(initial={'screen': 'SUP'})
-
-    context = {
-        'form': form,
-        'error': error,
-    }
-
-    return render(request, 'double_knockdown_search.html', context)
-
-
 def double_knockdown(request, worm, clone, temperature):
     """Render the page displaying the images of a double knockdown search."""
     worm = get_object_or_404(WormStrain, pk=worm)
@@ -87,6 +22,12 @@ def double_knockdown(request, worm, clone, temperature):
                              plate__screen_stage__gt=0)
                      .order_by('-plate__screen_stage'))
 
+    # 'data' holds the experiments in the format needed by the template:
+    #   (library_well, date, {
+    #       'mutant_rnai': experiment,
+    #       'n2_rnai': experiment,
+    #       'mutant_l4440': experiment,
+    #       'n2_l4440': experiment})
     data = []
 
     for library_well in library_wells:
@@ -150,3 +91,68 @@ def double_knockdown(request, worm, clone, temperature):
     }
 
     return render(request, 'double_knockdown.html', context)
+
+
+def double_knockdown_search(request):
+    """Render the page to search for a double knockdown."""
+    error = ''
+    if request.method == 'POST':
+        form = DoubleKnockdownForm(request.POST)
+        if form.is_valid():
+            try:
+                data = form.cleaned_data
+                query = data['query']
+                target = data['target']
+                screen = data['screen']
+
+                if screen != 'ENH' and screen != 'SUP':
+                    raise Exception('screen must be ENH or SUP')
+
+                if query == 'N2':
+                    raise Exception('query must be a mutant, not N2')
+
+                if target == 'L4440':
+                    raise Exception('target must be an RNAi clone, not L4440')
+
+                if screen == 'ENH':
+                    worms = (WormStrain.objects
+                             .filter(Q(gene=query) | Q(allele=query) |
+                                     Q(id=query))
+                             .exclude(permissive_temperature__isnull=True))
+                else:
+                    worms = (WormStrain.objects
+                             .filter(Q(gene=query) | Q(allele=query) |
+                                     Q(id=query))
+                             .exclude(restrictive_temperature__isnull=True))
+
+                if len(worms) == 0:
+                    raise Exception('No worm strain matches query.')
+                elif len(worms) > 1:
+                    raise Exception('Multiple worm strains match query.')
+                else:
+                    worm = worms[0]
+
+                if screen == 'ENH':
+                    temperature = worm.permissive_temperature
+                else:
+                    temperature = worm.restrictive_temperature
+
+                try:
+                    clone = Clone.objects.get(pk=target)
+                except ObjectDoesNotExist:
+                    raise ObjectDoesNotExist('No clone matches target.')
+
+                return redirect(double_knockdown, worm, clone, temperature)
+
+            except Exception as e:
+                error = e.message
+
+    else:
+        form = DoubleKnockdownForm(initial={'screen': 'SUP'})
+
+    context = {
+        'form': form,
+        'error': error,
+    }
+
+    return render(request, 'double_knockdown_search.html', context)
