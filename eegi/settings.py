@@ -7,8 +7,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
-from local_settings import (DEBUG, DATABASES, LOCKDOWN_PASSWORDS, SECRET_KEY,
-                            STATIC_ROOT)
+from local_settings import DEBUG, DATABASES, LOCKDOWN_PASSWORDS, SECRET_KEY
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
@@ -77,6 +76,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'staticfiles'
 
 
 # For request objects in templates
