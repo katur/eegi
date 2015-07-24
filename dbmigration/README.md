@@ -15,8 +15,9 @@ so should be run from scratch on a truncated database
 just prior to the official migration to the new database.
 
 The script lives in `utils/management/commands`, and can be run with:
-
-    ./manage.py migrate_legacy_database
+```
+./manage.py migrate_legacy_database
+```
 
 Please see the script's documentation for more information
 (including where to enter legacy database connection information,
@@ -52,8 +53,9 @@ tables).
 
 After using the main script to migrate the LibraryWell table,
 another script is used to add rows to representing 'empty' wells in the database:
-
-    ./manage.py add_empty_LibraryWells
+```
+./manage.py add_empty_LibraryWells
+```
 
 This is separate from the main script because empty wells were not represented
 in the previous database's library tables.
@@ -84,16 +86,19 @@ steps (since the legacy database did not store raw sequencing data, nor is it up
 To migrate the sequencing data, first copy all the genewiz sequencing output to your
 local machine:
 
-    scp username@machine:~genewiz/GenomeWideGI/ destination
+```
+scp username@machine:~genewiz/GenomeWideGI/ destination
+```
 
 Note that this genewiz directory includes ALL sequencing done by the lab;
 not just for the GI project.
 
 Run Hueyling's script to remove the date from the Seq and AB1 directories
 (this script is located in the directory just copied):
-
-    cd destination
-    perl rmDateFromSeqAB1.pl
+```
+cd destination
+perl rmDateFromSeqAB1.pl
+```
 
 There is no need to run her other scripts; the new script it written to work with .csv or .xls.
 
@@ -103,8 +108,9 @@ genewiz tracking numbers for all GI-specific sequencing plates.
 Now run the script to migrate the data (see the script for database connection
 requirements):
 
-    ./manage.py migrate_sequencing_data tracking_numbers genewiz_output_root
-
+```
+./manage.py migrate_sequencing_data tracking_numbers genewiz_output_root
+```
 -----------------------------------------------------------------------------------
 
 ## Reference of Changes
@@ -253,35 +259,38 @@ embryo per adult and larva per adult, if no adults | 0 | null
 First add 384 plates and Eliana Rearray plates by hand.
 
 Then:
+```
+INSERT INTO LibraryPlate (id, screen\_stage, number\_of\_wells)
+SELECT DISTINCT RNAiPlateID, 1, 96 FROM RNAiPlate;
 
-  INSERT INTO LibraryPlate (id, screen\_stage, number\_of\_wells)
-  SELECT DISTINCT RNAiPlateID, 1, 96 FROM RNAiPlate;
-
-  INSERT INTO LibraryPlate (id, screen\_stage, number\_of\_wells)
-  SELECT DISTINCT RNAiPlateID, 2, 96 FROM CherryPickRNAiPlate;
+INSERT INTO LibraryPlate (id, screen\_stage, number\_of\_wells)
+SELECT DISTINCT RNAiPlateID, 2, 96 FROM CherryPickRNAiPlate;
+```
 
 
 ### Experiment
 
 First correct misspelled allele in eegi.RawData:
-
-    UPDATE RawData SET mutantAllele='zu310' WHERE mutantAllele='zc310';
+```
+UPDATE RawData SET mutantAllele='zu310' WHERE mutantAllele='zc310';
+```
 
 Temporarily set eegi.WormStrain.gene to 'N2' for N2, in order for join to work
 (the old database had N2 listed as a mutation).
 
 Then:
-
-    INSERT INTO Experiment
-    SELECT expID, WormStrain.name, LibraryPlate.name,
-        CAST(SUBSTRING_INDEX(temperature, 'C', 1) AS DECIMAL(3,1)),
-        CAST(recordDate AS DATE), ABS(isJunk), comment
-    FROM RawData
-    LEFT JOIN WormStrain
-    ON RawData.mutant = WormStrain.gene
-    AND RawData.mutantAllele = WormStrain.allele
-    LEFT JOIN LibraryPlate
-    ON RawData.RNAiPlateID = LibraryPlate.name
-    WHERE (expID < 40000 OR expID > 49999)
-    AND RNAiPlateID NOT LIKE "Julie%";
+```
+INSERT INTO Experiment
+SELECT expID, WormStrain.name, LibraryPlate.name,
+    CAST(SUBSTRING_INDEX(temperature, 'C', 1) AS DECIMAL(3,1)),
+    CAST(recordDate AS DATE), ABS(isJunk), comment
+FROM RawData
+LEFT JOIN WormStrain
+ON RawData.mutant = WormStrain.gene
+AND RawData.mutantAllele = WormStrain.allele
+LEFT JOIN LibraryPlate
+ON RawData.RNAiPlateID = LibraryPlate.name
+WHERE (expID < 40000 OR expID > 49999)
+AND RNAiPlateID NOT LIKE "Julie%";
+```
 -->
