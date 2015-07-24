@@ -20,10 +20,11 @@ to make working with Python virtual environments easier.
 
 In a nutshell (assuming pip, virtualenv, and virtualenvwrapper already
 installed):
-
-    mkvirtualenv eegi
-    workon eegi
-    pip install -r requirements.txt
+```
+mkvirtualenv eegi
+workon eegi
+pip install -r requirements.txt
+```
 
 
 ## Database
