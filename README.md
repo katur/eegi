@@ -26,6 +26,9 @@ workon eegi
 pip install -r requirements.txt
 ```
 
+For a more in-depth description of how I deployed this on Ubuntu,
+please see [INSTALL.md](INSTALL.md).
+
 
 ## Database
 
