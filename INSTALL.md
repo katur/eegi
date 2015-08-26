@@ -20,10 +20,8 @@ Code
 ----
 ```
 cd /opt/local/eegi
-mkdir staging
-cd /opt/local/eegi/staging
 git clone https://github.com/katur/eegi.git
-cd /opt/local/eegi/staging/eegi/eegi
+cd /opt/local/eegi/eegi/eegi
 # copy local_settings.py from development computer
 # edit local_settings with database connection info, and set DEBUG=False
 ```
@@ -31,7 +29,7 @@ cd /opt/local/eegi/staging/eegi/eegi
 Virtual Environment and Dependencies
 ------------------------------------
 ```
-cd /opt/local/eegi/staging
+cd /opt/local/eegi
 virtualenv --python=/usr/bin/python2.7 eegivirtualenv
 source eegivirtualenv/bin/activate
 pip install -r eegi/requirements.txt
@@ -46,12 +44,12 @@ Running Django Built-in Development Server
 Apache Configuration
 --------------------
 ```
-cd /opt/local/eegi/staging
+cd /opt/local/eegi
 mkdir apache2
 cd apache2
 vi eegi.conf
 # add project-specific apache settings, using port 8009 for staging
-sudo ln -s /opt/local/eegi/staging/apache2/eegi.conf /etc/apache2/sites-enabled/001-eegi.conf
+sudo ln -s /opt/local/eegi/apache2/eegi.conf /etc/apache2/sites-enabled/001-eegi.conf
 cd /etc/apache2
 vi ports.conf
 # add line to Listen 8009. comment out line to Listen 80 if port 80 not being used
