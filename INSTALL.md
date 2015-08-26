@@ -31,6 +31,9 @@ Virtual Environment and Dependencies
 ```
 cd /opt/local/eegi
 virtualenv --python=/usr/bin/python2.7 eegivirtualenv
+# NOTE: This use of virtualenv hardcodes the name and location of the virtualenv dir.
+# But the --relocatable arg has problems and is to be deprecated.
+# So, to move or rename it, delete and recreate the virtualenv dir.
 source eegivirtualenv/bin/activate
 pip install -r eegi/requirements.txt
 ```
