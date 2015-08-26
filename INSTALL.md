@@ -48,7 +48,7 @@ cd /opt/local/eegi
 mkdir apache2
 cd apache2
 vi eegi.conf
-# add project-specific apache settings, using port 8009 for staging
+# add project-specific apache settings, using port 8009
 sudo ln -s /opt/local/eegi/apache2/eegi.conf /etc/apache2/sites-enabled/001-eegi.conf
 cd /etc/apache2
 vi ports.conf
