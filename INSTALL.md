@@ -65,3 +65,27 @@ sudo service apache2 restart
 sudo service apache2 start
 sudo service apache2 stop
 ```
+
+Deploying (to be fleshed out and automated)
+-------------------------------------------
+```
+### As user eegi...
+# dump database, in case reverting is necessary
+# note the currently-deployed git commit, in case reverting is necessary
+cd /opt/local/eegi/eegi
+source opt/local/eegi/eegivirtualenv/bin/activate
+git pull
+# if requirements.txt changed:
+pip install -r requirements.txt
+# if new database migrations:
+./manage.py migrate
+# if any scripts must be run, e.g. to modify data in keeping with schema changes:
+./manage.py scriptname
+# if unit tests:
+./manage.py test
+
+### As user katherine...
+sudo service apache2 restart
+# if front-end changes, visual inspection of site
+# if reversion is necessary, use the db dump, and revert to the previous commit, reverting packages if necessary
+```
