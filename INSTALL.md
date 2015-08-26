@@ -87,5 +87,5 @@ pip install -r requirements.txt
 ### As user katherine...
 sudo service apache2 restart
 # if front-end changes, visual inspection of site
-# if reversion is necessary, use the db dump, and revert to the previous commit, reverting packages if necessary
+# if necessary, revert the repo, db, and packages to the recorded versions.
 ```
