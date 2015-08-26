@@ -71,7 +71,7 @@ Deploying (to be fleshed out and automated)
 ```
 ### As user eegi...
 # dump database, in case reverting is necessary
-# note the currently-deployed git commit, in case reverting is necessary
+# record the currently-deployed git commit, in case reverting is necessary
 cd /opt/local/eegi/eegi
 source opt/local/eegi/eegivirtualenv/bin/activate
 git pull
