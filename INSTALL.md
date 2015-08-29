@@ -41,6 +41,7 @@ pip install -r eegi/requirements.txt
 Running Django Built-in Development Server
 ------------------------------------------
 ```
+cd /opt/local/eegi/eegi
 ./manage.py runserver <IP address>:8000
 ```
 
