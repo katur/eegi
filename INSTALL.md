@@ -42,7 +42,7 @@ Running Django Built-in Development Server
 ------------------------------------------
 ```
 source /opt/local/eegi/eegivirtualenv/bin/activate
-./opt/local/eegi/eegi/manage.py runserver <IP address>:8000
+/opt/local/eegi/eegi/manage.py runserver <IP address>:8000
 ```
 
 Apache Configuration
