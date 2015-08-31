@@ -1,5 +1,5 @@
-Deploying eegi Project
-======================
+Installing eegi Project
+=======================
 Here is a walkthrough of an Ubuntu deploy, using Apache
 and modwsgi. WORK IN PROGRESS.
 
