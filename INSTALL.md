@@ -6,7 +6,10 @@ and modwsgi. WORK IN PROGRESS.
 
 MySQL Database
 --------------
+```
 mysql -u eegi -p eegi < <eegi dump filename>.sql
+```
+
 <!---
 ```
 DROP DATABASE IF EXISTS eegi;
