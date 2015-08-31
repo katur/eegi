@@ -6,6 +6,8 @@ and modwsgi. WORK IN PROGRESS.
 
 MySQL Database
 --------------
+mysql -u eegi -p eegi < <eegi dump filename>.sql
+<!---
 ```
 DROP DATABASE IF EXISTS eegi;
 CREATE DATABASE eegi;
@@ -15,6 +17,7 @@ DROP USER eegi;
 CREATE USER 'eegi'@'%' IDENTIFIED BY '<password>';
 GRANT ALL PRIVILEGES ON eegi.* TO 'eegi'@'%' IDENTIFIED BY '<password>';
 ```
+-->
 
 Code
 ----
