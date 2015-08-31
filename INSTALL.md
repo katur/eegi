@@ -7,7 +7,7 @@ and modwsgi. WORK IN PROGRESS.
 MySQL Database
 --------------
 ```
-mysql -u eegi -p eegi < <eegi dump filename>.sql
+mysql -u eegi -p eegi < <sql dump filename>
 ```
 
 <!---
