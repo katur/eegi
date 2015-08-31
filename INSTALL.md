@@ -44,6 +44,14 @@ source eegivirtualenv/bin/activate
 pip install -r eegi/requirements.txt
 ```
 
+Static Files
+------------
+```
+source /opt/local/eegi/eegivirtualenv/bin/activate
+cd /opt/local/eegi/eegi
+./manage.py collectstatic
+```
+
 Running Django Built-in Development Server
 ------------------------------------------
 ```
