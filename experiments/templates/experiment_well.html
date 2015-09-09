@@ -64,4 +64,14 @@
 <div class="experiment-image-wrapper">
   <img src="{% get_image experiment well %}"/>
 </div>
+
+{% get_devstar_image experiment well as devstar_image %}
+
+{% if devstar_image %}
+  <div class="experiment-image-wrapper">
+    <img src="{{ devstar_image }}"/>
+  </div>
+{% else %}
+  DevStaR image not found.
+{% endif %}
 {% endblock %}
