@@ -94,7 +94,7 @@ Javascript is in [CoffeeScript](http://coffeescript.org/). Run
 `coffee -wc website/static/js/website.coffee`
 to compile.
 
-Purely offline scripts to be run by the project maintainer
+Managerial scripts
 (e.g. the script that migrates data from the old database)
 live in the standard location: `appname/management/commands/scriptname.py`,
 to be run with `./manage.py scriptname`. To browse these scripts,
