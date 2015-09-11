@@ -1,8 +1,22 @@
 # Database connection and other secret settings
 *local_settings.py
+
+# Backups and offline materials
 backups/
 materials/
+
+# Collected static files (can be re-collected with ./manage.py collectstatic)
 staticfiles/
+
+# Photoshop files
+*.psd
+
+# Videos
+*.avi
+*.mp4
+*.ogg
+*.ogv
+*.webm
 
 # Redirected command-line output
 *.out
@@ -47,13 +61,3 @@ Thumbs.db
 *.sql
 *.sqlite
 *.csv
-
-# Photoshop files
-*.psd
-
-# Videos
-*.avi
-*.mp4
-*.ogg
-*.ogv
-*.webm
