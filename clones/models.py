@@ -5,7 +5,7 @@ class Clone(models.Model):
     """An RNAi clone used in the screen."""
     id = models.CharField(max_length=30, primary_key=True)
     '''
-    antiquated_pk = models.CharField(max_length=30, blank=True)
+    firoz_pk = models.IntegerField(blank=True)
     library = models.CharField(max_length=30, blank=True)
     clone_type = models.CharField(max_length=30, blank=True)
     forward_primer = models.CharField(max_length=100, blank=True)
