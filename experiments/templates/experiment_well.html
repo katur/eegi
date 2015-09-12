@@ -61,14 +61,14 @@
   </span>
 </div>
 
-<div class="experiment-image-wrapper">
+<div class="image-frame">
   <img src="{% get_image experiment well %}"/>
 </div>
 
 {% get_devstar_image experiment well as devstar_image %}
 
 {% if devstar_image %}
-  <div class="experiment-image-wrapper">
+  <div class="image-frame">
     <img src="{{ devstar_image }}"/>
   </div>
 {% endif %}

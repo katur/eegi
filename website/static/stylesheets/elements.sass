@@ -72,7 +72,9 @@ form table
         margin-left: 0
 
 
-.experiment-image-wrapper
+$image-frame-z-index: 1
+
+.image-frame
   position: relative
 
   img
@@ -84,6 +86,20 @@ form table
     display: block
     position: relative
     padding-top: 75%
+    z-index: $image-frame-z-index
+
+  .image-frame-previous, .image-frame-next
+    position: absolute
+    top: 0
+    width: 50%
+    height: 100%
+    z-index: $image-frame-z-index + 1
+
+  .image-frame-previous
+    left: 0
+
+  .image-frame-next
+    right: 0
 
 
 .plate-96
@@ -114,7 +130,7 @@ form table
 
   .well-title,
   .well-caption,
-  .experiment-image-wrapper
+  .image-frame
     width: 100%
 
   .well-title,
@@ -130,7 +146,7 @@ form table
     &.well-caption
       bottom: 0
 
-  .experiment-image-wrapper
+  .image-frame
     display: block
 
   .well-title

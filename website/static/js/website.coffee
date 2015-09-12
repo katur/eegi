@@ -8,34 +8,45 @@ $(document).ready ->
 initializeDoubleKnockdownPage = ->
   # return if !$("body#double-knockdown").length
 
-  rotatingImages = $(".rotating-images")
+  rotators = $(".rotating-images")
 
-  rotatingImages.each ->
+  rotators.each ->
     el = $(this)
     firstImage = el.find(".individual-image").first()
     addImageElement(firstImage)
     firstImage.addClass("show")
 
-  rotatingImages.find(".experiment-image-wrapper").click ->
-    rotatingImage = $(this).closest(".rotating-images")
-    showNextImage(rotatingImage)
+  rotators.find(".image-frame-navigation").click (e) ->
+    e.preventDefault()
+    navigator = $(this)
+    rotator = navigator.closest(".rotating-images")
+
+    if navigator.hasClass("image-frame-previous")
+      direction = "previous"
+    else
+      direction = "next"
+
+    showSubsequentImage(rotator, direction)
 
 
-showNextImage = (rotatingImage) ->
-  images = rotatingImage.find(".individual-image")
-  currentImage = rotatingImage.find(".show")
+showSubsequentImage = (rotator, direction) ->
+  images = rotator.find(".individual-image")
+  currentImage = rotator.find(".show")
   i = images.index(currentImage)
   images.eq(i).removeClass("show")
-  i = (++i) % images.length
-  nextImage = images.eq(i)
-  nextImage.addClass("show")
-  addImageElement(nextImage)
+  if direction == "next"
+    i = (++i) % images.length
+  else
+    i = (--i) % images.length
+  subsequentImage = images.eq(i)
+  subsequentImage.addClass("show")
+  addImageElement(subsequentImage)
 
 
 addImageElement = (image) ->
-  imageWrapper = image.find(".experiment-image-wrapper")
-  imageSrc = imageWrapper.attr("data-src")
-  imageWrapper.html("<img src='#{imageSrc}' \>")
+  imageFrame = image.find(".image-frame")
+  imageSrc = imageFrame.attr("data-src")
+  imageFrame.prepend("<img src='#{imageSrc}' \>")
 
 
 removePageTitleStyleIfEmpty = ->

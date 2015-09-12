@@ -130,8 +130,10 @@ def get_image_html(experiment, well, current, length):
         {}
       </span>
 
-      <div class="experiment-image-wrapper"
+      <div class="image-frame"
         data-src="{}">
+        <a href="#" class="image-frame-navigation image-frame-previous"></a>
+        <a href="#" class="image-frame-navigation image-frame-next"></a>
       </div>
 
       <span class="image-caption">
