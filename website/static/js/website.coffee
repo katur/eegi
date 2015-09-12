@@ -2,13 +2,12 @@ $(document).ready ->
   removePageTitleStyleIfEmpty()
   setResizeHandler()
   positionFooter()
-  initializeDoubleKnockdownPage()
+  initializeRotatingImages()
 
 
-initializeDoubleKnockdownPage = ->
-  # return if !$("body#double-knockdown").length
-
+initializeRotatingImages = ->
   rotators = $(".rotating-images")
+  return if !rotators.length
 
   rotators.each ->
     el = $(this)
