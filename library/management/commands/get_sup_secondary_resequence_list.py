@@ -3,11 +3,10 @@ from django.core.management.base import BaseCommand
 from experiments.helpers.criteria import (
     passes_sup_positive_percentage_criteria)
 from experiments.helpers.scores import get_positives_across_all_worms
-from library.helpers.plate_design import (assign_to_plates,
-                                          get_plate_assignment_rows)
 from library.helpers.sequencing import (categorize_sequences_by_blat_results,
                                         NO_BLAT, NO_MATCH)
 from library.models import LibrarySequencing
+from utils.plate_design import assign_to_plates, get_plate_assignment_rows
 
 HELP = '''
 Get list of SUP Secondary wells to resequence.

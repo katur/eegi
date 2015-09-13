@@ -2,9 +2,8 @@ from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import passes_enh_secondary_criteria
 from experiments.helpers.scores import get_secondary_candidates
-from library.helpers.plate_design import (assign_to_plates,
-                                          get_plate_assignment_rows)
-from library.helpers.plate_layout import is_symmetric
+from utils.plate_design import assign_to_plates, get_plate_assignment_rows
+from utils.plate_layout import is_symmetric
 
 
 HELP = '''

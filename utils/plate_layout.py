@@ -1,10 +1,7 @@
-import re
-
-from library.helpers.constants import (ROWS_96, COLS_96,
-                                       NUM_ROWS_96, NUM_COLS_96,
-                                       ROWS_384, COLS_384)
-from library.helpers.well_tile_conversion import well_to_tile
-from library.helpers.well_naming import get_well_name, is_proper_well_name
+from constants import (ROWS_96, COLS_96, NUM_ROWS_96, NUM_COLS_96,
+                       ROWS_384, COLS_384)
+from well_tile_conversion import well_to_tile
+from well_naming import get_well_name, is_proper_well_name
 
 
 def get_well_list(vertical=False, is_384=False):
@@ -159,12 +156,6 @@ def is_symmetric(wells):
             return False
 
     return True
-
-
-def is_ahringer_96_plate(plate_name):
-    """Determine if a plate name is in the correct format for a 96-format
-    Ahringer plate."""
-    return re.match('(I|II|III|IV|V|X)-[1-9][0-3]?-[AB][12]', plate_name)
 
 
 if __name__ == '__main__':

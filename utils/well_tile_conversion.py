@@ -1,7 +1,7 @@
 import re
 
-from library.helpers.constants import ROWS_96, NUM_COLS_96
-from library.helpers.well_naming import get_well_name
+from constants import ROWS_96, NUM_COLS_96
+from well_naming import get_well_name
 
 BACKWARDS_ROWS = 'BDFH'
 
@@ -102,5 +102,7 @@ if __name__ == '__main__':
     for test in tests:
         if well_to_tile(test[0]) != test[1]:
             print 'fail:' + well_to_tile(test[0])
-        if tile_to_well(test[1]) != test[0]:
+        elif tile_to_well(test[1]) != test[0]:
             print 'FAIL: ' + tile_to_well(test[1])
+        else:
+            print 'success'

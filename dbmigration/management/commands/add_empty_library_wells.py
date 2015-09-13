@@ -5,9 +5,8 @@ from django.core.management.base import BaseCommand
 
 from dbmigration.helpers.name_getters import get_library_well_name
 from dbmigration.helpers.object_getters import get_library_plate
-from library.helpers.plate_layout import (get_96_well_set, get_384_position,
-                                          is_ahringer_96_plate)
 from library.models import LibraryWell
+from utils.plate_layout import get_96_well_set, get_384_position
 from utils.scripting import require_db_write_acknowledgement
 
 HELP = '''

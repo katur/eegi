@@ -1,9 +1,9 @@
 import random
 
-from library.helpers.constants import (ROWS_96, COLS_96, NUM_WELLS_96,
-                                       ROWS_384, COLS_384, NUM_WELLS_384)
-from library.helpers.plate_layout import get_well_list, is_symmetric
-from library.helpers.well_naming import get_well_name
+from constants import (ROWS_96, COLS_96, NUM_WELLS_96, ROWS_384, COLS_384,
+                       NUM_WELLS_384)
+from plate_layout import get_well_list, is_symmetric
+from well_naming import get_well_name
 
 
 def get_random_well(is_384=False):
@@ -116,7 +116,8 @@ def assign_to_plates(l, vertical=False,
 def get_plate_assignment_rows(plates):
     """Transform nested dictionary 'plates' to rows for nicer tabular output
 
-    Each rows lists the item, the plate assigned to, and the well assigned to.
+    Each rows lists the plate assigned to, the well assigned to,
+    and the item.
 
     Parameter 'plates' must be in format as returned by assign_to_plates.
     """

@@ -1,4 +1,4 @@
-from library.helpers.constants import ROWS_96, COLS_96, ROWS_384, COLS_384
+from constants import ROWS_96, COLS_96, ROWS_384, COLS_384
 
 
 def get_well_name(row, column):
