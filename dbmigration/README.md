@@ -156,8 +156,10 @@ vidal plate names | integers 1-21 | prefix with "vidal", e.g., "vidal-4"
 plate names in general | mishmash of hyphens (e.g. I-2-B1 and GHR-10010) and underscores (e.g. b1023\_F5 and Eliana\_Rearray\_2) | hyphens only (for more readable `LibraryWell.id`, e.g., b1023-F5\_F05)
 
 **Still to do**
-- Delete `LibraryPlate.screen_stage` since it's redundant with `Experiment.screen_level`. Or, if we think it would be useful to keep it, rename to `LibraryPlate.screen_level` for consistency.
-- Add the prefix to vidal plate names, and convert the plate name underscores to hyphens.
+- Consider deleting `LibraryPlate.screen_stage` since it's redundant with
+`Experiment.screen_stage`.
+- Add the prefix to vidal plate names, and convert the plate name underscores
+to hyphens.
 
 
 

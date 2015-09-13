@@ -38,10 +38,10 @@ def sort_scores_by_relevance_across_replicates(scores):
                   reverse=True)
 
 
-def get_organized_scores_all_worms(screen, screen_level,
+def get_organized_scores_all_worms(screen, screen_stage,
                                    most_relevant_only=False):
     """Fetch all scores for a particular screen ('ENH' or 'SUP')
-    and screen_level (1 for primary, 2 for secondary),
+    and screen_stage (1 for primary, 2 for secondary),
     organized as:
 
         s[worm][library_well][experiment] = [scores]
@@ -50,7 +50,7 @@ def get_organized_scores_all_worms(screen, screen_level,
 
         s[worm][library_well][experiment] = most_relevant_score
     """
-    w = get_organized_library_wells(screen_level=screen_level)
+    w = get_organized_library_wells(screen_stage=screen_stage)
 
     worms = WormStrain.objects
     if screen == 'ENH':
@@ -61,12 +61,12 @@ def get_organized_scores_all_worms(screen, screen_level,
     s = {}
     for worm in worms:
         s[worm] = get_organized_scores_specific_worm(
-            worm, screen, screen_level, most_relevant_only, library_wells=w)
+            worm, screen, screen_stage, most_relevant_only, library_wells=w)
 
     return s
 
 
-def get_organized_scores_specific_worm(worm, screen, screen_level,
+def get_organized_scores_specific_worm(worm, screen, screen_stage,
                                        most_relevant_only=False,
                                        library_wells=None):
     """Fetch all scores for a particular worm, screen ('ENH' or 'SUP'),
@@ -80,7 +80,7 @@ def get_organized_scores_specific_worm(worm, screen, screen_level,
         s[library_well][experiment] = most_relevant_score
     """
     scores = ManualScore.objects.filter(
-        experiment__screen_level=screen_level,
+        experiment__screen_stage=screen_stage,
         experiment__is_junk=False,
         experiment__worm_strain=worm)
 
@@ -97,7 +97,7 @@ def get_organized_scores_specific_worm(worm, screen, screen_level,
               .order_by('experiment__id', 'well'))
 
     if not library_wells:
-        library_wells = get_organized_library_wells(screen_level=screen_level)
+        library_wells = get_organized_library_wells(screen_stage=screen_stage)
 
     return organize_scores(scores, library_wells, most_relevant_only)
 
@@ -187,11 +187,11 @@ def get_secondary_candidates(screen, passes_criteria):
     return (candidates_by_worm, candidates_by_clone)
 
 
-def get_positives_across_all_worms(screen, screen_level, passes_criteria):
+def get_positives_across_all_worms(screen, screen_stage, passes_criteria):
     if screen != 'SUP' and screen != 'ENH':
         raise Exception('screen must be SUP or ENH')
 
-    s = get_organized_scores_all_worms(screen, screen_level=screen_level,
+    s = get_organized_scores_all_worms(screen, screen_stage=screen_stage,
                                        most_relevant_only=True)
     passing_library_wells = set()
 
@@ -204,12 +204,12 @@ def get_positives_across_all_worms(screen, screen_level, passes_criteria):
     return passing_library_wells
 
 
-def get_positives_specific_worm(worm, screen, screen_level, passes_criteria):
+def get_positives_specific_worm(worm, screen, screen_stage, passes_criteria):
     if screen != 'SUP' and screen != 'ENH':
         raise Exception('screen must be SUP or ENH')
 
     s = get_organized_scores_specific_worm(worm, screen,
-                                           screen_level=screen_level,
+                                           screen_stage=screen_stage,
                                            most_relevant_only=True)
     passing_library_wells = set()
 
@@ -237,13 +237,13 @@ def get_primary_single_replicate_experiments(screen):
     for worm in worms:
         if screen == 'SUP':
             experiments = (Experiment.objects
-                           .filter(is_junk=False, screen_level=1,
+                           .filter(is_junk=False, screen_stage=1,
                                    worm_strain=worm,
                                    temperature=worm.restrictive_temperature)
                            .order_by('library_plate'))
         else:
             experiments = (Experiment.objects
-                           .filter(is_junk=False, screen_level=1,
+                           .filter(is_junk=False, screen_stage=1,
                                    worm_strain=worm,
                                    temperature=worm.permissive_temperature)
                            .order_by('library_plate'))

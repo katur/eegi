@@ -1,17 +1,17 @@
 from library.models import LibraryWell
 
 
-def get_organized_library_wells(screen_level=None):
+def get_organized_library_wells(screen_stage=None):
     """Fetch all library wells from the database, organized as:
 
         l[library_plate][well] = library_well
 
-    Optionally provide a screen_level, to limit to the Primary or Secondary
+    Optionally provide a screen_stage, to limit to the Primary or Secondary
     screen.
     """
     wells = LibraryWell.objects.select_related('plate')
-    if screen_level:
-        wells = wells.filter(plate__screen_stage=screen_level)
+    if screen_stage:
+        wells = wells.filter(plate__screen_stage=screen_stage)
     else:
         wells = wells.all()
 

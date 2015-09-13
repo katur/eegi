@@ -5,7 +5,7 @@
 
 {% block page_title %}
 Grid of All
-{% ifequal screen_level '1' %}
+{% ifequal screen_stage '1' %}
 Primary
 {% else %}
 Secondary
@@ -38,13 +38,13 @@ Experiments
       {% for worm, temperatures in worms.items %}
         {% for temperature, experiments in temperatures.items %}
         <td
-          {% if screen_level == '1' and experiments|length < 2 %}
+          {% if screen_stage == '1' and experiments|length < 2 %}
             class="error-background"
-          {% elif screen_level == '1' and experiments|length > 2 %}
+          {% elif screen_stage == '1' and experiments|length > 2 %}
             class="warning-background"
-          {% elif experiments and screen_level == '2' and experiments|length < 8 %}
+          {% elif experiments and screen_stage == '2' and experiments|length < 8 %}
             class="error-background"
-          {% elif experiments and screen_level == '2' and experiments|length > 8 %}
+          {% elif experiments and screen_stage == '2' and experiments|length > 8 %}
             class="warning-background"
           {% endif %}
         >

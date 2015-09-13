@@ -139,7 +139,7 @@ def update_Experiment_table(cursor):
     later deemed untrustworthy) are excluded.
     """
     recorded_experiments = Experiment.objects.all()
-    fields_to_compare = ('worm_strain', 'library_plate', 'screen_level',
+    fields_to_compare = ('worm_strain', 'library_plate', 'screen_stage',
                          'temperature', 'date', 'is_junk', 'comment',)
 
     legacy_query = ('SELECT expID, mutant, mutantAllele, RNAiPlateID, '
@@ -153,14 +153,14 @@ def update_Experiment_table(cursor):
     def sync_experiment_row(legacy_row):
         expID = legacy_row[0]
         if expID < 40000:
-            screen_level = 1
+            screen_stage = 1
         else:
-            screen_level = 2
+            screen_stage = 2
         legacy_experiment = Experiment(
             id=legacy_row[0],
             worm_strain=get_worm_strain(legacy_row[1], legacy_row[2]),
             library_plate=get_library_plate(legacy_row[3]),
-            screen_level=screen_level,
+            screen_stage=screen_stage,
             temperature=legacy_row[4],
             date=legacy_row[5],
             is_junk=legacy_row[6],

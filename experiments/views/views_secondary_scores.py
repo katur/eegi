@@ -23,7 +23,7 @@ def secondary_scores(request, worm, temperature):
 
     # TODO: Try to speed this up with a single query between Experiment
     # (plate-level), ManualScore (well-level), and LibraryWell (well-level).
-    s = get_organized_scores_specific_worm(worm, screen, screen_level=2,
+    s = get_organized_scores_specific_worm(worm, screen, screen_stage=2,
                                            most_relevant_only=True)
 
     num_passes_stringent = 0

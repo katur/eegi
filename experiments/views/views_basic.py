@@ -69,12 +69,12 @@ def experiments(request, context=None):
     return render(request, 'experiments.html', context)
 
 
-def experiment_grid(request, screen_level):
+def experiment_grid(request, screen_stage):
     """Render the page showing all experiments as a grid."""
     worms = WormStrain.objects.all()
-    plates = LibraryPlate.objects.filter(screen_stage=screen_level)
+    plates = LibraryPlate.objects.filter(screen_stage=screen_stage)
     experiments = (Experiment.objects
-                   .filter(screen_level=screen_level, is_junk=False)
+                   .filter(screen_stage=screen_stage, is_junk=False)
                    .prefetch_related('library_plate', 'worm_strain'))
 
     header = []
@@ -104,7 +104,7 @@ def experiment_grid(request, screen_level):
             e[plate][worm][temp].append(experiment)
 
     context = {
-        'screen_level': screen_level,
+        'screen_stage': screen_stage,
         'header': header,
         'e': e,
     }
