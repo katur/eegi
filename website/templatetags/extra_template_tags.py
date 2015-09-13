@@ -1,9 +1,9 @@
-import urllib2
 import string
 from decimal import Decimal
 
 from django import template
 from django.core.urlresolvers import reverse
+from utils.http import http_response_ok
 
 register = template.Library()
 
@@ -73,17 +73,6 @@ def get_thumbnail_image(experiment, well):
     url = '/'.join((THUMBNAIL_PATH, str(experiment.id), tile))
     url = string.replace(url, 'bmp', 'jpg')
     return url
-
-
-def http_response_ok(url):
-    try:
-        r = urllib2.urlopen(url)
-    except urllib2.URLError as e:
-        return False
-    if r.code == 200:
-        return True
-    else:
-        return False
 
 
 @register.assignment_tag
