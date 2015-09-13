@@ -3,7 +3,7 @@
 
 {% block body_id %}experiment-well{% endblock %}
 {% block page_title %}
-  Experiment {{ experiment.id }}, Well {{ well.well }}
+  Experiment {{ experiment.id }}, Well {{ well }}
 {% endblock %}
 
 {% block content %}
@@ -16,7 +16,7 @@
   </span>
 
   <span>
-    Intended RNAi Clone: {{ well.intended_clone}}
+    Intended RNAi Clone: {{ library_well.intended_clone}}
   </span>
 
   <span>
@@ -48,9 +48,9 @@
     <span>Scores: {{ experiment.score_summary }}</span>
   {% endif %}
 
-  {% if well.intended_clone and not well.intended_clone.is_control and not experiment.worm_strain.is_control %}
+  {% if library_well.intended_clone and not library_well.intended_clone.is_control and not experiment.worm_strain.is_control %}
   <span>
-    <a href="{% url 'double_knockdown_url' experiment.worm_strain.id well.intended_clone.id experiment.temperature %}">
+    <a href="{% url 'double_knockdown_url' experiment.worm_strain.id library_well.intended_clone.id experiment.temperature %}">
       See with controls and all replicates.</a>
   </span>
   {% endif %}
@@ -62,10 +62,10 @@
 </div>
 
 <div class="image-frame">
-  <img src="{% get_image experiment well %}"/>
+  <img src="{% get_image_url experiment well %}"/>
 </div>
 
-{% get_devstar_image experiment well as devstar_image %}
+{% get_devstar_image_url experiment well as devstar_image %}
 
 {% if devstar_image %}
   <div class="image-frame">

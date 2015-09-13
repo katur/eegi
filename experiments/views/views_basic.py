@@ -119,15 +119,15 @@ def experiment_plate(request, id):
     experiment = get_object_or_404(Experiment, pk=id)
     experiment.worm_strain.url = experiment.worm_strain.get_url(request)
 
-    wells = LibraryWell.objects.filter(
+    library_wells = LibraryWell.objects.filter(
         plate=experiment.library_plate).order_by('well')
 
-    for well in wells:
-        well.row = well.get_row()
+    for library_well in library_wells:
+        library_well.row = library_well.get_row()
 
     context = {
         'experiment': experiment,
-        'wells': wells,
+        'library_wells': library_wells,
     }
 
     return render(request, 'experiment_plate.html', context)
@@ -139,7 +139,7 @@ def experiment_plate_vertical(request, ids):
     experiments = []
     for id in ids:
         experiment = get_object_or_404(Experiment, pk=id)
-        experiment.wells = LibraryWell.objects.filter(
+        experiment.library_wells = LibraryWell.objects.filter(
             plate=experiment.library_plate).order_by('well')
         experiments.append(experiment)
 
@@ -157,13 +157,13 @@ def experiment_well(request, id, well):
     experiment = get_object_or_404(Experiment, pk=id)
     experiment.worm_strain.url = experiment.worm_strain.get_url(request)
 
-    well = LibraryWell.objects.filter(
+    library_well = LibraryWell.objects.filter(
         plate=experiment.library_plate).filter(well=well)[0]
-    experiment.score_summary = experiment.get_score_summary(well)
 
     context = {
         'experiment': experiment,
         'well': well,
+        'library_well': library_well,
     }
 
     return render(request, 'experiment_well.html', context)

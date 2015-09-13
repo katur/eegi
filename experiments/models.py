@@ -55,7 +55,7 @@ class Experiment(models.Model):
     def get_scores(self, well=None):
         if well:
             scores = (ManualScore.objects
-                      .filter(Q(experiment=self), Q(well=well.well))
+                      .filter(Q(experiment=self), Q(well=well))
                       .order_by('scorer', 'timestamp', 'score_code'))
         else:
             scores = ManualScore.objects.filter(experiment=self)

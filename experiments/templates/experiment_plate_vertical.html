@@ -49,20 +49,20 @@
     </thead>
 
     <tbody>
-      {% for well in experiment.wells %}
+      {% for library_well in experiment.library_wells %}
       <tr>
-        <td {% if not well.intended_clone %} class="empty-well" {% endif %}>
+        <td {% if not library_well.intended_clone %} class="empty-well" {% endif %}>
           <div class="well-title">
-            {{ well.well }}
-            <span class="parenthetical">({{ well.get_tile }})</span>
+            {{ library_well.well }}
+            <span class="parenthetical">({{ library_well.get_tile }})</span>
           </div>
 
           <a class="image-frame"
-            href="{% url 'experiment_well_url' experiment well.well %}">
-              <img src="{% get_thumbnail_image experiment well %}">
+            href="{% url 'experiment_well_url' experiment library_well.well %}">
+              <img src="{% get_thumbnail_url experiment library_well.well %}">
           </a>
 
-          <div class="well-caption">{{ well.intended_clone }}</div>
+          <div class="well-caption">{{ library_well.intended_clone }}</div>
         </td>
       </tr>
       {% endfor %}

@@ -4,6 +4,7 @@ from decimal import Decimal
 from django import template
 from django.core.urlresolvers import reverse
 from eegi.settings import IMG_PATH, THUMBNAIL_PATH, DEVSTAR_PATH
+from library.helpers.tile_conversion import well_to_tile
 from utils.http import http_response_ok
 
 register = template.Library()
@@ -52,27 +53,27 @@ def get_screen_type(temperature, strain):
     elif Decimal(temperature) == strain.permissive_temperature:
         return 'ENH screen temperature'
     else:
-        return 'not SUP or ENH screening temperature for this strain'
+        return 'neither SUP nor ENH screen temperature'
 
 
 @register.simple_tag
-def get_image(experiment, well):
-    tile = well.get_tile()
+def get_image_url(experiment, well):
+    tile = well_to_tile(well)
     url = '/'.join((IMG_PATH, str(experiment.id), tile))
     return url
 
 
 @register.simple_tag
-def get_thumbnail_image(experiment, well):
-    tile = well.get_tile()
+def get_thumbnail_url(experiment, well):
+    tile = well_to_tile(well)
     url = '/'.join((THUMBNAIL_PATH, str(experiment.id), tile))
     url = string.replace(url, 'bmp', 'jpg')
     return url
 
 
 @register.assignment_tag
-def get_devstar_image(experiment, well):
-    tile = well.get_tile()
+def get_devstar_image_url(experiment, well):
+    tile = well_to_tile(well)
     url = '/'.join((DEVSTAR_PATH, str(experiment.id), tile))
     url = string.replace(url, '.bmp', 'res.png')
     if http_response_ok(url):
@@ -81,10 +82,10 @@ def get_devstar_image(experiment, well):
         return None
 
 
-@register.simple_tag
 def get_image_title(experiment, well):
-    url = reverse('experiment_well_url', args=[experiment.id, well.well])
-    essentials = 'Experiment {}, well {}'.format(str(experiment.id), well.well)
+    url = reverse('experiment_well_url', args=[experiment.id, well])
+    essentials = 'Experiment {}, well {}'.format(
+        str(experiment.id), well)
     if experiment.worm_strain.is_control():
         essentials += ', ' + experiment.get_celsius_temperature()
     output = '''
@@ -95,17 +96,18 @@ def get_image_title(experiment, well):
     return output
 
 
-@register.simple_tag
 def get_image_placement(current, length):
-    return '<span class="placement">{} of {}</span>'.format(current, length)
+    return '<span class="placement">{} of {}</span>'.format(
+        current, length)
 
 
 @register.simple_tag
-def get_image_html(experiment, well, current, length):
-    if well.is_control() or experiment.is_mutant_control():
+def get_image_html(experiment, library_well, current, length):
+    well = library_well.well
+    if library_well.is_control() or experiment.is_mutant_control():
         scores = ""
     else:
-        scores = experiment.score_summary
+        scores = experiment.get_score_summary(well)
 
     output = '''
     <div class="individual-image">
@@ -127,7 +129,7 @@ def get_image_html(experiment, well, current, length):
     '''.format(
         get_image_title(experiment, well),
         get_image_placement(current, length),
-        get_image(experiment, well),
+        get_image_url(experiment, well),
         scores
     )
     return output
