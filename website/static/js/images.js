@@ -6,29 +6,32 @@
   });
 
   initializeRotatingImages = function() {
-    var rotators;
-    rotators = $(".rotating-images");
+    var rotators = $(".rotating-images");
+
     if (!rotators.length) {
       return;
     }
+
     rotators.each(function() {
-      var el, firstImage;
-      el = $(this);
-      firstImage = el.find(".individual-image").first();
+      var el = $(this);
+      var firstImage = el.find(".individual-image").first();
       addImageElement(firstImage);
-      return firstImage.addClass("show");
+      firstImage.addClass("show");
     });
-    return rotators.find(".image-frame-navigation").click(function(e) {
-      var direction, navigator, rotator;
+
+    rotators.find(".image-frame-navigation").click(function(e) {
       e.preventDefault();
-      navigator = $(this);
-      rotator = navigator.closest(".rotating-images");
+      var navigator = $(this);
+      var rotator = navigator.closest(".rotating-images");
+
+      var direction;
       if (navigator.hasClass("image-frame-previous")) {
         direction = "previous";
       } else {
         direction = "next";
       }
-      return showSubsequentImage(rotator, direction);
+
+      showSubsequentImage(rotator, direction);
     });
   };
 
@@ -38,21 +41,23 @@
     currentImage = rotator.find(".show");
     i = images.index(currentImage);
     images.eq(i).removeClass("show");
+
     if (direction === "next") {
       i = (++i) % images.length;
     } else {
       i = (--i) % images.length;
     }
+
     subsequentImage = images.eq(i);
     subsequentImage.addClass("show");
-    return addImageElement(subsequentImage);
+    addImageElement(subsequentImage);
   };
 
   addImageElement = function(image) {
     var imageFrame, imageSrc;
     imageFrame = image.find(".image-frame");
     imageSrc = imageFrame.attr("data-src");
-    return imageFrame.prepend("<img src='" + imageSrc + "' \>");
+    imageFrame.prepend("<img src='" + imageSrc + "' \>");
   };
 
 }).call(this);
