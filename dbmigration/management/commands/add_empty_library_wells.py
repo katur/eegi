@@ -45,7 +45,7 @@ class Command(BaseCommand):
         for plate in plate_wells:
             missing_wells = get_missing_wells(plate_wells[plate],
                                               wells_96)
-            if is_ahringer_96_plate(plate.id):
+            if plate.is_ahringer_96_plate():
                 is_ahringer = True
             else:
                 is_ahringer = False
