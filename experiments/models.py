@@ -38,7 +38,7 @@ class Experiment(models.Model):
     library_plate = models.ForeignKey(LibraryPlate)
     library_plate_copy_number = models.PositiveSmallIntegerField(null=True,
                                                                  blank=True)
-    screen_level = models.PositiveSmallIntegerField(db_index=True)
+    screen_stage = models.PositiveSmallIntegerField(db_index=True)
     temperature = models.DecimalField(max_digits=3, decimal_places=1,
                                       db_index=True)
     date = models.DateField(db_index=True)
