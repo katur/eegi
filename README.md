@@ -88,12 +88,30 @@ HTML uses the
 [Django template language](https://docs.djangoproject.com/en/dev/topics/templates/).
 
 CSS is in [SASS](http://sass-lang.com/). Run
-`sass -wc --style compressed website/static/stylesheets/styles.sass`
+`sass --watch --compile --style compressed website/static/stylesheets/styles.sass`
 to compile.
 
 Javascript is in [CoffeeScript](http://coffeescript.org/). Run
-`coffee -wc website/static/js/*.coffee`
+`coffee --watch --compile website/static/js/*.coffee`
 to compile.
+
+
+### Optional way to streamline SASS and CoffeeScript compilation:
+Gulp is a nice Node package that can compile the SASS and CoffeeScript
+with one command. To install Node and gulp (with Homebrew):
+
+```
+brew install node
+sudo npm install -g gulp
+```
+
+Once gulp is installed, in the project root:
+```
+npm install --dev-save gulp-ruby-sass
+npm install --dev-save gulp-coffee
+npm install --dev-save gulp-util
+```
+
 
 Managerial scripts
 (e.g. the script that migrates data from the old database)

@@ -8,6 +8,9 @@ materials/
 # Collected static files (can be re-collected with ./manage.py collectstatic)
 staticfiles/
 
+# Project-specific Node.js packages (e.g. gulp)
+node_modules/
+
 # Photoshop files
 *.psd
 
