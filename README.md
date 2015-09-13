@@ -91,7 +91,7 @@ CSS is in [SASS](http://sass-lang.com/). Run
 to compile.
 
 Javascript is in [CoffeeScript](http://coffeescript.org/). Run
-`coffee -wc website/static/js/\*.coffee`
+`coffee -wc website/static/js/*.coffee`
 to compile.
 
 Managerial scripts
