@@ -3,7 +3,7 @@ import string
 from django import template
 from django.core.urlresolvers import reverse
 from eegi.settings import IMG_PATH, THUMBNAIL_PATH, DEVSTAR_PATH
-from library.helpers.tile_conversion import well_to_tile
+from library.helpers.well_tile_conversion import well_to_tile
 from utils.http import http_response_ok
 
 register = template.Library()

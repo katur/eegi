@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models import Q
 
 from clones.models import Clone
-from library.helpers.tile_conversion import well_to_tile
+from library.helpers.well_tile_conversion import well_to_tile
 
 
 class LibraryPlate(models.Model):

@@ -3,7 +3,7 @@ import re
 from library.helpers.constants import (ROWS_96, COLS_96,
                                        NUM_ROWS_96, NUM_COLS_96,
                                        ROWS_384, COLS_384)
-from library.helpers.tile_conversion import well_to_tile
+from library.helpers.well_tile_conversion import well_to_tile
 from library.helpers.well_naming import get_well_name, is_proper_well_name
 
 
