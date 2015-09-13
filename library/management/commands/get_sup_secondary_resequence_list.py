@@ -31,15 +31,28 @@ class Command(BaseCommand):
         seqs_blat = categorize_sequences_by_blat_results(seqs)
 
         reseq_wells = get_wells_to_resequence(seqs_blat)
+
         assigned = assign_to_plates(reseq_wells)
+
         rows = get_plate_assignment_rows(assigned)
 
         self.stdout.write('source_plate, source_well, '
                           'destination_plate, destination_well')
         for row in rows:
+            source = row[2]
+
+            if hasattr(source, 'plate'):
+                plate = source.plate
+            else:
+                plate = None
+
+            if hasattr(source, 'well'):
+                well = source.well
+            else:
+                well = None
+
             self.stdout.write('{},{},{},{}'
-                              .format(row[2].plate, row[2].well,
-                                      row[0], row[1]))
+                              .format(plate, well, row[0], row[1]))
 
 
 def get_wells_to_resequence(s):
