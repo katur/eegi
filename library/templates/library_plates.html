@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load extra_template_tags %}
 
 {% block body_id %}library-plates{% endblock %}
 {% block page_title %}RNAi Library Plates{% endblock %}
@@ -37,7 +36,7 @@
 
 <div id="results-header">
   <span id="total">
-    {{ plates|length }} total
+    {{ library_plates|length }} total
   </span>
 
   {% include 'pagination_status.html' %}
@@ -53,13 +52,14 @@
   </thead>
 
   <tbody>
-    {% for plate in paginated %}
+    {% for library_plate in paginated %}
     <tr>
       <td>
-        <a href="{% url 'library_plate_url' plate.id %}">{{ plate }}</a>
+        <a href="{% url 'library_plate_url' library_plate.id %}">
+          {{ library_plate }}</a>
       </td>
-      <td>{{ plate.screen_stage }}</td>
-      <td>{{ plate.number_of_wells }}</td>
+      <td>{{ library_plate.screen_stage }}</td>
+      <td>{{ library_plate.number_of_wells }}</td>
     </tr>
     {% endfor %}
   </tbody>

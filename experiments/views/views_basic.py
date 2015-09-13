@@ -69,7 +69,7 @@ def experiments(request, context=None):
     return render(request, 'experiments.html', context)
 
 
-def experiment_grid(request, screen_stage):
+def experiments_grid(request, screen_stage):
     """Render the page showing all experiments as a grid."""
     worms = WormStrain.objects.all()
     plates = LibraryPlate.objects.filter(screen_stage=screen_stage)
@@ -109,7 +109,7 @@ def experiment_grid(request, screen_stage):
         'e': e,
     }
 
-    return render(request, 'experiment_grid.html', context)
+    return render(request, 'experiments_grid.html', context)
 
 
 def experiment_plate(request, id):

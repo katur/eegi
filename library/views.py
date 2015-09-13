@@ -11,13 +11,13 @@ def library_plates(request):
     """Render the page listing all library plates."""
     screen_stage = request.GET.get('screen_stage')
     if screen_stage:
-        plates = sorted(LibraryPlate.objects.filter(
+        library_plates = sorted(LibraryPlate.objects.filter(
             screen_stage=screen_stage))
     else:
-        plates = sorted(LibraryPlate.objects.filter(
+        library_plates = sorted(LibraryPlate.objects.filter(
             screen_stage__gte=1))
 
-    paginator = Paginator(plates, PLATES_PER_PAGE)
+    paginator = Paginator(library_plates, PLATES_PER_PAGE)
     page = request.GET.get('page')
 
     try:
@@ -28,7 +28,7 @@ def library_plates(request):
         display_plates = paginator.page(paginator.num_pages)
 
     context = {
-        'plates': plates,
+        'library_plates': library_plates,
         'paginated': display_plates,
     }
 
@@ -37,14 +37,15 @@ def library_plates(request):
 
 def library_plate(request, id):
     """Render the page showing the contents of a single library plate."""
-    plate = get_object_or_404(LibraryPlate, pk=id)
-    wells = LibraryWell.objects.filter(plate=plate).order_by('well')
-    for well in wells:
-        well.row = well.get_row()
+    library_plate = get_object_or_404(LibraryPlate, pk=id)
+    library_wells = LibraryWell.objects.filter(
+        plate=library_plate).order_by('well')
+    for library_well in library_wells:
+        library_well.row = library_well.get_row()
 
     context = {
-        'plate': plate,
-        'wells': wells,
+        'library_plate': library_plate,
+        'library_wells': library_wells,
     }
 
     return render(request, 'library_plate.html', context)

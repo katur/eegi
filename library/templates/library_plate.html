@@ -1,23 +1,22 @@
 {% extends "base.html" %}
-{% load extra_template_tags %}
 
 {% block body_id %}library-plate{% endblock %}
-{% block page_title %}{{ plate }}{% endblock %}
+{% block page_title %}{{ library_plate }}{% endblock %}
 
 {% block content %}
 
 <table class="plate-96 striped">
-  {% regroup wells by row as wells_by_row %}
-  {% for row in wells_by_row %}
+  {% regroup library_wells by row as library_wells_by_row %}
+  {% for row in library_wells_by_row %}
   <tr>
-    {% for well in row.list %}
-      <td {% if not well.intended_clone %} class="empty-well" {% endif %}>
+    {% for library_well in row.list %}
+      <td {% if not library_well.intended_clone %} class="empty-well" {% endif %}>
         <div class="well-title">
-          {{ well.well }}
-          <span class="parenthetical">({{ well.get_tile }})</span>
+          {{ library_well.well }}
+          <span class="parenthetical">({{ library_well.get_tile }})</span>
         </div>
         <div class="well-caption">
-          {{ well.intended_clone }}
+          {{ library_well.intended_clone }}
         </div>
       </td>
     {% endfor %}
