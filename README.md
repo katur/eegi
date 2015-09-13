@@ -8,10 +8,10 @@ reveal genetic interactions.
 
 ## Dependencies
 
-Python version is listed in `runtime.txt`.
+Python version is listed in [runtime.txt](runtime.txt).
 
 Package dependencies, including Django itself,
-are listed in `requirements.txt`.
+are listed in [requirements.txt](requirements.txt).
 These should be [pip](https://pypi.python.org/pypi/pip)-installed into a fresh
 [Python virtual environment](http://virtualenv.readthedocs.org/)
 wherever the project runs (for development or production). I use
@@ -20,6 +20,7 @@ to make working with Python virtual environments easier.
 
 In a nutshell (assuming pip, virtualenv, and virtualenvwrapper already
 installed):
+
 ```
 mkvirtualenv eegi
 workon eegi
@@ -51,31 +52,31 @@ are in [dbmigration/README.md](dbmigration/README.md).
 
 The project is organized into four main apps centered around the project data:
 
-- `worms` captures the *C. elegans* strains used in the screen.
-- `clones` captures the RNAi feeding clones used in the screen, including
-information about what genes these clones target.
-- `library` captures the physical RNAi stocks used in the screen,
+- [worms](worms) captures the *C. elegans* strains used in the screen.
+- [clones](clones) captures the RNAi feeding clones used in the screen,
+including information about what genes these clones target.
+- [library](library) captures the physical RNAi stocks used in the screen,
 including sequencing results.
-- `experiments` captures the actual experiments, including human and
-machine scores of results.
+- [experiments](experiments) captures the actual experiments, including
+human and machine scores of results.
 
 
 There are several other, organizational apps:
 
-- `website` holds aspects of the website that are common to all apps (e.g.,
+- [website](website) holds aspects of the website that are common to all apps (e.g.,
 the templates and stylesheets for the home page, footer, etc)
-- `dbmigration` holds the functionality for syncing the database according to
+- [dbmigration](dbmigration) holds the functionality for syncing the database according to
 the legacy database
 
 
 Finally, an explanation of these top level directories (which are not apps):
 
-- `utils` holds a few very general helper functions
+- [utils](utils) holds a few very general helper functions
 - `materials`, excluded from the repo, holds various input files (Genewiz
 sequencing output, the official Ahringer RNAi library Excel database, etc.)
 - `backups`, excluded from the repo, holds MySQL database backups, schema
 backups, etc.
-- `antiquated` holds older code that predates this Django project
+- [antiquated](antiquated) holds older code that predates this Django project
 
 
 ## Code
