@@ -88,19 +88,20 @@ HTML uses the
 [Django template language](https://docs.djangoproject.com/en/dev/topics/templates/).
 
 CSS is in [SASS](http://sass-lang.com/). Run
-`sass --watch --compile --style compressed website/static/stylesheets/styles.sass`
+`sass --compile --style compressed website/static/stylesheets/styles.sass`
 to compile (assuming sass is installed).
 
 Javascript is in [CoffeeScript](http://coffeescript.org/). Run
-`coffee --watch --compile website/static/js/*.coffee`
+`coffee --compile website/static/js/*.coffee`
 to compile (assuming coffee is installed).
 
-Instead of compiling the SASS and CoffeeScript separately, there is a
-[Gulp.js build script](gulpfile.js), which can be run with `gulp`.
+Instead of compiling the SASS and CoffeeScript separately, 
+feel free to use the [Gulp.js build script](gulpfile.js), 
+run simply with `gulp`.
 
-To set up the project for gulping, assuming [Gulp.js](http://gulpjs.com/)
-is installed on the system, run the following in the project root to
-install gulp and some gulp packages in a git-ignored directory called
+To set up the project for gulping (assuming [Gulp.js](http://gulpjs.com/)
+is installed on the system), run the following in the project root
+to install project-specific gulp packages in a git-ignored directory called
 `node_modules`:
 
 ```
