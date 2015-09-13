@@ -7,8 +7,8 @@ var sassFiles = '**/*.sass';
 var sassMain = 'website/static/stylesheets/styles.sass';
 var cssDir = 'website/static/stylesheets/';
 
-var coffeeFiles = '**/*.coffee'
-var jsDir = 'website/static/js/'
+var coffeeFiles = 'website/static/js/*.coffee';
+var jsDir = 'website/static/js/';
 
 gulp.task('default', function() {
   gulp.watch(sassFiles, ['compileSass']);
