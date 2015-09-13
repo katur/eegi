@@ -107,9 +107,10 @@ sudo npm install -g gulp
 
 Once gulp is installed, in the project root:
 ```
+npm install --dev-save gulp
+npm install --dev-save gulp-util
 npm install --dev-save gulp-ruby-sass
 npm install --dev-save gulp-coffee
-npm install --dev-save gulp-util
 ```
 
 
