@@ -1,3 +1,12 @@
+"""Utility module for help with well names.
+
+These functions are mainly useful for migrating data from the legacy
+database, which did not use consistent well names (it sometimes
+used 2-character format, e.g. 'A1', and sometimes used 3-character
+format, e.g. 'A01').
+
+"""
+
 from constants import ROWS_96, COLS_96, ROWS_384, COLS_384
 
 
@@ -7,13 +16,17 @@ def get_well_name(row, column):
     row_name should be a capital letter.
 
     column_name should be an integer.
+
     """
     return '{}{}'.format(row, str(column).zfill(2))
 
 
 def get_three_character_well(well):
-    """Return a well in 3-character format (e.g. 'A05'), whether the input is
-    in 3-character format or 2-character format (e.g. 'A5').
+    """Return a well in proper 3-character format (e.g. 'A05').
+
+    Works whether the input is in proper 3-character format, or in
+    2-character format (e.g. 'A5').
+
     """
     row = well[0]
     column = int(well[1:])
@@ -21,7 +34,7 @@ def get_three_character_well(well):
 
 
 def is_proper_well_name(well, is_384=False):
-    """Determine if a 96-format well name is an allowed well name."""
+    """Determine if a 96-format well name is a proper well name."""
     if len(well) != 3:
         return False
 

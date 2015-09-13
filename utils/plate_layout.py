@@ -1,3 +1,23 @@
+"""Utility module to help work with plates (library and experiment plates).
+
+This module includes functions to:
+
+    - Retrieve all the wells that exist in a 96-format or 384-format
+      plate, in various formats (e.g. as a list sorted by column first
+      or row first, as a Python set for more speedy access,
+      as a 96-well 2D array).
+
+    - Translating between 96-format and 384-format positions. This
+      is useful for figuring out what position 96-format wells
+      derived from, if the 96-format plate derives from a 384-format
+      plate.
+
+    - Calculate which well is symmetric to a given well. This is useful
+      for designing plates without symmetric patterns, and for fixing
+      issues with plates that were accidentally flipped 180 degrees.
+
+"""
+
 from constants import (ROWS_96, COLS_96, NUM_ROWS_96, NUM_COLS_96,
                        ROWS_384, COLS_384)
 from well_tile_conversion import well_to_tile
@@ -11,6 +31,7 @@ def get_well_list(vertical=False, is_384=False):
 
     is_384 param determines if the well list should be for 384-format plates,
     or 96-format plates.
+
     """
     if is_384:
         rows = ROWS_384
@@ -31,6 +52,7 @@ def get_well_list_vertical(rows, columns):
 
         ['A01', 'B01', ..., 'H01', 'A02', 'B02', ..., 'H02', ...,
          'A12', 'B12', ..., 'H12']
+
     """
     wells = []
     for column in columns:
@@ -45,6 +67,7 @@ def get_well_list_horizontal(rows, columns):
 
         ['A01', 'A02', ..., 'A12', 'B01', 'B02', ..., 'B12', ...,
          'H01', 'H02', ..., 'H12']
+
     """
     wells = []
     for row in rows:
@@ -68,6 +91,7 @@ def get_well_set(rows, columns):
     and columns.
 
     Expects each column to be an integer with no more than 2 digits.
+
     """
     wells = set()
     for row in rows:
@@ -81,6 +105,7 @@ def get_96_grid():
 
     Each element in the 2D array is a dictionary with 'well' and 'tile' keys
     mapping to the well name and tile name.
+
     """
     plate = []
     for row_index in range(NUM_ROWS_96):
@@ -103,6 +128,7 @@ def get_384_position(child_quadrant, child_position):
 
     Uses the child's quadrant (A1, A2, B1, or B2) and the child's position
     to calculate this.
+
     """
     if child_quadrant[0] == 'A':
         odd_row = True
@@ -134,6 +160,7 @@ def get_symmetric_well(well):
 
     Well A is symmetric to well B if the two would swap positions if the
     plate were flipped 180 degrees.
+
     """
     if not is_proper_well_name(well):
         raise ValueError('{} is an improper well name'.format(well))
@@ -149,6 +176,7 @@ def is_symmetric(wells):
 
     Symmetry requires that for each well present in wells, its symmetric well
     is also present.
+
     """
     for well in wells:
         s = get_symmetric_well(well)

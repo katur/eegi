@@ -1,3 +1,18 @@
+"""Utility module to help with designing plates (e.g. library plates).
+
+This module includes functions to:
+
+    - Select random wells. This is useful when designing new frozen
+      bacteria plates, when we want some empty wells to create
+      a recognizable pattern whenever the bacteria is replicated.
+
+    - Assign items to plate positions. This is useful e.g. for
+      rearraying positives from the Primary screen into Secondary
+      plates, and rearraying clones that need to be resequenced into
+      PCR plates.
+
+"""
+
 import random
 
 from constants import (ROWS_96, COLS_96, NUM_WELLS_96, ROWS_384, COLS_384,
@@ -24,6 +39,7 @@ def get_random_wells(count, is_384=False):
     """Get unique, random wells (number determined by count parameter).
 
     count must be between 0 and number of wells in a plate, inclusive.
+
     """
     if is_384:
         upper = NUM_WELLS_384
@@ -58,6 +74,7 @@ def assign_to_plates(l, vertical=False,
     that no two plates will have the same pattern (and that no plate
     will have a pattern already existing in optional parameter
     already_used_empties).
+
     """
     def add_new_plate(plates, empties_per_plate, already_used_empties):
         """Add a new plate to plates, generating new empty wells."""
@@ -120,6 +137,7 @@ def get_plate_assignment_rows(plates):
     and the item.
 
     Parameter 'plates' must be in format as returned by assign_to_plates.
+
     """
     rows = []
 
@@ -134,6 +152,7 @@ def get_empties_from_list_of_lists(l):
     """List the positions in which a list of lists is 'None'.
 
     This is useful for cherry picking, to list the empty wills separately.
+
     """
     e = []
     for outer_i, nested_l in enumerate(l):
