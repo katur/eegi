@@ -217,11 +217,28 @@ form table th, form table td {
     top: 0;
     width: 50%;
     height: 100%;
-    z-index: 2; }
+    z-index: 2;
+    color: #c0a1e0;
+    font-size: 50px;
+    font-size: 4vw; }
+    .image-frame .image-frame-previous:hover, .image-frame .image-frame-next:hover {
+      color: #c4c4c4; }
+    .image-frame .image-frame-previous span, .image-frame .image-frame-next span {
+      position: absolute;
+      top: 50%;
+      -webkit-transform: translateY(calc(-50%));
+      -moz-transform: translateY(calc(-50%));
+      -ms-transform: translateY(calc(-50%));
+      -o-transform: translateY(calc(-50%));
+      transform: translateY(calc(-50%)); }
   .image-frame .image-frame-previous {
     left: 0; }
+    .image-frame .image-frame-previous span {
+      left: 5%; }
   .image-frame .image-frame-next {
     right: 0; }
+    .image-frame .image-frame-next span {
+      right: 5%; }
 
 .plate-96 {
   width: 100%;

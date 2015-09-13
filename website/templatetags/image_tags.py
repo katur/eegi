@@ -71,8 +71,12 @@ def get_image_html(experiment, library_well, current, length):
 
       <div class="image-frame"
         data-src="{}">
-        <a href="#" class="image-frame-navigation image-frame-previous"></a>
-        <a href="#" class="image-frame-navigation image-frame-next"></a>
+        <a href="#" class="image-frame-navigation image-frame-previous">
+          <span>&laquo;</span>
+        </a>
+        <a href="#" class="image-frame-navigation image-frame-next">
+          <span>&raquo;</span>
+        </a>
       </div>
 
       <span class="image-caption">

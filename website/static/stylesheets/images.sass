@@ -20,12 +20,35 @@ $image-frame-z-index: 1
     width: 50%
     height: 100%
     z-index: $image-frame-z-index + 1
+    color: lighten($link-color, 20%)
+
+    // For browsers that don't support vw
+    font-size: 50px
+
+    // vw is "Viewport-width" (font size relative to window size)
+    font-size: 4vw
+
+    &:hover
+      color: lighten($link-hover-color, 30%)
+
+    span
+      position: absolute
+      top: 50%
+      // Move up by 50% of itself, so centered
+      @include transform(translateY(calc(-50%)))
+
 
   .image-frame-previous
     left: 0
 
+    span
+      left: 5%
+
   .image-frame-next
     right: 0
+
+    span
+      right: 5%
 
 
 .plate-96
