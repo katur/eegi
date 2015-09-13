@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django import template
 from django.core.urlresolvers import reverse
+from eegi.settings import IMG_PATH, THUMBNAIL_PATH, DEVSTAR_PATH
 from utils.http import http_response_ok
 
 register = template.Library()
@@ -52,12 +53,6 @@ def get_screen_type(temperature, strain):
         return 'ENH screen temperature'
     else:
         return 'not SUP or ENH screening temperature for this strain'
-
-
-IMG_SERVER = 'http://pleiades.bio.nyu.edu'
-IMG_PATH = IMG_SERVER + '/GI_IMG'
-THUMBNAIL_PATH = IMG_SERVER + '/GI_IMG/convertedImg'
-DEVSTAR_PATH = IMG_SERVER + '/GI_IMG/resultimages'
 
 
 @register.simple_tag

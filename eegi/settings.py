@@ -98,3 +98,11 @@ LOGIN_URL = 'login_url'
 # Site password protection
 
 LOCKDOWN_FORM = 'lockdown.forms.LockdownForm'
+
+
+# Images are stored on another server
+
+IMG_SERVER = 'http://pleiades.bio.nyu.edu'
+IMG_PATH = IMG_SERVER + '/GI_IMG'
+THUMBNAIL_PATH = IMG_SERVER + '/GI_IMG/convertedImg'
+DEVSTAR_PATH = IMG_SERVER + '/GI_IMG/resultimages'
