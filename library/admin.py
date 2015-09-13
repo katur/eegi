@@ -3,7 +3,7 @@
 from django.contrib import admin
 
 from library.models import LibraryPlate, LibraryWell, LibrarySequencing
-from utils.admin import ReadOnlyAdmin
+from website.admin import ReadOnlyAdmin
 
 
 class LibraryPlateAdmin(ReadOnlyAdmin):

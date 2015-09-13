@@ -14,7 +14,7 @@ It does not yet account for deleted records,
 so should be run from scratch on a truncated database
 just prior to the official migration to the new database.
 
-The script lives in `utils/management/commands`, and can be run with:
+The script lives in `dbmigration/management/commands`, and can be run with:
 ```
 ./manage.py migrate_legacy_database
 ```

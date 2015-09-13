@@ -64,13 +64,13 @@ There are several other, organizational apps:
 
 - `website` holds aspects of the website that are common to all apps (e.g.,
 the templates and stylesheets for the home page, footer, etc)
-- `utils` holds some general utilities and helper functions.
 - `dbmigration` holds the functionality for syncing the database according to
 the legacy database
 
 
 Finally, an explanation of these top level directories (which are not apps):
 
+- `utils` holds a few very general helper functions
 - `materials`, excluded from the repo, holds various input files (Genewiz
 sequencing output, the official Ahringer RNAi library Excel database, etc.)
 - `backups`, excluded from the repo, holds MySQL database backups, schema

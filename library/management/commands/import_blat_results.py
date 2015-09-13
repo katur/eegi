@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from clones.models import Clone
 from library.models import LibrarySequencing, LibrarySequencingBlatResult
-from utils.helpers.scripting import require_db_write_acknowledgement
+from utils.scripting import require_db_write_acknowledgement
 
 HELP = '''
 Import the BLAT hits of our sequencing results to the database.

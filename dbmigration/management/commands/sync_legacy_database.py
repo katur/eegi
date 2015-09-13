@@ -8,7 +8,7 @@ from dbmigration.helpers.sync_legacy_database_steps import (
     update_DevstarScore_table, update_Clone_table,
     update_LibraryWell_table, update_ManualScore_table_secondary)
 from eegi.local_settings import LEGACY_DATABASE, LEGACY_DATABASE_2
-from utils.helpers.scripting import require_db_write_acknowledgement
+from utils.scripting import require_db_write_acknowledgement
 
 HELP = '''
 Sync the database according to any changes in the legacy database.

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from experiments.models import (Experiment, ManualScoreCode, ManualScore,
                                 DevstarScore)
-from utils.admin import ReadOnlyAdmin
+from website.admin import ReadOnlyAdmin
 
 
 class ExperimentAdmin(admin.ModelAdmin):

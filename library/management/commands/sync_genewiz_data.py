@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand, CommandError
 from eegi.local_settings import LEGACY_DATABASE
 from library.helpers.well_naming import get_well_name
 from library.models import LibraryWell, LibrarySequencing
-from utils.helpers.scripting import require_db_write_acknowledgement
+from utils.scripting import require_db_write_acknowledgement
 
 HELP = '''
 Sync the sequencing data from the Genewiz output files to the database.
