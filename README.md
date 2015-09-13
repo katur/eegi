@@ -89,30 +89,26 @@ HTML uses the
 
 CSS is in [SASS](http://sass-lang.com/). Run
 `sass --watch --compile --style compressed website/static/stylesheets/styles.sass`
-to compile.
+to compile (assuming sass is installed).
 
 Javascript is in [CoffeeScript](http://coffeescript.org/). Run
 `coffee --watch --compile website/static/js/*.coffee`
-to compile.
+to compile (assuming coffee is installed).
 
+Instead of compiling the SASS and CoffeeScript separately, there is a
+[Gulp.js build script](gulpfile.js), which can be run with `gulp`.
 
-### Optional way to streamline SASS and CoffeeScript compilation:
-Gulp is a nice Node package that can compile the SASS and CoffeeScript
-with one command. To install Node and gulp (with Homebrew):
+To set up the project for gulping, assuming [Gulp.js](http://gulpjs.com/)
+is installed on the system, run the following in the project root to
+install gulp and some gulp packages in a git-ignored directory called
+`node_modules`:
 
-```
-brew install node
-sudo npm install -g gulp
-```
-
-Once gulp is installed, in the project root:
 ```
 npm install --dev-save gulp
 npm install --dev-save gulp-util
 npm install --dev-save gulp-ruby-sass
 npm install --dev-save gulp-coffee
 ```
-
 
 Managerial scripts
 (e.g. the script that migrates data from the old database)
