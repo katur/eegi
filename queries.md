@@ -1,4 +1,7 @@
-# Miscellaneous database queries.
+# Some miscellaneous, sometimes useful database queries.
+
+These queries are to be performed on the MySQL database directly
+(i.e., not through Django query abstraction).
 
 ## ENH secondary estimates
 These queries are both just a way to get a very general sense of the size of
