@@ -82,6 +82,12 @@ a {
   a.active {
     cursor: default; }
 
+.inactive-link {
+  pointer-events: none;
+  cursor: default;
+  color: #777;
+  text-decoration: line-through; }
+
 .helptext {
   color: #888;
   font-size: 13px;
@@ -352,10 +358,10 @@ form table th, form table td {
   margin-bottom: 40px; }
 #experiments #experiment-results {
   width: 100%; }
-#experiments .link-to-vertical {
-  display: block;
-  float: left;
-  margin-left: 40px; }
+#experiments .vertical-links {
+  margin-left: 80px; }
+  #experiments .vertical-links span, #experiments .vertical-links a {
+    margin-left: 40px; }
 
 #experiment-grid-table {
   font-size: 12px;
