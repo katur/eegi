@@ -44,40 +44,45 @@ def get_image_title(experiment, well):
     return '{} (<a href="{}">more info</a>)'.format(essentials, url)
 
 
-@register.simple_tag
-def get_image_html(experiment, library_well, current, length):
-    well = library_well.well
-    if library_well.is_control() or experiment.is_mutant_control():
-        scores = ""
-    else:
-        scores = experiment.get_score_summary(well)
-
-    output = '''
-    <div class="individual-image">
-      <span class="image-topbar">
-        <span class="image-title">{}</span>
-        <span class="placement">{} of {}</span>
-      </span>
-
-      <div class="image-frame"
-        data-src="{}">
+def get_image_frame(experiment, well):
+    return '''
+        <div class="image-frame"
+          data-src="{}">
         <a href="#" class="image-frame-navigation image-frame-previous">
           <span>&laquo;</span>
         </a>
         <a href="#" class="image-frame-navigation image-frame-next">
           <span>&raquo;</span>
         </a>
-      </div>
+        </div>
+    '''.format(get_image_url(experiment, well))
 
-      <span class="image-caption">
-        {}
-      </span>
-    </div>
+
+@register.simple_tag
+def get_image_wrapper(experiment, library_well, current, length):
+    well = library_well.well
+    if library_well.is_control() or experiment.is_mutant_control():
+        scores = ""
+    else:
+        scores = experiment.get_score_summary(well)
+
+    return '''
+        <div class="individual-image">
+          <span class="image-topbar">
+            <span class="image-title">{}</span>
+            <span class="placement">{} of {}</span>
+          </span>
+
+          {}
+
+          <span class="image-caption">
+            {}
+          </span>
+        </div>
     '''.format(
         get_image_title(experiment, well),
         current,
         length,
-        get_image_url(experiment, well),
+        get_image_frame(experiment, well),
         scores
     )
-    return output

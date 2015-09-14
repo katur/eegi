@@ -49,22 +49,22 @@
 
       <tr>
         <td>
-          <div class="rotating-images">
+          <div class="carousel">
           {% with experiments|keyvalue:"mutant_rnai" as experiments %}
           {% for experiment in experiments %}
-            {% get_image_html experiment rnai_well forloop.counter experiments|length %}
+            {% get_image_wrapper experiment rnai_well forloop.counter experiments|length %}
           {% endfor %}
           {% endwith %}
           </div>
         </td>
 
         <td>
-          <div class="rotating-images">
+          <div class="carousel">
           {% with experiments|keyvalue:"mutant_l4440" as experiments %}
           {% for experiment in experiments %}
             {% with experiment.library_plate.get_l4440_wells as wells %}
             {% for well in wells %}
-              {% get_image_html experiment well forloop.counter wells|length %}
+              {% get_image_wrapper experiment well forloop.counter wells|length %}
             {% endfor %}
             {% endwith %}
           {% endfor %}
@@ -80,22 +80,22 @@
 
       <tr>
         <td>
-          <div class="rotating-images">
+          <div class="carousel">
           {% with experiments|keyvalue:"n2_rnai" as experiments %}
           {% for experiment in experiments %}
-            {% get_image_html experiment rnai_well forloop.counter experiments|length %}
+            {% get_image_wrapper experiment rnai_well forloop.counter experiments|length %}
           {% endfor %}
           {% endwith %}
           </div>
         </td>
 
         <td>
-          <div class="rotating-images">
+          <div class="carousel">
           {% with experiments|keyvalue:"n2_l4440" as experiments %}
           {% for experiment in experiments %}
             {% with experiment.library_plate.get_l4440_wells as wells %}
             {% for well in wells %}
-              {% get_image_html experiment well forloop.counter wells|length %}
+              {% get_image_wrapper experiment well forloop.counter wells|length %}
             {% endfor %}
             {% endwith %}
           {% endfor %}

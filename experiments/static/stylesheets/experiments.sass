@@ -50,6 +50,7 @@
   clear: both
   margin-bottom: $vertical-whitespace
 
+
 .double-knockdown-results
   float: left
   clear: both
@@ -74,45 +75,3 @@
     th
       padding-top: 3%
       font-size: $base-font-size + 2
-
-  .rotating-images
-    width: 94%
-    padding: 3%
-    float: left
-    background: black
-    color: $gray-light
-
-    .individual-image
-      display: none
-
-      &.show
-        display: block
-
-      position: relative
-
-      .image-topbar
-        float: left
-        width: 100%
-        padding: 2% 0
-        text-align: center
-
-        .image-title
-          float: left
-
-        .placement
-          float: right
-
-      .image-frame
-        float: left
-        width: 100%
-        -webkit-user-select: none // webkit (safari, chrome) browsers
-        -moz-user-select: none // mozilla browsers
-        -khtml-user-select: none // webkit (konqueror) browsers
-        -ms-user-select: none // IE10+
-
-      .image-caption
-        position: absolute
-        bottom: 0
-        left: 0
-        width: 100%
-        z-index: 10

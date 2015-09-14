@@ -22,9 +22,9 @@ with control L4440 bacteria, at
     <tbody>
       <tr>
         <td>
-          <div class="rotating-images">
+          <div class="carousel">
           {% for well in wells %}
-            {% get_image_html experiment well forloop.counter wells|length %}
+            {% get_image_wrapper experiment well forloop.counter wells|length %}
           {% endfor %}
           </div>
         </td>

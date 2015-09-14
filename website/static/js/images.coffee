@@ -1,33 +1,33 @@
 $(document).ready ->
-  initializeRotatingImages()
+  initializeCarousels()
 
 
-initializeRotatingImages = ->
-  rotators = $(".rotating-images")
-  return if !rotators.length
+initializeCarousels = ->
+  carousels = $(".carousel")
+  return if !carousels.length
 
-  rotators.each ->
+  carousels.each ->
     el = $(this)
     firstImage = el.find(".individual-image").first()
     addImageElement(firstImage)
     firstImage.addClass("show")
 
-  rotators.find(".image-frame-navigation").click (e) ->
+  carousels.find(".image-frame-navigation").click (e) ->
     e.preventDefault()
     navigator = $(this)
-    rotator = navigator.closest(".rotating-images")
+    carousel = navigator.closest(".carousel")
 
     if navigator.hasClass("image-frame-previous")
       direction = "previous"
     else
       direction = "next"
 
-    showSubsequentImage(rotator, direction)
+    showSubsequentImage(carousel, direction)
 
 
-showSubsequentImage = (rotator, direction) ->
-  images = rotator.find(".individual-image")
-  currentImage = rotator.find(".show")
+showSubsequentImage = (carousel, direction) ->
+  images = carousel.find(".individual-image")
+  currentImage = carousel.find(".show")
   i = images.index(currentImage)
   images.eq(i).removeClass("show")
   if direction == "next"

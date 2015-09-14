@@ -1,63 +1,58 @@
 (function() {
-  var addImageElement, initializeRotatingImages, showSubsequentImage;
+  var addImageElement, initializeCarousels, showSubsequentImage;
 
   $(document).ready(function() {
-    return initializeRotatingImages();
+    return initializeCarousels();
   });
 
-  initializeRotatingImages = function() {
-    var rotators = $(".rotating-images");
-
-    if (!rotators.length) {
+  initializeCarousels = function() {
+    var carousels;
+    carousels = $(".carousel");
+    if (!carousels.length) {
       return;
     }
-
-    rotators.each(function() {
-      var el = $(this);
-      var firstImage = el.find(".individual-image").first();
+    carousels.each(function() {
+      var el, firstImage;
+      el = $(this);
+      firstImage = el.find(".individual-image").first();
       addImageElement(firstImage);
-      firstImage.addClass("show");
+      return firstImage.addClass("show");
     });
-
-    rotators.find(".image-frame-navigation").click(function(e) {
+    return carousels.find(".image-frame-navigation").click(function(e) {
+      var carousel, direction, navigator;
       e.preventDefault();
-      var navigator = $(this);
-      var rotator = navigator.closest(".rotating-images");
-
-      var direction;
+      navigator = $(this);
+      carousel = navigator.closest(".carousel");
       if (navigator.hasClass("image-frame-previous")) {
         direction = "previous";
       } else {
         direction = "next";
       }
-
-      showSubsequentImage(rotator, direction);
+      return showSubsequentImage(carousel, direction);
     });
   };
 
-  showSubsequentImage = function(rotator, direction) {
+  showSubsequentImage = function(carousel, direction) {
     var currentImage, i, images, subsequentImage;
-    images = rotator.find(".individual-image");
-    currentImage = rotator.find(".show");
+    images = carousel.find(".individual-image");
+    currentImage = carousel.find(".show");
     i = images.index(currentImage);
     images.eq(i).removeClass("show");
-
     if (direction === "next") {
       i = (++i) % images.length;
     } else {
       i = (--i) % images.length;
     }
-
     subsequentImage = images.eq(i);
     subsequentImage.addClass("show");
-    addImageElement(subsequentImage);
+    return addImageElement(subsequentImage);
   };
 
   addImageElement = function(image) {
     var imageFrame, imageSrc;
     imageFrame = image.find(".image-frame");
     imageSrc = imageFrame.attr("data-src");
-    imageFrame.prepend("<img src='" + imageSrc + "' \>");
+    return imageFrame.prepend("<img src='" + imageSrc + "' \>");
   };
 
 }).call(this);

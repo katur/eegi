@@ -23,9 +23,9 @@ with RNAi knockdown of {{ clone }}, at
     <tbody>
       <tr>
         <td>
-          <div class="rotating-images">
+          <div class="carousel">
           {% for experiment in experiments %}
-            {% get_image_html experiment library_well forloop.counter experiments|length %}
+            {% get_image_wrapper experiment library_well forloop.counter experiments|length %}
           {% endfor %}
           </div>
         </td>

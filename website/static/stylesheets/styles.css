@@ -201,6 +201,40 @@ form table th, form table td {
     #results-header .pagination-status span:first-child, #results-header .pagination-status a:first-child {
       margin-left: 0; }
 
+.carousel {
+  width: 94%;
+  padding: 3%;
+  float: left;
+  background: black;
+  color: #e0e0e0; }
+  .carousel .individual-image {
+    display: none;
+    position: relative; }
+    .carousel .individual-image.show {
+      display: block; }
+    .carousel .individual-image .image-topbar {
+      float: left;
+      width: 100%;
+      padding: 2% 0;
+      text-align: center; }
+      .carousel .individual-image .image-topbar .image-title {
+        float: left; }
+      .carousel .individual-image .image-topbar .placement {
+        float: right; }
+    .carousel .individual-image .image-frame {
+      float: left;
+      width: 100%;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -khtml-user-select: none;
+      -ms-user-select: none; }
+    .carousel .individual-image .image-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10; }
+
 .image-frame {
   position: relative; }
   .image-frame:after {
@@ -363,36 +397,3 @@ form table th, form table td {
   .double-knockdown-results tbody th {
     padding-top: 3%;
     font-size: 18px; }
-  .double-knockdown-results .rotating-images {
-    width: 94%;
-    padding: 3%;
-    float: left;
-    background: black;
-    color: #e0e0e0; }
-    .double-knockdown-results .rotating-images .individual-image {
-      display: none;
-      position: relative; }
-      .double-knockdown-results .rotating-images .individual-image.show {
-        display: block; }
-      .double-knockdown-results .rotating-images .individual-image .image-topbar {
-        float: left;
-        width: 100%;
-        padding: 2% 0;
-        text-align: center; }
-        .double-knockdown-results .rotating-images .individual-image .image-topbar .image-title {
-          float: left; }
-        .double-knockdown-results .rotating-images .individual-image .image-topbar .placement {
-          float: right; }
-      .double-knockdown-results .rotating-images .individual-image .image-frame {
-        float: left;
-        width: 100%;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -khtml-user-select: none;
-        -ms-user-select: none; }
-      .double-knockdown-results .rotating-images .individual-image .image-caption {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        z-index: 10; }
