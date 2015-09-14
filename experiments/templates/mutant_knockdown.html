@@ -11,11 +11,12 @@ with control L4440 bacteria, at
 {% endblock %}
 
 {% block content %}
-{% for experiment, wells in data %}
+{% regroup data by date as date_list%}
+{% for expdate in date_list %}
   <table class="double-knockdown-results grayscale">
     <thead>
       <th>
-        Experiment {{ experiment.id }}
+        {{ expdate.grouper }}
       </th>
     </thead>
 
@@ -23,8 +24,10 @@ with control L4440 bacteria, at
       <tr>
         <td>
           <div class="carousel">
-          {% for well in wells %}
-            {% get_image_wrapper experiment well forloop.counter wells|length %}
+          {% for experiment in expdate.list %}
+            {% for well in experiment.l4440_wells %}
+              {% get_image_wrapper experiment well 'n/a' 'n/a' %}
+            {% endfor %}
           {% endfor %}
           </div>
         </td>

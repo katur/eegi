@@ -48,7 +48,7 @@ def mutant_knockdown(request, worm, temperature):
 
     # Each element of 'data' is in format (as needed by the template):
     #   (experiment, l4440_wells)
-    data = []
+    data = {}
     for plate in plates:
         l4440_wells = plate.wells.filter(intended_clone=l4440)
         if l4440_wells:
@@ -56,16 +56,23 @@ def mutant_knockdown(request, worm, temperature):
                            .filter(is_junk=False, worm_strain=worm,
                                    temperature=temperature,
                                    library_plate=plate)
-                           .order_by('id'))
-            for experiment in experiments:
-                data.append((experiment, l4440_wells))
+                           .order_by('date', 'id'))
 
-    data.sort(key=lambda x: x[0].id)
+            for experiment in experiments:
+                experiment.l4440_wells = l4440_wells
+                if experiment.date not in data:
+                    data[experiment.date] = []
+                data[experiment.date].append(experiment)
+
+    ordered_data = []
+    for date in sorted(data):
+        for experiment in data[date]:
+            ordered_data.append(experiment)
 
     context = {
         'worm': worm,
         'temperature': temperature,
-        'data': data,
+        'data': ordered_data,
     }
 
     return render(request, 'mutant_knockdown.html', context)
