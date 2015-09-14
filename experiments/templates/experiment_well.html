@@ -62,15 +62,8 @@
   </span>
 </div>
 
-<div class="image-frame">
-  <img src="{% get_image_url experiment well %}"/>
-</div>
+{% get_image experiment well %}
 
-{% get_devstar_image_url_if_exists experiment well as devstar_image %}
+{% get_devstar_image_if_exists experiment well %}
 
-{% if devstar_image %}
-  <div class="image-frame">
-    <img src="{{ devstar_image }}"/>
-  </div>
-{% endif %}
 {% endblock %}

@@ -1,104 +1,111 @@
-import string
-
 from django import template
 from django.core.urlresolvers import reverse
-from eegi.settings import IMG_PATH, THUMBNAIL_PATH, DEVSTAR_PATH
+
+from experiments.helpers.urls import (get_image_url, get_thumbnail_url,
+                                      get_devstar_image_url)
 from utils.http import http_response_ok
-from utils.well_tile_conversion import well_to_tile
 
 register = template.Library()
 
 
 @register.simple_tag
-def get_image_url(experiment, well):
-    """Get the url of an experiment image.
+def get_thumbnail(experiment, well):
+    """Get a thumbnail image.
 
-    Accepts an Experiment object, and well as a string.
+    See get_image() for more details.
 
     """
-    tile = well_to_tile(well)
-    url = '/'.join((IMG_PATH, str(experiment.id), tile))
-    return url
+    return get_image(experiment, well, is_thumbnail=True)
 
 
 @register.simple_tag
-def get_thumbnail_url(experiment, well):
-    """Get the url of an experiment thumbnail image.
+def get_devstar_image(experiment, well):
+    """Get a DevStaR-labelled image.
 
-    Accepts an Experiment object, and well as a string.
+    See get_image() for more details.
 
     """
-    tile = well_to_tile(well)
-    url = '/'.join((THUMBNAIL_PATH, str(experiment.id), tile))
-    url = string.replace(url, 'bmp', 'jpg')
-    return url
+    return get_image(experiment, well, is_devstar=True)
 
 
 @register.simple_tag
-def get_devstar_image_url(experiment, well):
-    """Get the url of a DevStaR output image.
+def get_devstar_image_if_exists(experiment, well):
+    """Get a DevStaR-labelled image, or None if it doesn't exist.
 
-    Accepts an Experiment object, and well as a string.
+    Like get_devstar_image(), but checks that the image url returns an
+    HTTP 200 status code (which means "ok").
 
-    """
-    tile = well_to_tile(well)
-    url = '/'.join((DEVSTAR_PATH, str(experiment.id), tile))
-    url = string.replace(url, '.bmp', 'res.png')
-    return url
-
-
-@register.assignment_tag
-def get_devstar_image_url_if_exists(experiment, well):
-    """Get the url of a DevStaR output image, or None if it doesn't exist.
-
-    Checks that the url returns an HTTP 200 status code, meaning "ok".
     Be careful not to use this on too many images at once; making
     many HTTP requests can be slow.
 
     """
     url = get_devstar_image_url(experiment, well)
     if http_response_ok(url):
-        return url
+        return get_devstar_image(experiment, well)
     else:
         return None
 
 
 @register.simple_tag
-def get_thumbnail_td(experiment, library_well):
-    return get_image_td(experiment, library_well, is_thumbnail=True)
+def get_image(experiment, well, is_thumbnail=False, is_devstar=False):
+    """Get an image.
 
-
-@register.simple_tag
-def get_devstar_image_td(experiment, library_well):
-    return get_image_td(experiment, library_well, is_devstar=True)
-
-
-@register.simple_tag
-def get_image_td(experiment, library_well, is_thumbnail=False,
-                 is_devstar=False):
-    """Get a td element with an experiment image and some simple information.
-
-    This is used when printing the wells of an entire plate as a table
-    (e.g with 8 rows and 12 columns for a normal 96-well plate, or 96 rows
-    and 1 column for "vertical view" of a 96-well plate, etc).
-
-    The top bar contains minimal info to identify the well (well and tile).
-
-    The lower caption contains the clone name.
-
-    Clicking the image links to more details about that experiment well.
+    Returns the HTML img tag along with a surrounding div
+    to preserve the aspect ratio while loading.
 
     """
-
-    well = library_well.well
-    experiment_url = reverse('experiment_well_url', args=[experiment.id, well])
-
     if is_thumbnail:
         image_url = get_thumbnail_url(experiment, well)
     elif is_devstar:
         image_url = get_devstar_image_url(experiment, well)
     else:
         image_url = get_image_url(experiment, well)
+
+    return '''
+        <div class="image-frame">
+          <img src="{}"/>
+        </div>
+    '''.format(image_url)
+
+
+@register.simple_tag
+def get_thumbnail_td(experiment, library_well):
+    """Get an HTML td element with a thumbnail and minimal information.
+
+    See get_image_td() for more details.
+
+    """
+    return get_image_td(experiment, library_well, is_thumbnail=True)
+
+
+@register.simple_tag
+def get_devstar_image_td(experiment, library_well):
+    """Get an HTML td element with a DevStaR-labelled image and minimal
+    information.
+
+    See get_image_td() for more details.
+
+    """
+    return get_image_td(experiment, library_well, is_devstar=True)
+
+
+@register.simple_tag
+def get_image_td(experiment, library_well, is_thumbnail=False,
+                 is_devstar=False):
+    """Get an HTML td element with an image and minimal information.
+
+    "Minimal information" is a top bar identifying the well's position,
+    and a lower caption identifying the clone name.
+    Clicking the image links to more details about that experiment well.
+    This function is meant for displaying a well in the context of
+    displaying the entire plate.
+
+    """
+
+    well = library_well.well
+    image = get_image(experiment, well, is_thumbnail=is_thumbnail,
+                      is_devstar=is_devstar)
+    experiment_url = reverse('experiment_well_url', args=[experiment.id, well])
 
     if not library_well.intended_clone:
         td_style = 'class="empty-well"'
@@ -113,31 +120,35 @@ def get_image_td(experiment, library_well, is_thumbnail=False,
           </div>
 
           <a href="{}">
-            <div class="image-frame"><img src="{}"></div>
+            {}
           </a>
 
           <div class="well-caption">{}</div>
         </td>
     '''.format(td_style, well, library_well.get_tile(), experiment_url,
-               image_url, library_well.intended_clone)
-
-
-def get_image_frame(experiment, well):
-    return '''
-        <div class="image-frame"
-          data-src="{}">
-        <a href="#" class="image-frame-navigation image-frame-previous">
-          <span>&laquo;</span>
-        </a>
-        <a href="#" class="image-frame-navigation image-frame-next">
-          <span>&raquo;</span>
-        </a>
-        </div>
-    '''.format(get_image_url(experiment, well))
+               image, library_well.intended_clone)
 
 
 @register.simple_tag
 def get_image_wrapper(experiment, library_well, current, length):
+    """Get an image along with the surrounding carousel information.
+
+    Surrounding information includes which experiment and well it is,
+    its position in the carousel, manual scores, a link to devstar, etc.
+
+    """
+    def get_image_frame(experiment, well):
+        return '''
+            <div class="image-frame"
+              data-src="{}">
+            <a href="#" class="image-frame-navigation image-frame-previous">
+              <span>&laquo;</span>
+            </a>
+            <a href="#" class="image-frame-navigation image-frame-next">
+              <span>&raquo;</span>
+            </a>
+            </div>
+        '''.format(get_image_url(experiment, well))
 
     def get_image_title(experiment, well):
         url = reverse('experiment_well_url', args=[experiment.id, well])
