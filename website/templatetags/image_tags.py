@@ -24,11 +24,24 @@ def get_thumbnail_url(experiment, well):
     return url
 
 
-@register.assignment_tag
+@register.simple_tag
 def get_devstar_image_url(experiment, well):
     tile = well_to_tile(well)
     url = '/'.join((DEVSTAR_PATH, str(experiment.id), tile))
     url = string.replace(url, '.bmp', 'res.png')
+    return url
+
+
+@register.assignment_tag
+def get_devstar_image_url_if_exists(experiment, well):
+    """Returns the DevStaR image output, or None if the url does not return
+    a 200 HTTP response.
+
+    Be careful not to use this on too many images at once (making
+    many HTTP requests can be slow).
+
+    """
+    url = get_devstar_image_url(experiment, well)
     if http_response_ok(url):
         return url
     else:
@@ -61,6 +74,7 @@ def get_image_frame(experiment, well):
 @register.simple_tag
 def get_image_wrapper(experiment, library_well, current, length):
     well = library_well.well
+
     if library_well.is_control() or experiment.is_mutant_control():
         scores = ""
     else:
@@ -69,20 +83,20 @@ def get_image_wrapper(experiment, library_well, current, length):
     return '''
         <div class="individual-image">
           <span class="image-topbar">
-            <span class="image-title">{}</span>
-            <span class="placement">{} of {}</span>
+            <span class="image-title">{0}</span>
+            <span class="placement">{1} of {2}</span>
           </span>
 
-          {}
+          {3}
 
           <span class="image-caption">
-            {}
-          </span>
+            <span class="image-scores">{4}</span>
+            <a class="devstar-link" href="{5}">View DevStaR image</a>
         </div>
     '''.format(
         get_image_title(experiment, well),
-        current,
-        length,
+        current, length,
         get_image_frame(experiment, well),
-        scores
+        scores,
+        get_devstar_image_url(experiment, well)
     )

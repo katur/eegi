@@ -204,7 +204,6 @@ form table th, form table td {
 .carousel {
   width: 94%;
   padding: 3%;
-  float: left;
   background: black;
   color: #e0e0e0; }
   .carousel .individual-image {
@@ -229,11 +228,14 @@ form table th, form table td {
       -khtml-user-select: none;
       -ms-user-select: none; }
     .carousel .individual-image .image-caption {
-      position: absolute;
-      bottom: 0;
-      left: 0;
+      float: left;
       width: 100%;
-      z-index: 10; }
+      padding: 2% 0;
+      font-size: 14px; }
+      .carousel .individual-image .image-caption .image-scores {
+        float: left; }
+      .carousel .individual-image .image-caption .devstar-link {
+        float: right; }
 
 .image-frame {
   position: relative; }
@@ -391,9 +393,12 @@ form table th, form table td {
     text-align: center; }
   .double-knockdown-results td {
     width: 46%;
-    padding: 0 2%; }
+    padding: 0 2%;
+    vertical-align: top; }
   .double-knockdown-results thead th {
     font-size: 20px; }
   .double-knockdown-results tbody th {
     padding-top: 3%;
     font-size: 18px; }
+  .double-knockdown-results .carousel {
+    float: left; }

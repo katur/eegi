@@ -1,7 +1,6 @@
 .carousel
   width: 94%
   padding: 3%
-  float: left
   background: black
   color: $gray-light
 
@@ -33,11 +32,16 @@
       -ms-user-select: none // IE10+
 
     .image-caption
-      position: absolute
-      bottom: 0
-      left: 0
+      float: left
       width: 100%
-      z-index: 10
+      padding: 2% 0
+      font-size: $base-font-size - 2
+
+      .image-scores
+        float: left
+
+      .devstar-link
+        float: right
 
 
 $image-frame-z-index: 1

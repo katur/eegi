@@ -78,7 +78,7 @@ class Experiment(models.Model):
         for s in d:
             output = s.get_short_name() + ': '
             for t in d[s]:
-                t_string = t.strftime('%Y-%m-%d %H:%M:%S')
+                t_string = t.strftime('%Y-%m-%d %H:%M')
                 joined = ', '.join(str(item) for item in d[s][t])
                 output += joined + ' (' + t_string + ');'
             people.append(output)
