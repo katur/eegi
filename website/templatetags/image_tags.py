@@ -41,17 +41,7 @@ def get_image_title(experiment, well):
         str(experiment.id), well)
     if experiment.worm_strain.is_control():
         essentials += ', ' + experiment.get_celsius_temperature()
-    output = '''
-    <span class="image-title">
-      {} (<a href="{}">more info</a>)
-    </span>
-    '''.format(essentials, url)
-    return output
-
-
-def get_image_placement(current, length):
-    return '<span class="placement">{} of {}</span>'.format(
-        current, length)
+    return '{} (<a href="{}">more info</a>)'.format(essentials, url)
 
 
 @register.simple_tag
@@ -65,8 +55,8 @@ def get_image_html(experiment, library_well, current, length):
     output = '''
     <div class="individual-image">
       <span class="image-topbar">
-        {}
-        {}
+        <span class="image-title">{}</span>
+        <span class="placement">{} of {}</span>
       </span>
 
       <div class="image-frame"
@@ -85,7 +75,8 @@ def get_image_html(experiment, library_well, current, length):
     </div>
     '''.format(
         get_image_title(experiment, well),
-        get_image_placement(current, length),
+        current,
+        length,
         get_image_url(experiment, well),
         scores
     )
