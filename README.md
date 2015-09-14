@@ -82,9 +82,9 @@ backups, etc.
 ## Code
 
 The project is organized the standard
-[Django](https://www.djangoproject.com/) way, with almost all code in Python.
+[Django](https://www.djangoproject.com/) way, with most code in Python.
 
-HTML uses the
+HTML is in the
 [Django template language](https://docs.djangoproject.com/en/dev/topics/templates/).
 
 CSS is in [SASS](http://sass-lang.com/). Run
@@ -95,8 +95,8 @@ Javascript is in [CoffeeScript](http://coffeescript.org/). Run
 `coffee --compile website/static/js/*.coffee`
 to compile (assuming coffee is installed).
 
-Instead of compiling the SASS and CoffeeScript separately, 
-feel free to use the [Gulp.js build script](gulpfile.js), 
+Instead of compiling the SASS and CoffeeScript separately,
+feel free to use the [Gulp.js build script](gulpfile.js),
 run simply with `gulp`.
 
 To set up the project for gulping (assuming [Gulp.js](http://gulpjs.com/)
