@@ -201,42 +201,6 @@ form table th, form table td {
     #results-header .pagination-status span:first-child, #results-header .pagination-status a:first-child {
       margin-left: 0; }
 
-.carousel {
-  width: 94%;
-  padding: 3%;
-  background: black;
-  color: #e0e0e0; }
-  .carousel .individual-image {
-    display: none;
-    position: relative; }
-    .carousel .individual-image.show {
-      display: block; }
-    .carousel .individual-image .image-topbar {
-      float: left;
-      width: 100%;
-      padding: 2% 0;
-      text-align: center; }
-      .carousel .individual-image .image-topbar .image-title {
-        float: left; }
-      .carousel .individual-image .image-topbar .placement {
-        float: right; }
-    .carousel .individual-image .image-frame {
-      float: left;
-      width: 100%;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -khtml-user-select: none;
-      -ms-user-select: none; }
-    .carousel .individual-image .image-caption {
-      float: left;
-      width: 100%;
-      padding: 2% 0;
-      font-size: 14px; }
-      .carousel .individual-image .image-caption .image-scores {
-        float: left; }
-      .carousel .individual-image .image-caption .devstar-link {
-        float: right; }
-
 .image-frame {
   position: relative; }
   .image-frame:after {
@@ -284,6 +248,42 @@ form table th, form table td {
     right: 0; }
     .image-frame .image-frame-next span {
       right: 5%; }
+
+.carousel {
+  width: 94%;
+  padding: 3%;
+  background: black;
+  color: #e0e0e0; }
+  .carousel .individual-image {
+    display: none;
+    position: relative; }
+    .carousel .individual-image.show {
+      display: block; }
+    .carousel .individual-image .image-topbar {
+      float: left;
+      width: 100%;
+      padding: 2% 0;
+      text-align: center; }
+      .carousel .individual-image .image-topbar .image-title {
+        float: left; }
+      .carousel .individual-image .image-topbar .placement {
+        float: right; }
+    .carousel .individual-image .image-frame {
+      float: left;
+      width: 100%;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -khtml-user-select: none;
+      -ms-user-select: none; }
+    .carousel .individual-image .image-caption {
+      float: left;
+      width: 100%;
+      padding: 2% 0;
+      font-size: 14px; }
+      .carousel .individual-image .image-caption .image-scores {
+        float: left; }
+      .carousel .individual-image .image-caption .devstar-link {
+        float: right; }
 
 .plate-96 {
   width: 100%;

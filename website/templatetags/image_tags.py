@@ -106,17 +106,17 @@ def get_image_td(experiment, library_well, is_thumbnail=False,
         td_style = ''
 
     return '''
-        <td {0}>
+        <td {}>
           <div class="well-title">
-            {1}
-            <span class="parenthetical">({2})</span>
+            {}
+            <span class="parenthetical">({})</span>
           </div>
 
-          <a class="image-frame" href="{3}">
-            <img src="{4}">
+          <a href="{}">
+            <div class="image-frame"><img src="{}"></div>
           </a>
 
-          <div class="well-caption">{5}</div>
+          <div class="well-caption">{}</div>
         </td>
     '''.format(td_style, well, library_well.get_tile(), experiment_url,
                image_url, library_well.intended_clone)
@@ -157,15 +157,15 @@ def get_image_wrapper(experiment, library_well, current, length):
     return '''
         <div class="individual-image">
           <span class="image-topbar">
-            <span class="image-title">{0}</span>
-            <span class="placement">{1} of {2}</span>
+            <span class="image-title">{}</span>
+            <span class="placement">{} of {}</span>
           </span>
 
-          {3}
+          {}
 
           <span class="image-caption">
-            <span class="image-scores">{4}</span>
-            <a class="devstar-link" href="{5}">View DevStaR image</a>
+            <span class="image-scores">{}</span>
+            <a class="devstar-link" href="{}">View DevStaR image</a>
         </div>
     '''.format(
         get_image_title(experiment, well),
