@@ -48,15 +48,6 @@ def get_devstar_image_url_if_exists(experiment, well):
         return None
 
 
-def get_image_title(experiment, well):
-    url = reverse('experiment_well_url', args=[experiment.id, well])
-    essentials = 'Experiment {}, well {}'.format(
-        str(experiment.id), well)
-    if experiment.worm_strain.is_control():
-        essentials += ', ' + experiment.get_celsius_temperature()
-    return '{} (<a href="{}">more info</a>)'.format(essentials, url)
-
-
 def get_image_frame(experiment, well):
     return '''
         <div class="image-frame"
@@ -73,6 +64,15 @@ def get_image_frame(experiment, well):
 
 @register.simple_tag
 def get_image_wrapper(experiment, library_well, current, length):
+
+    def get_image_title(experiment, well):
+        url = reverse('experiment_well_url', args=[experiment.id, well])
+        essentials = 'Experiment {}, well {}'.format(
+            str(experiment.id), well)
+        if experiment.worm_strain.is_control():
+            essentials += ', ' + experiment.get_celsius_temperature()
+        return '{} (<a href="{}">more info</a>)'.format(essentials, url)
+
     well = library_well.well
 
     if library_well.is_control() or experiment.is_mutant_control():
