@@ -52,19 +52,7 @@
     <tbody>
       {% for library_well in experiment.library_wells %}
       <tr>
-        <td {% if not library_well.intended_clone %} class="empty-well" {% endif %}>
-          <div class="well-title">
-            {{ library_well.well }}
-            <span class="parenthetical">({{ library_well.get_tile }})</span>
-          </div>
-
-          <a class="image-frame"
-            href="{% url 'experiment_well_url' experiment library_well.well %}">
-              <img src="{% get_thumbnail_url experiment library_well.well %}">
-          </a>
-
-          <div class="well-caption">{{ library_well.intended_clone }}</div>
-        </td>
+        {% get_thumbnail_td experiment library_well %}
       </tr>
       {% endfor %}
     </tbody>
