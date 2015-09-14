@@ -39,8 +39,14 @@
   {% endif %}
 
   <span>
-    <a href="{% url 'experiment_plate_vertical_url' experiment.id %}">
+    <a href="{% url 'experiments_vertical_url' experiment.id %}">
       See vertical view of thumbnail images</a>
+    <br>
+    <a href="{% url 'experiments_vertical_url' experiment.id %}?mode=big">
+      See vertical view of full-size images</a>
+    <br>
+    <a href="{% url 'experiments_vertical_url' experiment.id %}?mode=devstar">
+      See vertical view of DevStaR images</a>
   </span>
 </div>
 

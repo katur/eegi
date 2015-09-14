@@ -113,11 +113,15 @@ $image-frame-z-index: 1
 
 .plate-96
   width: 100%
-  &.vertical-tiles
-    width: 320px
-    float: left
 
   font-size: $base-font-size - 3
+
+  &.vertical-tiles
+    min-width: 320px
+    float: left
+
+    &.mode-devstar, &.mode-big
+      min-width: 1000px
 
   th
     padding: 10px

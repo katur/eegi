@@ -289,8 +289,10 @@ form table th, form table td {
   width: 100%;
   font-size: 13px; }
   .plate-96.vertical-tiles {
-    width: 320px;
+    min-width: 320px;
     float: left; }
+    .plate-96.vertical-tiles.mode-devstar, .plate-96.vertical-tiles.mode-big {
+      min-width: 1000px; }
   .plate-96 th {
     padding: 10px; }
   .plate-96 td, .plate-96 tr {
@@ -355,14 +357,14 @@ form table th, form table td {
   float: left;
   margin-left: 40px; }
 
-#experiment-grid #experiment-grid-table {
+#experiment-grid-table {
   font-size: 12px;
   table-layout: fixed;
   width: 100%; }
-  #experiment-grid #experiment-grid-table td, #experiment-grid #experiment-grid-table th {
+  #experiment-grid-table td, #experiment-grid-table th {
     width: 60px;
     overflow: hidden; }
-  #experiment-grid #experiment-grid-table th {
+  #experiment-grid-table th {
     font-weight: bold; }
 
 #experiment-plate-vertical .plate-info span {

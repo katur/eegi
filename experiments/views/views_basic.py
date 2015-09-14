@@ -44,7 +44,7 @@ def experiments(request, context=None):
                     ids = experiments.values_list('id')
                     ids = (str(i[0]) for i in ids)
                     id_string = ','.join(ids)
-                    link_to_vertical = reverse('experiment_plate_vertical_url',
+                    link_to_vertical = reverse('experiments_vertical_url',
                                                args=[id_string])
 
                 paginator = Paginator(experiments, EXPERIMENTS_PER_PAGE)
@@ -112,7 +112,7 @@ def experiments_grid(request, screen_stage):
     return render(request, 'experiments_grid.html', context)
 
 
-def experiment_plate(request, id):
+def experiment(request, id):
     """Render the page to see the images and information for a particular
     experiment.
     """
@@ -130,10 +130,10 @@ def experiment_plate(request, id):
         'library_wells': library_wells,
     }
 
-    return render(request, 'experiment_plate.html', context)
+    return render(request, 'experiment.html', context)
 
 
-def experiment_plate_vertical(request, ids):
+def experiments_vertical(request, ids):
     """Render the page to view the images of experiments vertically."""
     ids = ids.split(',')
     experiments = []
@@ -143,11 +143,17 @@ def experiment_plate_vertical(request, ids):
             plate=experiment.library_plate).order_by('well')
         experiments.append(experiment)
 
+    if 'mode' in request.GET:
+        mode = request.GET['mode']
+    else:
+        mode = None
+
     context = {
         'experiments': experiments,
+        'mode': mode,
     }
 
-    return render(request, 'experiment_plate_vertical.html', context)
+    return render(request, 'experiments_vertical.html', context)
 
 
 def experiment_well(request, id, well):

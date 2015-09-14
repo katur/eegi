@@ -57,7 +57,7 @@ Experiments
           <ol>
             {% for experiment in experiments %}
             <li>
-            <a href="{% url 'experiment_plate_url' experiment.id %}">
+            <a href="{% url 'experiment_url' experiment.id %}">
               _{{ experiment.id }}_</a>
             </li>
             {% endfor %}
@@ -65,7 +65,7 @@ Experiments
 
           {% if experiments %}
             <a href="
-              {% url 'experiment_plate_vertical_url' experiments|concatenate_ids_with_commas %}">
+              {% url 'experiments_vertical_url' experiments|concatenate_ids_with_commas %}">
               all</a>
           {% endif %}
         </td>
