@@ -26,7 +26,7 @@ def rnai_knockdown(request, clone, temperature):
                        .filter(is_junk=False, worm_strain=n2,
                                temperature=temperature,
                                library_plate=library_well.plate)
-                       .order_by('-id'))
+                       .order_by('-date', 'id'))
         if experiments:
             data.append((library_well, experiments))
 
