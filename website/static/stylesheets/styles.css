@@ -203,15 +203,20 @@ form table th, form table td {
 
 .image-frame {
   position: relative; }
-  .image-frame img {
-    position: absolute;
-    width: 100%; }
   .image-frame:after {
     content: "";
     display: block;
     position: relative;
     padding-top: 75%;
     z-index: 1; }
+  .image-frame:hover .image-frame-previous span, .image-frame:hover .image-frame-next span {
+    opacity: 1;
+    -webkit-transition: opacity 50ms linear;
+    -moz-transition: opacity 50ms linear;
+    transition: opacity 50ms linear; }
+  .image-frame img {
+    position: absolute;
+    width: 100%; }
   .image-frame .image-frame-previous, .image-frame .image-frame-next {
     position: absolute;
     top: 0;
@@ -230,7 +235,11 @@ form table th, form table td {
       -moz-transform: translateY(calc(-50%));
       -ms-transform: translateY(calc(-50%));
       -o-transform: translateY(calc(-50%));
-      transform: translateY(calc(-50%)); }
+      transform: translateY(calc(-50%));
+      opacity: 0;
+      -webkit-transition: opacity 250ms linear;
+      -moz-transition: opacity 250ms linear;
+      transition: opacity 250ms linear; }
   .image-frame .image-frame-previous {
     left: 0; }
     .image-frame .image-frame-previous span {

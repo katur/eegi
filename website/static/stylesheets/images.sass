@@ -3,16 +3,27 @@ $image-frame-z-index: 1
 .image-frame
   position: relative
 
-  img
-    position: absolute
-    width: 100%
-
+  // For aspect ratio
   &:after
     content: ''
     display: block
     position: relative
     padding-top: 75%
     z-index: $image-frame-z-index
+
+  // To show/hide arrows when carousel is present
+  &:hover
+    .image-frame-previous, .image-frame-next
+      span
+        opacity: 1
+
+        // Fade in
+        @include transition(opacity 50ms linear)
+
+  // This interacts with &:after for aspect ratio
+  img
+    position: absolute
+    width: 100%
 
   .image-frame-previous, .image-frame-next
     position: absolute
@@ -34,9 +45,12 @@ $image-frame-z-index: 1
     span
       position: absolute
       top: 50%
-      // Move up by 50% of itself, so centered
+
+      // Move up by 50% of itself, for vertical centering
       @include transform(translateY(calc(-50%)))
 
+      opacity: 0
+      @include transition(opacity 250ms linear)
 
   .image-frame-previous
     left: 0
