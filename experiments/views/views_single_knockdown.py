@@ -42,7 +42,6 @@ def rnai_knockdown(request, clone, temperature):
 def mutant_knockdown(request, worm, temperature):
     """Render the page displaying control bacteria (L4440) with a mutant
     knockdown."""
-    l4440 = get_object_or_404(Clone, pk='L4440')
     worm = get_object_or_404(WormStrain, pk=worm)
     plates = LibraryPlate.objects.filter(screen_stage__gt=0)
 
@@ -50,7 +49,7 @@ def mutant_knockdown(request, worm, temperature):
     #   (experiment, l4440_wells)
     data = {}
     for plate in plates:
-        l4440_wells = plate.wells.filter(intended_clone=l4440)
+        l4440_wells = plate.get_l4440_wells()
         if l4440_wells:
             experiments = (Experiment.objects
                            .filter(is_junk=False, worm_strain=worm,
