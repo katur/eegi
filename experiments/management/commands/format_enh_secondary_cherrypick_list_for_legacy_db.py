@@ -109,9 +109,14 @@ class Command(BaseCommand):
                 destination_plate_chars[1] = 'c'
                 destination_plate_name = ''.join(destination_plate_chars)
 
-            new_clone_name = source_library_well.intended_clone.id
-            old_clone_name = new_to_old[new_clone_name]['old_clone_name']
-            node_primary_name = new_to_old[new_clone_name]['node_primary_name']
+            if source_library_well.intended_clone:
+                new_clone_name = source_library_well.intended_clone.id
+                old_clone_name = new_to_old[new_clone_name]['old_clone_name']
+                node_primary_name = new_to_old[new_clone_name]['node_primary_name']
+
+            else:
+                old_clone_name = ''
+                node_primary_name = ''
 
             output = [
                 gene, allele,
