@@ -40,18 +40,17 @@
   {% if link_to_vertical %}
   <span class="vertical-links">
 
-
     <a href="{{ link_to_vertical }}"
-        {% if total_results > 500 %}class="inactive-link"{% endif %}">
-      See thumbnails (max 500)</a>
+        {% if total_results > 500 %}class="inactive-link"{% endif %}>
+      See all thumbnails (max 500 exps)</a>
 
     <a href="{{ link_to_vertical }}?mode=big"
-        {% if total_results > 50 %}class="inactive-link"{% endif %}">
-      See full-size images (max 50)</a>
+        {% if total_results > 50 %}class="inactive-link"{% endif %}>
+      See all full-size images (50)</a>
 
     <a href="{{ link_to_vertical }}?mode=devstar"
-        {% if total_results > 50 %}class="inactive-link"{% endif %}">
-      See DevStaR images (max 50)</a>
+        {% if total_results > 50 %}class="inactive-link"{% endif %}>
+      See all DevStaR images (50)</a>
   </span>
   {% endif %}
 
