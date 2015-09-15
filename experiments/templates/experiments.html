@@ -42,15 +42,15 @@
 
     <a href="{{ link_to_vertical }}"
         {% if total_results > 500 %}class="inactive-link"{% endif %}>
-      See all thumbnails (max 500 exps)</a>
+      See all thumbnails (max 500 expts)</a>
 
     <a href="{{ link_to_vertical }}?mode=big"
         {% if total_results > 50 %}class="inactive-link"{% endif %}>
-      See all full-size images (50)</a>
+      See all full-size images (max 50)</a>
 
     <a href="{{ link_to_vertical }}?mode=devstar"
         {% if total_results > 50 %}class="inactive-link"{% endif %}>
-      See all DevStaR images (50)</a>
+      See all DevStaR images (max 50)</a>
   </span>
   {% endif %}
 
