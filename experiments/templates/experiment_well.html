@@ -3,8 +3,9 @@
 {% load image_tags %}
 
 {% block body_id %}experiment-well{% endblock %}
+
 {% block page_title %}
-  Experiment {{ experiment.id }}, Well {{ well }}
+Experiment {{ experiment.id }}, Well {{ well }}
 {% endblock %}
 
 {% block content %}
@@ -27,7 +28,7 @@
   </span>
 
   {% if experiment.worm_strain.genotype %}
-    <span>Worm genotype: {{ experiment.worm_strain.genotype }}</span>
+  <span>Worm genotype: {{ experiment.worm_strain.genotype }}</span>
   {% endif %}
 
   <span>
@@ -42,30 +43,46 @@
   {% endif %}
 
   {% if experiment.comment %}
-    <span>Comment: {{ experiment.comment }}</span>
+  <span>Comment: {{ experiment.comment }}</span>
   {% endif %}
 
   {% if experiment.score_summary %}
-    <span>Scores: {{ experiment.score_summary }}</span>
+  <span>Scores: {{ experiment.score_summary }}</span>
   {% endif %}
 
   {% if library_well.intended_clone and not library_well.intended_clone.is_control and not experiment.worm_strain.is_control %}
+
   <span>
     <a href="{% url 'double_knockdown_url' experiment.worm_strain.id library_well.intended_clone.id experiment.temperature %}">
       See with controls and all replicates.</a>
   </span>
+
   {% endif %}
 
   <span>
     <a href="{% url 'experiment_url' experiment.id %}">
       See entire experiment plate.</a>
   </span>
+
+  {% if devstar_available %}
+    {% if image_settings|get_value_or_none:"mode" != 'devstar' %}
+
+    <span>
+      <a href="?mode=devstar">See DevStaR-labelled image</a>
+    </span>
+
+    {% else %}
+
+    <span>
+      <a href="?{% url_replace request 'mode' 'big' %}">
+        See unlabelled image</a>
+    </span>
+
+    {% endif %}
+  {% endif %}
+
 </div>
 
 {% get_image experiment well image_settings %}
-
-{% if devstar_url %}
-  <a href="?mode=devstar">Toggle DevStaR</a>
-{% endif %}
 
 {% endblock %}

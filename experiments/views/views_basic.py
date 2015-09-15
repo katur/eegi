@@ -176,19 +176,15 @@ def experiment_well(request, id, well):
     mode = request.GET.get('mode', 'big')
     image_settings = {'mode': mode}
 
-    if mode != 'devstar':
-        devstar_url = experiment.get_devstar_image_url(well)
-        if not http_response_ok(devstar_url):
-            devstar_url = None
-    else:
-        devstar_url = None
+    devstar_url = experiment.get_devstar_image_url(well)
+    devstar_available = http_response_ok(devstar_url)
 
     context = {
         'experiment': experiment,
         'well': well,
         'library_well': library_well,
         'image_settings': image_settings,
-        'devstar_url': devstar_url,
+        'devstar_available': devstar_available,
     }
 
     return render(request, 'experiment_well.html', context)
