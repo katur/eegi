@@ -136,7 +136,8 @@ def single_knockdown_search(request):
                         temperature = worm.permissive_temperature
                     else:
                         temperature = worm.restrictive_temperature
-                        return redirect(mutant_knockdown, worm, temperature)
+
+                    return redirect(mutant_knockdown, worm, temperature)
 
                 except Exception as e:
                     error = e.message
