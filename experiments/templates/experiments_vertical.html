@@ -18,7 +18,10 @@
 <td>
 
   <!-- Inner table is per-experiment -->
-  <table class="grayscale plate-96 vertical-tiles mode-{{ mode }}">
+  <table class="grayscale plate-96 vertical-tiles
+      {% if image_settings|is_key_present:"mode" %}
+        mode-{{ image_settings.mode }}
+      {% endif %}">
     <thead>
       <tr>
         <th class="plate-info">

@@ -158,9 +158,6 @@ def experiments_vertical(request, ids):
     context = {
         'experiments': experiments,
         'image_settings': image_settings,
-
-        # TODO: get rid of passing mode
-        'mode': mode,
     }
 
     return render(request, 'experiments_vertical.html', context)

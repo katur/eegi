@@ -6,8 +6,33 @@ register = template.Library()
 
 
 @register.filter
-def keyvalue(dict, key):
-        return dict[key]
+def get_value(dictionary, key):
+    """Get a dictionary value the normal way.
+
+    Raises a KeyError if key is not present. So only use this when
+    key being absent signifies a bug.
+
+    """
+    return dictionary[key]
+
+
+@register.filter
+def get_value_or_none(dictionary, key):
+    """Get a dictionary value the safe way.
+
+    Returns None if the key is not present.
+
+    """
+    return dictionary.get(key)
+
+
+@register.filter
+def is_key_present(dictionary, key):
+    """Determine if a key is present in dictionary."""
+    if dictionary.get(key):
+        return True
+    else:
+        return False
 
 
 @register.filter

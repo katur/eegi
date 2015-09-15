@@ -50,7 +50,7 @@
       <tr>
         <td>
           <div class="carousel">
-          {% with experiments|keyvalue:"mutant_rnai" as experiments %}
+          {% with experiments|get_value:"mutant_rnai" as experiments %}
           {% for experiment in experiments %}
             {% get_image_wrapper experiment rnai_well forloop.counter experiments|length %}
           {% endfor %}
@@ -60,7 +60,7 @@
 
         <td>
           <div class="carousel">
-          {% with experiments|keyvalue:"mutant_l4440" as experiments %}
+          {% with experiments|get_value:"mutant_l4440" as experiments %}
           {% for experiment in experiments %}
             {% with experiment.library_plate.get_l4440_wells as wells %}
             {% for well in wells %}
@@ -81,7 +81,7 @@
       <tr>
         <td>
           <div class="carousel">
-          {% with experiments|keyvalue:"n2_rnai" as experiments %}
+          {% with experiments|get_value:"n2_rnai" as experiments %}
           {% for experiment in experiments %}
             {% get_image_wrapper experiment rnai_well forloop.counter experiments|length %}
           {% endfor %}
@@ -91,7 +91,7 @@
 
         <td>
           <div class="carousel">
-          {% with experiments|keyvalue:"n2_l4440" as experiments %}
+          {% with experiments|get_value:"n2_l4440" as experiments %}
           {% for experiment in experiments %}
             {% with experiment.library_plate.get_l4440_wells as wells %}
             {% for well in wells %}
