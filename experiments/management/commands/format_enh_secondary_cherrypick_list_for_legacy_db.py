@@ -62,10 +62,15 @@ class Command(BaseCommand):
         # table in the legacy database. The fields in CherryPickRNAi
         # are: ('mutant', 'mutantAllele', 'RNAiPlateID', '96well', 'ImgName',
         # 'clone', 'node_primary_name', 'seq_node_primary_name']
+        '''
+        # Don't print legacy fieldnames (easier to import with phpmyadmin
+        # without field names
         legacy_fields = ('mutant', 'mutantAllele', 'RNAiPlateID', '96well',
                          'ImgName', 'clone', 'node_primary_name',
                          'seq_node_primary_name')
+
         self.stdout.write(','.join(legacy_fields))
+        '''
 
         for line in cherrypick_list:
             row = line.split(',')
@@ -113,6 +118,8 @@ class Command(BaseCommand):
                 new_clone_name = source_library_well.intended_clone.id
                 old_clone_name = new_to_old[new_clone_name]['old_clone_name']
                 node_primary_name = new_to_old[new_clone_name]['node_primary_name']
+                if node_primary_name == 'NULL':
+                    node_primary_name = ''
 
             else:
                 old_clone_name = ''
