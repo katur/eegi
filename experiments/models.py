@@ -1,10 +1,13 @@
 from __future__ import division
+import string
 
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
 
+from eegi.settings import IMG_PATH, THUMBNAIL_PATH, DEVSTAR_PATH
 from library.models import LibraryPlate
+from utils.well_tile_conversion import well_to_tile
 from worms.models import WormStrain
 
 
@@ -52,7 +55,21 @@ class Experiment(models.Model):
     def __unicode__(self):
         return str(self.id)
 
+    def get_celsius_temperature(self):
+        """Get this experiment's temperature in format '22.5C'"""
+        return str(self.temperature) + 'C'
+
+    def is_mutant_control(self):
+        """Check if this experiment contains the control worm strain."""
+        return self.worm_strain.is_control()
+
     def get_scores(self, well=None):
+        """Get all scores for this experiment.
+
+        Defaults to all scores for the entire plate, or specify
+        well to get the scores for a particular well.
+
+        """
         if well:
             scores = (ManualScore.objects
                       .filter(Q(experiment=self), Q(well=well))
@@ -63,6 +80,7 @@ class Experiment(models.Model):
         return scores
 
     def get_score_summary(self, well):
+        """Get a summary of scores for printing purposes."""
         scores = self.get_scores(well)
         d = {}
         for score in scores:
@@ -85,11 +103,37 @@ class Experiment(models.Model):
 
         return '; '.join(str(item) for item in people)
 
-    def get_celsius_temperature(self):
-        return str(self.temperature) + 'C'
+    def get_image_url(self, well):
+        """Get the url of an experiment image.
 
-    def is_mutant_control(self):
-        return self.worm_strain.is_control()
+        Accepts an Experiment object, and well as a string.
+
+        """
+        tile = well_to_tile(well)
+        url = '/'.join((IMG_PATH, str(self.id), tile))
+        return url
+
+    def get_thumbnail_url(self, well):
+        """Get the url of an experiment thumbnail image.
+
+        Accepts an Experiment object, and well as a string.
+
+        """
+        tile = well_to_tile(well)
+        url = '/'.join((THUMBNAIL_PATH, str(self.id), tile))
+        url = string.replace(url, 'bmp', 'jpg')
+        return url
+
+    def get_devstar_image_url(self, well):
+        """Get the url of a DevStaR output image.
+
+        Accepts an Experiment object, and well as a string.
+
+        """
+        tile = well_to_tile(well)
+        url = '/'.join((DEVSTAR_PATH, str(self.id), tile))
+        url = string.replace(url, '.bmp', 'res.png')
+        return url
 
 
 class ManualScoreCode(models.Model):

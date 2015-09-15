@@ -6,7 +6,6 @@ from django.shortcuts import render, get_object_or_404
 
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm
-from experiments.helpers.urls import get_devstar_image_url
 from library.models import LibraryWell, LibraryPlate
 from utils.http import http_response_ok
 from worms.models import WormStrain
@@ -178,7 +177,7 @@ def experiment_well(request, id, well):
     image_settings = {'mode': mode}
 
     if mode != 'devstar':
-        devstar_url = get_devstar_image_url(experiment, well)
+        devstar_url = experiment.get_devstar_image_url(well)
         if not http_response_ok(devstar_url):
             devstar_url = None
     else:

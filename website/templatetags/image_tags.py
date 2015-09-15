@@ -1,9 +1,6 @@
 from django import template
 from django.core.urlresolvers import reverse
 
-from experiments.helpers.urls import (get_image_url, get_thumbnail_url,
-                                      get_devstar_image_url)
-
 register = template.Library()
 
 
@@ -17,11 +14,11 @@ def get_image(experiment, well, settings):
     """
     mode = settings.get('mode', None)
     if mode == 'thumbnail':
-        image_url = get_thumbnail_url(experiment, well)
+        image_url = experiment.get_thumbnail_url(well)
     elif mode == 'devstar':
-        image_url = get_devstar_image_url(experiment, well)
+        image_url = experiment.get_devstar_image_url(well)
     else:
-        image_url = get_image_url(experiment, well)
+        image_url = experiment.get_image_url(well)
 
     return '''
         <div class="image-frame">
@@ -87,7 +84,7 @@ def get_image_wrapper(experiment, library_well, current, length):
               <span>&raquo;</span>
             </a>
             </div>
-        '''.format(get_image_url(experiment, well))
+        '''.format(experiment.get_image_url(well))
 
     def get_image_title(experiment, well):
         url = reverse('experiment_well_url', args=[experiment.id, well])
@@ -122,5 +119,5 @@ def get_image_wrapper(experiment, library_well, current, length):
         current, length,
         get_image_frame(experiment, well),
         scores,
-        get_devstar_image_url(experiment, well)
+        experiment.get_devstar_image_url(well)
     )
