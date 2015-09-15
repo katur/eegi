@@ -62,8 +62,10 @@
   </span>
 </div>
 
-{% get_image experiment well %}
+{% get_image experiment well image_settings %}
 
-{% get_devstar_image_if_exists experiment well %}
+{% if devstar_url %}
+  <a href="?mode=devstar">Toggle DevStaR</a>
+{% endif %}
 
 {% endblock %}

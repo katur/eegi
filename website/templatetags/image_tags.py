@@ -3,60 +3,22 @@ from django.core.urlresolvers import reverse
 
 from experiments.helpers.urls import (get_image_url, get_thumbnail_url,
                                       get_devstar_image_url)
-from utils.http import http_response_ok
 
 register = template.Library()
 
 
 @register.simple_tag
-def get_thumbnail(experiment, well):
-    """Get a thumbnail image.
-
-    See get_image() for more details.
-
-    """
-    return get_image(experiment, well, is_thumbnail=True)
-
-
-@register.simple_tag
-def get_devstar_image(experiment, well):
-    """Get a DevStaR-labelled image.
-
-    See get_image() for more details.
-
-    """
-    return get_image(experiment, well, is_devstar=True)
-
-
-@register.simple_tag
-def get_devstar_image_if_exists(experiment, well):
-    """Get a DevStaR-labelled image, or None if it doesn't exist.
-
-    Like get_devstar_image(), but checks that the image url returns an
-    HTTP 200 status code (which means "ok").
-
-    Be careful not to use this on too many images at once; making
-    many HTTP requests can be slow.
-
-    """
-    url = get_devstar_image_url(experiment, well)
-    if http_response_ok(url):
-        return get_devstar_image(experiment, well)
-    else:
-        return None
-
-
-@register.simple_tag
-def get_image(experiment, well, is_thumbnail=False, is_devstar=False):
+def get_image(experiment, well, settings):
     """Get an image.
 
     Returns the HTML img tag along with a surrounding div
     to preserve the aspect ratio while loading.
 
     """
-    if is_thumbnail:
+    mode = settings.get('mode', None)
+    if mode == 'thumbnail':
         image_url = get_thumbnail_url(experiment, well)
-    elif is_devstar:
+    elif mode == 'devstar':
         image_url = get_devstar_image_url(experiment, well)
     else:
         image_url = get_image_url(experiment, well)
@@ -69,29 +31,7 @@ def get_image(experiment, well, is_thumbnail=False, is_devstar=False):
 
 
 @register.simple_tag
-def get_thumbnail_td(experiment, library_well):
-    """Get an HTML td element with a thumbnail and minimal information.
-
-    See get_image_td() for more details.
-
-    """
-    return get_image_td(experiment, library_well, is_thumbnail=True)
-
-
-@register.simple_tag
-def get_devstar_image_td(experiment, library_well):
-    """Get an HTML td element with a DevStaR-labelled image and minimal
-    information.
-
-    See get_image_td() for more details.
-
-    """
-    return get_image_td(experiment, library_well, is_devstar=True)
-
-
-@register.simple_tag
-def get_image_td(experiment, library_well, is_thumbnail=False,
-                 is_devstar=False):
+def get_image_td(experiment, library_well, settings):
     """Get an HTML td element with an image and minimal information.
 
     "Minimal information" is a top bar identifying the well's position,
@@ -103,8 +43,7 @@ def get_image_td(experiment, library_well, is_thumbnail=False,
     """
 
     well = library_well.well
-    image = get_image(experiment, well, is_thumbnail=is_thumbnail,
-                      is_devstar=is_devstar)
+    image = get_image(experiment, well, settings)
     experiment_url = reverse('experiment_well_url', args=[experiment.id, well])
 
     if not library_well.intended_clone:

@@ -6,7 +6,9 @@ from django.shortcuts import render, get_object_or_404
 
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm
+from experiments.helpers.urls import get_devstar_image_url
 from library.models import LibraryWell, LibraryPlate
+from utils.http import http_response_ok
 from worms.models import WormStrain
 
 
@@ -122,12 +124,18 @@ def experiment(request, id):
     library_wells = LibraryWell.objects.filter(
         plate=experiment.library_plate).order_by('well')
 
+    # Add row attribute in order to use regroup template tag
     for library_well in library_wells:
         library_well.row = library_well.get_row()
+
+    # Default to thumbanil if GET['mode'] not set
+    mode = request.GET.get('mode', 'thumbnail')
+    image_settings = {'mode': mode}
 
     context = {
         'experiment': experiment,
         'library_wells': library_wells,
+        'image_settings': image_settings,
     }
 
     return render(request, 'experiment.html', context)
@@ -143,13 +151,15 @@ def experiments_vertical(request, ids):
             plate=experiment.library_plate).order_by('well')
         experiments.append(experiment)
 
-    if 'mode' in request.GET:
-        mode = request.GET['mode']
-    else:
-        mode = None
+    # Default to thumbnail if GET['mode'] not set
+    mode = request.GET.get('mode', 'thumbnail')
+    image_settings = {'mode': mode}
 
     context = {
         'experiments': experiments,
+        'image_settings': image_settings,
+
+        # TODO: get rid of passing mode
         'mode': mode,
     }
 
@@ -166,10 +176,23 @@ def experiment_well(request, id, well):
     library_well = LibraryWell.objects.filter(
         plate=experiment.library_plate).filter(well=well)[0]
 
+    # Default to full size image if GET['mode'] not set
+    mode = request.GET.get('mode', 'big')
+    image_settings = {'mode': mode}
+
+    if mode != 'devstar':
+        devstar_url = get_devstar_image_url(experiment, well)
+        if not http_response_ok(devstar_url):
+            devstar_url = None
+    else:
+        devstar_url = None
+
     context = {
         'experiment': experiment,
         'well': well,
         'library_well': library_well,
+        'image_settings': image_settings,
+        'devstar_url': devstar_url,
     }
 
     return render(request, 'experiment_well.html', context)

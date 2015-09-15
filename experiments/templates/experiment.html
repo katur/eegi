@@ -55,7 +55,7 @@
   {% for row in library_wells_by_row %}
   <tr>
     {% for library_well in row.list %}
-      {% get_thumbnail_td experiment library_well %}
+      {% get_image_td experiment library_well image_settings %}
     {% endfor %}
   </tr>
   {% endfor %}

@@ -54,13 +54,7 @@
     <tbody>
       {% for library_well in experiment.library_wells %}
       <tr>
-        {% if mode == 'big' %}
-          {% get_image_td experiment library_well %}
-        {% elif mode == 'devstar' %}
-          {% get_devstar_image_td experiment library_well %}
-        {% else %}
-          {% get_thumbnail_td experiment library_well %}
-        {% endif %}
+        {% get_image_td experiment library_well image_settings %}
       </tr>
       {% endfor %}
     </tbody>
