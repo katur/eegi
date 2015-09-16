@@ -402,7 +402,8 @@ def update_DevstarScore_table(cursor):
                     'machineCall, machineDetectBac, '
                     'GIscoreLarvaePerWorm, GIscoreSurvival '
                     'FROM RawDataWithScore '
-                    'WHERE (expID < 40000 OR expID>=50000)')
+                    'WHERE (expID < 40000 OR expID>=50000) '
+                    'ORDER BY expID, 96well')
 
     def sync_score_row(legacy_row):
         # Build the object using the minimimum fields
