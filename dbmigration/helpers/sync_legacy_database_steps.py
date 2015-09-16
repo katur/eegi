@@ -147,7 +147,7 @@ def update_Experiment_table(cursor):
                     'AS DECIMAL(3,1)), '
                     'CAST(recordDate AS DATE), ABS(isJunk), comment '
                     'FROM RawData '
-                    'WHERE (expID < 40000 OR expID>=50000) '
+                    'WHERE (expID < 40000 OR expID >= 50000) '
                     'AND RNAiPlateID NOT LIKE "Julie%"')
 
     def sync_experiment_row(legacy_row):
@@ -439,12 +439,20 @@ def update_DevstarScore_table(cursor):
 
         errors = []
 
-        # Deal with case of legacy database using zc310 instead of zu310,
-        # and of legacy database having some case sensitivity issues
-        if (legacy_score.experiment.worm_strain.allele != legacy_row[2]):
+        legacy_allele = legacy_score.experiment.worm_strain.allele
+        if (legacy_allele != legacy_row[2]):
+            # Deal with case of legacy database using zc310 instead of zu310
             if (legacy_row[2] == 'zc310' and
-                    legacy_score.experiment.worm_strain.allele == 'zu310'):
+                    legacy_allele == 'zu310'):
                 pass
+
+            # Deal with some case sensitivity issues in legacy database
+            # (e.g. see experiment 32405, where the allele is capitalized).
+            # Can't do lower() in all cases because "N2" should always be
+            # capitalized.
+            elif legacy_allele == legacy_row[2].lower():
+                pass
+
             else:
                 errors.append('allele mismatch')
 
