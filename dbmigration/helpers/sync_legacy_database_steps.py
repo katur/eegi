@@ -437,6 +437,9 @@ def update_DevstarScore_table(cursor):
         legacy_score.clean()
 
         errors = []
+
+        # Deal with case of legacy database using zc310 instead of zu310,
+        # and of legacy database having some case sensitivity issues
         if (legacy_score.experiment.worm_strain.allele != legacy_row[2]):
             if (legacy_row[2] == 'zc310' and
                     legacy_score.experiment.worm_strain.allele == 'zu310'):
@@ -444,10 +447,13 @@ def update_DevstarScore_table(cursor):
             else:
                 errors.append('allele mismatch')
 
+        # Deal with case of some experiments having the wrong RNAiPlateID
+        # in the legacy database's RawDataWithScore table. This field is
+        # redundant with the RawData table, and RawData is more trustworthy;
+        # however it is still worthwhile to perform this check in order
+        # to find the mismatches, and to confirm manually that each one
+        # makes sense.
         if legacy_score.experiment.library_plate.id != legacy_row[4]:
-            # expID 461 has an improper RNAiPlateID in the RawDataWithScore
-            # legacy table (this field is redundant and must not have
-            # been updated during a data entry correction)
             if (legacy_score.experiment.id == 461 or
                     legacy_score.experiment.id == 8345):
                 pass
