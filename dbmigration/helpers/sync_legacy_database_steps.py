@@ -6,6 +6,7 @@ database for a particular table. For each record, various conversions and
 validations are performed to make a Python object that is compatible with
 the new database. This Python object is inserted into the new database
 if not present, or used to update an existing record if changes have occurred.
+
 """
 import re
 import sys
@@ -33,6 +34,7 @@ from utils.well_tile_conversion import tile_to_well
 def sync_rows(cursor, legacy_query, sync_row_function, **kwargs):
     """Sync the rows from a query to the legacy database to the current
     database, according to sync_row_function(legacy_row, **kwargs).
+
     """
     cursor.execute(legacy_query)
     legacy_rows = cursor.fetchall()
@@ -148,6 +150,7 @@ def update_Experiment_table(cursor):
 
     Also, experiments of Julie's (which were done with a line of spn-4 worms
     later deemed untrustworthy) are excluded.
+
     """
     recorded_experiments = Experiment.objects.all()
     fields_to_compare = ('worm_strain', 'library_plate', 'screen_stage',
@@ -163,10 +166,12 @@ def update_Experiment_table(cursor):
 
     def sync_experiment_row(legacy_row):
         expID = legacy_row[0]
+
         if expID < 40000:
             screen_stage = 1
         else:
             screen_stage = 2
+
         legacy_experiment = Experiment(
             id=legacy_row[0],
             worm_strain=get_worm_strain(legacy_row[1], legacy_row[2]),
@@ -177,6 +182,7 @@ def update_Experiment_table(cursor):
             is_junk=legacy_row[6],
             comment=legacy_row[7]
         )
+
         return update_or_save_object(legacy_experiment, recorded_experiments,
                                      fields_to_compare)
 
@@ -202,6 +208,7 @@ def update_ManualScoreCode_table(cursor):
 
     - Migrate these antiquated codes, but do not show in interface:
         -5: IA Error
+
     """
     recorded_score_codes = ManualScoreCode.objects.all()
     fields_to_compare = ('legacy_description',)
@@ -259,6 +266,7 @@ def update_ManualScore_table(cursor):
 
         - for sherly and patricia's ENH scores, ensure that any medium or
           strong enhancers were caught by official scorers
+
     """
     recorded_scores = ManualScore.objects.all()
     fields_to_compare = None
@@ -395,7 +403,8 @@ def update_DevstarScore_table(cursor):
           program did not run)
         - division by 0 in embryo/larva per adult remain 0, but when adult=0
           we DO now calculate survival and lethality
-        - machineCall becomes a boolean
+        - machineCall becomes a Boolean
+
     """
     recorded_scores = DevstarScore.objects.all()
     fields_to_compare = ('area_adult', 'area_larva', 'area_embryo',
@@ -527,6 +536,7 @@ def update_Clone_table(cursor):
     from the 384PlateID and 384Well fields of RNAiPlate
     (note that we are no longer using the 'mv_X'-style Vidal clone names,
     and our PK for Vidal clones will now be in 'GHR-X@X' style).
+
     """
     recorded_clones = Clone.objects.all()
     fields_to_compare = None
@@ -561,6 +571,7 @@ def update_LibraryWell_table(cursor):
     This information comes from a variety of queries of
     primarily according to legacy tables RNAiPlate and CherryPickRNAiPlate.
     Detailed comments inline.
+
     """
     recorded_wells = LibraryWell.objects.all()
     fields_to_compare = ('plate', 'well', 'parent_library_well',
@@ -675,7 +686,7 @@ def update_LibraryWell_table(cursor):
 
     # Secondary well layout is captured in CherryPickRNAiPlate (fields
     # RNAiPlate and 96well). However, there are no columns in this table
-    # for origina. CherryPickTemplate captures MOST parent relationships,
+    # for origin. CherryPickTemplate captures MOST parent relationships,
     # but not all. Therefore, we rely on CherryPickTemplate where available
     # to define parent relationship. Otherwise, we guess based on clone name
     # (which almost always uniquely defines the source well). In the handful
