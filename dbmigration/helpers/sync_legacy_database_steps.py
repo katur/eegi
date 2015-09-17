@@ -69,7 +69,11 @@ def update_LibraryPlate_table(cursor):
     from ReArrayRNAiPlate.
 
     Find the plates actually used in our secondary experiments as the distinct
-    RNAiPlateID from CherryPickRNAiPlates.
+    RNAiPlateID from CherryPickRNAiPlates. Must also skip L4440 (because
+    in order to get around some bizarities in the old database separating
+    the primary and secondary screens into two tables, we have the same
+    L4440 plate listed in both tables in the legacy database).
+
     """
     recorded_plates = LibraryPlate.objects.all()
     fields_to_compare = ('screen_stage', 'number_of_wells')
@@ -83,11 +87,16 @@ def update_LibraryPlate_table(cursor):
                                    'FROM RNAiPlate '
                                    'WHERE 384PlateID LIKE "GHR-%"')
 
-    legacy_query_experiment_plates = 'SELECT DISTINCT RNAiPlateID FROM {}'
+    legacy_query_primary_plates = ('SELECT DISTINCT RNAiPlateID '
+                                   'FROM RNAiPlate')
 
     legacy_query_eliana_rearrays = ('SELECT DISTINCT RNAiPlateID FROM '
                                     'ReArrayRNAiPlate WHERE RNAiPlateID '
                                     'LIKE "Eliana%"')
+
+    legacy_query_secondary_plates = ('SELECT DISTINCT RNAiPlateID '
+                                     'FROM CherryPickRNAiPlate '
+                                     'WHERE RNAiPlateID != "L4440"')
 
     def sync_library_plate_row(legacy_row, screen_stage, number_of_wells=96):
         if len(legacy_row) > 1:
@@ -101,27 +110,29 @@ def update_LibraryPlate_table(cursor):
         return update_or_save_object(legacy_plate, recorded_plates,
                                      fields_to_compare)
 
-    # 384-well Ahringer plates from which our 96-well Ahringer plates were
-    # arrayed
+    # Sync the 384-well Ahringer plates from which our 96-well Ahringer plates
+    # were arrayed
     sync_rows(cursor, legacy_query_384_plates, sync_library_plate_row,
               screen_stage=0, number_of_wells=384)
 
-    # 96-well Orfeome plates from which our 96-well Vidal rearrays were
-    # cherry-picked
+    # Sync the 96-well Orfeome plates from which our 96-well Vidal rearrays
+    # were cherry-picked
     sync_rows(cursor, legacy_query_orfeome_plates, sync_library_plate_row,
               screen_stage=0)
 
-    # The 96-well plates actually used in our experiments
-    sync_rows(cursor,
-              legacy_query_experiment_plates.format('RNAiPlate'),
-              sync_library_plate_row, screen_stage=1)
+    # Sync the 96-well plates used in our Primary experiments (includes
+    # L4440 plate, Ahringer plates, and Vidal plates)
+    sync_rows(cursor, legacy_query_primary_plates, sync_library_plate_row,
+              screen_stage=1)
 
-    sync_rows(cursor, legacy_query_eliana_rearrays,
-              sync_library_plate_row, screen_stage=1)
+    # Sync the 96-well "Eliana Rearray" plates, which tried to salvage wells
+    # that did not grow consistently in the other primary screen plates
+    sync_rows(cursor, legacy_query_eliana_rearrays, sync_library_plate_row,
+              screen_stage=1)
 
-    sync_rows(cursor,
-              legacy_query_experiment_plates.format('CherryPickRNAiPlate'),
-              sync_library_plate_row, screen_stage=2)
+    # Sync the 96-well plates used for our Secondary experiments
+    sync_rows(cursor, legacy_query_secondary_plates, sync_library_plate_row,
+              screen_stage=2)
 
 
 def update_Experiment_table(cursor):
