@@ -14,6 +14,7 @@ class LibraryPlate(models.Model):
     plate, we only represent one copy in the database. This is because,
     historically, we did not keep track of which copy was used in which
     experiment.
+
     """
     id = models.CharField(max_length=20, primary_key=True)
     screen_stage = models.PositiveSmallIntegerField(null=True, blank=True,
@@ -23,12 +24,6 @@ class LibraryPlate(models.Model):
     class Meta:
         db_table = 'LibraryPlate'
         ordering = ['id']
-
-    def __unicode__(self):
-        return self.id
-
-    def __hash__(self):
-        return 31 * hash(self.id)
 
     def __cmp__(self, other):
         # First order by screen stage
@@ -54,6 +49,12 @@ class LibraryPlate(models.Model):
         else:
             return cmp(self.id, other.id)
 
+    def __hash__(self):
+        return 31 * hash(self.id)
+
+    def __unicode__(self):
+        return self.id
+
     def get_all_wells(self):
         return LibraryWell.objects.filter(plate=self)
 
@@ -62,8 +63,9 @@ class LibraryPlate(models.Model):
                                           Q(intended_clone='L4440'))
 
     def is_ahringer_96_plate(self):
-        """Determine if a plate name is in the correct format for an Ahringer
-        96-format plate.
+        """Determine if a plate name is in the correct format for an
+        Ahringer 96-format plate.
+
         """
         return re.match('(I|II|III|IV|V|X)-[1-9][0-3]?-[AB][12]',
                         self.id)
@@ -74,6 +76,7 @@ class LibraryWell(models.Model):
 
     Includes the clone intended on being in this position (according to
     whoever designed the library), separate from a sequence-verified clone.
+
     """
     id = models.CharField(max_length=24, primary_key=True)
     plate = models.ForeignKey(LibraryPlate, related_name='wells')
@@ -96,7 +99,7 @@ class LibraryWell(models.Model):
 
     def __unicode__(self):
         return '{} (intended clone: {})'.format(self.id,
-                                                str(self.intended_clone))
+                                                self.intended_clone)
 
     def get_row(self):
         return self.well[0]

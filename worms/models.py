@@ -6,8 +6,9 @@ from django.db import models
 class WormStrain(models.Model):
     """A worm strain used in this experiment.
 
-    Either a temperature-sensitive mutant, or a control strain (control strain
-    signified by no allele).
+    Can be either a temperature-sensitive mutant strain, or a control
+    strain. Control strains are signified by allele=None.
+
     """
     # The name of this strain (e.g. KK300)
     id = models.CharField(max_length=10, primary_key=True)
@@ -36,6 +37,12 @@ class WormStrain(models.Model):
     def __unicode__(self):
         return self.id
 
+    def is_control(self):
+        if not self.allele:
+            return True
+        else:
+            return False
+
     def get_lab_website_url(self):
         return 'http://gunsiano.webfactional.com/strain/' + self.id
 
@@ -54,10 +61,15 @@ class WormStrain(models.Model):
     def get_screen_category(self, temperature):
         """Determine if temperature is a screen temperature for this strain.
 
-        Returns 'ENH' if temperature is this strain's permissive temperature.
-        Returns 'SUP' if temperature is this strain's restrictive temperature.
-        Returns None if temperature is not an official screen temperature for
-        this strain.
+        Returns 'ENH' if temperature is this strain's permissive
+        screening temperature.
+
+        Returns 'SUP' if temperature is this strain's restrictive
+        screening temperature.
+
+        Returns None if temperature is not an official screening
+        temperature for this strain.
+
         """
         temperature = Decimal(temperature)
         if self.permissive_temperature == temperature:
@@ -66,9 +78,3 @@ class WormStrain(models.Model):
             return 'SUP'
         else:
             return None
-
-    def is_control(self):
-        if not self.allele:
-            return True
-        else:
-            return False

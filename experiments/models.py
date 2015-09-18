@@ -33,8 +33,9 @@ RELEVANCE_ACROSS_REPLICATES = (NEGATIVE, OTHER, UNSCORED, WEAK, MEDIUM, STRONG)
 class Experiment(models.Model):
     """A plate-level experiment.
 
-    I.e., a flat-bottom plate in which worms and RNAi clones were combined
+    I.e., flat-bottom plate in which worms and RNAi clones were combined
     and put at a specific temperature.
+
     """
     id = models.PositiveIntegerField(primary_key=True)
     worm_strain = models.ForeignKey(WormStrain)
@@ -182,9 +183,7 @@ class ManualScoreCode(models.Model):
 
 
 class ManualScore(models.Model):
-    """A score that was assigned to a particular experiment image by a
-    human.
-    """
+    """A score that was assigned to a particular image by a human."""
     experiment = models.ForeignKey(Experiment)
     well = models.CharField(max_length=3)
     score_code = models.ForeignKey(ManualScoreCode)
@@ -237,6 +236,7 @@ class ManualScore(models.Model):
         'negative' means that it does not indicate a genetic interaction,
         whereas 'other' may be any auxiliary score, such as an experiment
         problem or a phenotype unrelated to sup/enh).
+
         """
         return SCORE_WEIGHTS[self.get_category()]
 
@@ -250,6 +250,7 @@ class ManualScore(models.Model):
 class DevstarScore(models.Model):
     """Information about an image determined by the DevStaR computer vision
     program.
+
     """
     experiment = models.ForeignKey(Experiment)
     well = models.CharField(max_length=3)
