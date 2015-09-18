@@ -49,18 +49,21 @@
 
       <tr>
         <td>
-          <div class="carousel">
           {% with experiments|get_value:"mutant_rnai" as experiments %}
+
+          <div class="carousel">
           {% for experiment in experiments %}
             {% get_image_wrapper experiment rnai_well forloop.counter experiments|length %}
           {% endfor %}
-          {% endwith %}
           </div>
+
+          {% endwith %}
         </td>
 
         <td>
-          <div class="carousel">
           {% with experiments|get_value:"mutant_l4440" as experiments %}
+
+          <div class="carousel">
           {% for experiment in experiments %}
             {% with experiment.library_plate.get_l4440_wells as wells %}
             {% for well in wells %}
@@ -68,8 +71,9 @@
             {% endfor %}
             {% endwith %}
           {% endfor %}
-          {% endwith %}
           </div>
+
+          {% endwith %}
         </td>
       </tr>
 
@@ -80,18 +84,21 @@
 
       <tr>
         <td>
-          <div class="carousel">
           {% with experiments|get_value:"n2_rnai" as experiments %}
+
+          <div class="carousel">
           {% for experiment in experiments %}
             {% get_image_wrapper experiment rnai_well forloop.counter experiments|length %}
           {% endfor %}
-          {% endwith %}
           </div>
+
+          {% endwith %}
         </td>
 
         <td>
-          <div class="carousel">
           {% with experiments|get_value:"n2_l4440" as experiments %}
+
+          <div class="carousel">
           {% for experiment in experiments %}
             {% with experiment.library_plate.get_l4440_wells as wells %}
             {% for well in wells %}
@@ -99,8 +106,9 @@
             {% endfor %}
             {% endwith %}
           {% endfor %}
-          {% endwith %}
           </div>
+
+          {% endwith %}
         </td>
       </tr>
     </tbody>
