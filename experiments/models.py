@@ -56,54 +56,6 @@ class Experiment(models.Model):
     def __unicode__(self):
         return str(self.id)
 
-    def get_celsius_temperature(self):
-        """Get this experiment's temperature in format '22.5C'"""
-        return str(self.temperature) + 'C'
-
-    def is_mutant_control(self):
-        """Check if this experiment contains the control worm strain."""
-        return self.worm_strain.is_control()
-
-    def get_scores(self, well=None):
-        """Get all scores for this experiment.
-
-        Defaults to all scores for the entire plate, or specify
-        well to get the scores for a particular well.
-
-        """
-        if well:
-            scores = (ManualScore.objects
-                      .filter(Q(experiment=self), Q(well=well))
-                      .order_by('scorer', 'timestamp', 'score_code'))
-        else:
-            scores = ManualScore.objects.filter(experiment=self)
-
-        return scores
-
-    def get_score_summary(self, well):
-        """Get a summary of scores for printing purposes."""
-        scores = self.get_scores(well)
-        d = {}
-        for score in scores:
-            scorer = score.scorer
-            timestamp = score.timestamp
-            if scorer not in d:
-                d[scorer] = {}
-            if timestamp not in d[scorer]:
-                d[scorer][timestamp] = []
-            d[scorer][timestamp].append(score.score_code.short_description)
-
-        people = []
-        for s in d:
-            output = s.get_short_name() + ': '
-            for t in d[s]:
-                t_string = t.strftime('%Y-%m-%d %H:%M')
-                joined = ', '.join(str(item) for item in d[s][t])
-                output += joined + ' (' + t_string + ')'
-            people.append(output)
-
-        return '; '.join(str(item) for item in people)
-
     def get_image_url(self, well):
         """Get the url of an experiment image.
 
@@ -136,11 +88,25 @@ class Experiment(models.Model):
         url = string.replace(url, '.bmp', 'res.png')
         return url
 
+    def get_scores(self, well=None):
+        """Get all scores for this experiment.
+
+        Defaults to all scores for the entire plate, or specify
+        well to get the scores for a particular well.
+
+        """
+        if well:
+            scores = (ManualScore.objects
+                      .filter(Q(experiment=self), Q(well=well))
+                      .order_by('scorer', 'timestamp', 'score_code'))
+        else:
+            scores = ManualScore.objects.filter(experiment=self)
+
+        return scores
+
 
 class ManualScoreCode(models.Model):
-    """A score category that can be assigned to an image manually by a
-    human.
-    """
+    """A class of score that could be assigned to an image by a human."""
     id = models.IntegerField(primary_key=True)
     description = models.CharField(max_length=100, blank=True)
     short_description = models.CharField(max_length=50, blank=True)

@@ -1,5 +1,3 @@
-from itertools import chain
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
@@ -74,9 +72,6 @@ def double_knockdown(request, worm, clone, temperature):
             else:
                 mutant_l4440 = mutant_rnai
                 n2_l4440 = n2_rnai
-
-            for e in list(chain(mutant_rnai, n2_rnai, mutant_l4440, n2_l4440)):
-                e.score_summary = e.get_score_summary(library_well)
 
             data.append((library_well, date['date'], {
                 'mutant_rnai': mutant_rnai,
