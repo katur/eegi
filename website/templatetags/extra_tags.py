@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from django import template
 
 register = template.Library()
@@ -42,6 +40,10 @@ def get_range(value):
 
 @register.simple_tag
 def url_replace(request, field, value):
+    """Set GET[field] to value in the url.
+
+    Keeps other GET key/value pairs intact.
+    """
     query_dict = request.GET.copy()
     query_dict[field] = value
     return query_dict.urlencode()
@@ -49,6 +51,11 @@ def url_replace(request, field, value):
 
 @register.filter(is_safe=True)
 def concatenate_ids_with_commas(l):
+    """Get a string that is elements of l, separated by commas.
+
+    Does not add spaces before or after the commas.
+
+    """
     s = ''
     for item in l:
         s += str(item.id) + ','
@@ -60,6 +67,7 @@ def concatenate_ids_with_commas(l):
 
 @register.filter(is_safe=True)
 def celsius(temperature):
+    """Return temperature in format 22.5C, including degree sign."""
     if temperature:
         return unicode(temperature) + u'\xb0' + 'C'
     else:
@@ -68,18 +76,26 @@ def celsius(temperature):
 
 @register.simple_tag
 def get_screen_type(temperature, strain):
-    category = strain.get_screen_category(temperature)
-    if category == 'SUP':
-        return 'SUP screen temperature'
-    elif category == 'ENH':
+    """Get a string describing if temperature is an official screening
+    temperature for strain.
+
+    """
+    if strain.is_permissive_temperature(temperature):
         return 'ENH screen temperature'
+    elif strain.is_restrictive_temperature(temperature):
+        return 'SUP screen temperature'
     else:
         return 'neither SUP nor ENH screen temperature'
 
 
 @register.simple_tag
 def get_image_url(experiment, well, mode=None):
-    """Get an image url."""
+    """Get the url for an image.
+
+    Set mode to 'thumbnail' or 'devstar' for either of those image
+    types. Otherwise, returns the normal full-size image.
+
+    """
     if mode == 'thumbnail':
         image_url = experiment.get_thumbnail_url(well)
     elif mode == 'devstar':
@@ -92,6 +108,12 @@ def get_image_url(experiment, well, mode=None):
 
 @register.simple_tag
 def get_score_summary(experiment, well):
+    """Get a string summarizing the scores for this experiment.
+
+    Groups such that scores by different scorers, and scores made at
+    different timepoints, can be distinguished.
+
+    """
     scores = experiment.get_scores(well)
     d = {}
     for score in scores:

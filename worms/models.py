@@ -58,6 +58,12 @@ class WormStrain(models.Model):
     def get_short_genotype(self):
         return self.genotype.split()[0]
 
+    def is_permissive_temperature(self, temperature):
+        return self.permissive_temperature == Decimal(temperature)
+
+    def is_restrictive_temperature(self, temperature):
+        return self.restrictive_temperature == Decimal(temperature)
+
     def get_screen_category(self, temperature):
         """Determine if temperature is a screen temperature for this strain.
 
@@ -71,10 +77,9 @@ class WormStrain(models.Model):
         temperature for this strain.
 
         """
-        temperature = Decimal(temperature)
-        if self.permissive_temperature == temperature:
+        if self.is_permissive_temperature(temperature):
             return 'ENH'
-        elif self.restrictive_temperature == temperature:
+        elif self.is_restrictive_temperature(temperature):
             return 'SUP'
         else:
             return None
