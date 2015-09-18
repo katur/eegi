@@ -25,7 +25,7 @@ Experiments
         <br>
         {{ worm.gene }}
         <br>
-        {{ temp|get_celsius_string }}
+        {{ temp|celsius }}
       </th>
       {% endfor %}
     </tr>
@@ -52,7 +52,7 @@ Experiments
           <br>
           {{ worm }}
           <br>
-          {{ temperature|get_celsius_string }}
+          {{ temperature|celsius }}
 
           <ol>
             {% for experiment in experiments %}

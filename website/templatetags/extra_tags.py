@@ -59,7 +59,7 @@ def concatenate_ids_with_commas(l):
 
 
 @register.filter(is_safe=True)
-def get_celsius_string(temperature):
+def celsius(temperature):
     if temperature:
         return unicode(temperature) + u'\xb0' + 'C'
     else:

@@ -4,7 +4,7 @@
 {% block body_id %}double-knockdown{% endblock %}
 
 {% block page_title %}
-{{ worm }} x {{ clone }}, at {{ temperature|get_celsius_string }}
+{{ worm }} x {{ clone }}, at {{ temperature|celsius }}
 {% endblock %}
 
 {% block content %}
@@ -24,7 +24,7 @@
   </span>
 
   <span>
-    Temperature: {{ temperature|get_celsius_string }}
+    Temperature: {{ temperature|celsius }}
     ({% get_screen_type temperature worm %})
   </span>
 </div>

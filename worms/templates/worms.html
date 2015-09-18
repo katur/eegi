@@ -20,8 +20,8 @@
     <tr>
       <td><a href="{{ worm.url }}">{{ worm }}</a></td>
       <td>{{ worm.genotype }}</td>
-      <td>{{ worm.permissive_temperature|get_celsius_string }}</td>
-      <td>{{ worm.restrictive_temperature|get_celsius_string }}</td>
+      <td>{{ worm.permissive_temperature|celsius }}</td>
+      <td>{{ worm.restrictive_temperature|celsius }}</td>
     </tr>
     {% endfor %}
   </tbody>

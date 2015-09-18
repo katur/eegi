@@ -102,7 +102,7 @@
       <td>{{ experiment.worm_strain }}</td>
       <td>{{ experiment.worm_strain__genotype }}</td>
       <td>{{ experiment.library_plate }}</td>
-      <td>{{ experiment.temperature|get_celsius_string }}</td>
+      <td>{{ experiment.temperature|celsius }}</td>
       <td>{{ experiment.date|date:"SHORT_DATE_FORMAT" }}</td>
       <td
         {% if experiment.is_junk %}

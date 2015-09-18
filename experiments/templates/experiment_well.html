@@ -31,7 +31,7 @@ Experiment {{ experiment.id }}, Well {{ well }}
   {% endif %}
 
   <span>
-    Temperature: {{ experiment.temperature|get_celsius_string }}
+    Temperature: {{ experiment.temperature|celsius }}
     ({% get_screen_type experiment.temperature experiment.worm_strain %})
   </span>
 

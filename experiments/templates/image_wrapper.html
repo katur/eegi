@@ -8,7 +8,7 @@
     <span class="image-title">
       Experiment {{ experiment.id }},
       well {{ well }},
-      {{ experiment.temperature|get_celsius_string }}
+      {{ experiment.temperature|celsius }}
 
       (<a href="{% url 'experiment_well_url' experiment.id well %}">
         more info</a>)
