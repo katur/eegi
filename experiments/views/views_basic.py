@@ -113,10 +113,28 @@ def experiments_grid(request, screen_stage):
     return render(request, 'experiments_grid.html', context)
 
 
+def experiments_vertical(request, ids):
+    """Render the page to view vertical images of one or more experiments."""
+    ids = ids.split(',')
+    experiments = []
+    for id in ids:
+        experiment = get_object_or_404(Experiment, pk=id)
+        experiment.library_wells = LibraryWell.objects.filter(
+            plate=experiment.library_plate).order_by('well')
+        experiments.append(experiment)
+
+    context = {
+        'experiments': experiments,
+
+        # Default to thumbnail
+        'mode': request.GET.get('mode', 'thumbnail')
+    }
+
+    return render(request, 'experiments_vertical.html', context)
+
+
 def experiment(request, id):
-    """Render the page to see the images and information for a particular
-    experiment.
-    """
+    """Render the page to see a particular experiment plate."""
     experiment = get_object_or_404(Experiment, pk=id)
     experiment.worm_strain.url = experiment.worm_strain.get_url(request)
 
@@ -127,51 +145,24 @@ def experiment(request, id):
     for library_well in library_wells:
         library_well.row = library_well.get_row()
 
-    # Default to thumbanil if GET['mode'] not set
-    mode = request.GET.get('mode', 'thumbnail')
-
     context = {
         'experiment': experiment,
         'library_wells': library_wells,
-        'mode': mode,
+
+        # Default to thumbnail
+        'mode': request.GET.get('mode', 'thumbnail'),
     }
 
     return render(request, 'experiment.html', context)
 
 
-def experiments_vertical(request, ids):
-    """Render the page to view the images of experiments vertically."""
-    ids = ids.split(',')
-    experiments = []
-    for id in ids:
-        experiment = get_object_or_404(Experiment, pk=id)
-        experiment.library_wells = LibraryWell.objects.filter(
-            plate=experiment.library_plate).order_by('well')
-        experiments.append(experiment)
-
-    # Default to thumbnail if GET['mode'] not set
-    mode = request.GET.get('mode', 'thumbnail')
-
-    context = {
-        'experiments': experiments,
-        'mode': mode,
-    }
-
-    return render(request, 'experiments_vertical.html', context)
-
-
 def experiment_well(request, id, well):
-    """Render the page to see the image and information for a particular
-    experiment well.
-    """
+    """Render the page to see a particular experiment well."""
     experiment = get_object_or_404(Experiment, pk=id)
     experiment.worm_strain.url = experiment.worm_strain.get_url(request)
 
     library_well = LibraryWell.objects.filter(
         plate=experiment.library_plate).filter(well=well)[0]
-
-    # Default to full size image if GET['mode'] not set
-    mode = request.GET.get('mode', 'big')
 
     devstar_url = experiment.get_devstar_image_url(well)
     devstar_available = http_response_ok(devstar_url)
@@ -180,8 +171,10 @@ def experiment_well(request, id, well):
         'experiment': experiment,
         'well': well,
         'library_well': library_well,
-        'mode': mode,
         'devstar_available': devstar_available,
+
+        # Default to full-size images
+        'mode': request.GET.get('mode', 'big')
     }
 
     return render(request, 'experiment_well.html', context)

@@ -11,7 +11,7 @@ from worms.models import WormStrain
 
 
 def double_knockdown(request, worm, clone, temperature):
-    """Render the page displaying the images of a double knockdown search."""
+    """Render the double knockdown page."""
     worm = get_object_or_404(WormStrain, pk=worm)
     clone = get_object_or_404(Clone, pk=clone)
     n2 = get_object_or_404(WormStrain, pk='N2')
@@ -21,7 +21,7 @@ def double_knockdown(request, worm, clone, temperature):
                              plate__screen_stage__gt=0)
                      .order_by('-plate__screen_stage'))
 
-    # Each element of 'data' is in format (as needed by the template):
+    # Each element of 'data' is in the format:
     #   (library_well, date, {
     #       'mutant_rnai': [experiments],
     #       'n2_rnai': [experiments],
@@ -53,7 +53,7 @@ def double_knockdown(request, worm, clone, temperature):
                        Q(date=date['date']),
                        Q(library_plate=library_well.plate)))
 
-            # For primary, L4440 is an entire separate plate
+            # For primary, L4440 is a separate plate
             if library_well.plate.screen_stage == 1:
                 mutant_l4440 = (Experiment.objects.filter(
                                 Q(is_junk=False),
@@ -68,7 +68,7 @@ def double_knockdown(request, worm, clone, temperature):
                             Q(date=date['date']),
                             Q(library_plate=l4440_plate)))
 
-            # For secondary, L4440 wells are in the same plates as the RNAi.
+            # For secondary, L4440 wells are in the same plates as RNAi
             else:
                 mutant_l4440 = mutant_rnai
                 n2_l4440 = n2_rnai
@@ -91,7 +91,7 @@ def double_knockdown(request, worm, clone, temperature):
 
 
 def rnai_knockdown(request, clone, temperature):
-    """Render the page displaying control worms (N2) with an RNAi knockdown."""
+    """Render the RNAi knockdown page."""
     clone = get_object_or_404(Clone, pk=clone)
     n2 = get_object_or_404(WormStrain, pk='N2')
     library_wells = (LibraryWell.objects
@@ -121,8 +121,7 @@ def rnai_knockdown(request, clone, temperature):
 
 
 def mutant_knockdown(request, worm, temperature):
-    """Render the page displaying control bacteria (L4440) with a mutant
-    knockdown."""
+    """Render the mutant knockdown page."""
     worm = get_object_or_404(WormStrain, pk=worm)
     plates = LibraryPlate.objects.filter(screen_stage__gt=0)
 
