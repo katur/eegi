@@ -1,6 +1,5 @@
 {% extends "base.html" %}
-{% load simple_tags %}
-{% load image_tags %}
+{% load extra_tags %}
 
 {% block body_id %}double-knockdown{% endblock %}
 
@@ -53,7 +52,7 @@
 
           <div class="carousel">
           {% for experiment in experiments %}
-            {% get_image_wrapper experiment rnai_well forloop.counter experiments|length %}
+            {% include "image_wrapper.html" with experiment=experiment library_well=rnai_well current=forloop.counter total=experiments|length %}
           {% endfor %}
           </div>
 
@@ -67,7 +66,7 @@
           {% for experiment in experiments %}
             {% with experiment.library_plate.get_l4440_wells as wells %}
             {% for well in wells %}
-              {% get_image_wrapper experiment well forloop.counter wells|length %}
+              {% include "image_wrapper.html" with experiment=experiment library_well=well current=forloop.counter total=wells|length %}
             {% endfor %}
             {% endwith %}
           {% endfor %}
@@ -88,7 +87,7 @@
 
           <div class="carousel">
           {% for experiment in experiments %}
-            {% get_image_wrapper experiment rnai_well forloop.counter experiments|length %}
+            {% include "image_wrapper.html" with experiment=experiment library_well=rnai_well current=forloop.counter total=experiments|length %}
           {% endfor %}
           </div>
 
@@ -102,7 +101,7 @@
           {% for experiment in experiments %}
             {% with experiment.library_plate.get_l4440_wells as wells %}
             {% for well in wells %}
-              {% get_image_wrapper experiment well forloop.counter wells|length %}
+              {% include "image_wrapper.html" with experiment=experiment library_well=well current=forloop.counter total=wells|length %}
             {% endfor %}
             {% endwith %}
           {% endfor %}

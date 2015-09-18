@@ -129,12 +129,11 @@ def experiment(request, id):
 
     # Default to thumbanil if GET['mode'] not set
     mode = request.GET.get('mode', 'thumbnail')
-    image_settings = {'mode': mode}
 
     context = {
         'experiment': experiment,
         'library_wells': library_wells,
-        'image_settings': image_settings,
+        'mode': mode,
     }
 
     return render(request, 'experiment.html', context)
@@ -152,11 +151,10 @@ def experiments_vertical(request, ids):
 
     # Default to thumbnail if GET['mode'] not set
     mode = request.GET.get('mode', 'thumbnail')
-    image_settings = {'mode': mode}
 
     context = {
         'experiments': experiments,
-        'image_settings': image_settings,
+        'mode': mode,
     }
 
     return render(request, 'experiments_vertical.html', context)
@@ -174,7 +172,6 @@ def experiment_well(request, id, well):
 
     # Default to full size image if GET['mode'] not set
     mode = request.GET.get('mode', 'big')
-    image_settings = {'mode': mode}
 
     devstar_url = experiment.get_devstar_image_url(well)
     devstar_available = http_response_ok(devstar_url)
@@ -183,7 +180,7 @@ def experiment_well(request, id, well):
         'experiment': experiment,
         'well': well,
         'library_well': library_well,
-        'image_settings': image_settings,
+        'mode': mode,
         'devstar_available': devstar_available,
     }
 

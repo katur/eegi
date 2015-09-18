@@ -1,6 +1,5 @@
 {% extends "base.html" %}
-{% load simple_tags %}
-{% load image_tags %}
+{% load extra_tags %}
 
 {% block body_id %}experiment-plate{% endblock %}
 {% block page_title %}Experiment {{ experiment.id }}{% endblock %}
@@ -55,7 +54,7 @@
   {% for row in library_wells_by_row %}
   <tr>
     {% for library_well in row.list %}
-      {% get_image_td experiment library_well image_settings %}
+      {% include "image_td.html" with experiment=experiment library_well=library_well mode=mode %}
     {% endfor %}
   </tr>
   {% endfor %}

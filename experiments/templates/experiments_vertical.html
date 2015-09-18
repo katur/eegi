@@ -1,6 +1,5 @@
 {% extends "base.html" %}
-{% load simple_tags %}
-{% load image_tags %}
+{% load extra_tags %}
 
 {% block body_id %}experiment-plate-vertical{% endblock %}
 {% block page_title %}
@@ -19,9 +18,7 @@
 
   <!-- Inner table is per-experiment -->
   <table class="grayscale plate-96 vertical-tiles
-      {% if image_settings|is_key_present:"mode" %}
-        mode-{{ image_settings.mode }}
-      {% endif %}">
+      mode-{{ mode }}">
     <thead>
       <tr>
         <th class="plate-info">
@@ -57,7 +54,7 @@
     <tbody>
       {% for library_well in experiment.library_wells %}
       <tr>
-        {% get_image_td experiment library_well image_settings %}
+        {% include "image_td.html" with experiment=experiment library_well=library_well mode=mode%}
       </tr>
       {% endfor %}
     </tbody>

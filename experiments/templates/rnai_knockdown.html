@@ -1,6 +1,5 @@
 {% extends "base.html" %}
-{% load simple_tags %}
-{% load image_tags %}
+{% load extra_tags %}
 
 {% block body_id %}rnai-knockdown{% endblock %}
 
@@ -25,7 +24,7 @@ with RNAi knockdown of {{ clone }}, at
         <td>
           <div class="carousel">
           {% for experiment in experiments %}
-            {% get_image_wrapper experiment library_well forloop.counter experiments|length %}
+            {% include "image_wrapper.html" with experiment=experiment library_well=library_well current=forloop.counter total=experiments|length %}
           {% endfor %}
           </div>
         </td>

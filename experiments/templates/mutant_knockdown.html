@@ -1,6 +1,5 @@
 {% extends "base.html" %}
-{% load simple_tags %}
-{% load image_tags %}
+{% load extra_tags %}
 
 {% block body_id %}mutant-knockdown{% endblock %}
 
@@ -26,7 +25,7 @@ with control L4440 bacteria, at
           <div class="carousel">
           {% for experiment in expdate.list %}
             {% for well in experiment.l4440_wells %}
-              {% get_image_wrapper experiment well 'n/a' 'n/a' %}
+              {% include "image_wrapper.html" with experiment=experiment library_well=well current='n/a' total='n/a' %}
             {% endfor %}
           {% endfor %}
           </div>

@@ -1,0 +1,44 @@
+{% load extra_tags %}
+
+{% with library_well.well as well %}
+
+<div class="individual-image">
+  <span class="image-topbar">
+
+    <span class="image-title">
+      Experiment {{ experiment.id }},
+      well {{ well }},
+      {{ experiment.temperature|get_celsius_string }}
+
+      (<a href="{% url 'experiment_well_url' experiment.id well %}">
+        more info</a>)
+    </span>
+
+    <span class="placement">{{ current }} of {{ total }}</span>
+  </span>
+
+  <div class="image-frame" data-src="{% get_image_url experiment well %}">
+
+    <a href="#" class="image-frame-navigation image-frame-previous">
+      <span>&laquo;</span>
+    </a>
+
+    <a href="#" class="image-frame-navigation image-frame-next">
+      <span>&raquo;</span>
+    </a>
+
+  </div>
+
+  <span class="image-caption">
+    <span class="image-scores">
+      {% if not library_well.is_control or experiment.worm_strain.is_control %}
+        {% get_score_summary experiment well %}
+      {% endif %}
+    </span>
+
+    <a class="devstar-link"
+          href="{% get_image_url experiment well 'devstar' %}">
+      View DevStaR image</a>
+</div>
+
+{% endwith %}

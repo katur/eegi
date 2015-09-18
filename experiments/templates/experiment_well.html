@@ -1,6 +1,5 @@
 {% extends "base.html" %}
-{% load simple_tags %}
-{% load image_tags %}
+{% load extra_tags %}
 
 {% block body_id %}experiment-well{% endblock %}
 
@@ -65,7 +64,7 @@ Experiment {{ experiment.id }}, Well {{ well }}
   </span>
 
   {% if devstar_available %}
-    {% if image_settings|get_value_or_none:"mode" != 'devstar' %}
+    {% if mode != 'devstar' %}
 
     <span>
       <a href="?mode=devstar">See DevStaR-labelled image</a>
@@ -83,6 +82,6 @@ Experiment {{ experiment.id }}, Well {{ well }}
 
 </div>
 
-{% get_image experiment well image_settings %}
+{% include "image.html" with experiment=experiment well=well mode=mode %}
 
 {% endblock %}

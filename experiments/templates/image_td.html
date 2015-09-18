@@ -1,0 +1,22 @@
+{% with library_well.well as well %}
+
+<td
+  {% if not library_well.intended_clone %}
+    class="empty-well"
+  {% endif %}
+  >
+
+  <div class="well-title">
+    {{ well }}
+
+    <span class="parenthetical">({{ library_well.get_tile }})</span>
+  </div>
+
+  <a href="{% url 'experiment_well_url' experiment.id well %}">
+    {% include "image.html" with experiment=experiment well=well mode=mode %}
+  </a>
+
+  <div class="well-caption">{{ library_well.intended_clone }}</div>
+</td>
+
+{% endwith %}
