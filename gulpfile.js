@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var util = require('gulp-util');
+var plumber = require('gulp-plumber');
 var sass = require('gulp-ruby-sass');
 var coffee = require('gulp-coffee');
 
@@ -23,6 +24,7 @@ gulp.task('compileSass', function() {
 
 gulp.task('compileCoffee', function() {
   return gulp.src(coffeeFiles)
+    .pipe(plumber())
     .pipe(coffee().on('error', util.log))
     .pipe(gulp.dest(jsDir));
 });
