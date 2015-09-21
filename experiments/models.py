@@ -89,7 +89,7 @@ class Experiment(models.Model):
         return url
 
     def get_manual_scores(self, well=None):
-        """Get all scores for this experiment.
+        """Get all Manual scores for this experiment.
 
         Defaults to returning all scores for the plate.
         Optionally specify a well to limit to the scores for a
@@ -105,6 +105,22 @@ class Experiment(models.Model):
 
         return scores
 
+    def get_devstar_scores(self, well=None):
+        """Get all DevStaR scores for this experiment.
+
+        Defaults to returning all scores for the plate.
+        Optionally specify a well to limit to the scores for a
+        particular well.
+
+        """
+        if well:
+            scores = (DevstarScore.objects
+                      .filter(Q(experiment=self), Q(well=well)))
+        else:
+            scores = DevstarScore.objects.filter(experiment=self)
+
+        return scores
+
     def is_manually_scored(self, well=None):
         """Determine whether an experiment was manually scored.
 
@@ -114,6 +130,19 @@ class Experiment(models.Model):
 
         """
         if self.get_manual_scores(well=well):
+            return True
+        else:
+            return False
+
+    def is_devstar_scored(self, well=None):
+        """Determine whether an experiment was scored by DevStaR.
+
+        Defaults to checking if any well in the plate was scored.
+        Optionally specify a well to get whether a particular well
+        was scored.
+
+        """
+        if self.get_devstar_scores(well=well):
             return True
         else:
             return False
