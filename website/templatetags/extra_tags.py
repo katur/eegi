@@ -107,14 +107,14 @@ def get_image_url(experiment, well, mode=None):
 
 
 @register.simple_tag
-def get_score_summary(experiment, well):
+def get_manual_score_summary(experiment, well):
     """Get a string summarizing the scores for this experiment.
 
     Groups such that scores by different scorers, and scores made at
     different timepoints, can be distinguished.
 
     """
-    scores = experiment.get_scores(well)
+    scores = experiment.get_manual_scores(well)
     d = {}
     for score in scores:
         scorer = score.scorer
@@ -138,6 +138,6 @@ def get_score_summary(experiment, well):
 
 
 @register.assignment_tag
-def is_scored(experiment, well):
+def is_manually_scored(experiment, well):
     """Determine whether an experiment was scored at position well."""
-    return experiment.is_scored(well)
+    return experiment.is_manually_scored(well)

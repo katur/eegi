@@ -88,7 +88,7 @@ class Experiment(models.Model):
         url = string.replace(url, '.bmp', 'res.png')
         return url
 
-    def get_scores(self, well=None):
+    def get_manual_scores(self, well=None):
         """Get all scores for this experiment.
 
         Defaults to returning all scores for the plate.
@@ -105,15 +105,15 @@ class Experiment(models.Model):
 
         return scores
 
-    def is_scored(self, well=None):
-        """Determine whether an experiment was scored.
+    def is_manually_scored(self, well=None):
+        """Determine whether an experiment was manually scored.
 
         Defaults to checking if any well in the plate was scored.
         Optionally specify a well to get whether a particular well
         was scored.
 
         """
-        if self.get_scores(well=well):
+        if self.get_manual_scores(well=well):
             return True
         else:
             return False
