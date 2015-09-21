@@ -57,9 +57,9 @@ class Experiment(models.Model):
         return str(self.id)
 
     def get_image_url(self, well):
-        """Get the url of an experiment image.
+        """Get the image url for this experiment, at position well.
 
-        Accepts an Experiment object, and well as a string.
+        well should be a string.
 
         """
         tile = well_to_tile(well)
@@ -67,9 +67,9 @@ class Experiment(models.Model):
         return url
 
     def get_thumbnail_url(self, well):
-        """Get the url of an experiment thumbnail image.
+        """Get the thumbnail image url for this experiment, at position well.
 
-        Accepts an Experiment object, and well as a string.
+        well should be a string.
 
         """
         tile = well_to_tile(well)
@@ -78,9 +78,9 @@ class Experiment(models.Model):
         return url
 
     def get_devstar_image_url(self, well):
-        """Get the url of a DevStaR output image.
+        """Get the DevStaR image url for this experiment, at position well.
 
-        Accepts an Experiment object, and well as a string.
+        well should be a string.
 
         """
         tile = well_to_tile(well)
@@ -91,8 +91,9 @@ class Experiment(models.Model):
     def get_scores(self, well=None):
         """Get all scores for this experiment.
 
-        Defaults to all scores for the entire plate, or specify
-        well to get the scores for a particular well.
+        Defaults to returning all scores for the plate.
+        Optionally specify a well to limit to the scores for a
+        particular well.
 
         """
         if well:
@@ -105,10 +106,11 @@ class Experiment(models.Model):
         return scores
 
     def is_scored(self, well=None):
-        """Determine whether an experiment has scores.
+        """Determine whether an experiment was scored.
 
-        Defaults to checking if any well was scored, or specify well
-        to get whether a particular well was scored.
+        Defaults to checking if any well in the plate was scored.
+        Optionally specify a well to get whether a particular well
+        was scored.
 
         """
         if self.get_scores(well=well):

@@ -139,4 +139,5 @@ def get_score_summary(experiment, well):
 
 @register.assignment_tag
 def is_scored(experiment, well):
+    """Determine whether an experiment was scored at position well."""
     return experiment.is_scored(well)
