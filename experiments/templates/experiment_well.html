@@ -10,17 +10,6 @@ Experiment {{ experiment.id }}, Well {{ well }}
 {% block content %}
 <div class="cleared-spaced-spans">
   <span>
-    Library plate:
-    <a href="{% url 'library_plate_url' experiment.library_plate.id %}">
-    {{ experiment.library_plate }}
-    </a>
-  </span>
-
-  <span>
-    Intended RNAi Clone: {{ library_well.intended_clone}}
-  </span>
-
-  <span>
     Worm strain:
     <a href="{{ experiment.worm_strain.url }}">
       {{ experiment.worm_strain }}</a>
@@ -35,6 +24,13 @@ Experiment {{ experiment.id }}, Well {{ well }}
     ({% get_screen_type experiment.temperature experiment.worm_strain %})
   </span>
 
+  <span>
+    Library plate:
+    <a href="{% url 'library_plate_url' experiment.library_plate.id %}">
+    {{ experiment.library_plate }}
+    </a>
+  </span>
+
   <span>Date: {{ experiment.date|date:"SHORT_DATE_FORMAT" }}</span>
 
   {% if experiment.is_junk %}
@@ -45,6 +41,10 @@ Experiment {{ experiment.id }}, Well {{ well }}
   <span>Comment: {{ experiment.comment }}</span>
   {% endif %}
 
+  <span>
+    Intended RNAi Clone: {{ library_well.intended_clone}}
+  </span>
+
   <span>Scores:
     {% is_scored experiment well as scored %}
     {% if scored %}
@@ -52,20 +52,11 @@ Experiment {{ experiment.id }}, Well {{ well }}
     {% else %}
       Not scored
     {% endif %}
-</span>
-
-  {% if library_well.intended_clone and not library_well.intended_clone.is_control and not experiment.worm_strain.is_control %}
-
-  <span>
-    <a href="{% url 'double_knockdown_url' experiment.worm_strain.id library_well.intended_clone.id experiment.temperature %}">
-      See with controls and all replicates.</a>
   </span>
-
-  {% endif %}
 
   <span>
     <a href="{% url 'experiment_url' experiment.id %}">
-      See entire experiment plate.</a>
+      See entire experiment plate</a>
   </span>
 
   {% if devstar_available %}
@@ -84,6 +75,13 @@ Experiment {{ experiment.id }}, Well {{ well }}
     </span>
 
     {% endif %}
+  {% endif %}
+
+  {% if library_well.intended_clone and not library_well.intended_clone.is_control and not experiment.worm_strain.is_control %}
+  <span>
+    <a href="{% url 'double_knockdown_url' experiment.worm_strain.id library_well.intended_clone.id experiment.temperature %}">
+      See all replicates and controls</a>
+  </span>
   {% endif %}
 
 </div>

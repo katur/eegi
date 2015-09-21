@@ -17,14 +17,15 @@
   {% endif %}
 
   <span>
+    Temperature: {{ experiment.temperature|celsius }}
+    ({% get_screen_type experiment.temperature experiment.worm_strain %})
+  </span>
+
+  <span>
     Library plate:
     <a href="{% url 'library_plate_url' experiment.library_plate.id %}">
     {{ experiment.library_plate }}
     </a>
-  </span>
-
-  <span>
-    Temperature: {{ experiment.temperature|celsius }}
   </span>
 
   <span>Date: {{ experiment.date|date:"SHORT_DATE_FORMAT" }}</span>
@@ -39,13 +40,13 @@
 
   <span>
     <a href="{% url 'experiments_vertical_url' experiment.id %}">
-      See vertical view of thumbnails</a>
+      See vertical view: thumbnails</a>
     <br>
     <a href="{% url 'experiments_vertical_url' experiment.id %}?mode=big">
-      See vertical view of full-size images</a>
+      See vertical view: full-size images</a>
     <br>
     <a href="{% url 'experiments_vertical_url' experiment.id %}?mode=devstar">
-      See vertical view of DevStaR images</a>
+      See vertical view: DevStaR images</a>
   </span>
 </div>
 
