@@ -6,37 +6,7 @@
 
 {% block content %}
 <div class="cleared-spaced-spans">
-  <span>
-    Worm strain:
-    <a href="{{ experiment.worm_strain.url }}">
-      {{ experiment.worm_strain }}</a>
-  </span>
-
-  {% if experiment.worm_strain.genotype %}
-    <span>Worm genotype: {{ experiment.worm_strain.genotype }}</span>
-  {% endif %}
-
-  <span>
-    Temperature: {{ experiment.temperature|celsius }}
-    ({% get_screen_type experiment.temperature experiment.worm_strain %})
-  </span>
-
-  <span>
-    Library plate:
-    <a href="{% url 'library_plate_url' experiment.library_plate.id %}">
-    {{ experiment.library_plate }}
-    </a>
-  </span>
-
-  <span>Date: {{ experiment.date|date:"SHORT_DATE_FORMAT" }}</span>
-
-  {% if experiment.is_junk %}
-  <span class="error-message">JUNK</span>
-  {% endif %}
-
-  {% if experiment.comment %}
-    <span>Comment: {{ experiment.comment }}</span>
-  {% endif %}
+  {% include "experiment_info.html" with experiment=experiment %}
 
   <span>
     <a href="{% url 'experiments_vertical_url' experiment.id %}">
