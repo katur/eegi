@@ -45,9 +45,14 @@ Experiment {{ experiment.id }}, Well {{ well }}
   <span>Comment: {{ experiment.comment }}</span>
   {% endif %}
 
-  {% if experiment.score_summary %}
-  <span>Scores: {{ experiment.score_summary }}</span>
-  {% endif %}
+  <span>Scores:
+    {% is_scored experiment well as scored %}
+    {% if scored %}
+      {% get_score_summary experiment well %}
+    {% else %}
+      Not scored
+    {% endif %}
+</span>
 
   {% if library_well.intended_clone and not library_well.intended_clone.is_control and not experiment.worm_strain.is_control %}
 
@@ -67,7 +72,8 @@ Experiment {{ experiment.id }}, Well {{ well }}
     {% if mode != 'devstar' %}
 
     <span>
-      <a href="?mode=devstar">See DevStaR-labelled image</a>
+      <a href="?mode=devstar">
+        See DevStaR-labelled image</a>
     </span>
 
     {% else %}

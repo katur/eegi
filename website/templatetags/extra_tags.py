@@ -135,3 +135,8 @@ def get_score_summary(experiment, well):
         people.append(output)
 
     return '; '.join(str(item) for item in people)
+
+
+@register.assignment_tag
+def is_scored(experiment, well):
+    return experiment.is_scored(well)

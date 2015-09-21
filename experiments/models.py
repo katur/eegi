@@ -104,6 +104,18 @@ class Experiment(models.Model):
 
         return scores
 
+    def is_scored(self, well=None):
+        """Determine whether an experiment has scores.
+
+        Defaults to checking if any well was scored, or specify well
+        to get whether a particular well was scored.
+
+        """
+        if self.get_scores(well=well):
+            return True
+        else:
+            return False
+
 
 class ManualScoreCode(models.Model):
     """A class of score that could be assigned to an image by a human."""
