@@ -33,12 +33,8 @@
     <span class="image-scores">
       {{ experiment|get_manual_score_summary:well }}
       <br>
-      {{ experiment|get_devstar_score_summary:well }}
+      DevStaR: {{ experiment|get_devstar_score_summary:well }}
     </span>
-
-    <a class="devstar-link"
-          href="{% get_image_url experiment well 'devstar' %}">
-      View DevStaR image</a>
 </div>
 
 {% endwith %}
