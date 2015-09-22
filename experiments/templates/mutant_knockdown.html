@@ -24,8 +24,8 @@ with control L4440 bacteria, at
         <td>
           <div class="carousel">
           {% for experiment in expdate.list %}
-            {% for well in experiment.l4440_wells %}
-              {% include "image_wrapper.html" with experiment=experiment library_well=well current='n/a' total='n/a' %}
+            {% for library_well in experiment.l4440_wells %}
+              {% include "image_wrapper.html" with current='n/a' total='n/a' %}
             {% endfor %}
           {% endfor %}
           </div>

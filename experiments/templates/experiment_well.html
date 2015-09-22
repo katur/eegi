@@ -9,8 +9,8 @@ Experiment {{ experiment.id }}, Well {{ well }}
 
 {% block content %}
 <div class="cleared-spaced-spans">
-  {% include "experiment_plate_info.html" with experiment=experiment %}
-  {% include "experiment_well_info.html" with experiment=experiment well=well library_well=library_well %}
+  {% include "experiment_plate_info.html" %}
+  {% include "experiment_well_info.html" %}
 
   <span>
     <a href="{% url 'experiment_plate_url' experiment.id %}">
@@ -41,6 +41,6 @@ Experiment {{ experiment.id }}, Well {{ well }}
 
 </div>
 
-{% include "image.html" with experiment=experiment well=well mode=mode %}
+{% include "image.html" %}
 
 {% endblock %}

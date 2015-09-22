@@ -1,4 +1,4 @@
-{% with library_well.well as well %}
+{% with well=library_well.well %}
 
 <td
   {% if not library_well.intended_clone %}
@@ -13,7 +13,7 @@
   </div>
 
   <a href="{% url 'experiment_well_url' experiment.id well %}">
-    {% include "image.html" with experiment=experiment well=well mode=mode %}
+    {% include "image.html" %}
   </a>
 
   <div class="well-caption">{{ library_well.intended_clone }}</div>

@@ -48,26 +48,33 @@
 
       <tr>
         <td>
-          {% with experiments|get_value:"mutant_rnai" as experiments %}
+
+          {% with experiments=experiments|get_value:"mutant_rnai" %}
+          {% with library_well=rnai_well total=experiments|length %}
 
           <div class="carousel">
           {% for experiment in experiments %}
-            {% include "image_wrapper.html" with experiment=experiment library_well=rnai_well current=forloop.counter total=experiments|length %}
+            {% include "image_wrapper.html" with current=forloop.counter %}
           {% endfor %}
           </div>
 
           {% endwith %}
+          {% endwith %}
         </td>
 
         <td>
-          {% with experiments|get_value:"mutant_l4440" as experiments %}
+          {% with experiments=experiments|get_value:"mutant_l4440" %}
 
           <div class="carousel">
           {% for experiment in experiments %}
-            {% with experiment.library_plate.get_l4440_wells as wells %}
-            {% for well in wells %}
-              {% include "image_wrapper.html" with experiment=experiment library_well=well current=forloop.counter total=wells|length %}
+            {% with library_wells=experiment.library_plate.get_l4440_wells %}
+            {% with total=library_wells|length %}
+
+            {% for library_well in library_wells %}
+              {% include "image_wrapper.html" with current=forloop.counter %}
             {% endfor %}
+
+            {% endwith %}
             {% endwith %}
           {% endfor %}
           </div>
@@ -83,26 +90,30 @@
 
       <tr>
         <td>
-          {% with experiments|get_value:"n2_rnai" as experiments %}
+          {% with experiments=experiments|get_value:"n2_rnai" %}
+          {% with library_well=rnai_well total=experiments|length %}
 
           <div class="carousel">
           {% for experiment in experiments %}
-            {% include "image_wrapper.html" with experiment=experiment library_well=rnai_well current=forloop.counter total=experiments|length %}
+            {% include "image_wrapper.html" with current=forloop.counter %}
           {% endfor %}
           </div>
 
           {% endwith %}
+          {% endwith %}
         </td>
 
         <td>
-          {% with experiments|get_value:"n2_l4440" as experiments %}
+          {% with experiments=experiments|get_value:"n2_l4440" %}
 
           <div class="carousel">
           {% for experiment in experiments %}
-            {% with experiment.library_plate.get_l4440_wells as wells %}
-            {% for well in wells %}
-              {% include "image_wrapper.html" with experiment=experiment library_well=well current=forloop.counter total=wells|length %}
+            {% with library_wells=experiment.library_plate.get_l4440_wells %}
+            {% with total=library_wells|length %}
+            {% for library_well in library_wells %}
+              {% include "image_wrapper.html" with current=forloop.counter %}
             {% endfor %}
+            {% endwith %}
             {% endwith %}
           {% endfor %}
           </div>

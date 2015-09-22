@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="cleared-spaced-spans">
-  {% include "experiment_plate_info.html" with experiment=experiment %}
+  {% include "experiment_plate_info.html" %}
 
   <span>
     <a href="{% url 'experiment_plates_vertical_url' experiment.id %}">
@@ -25,7 +25,7 @@
   {% for row in library_wells_by_row %}
   <tr>
     {% for library_well in row.list %}
-      {% include "image_td.html" with experiment=experiment library_well=library_well mode=mode %}
+      {% include "image_td.html" %}
     {% endfor %}
   </tr>
   {% endfor %}
