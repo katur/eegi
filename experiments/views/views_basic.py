@@ -14,8 +14,8 @@ from worms.models import WormStrain
 EXPERIMENTS_PER_PAGE = 100
 
 
-def experiments(request, context=None):
-    """Render the page to search for experiments."""
+def experiment_plates(request, context=None):
+    """Render the page to search for experiment plates."""
     total_results = None
     display_experiments = None
     link_to_vertical = None
@@ -45,8 +45,8 @@ def experiments(request, context=None):
                     ids = experiments.values_list('id')
                     ids = (str(i[0]) for i in ids)
                     id_string = ','.join(ids)
-                    link_to_vertical = reverse('experiments_vertical_url',
-                                               args=[id_string])
+                    link_to_vertical = reverse(
+                        'experiment_plates_vertical_url', args=[id_string])
 
                 paginator = Paginator(experiments, EXPERIMENTS_PER_PAGE)
                 page = request.GET.get('page')
@@ -67,10 +67,10 @@ def experiments(request, context=None):
         'link_to_vertical': link_to_vertical,
     }
 
-    return render(request, 'experiments.html', context)
+    return render(request, 'experiment_plates.html', context)
 
 
-def experiments_grid(request, screen_stage):
+def experiment_plates_grid(request, screen_stage):
     """Render the page showing all experiments as a grid."""
     worms = WormStrain.objects.all()
     plates = LibraryPlate.objects.filter(screen_stage=screen_stage)
@@ -110,10 +110,10 @@ def experiments_grid(request, screen_stage):
         'e': e,
     }
 
-    return render(request, 'experiments_grid.html', context)
+    return render(request, 'experiment_plates_grid.html', context)
 
 
-def experiments_vertical(request, ids):
+def experiment_plates_vertical(request, ids):
     """Render the page to view vertical images of one or more experiments."""
     ids = ids.split(',')
     experiments = []
@@ -130,10 +130,10 @@ def experiments_vertical(request, ids):
         'mode': request.GET.get('mode', 'thumbnail')
     }
 
-    return render(request, 'experiments_vertical.html', context)
+    return render(request, 'experiment_plates_vertical.html', context)
 
 
-def experiment(request, id):
+def experiment_plate(request, id):
     """Render the page to see a particular experiment plate."""
     experiment = get_object_or_404(Experiment, pk=id)
     experiment.worm_strain.url = experiment.worm_strain.get_url(request)
@@ -153,7 +153,7 @@ def experiment(request, id):
         'mode': request.GET.get('mode', 'thumbnail'),
     }
 
-    return render(request, 'experiment.html', context)
+    return render(request, 'experiment_plate.html', context)
 
 
 def experiment_well(request, id, well):

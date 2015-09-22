@@ -6,16 +6,16 @@
 
 {% block content %}
 <div class="cleared-spaced-spans">
-  {% include "experiment_info.html" with experiment=experiment %}
+  {% include "experiment_plate_info.html" with experiment=experiment %}
 
   <span>
-    <a href="{% url 'experiments_vertical_url' experiment.id %}">
+    <a href="{% url 'experiment_plates_vertical_url' experiment.id %}">
       See vertical view: thumbnails</a>
     <br>
-    <a href="{% url 'experiments_vertical_url' experiment.id %}?mode=big">
+    <a href="{% url 'experiment_plates_vertical_url' experiment.id %}?mode=big">
       See vertical view: full-size images</a>
     <br>
-    <a href="{% url 'experiments_vertical_url' experiment.id %}?mode=devstar">
+    <a href="{% url 'experiment_plates_vertical_url' experiment.id %}?mode=devstar">
       See vertical view: DevStaR images</a>
   </span>
 </div>

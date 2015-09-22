@@ -7,11 +7,11 @@
 {% block content %}
 
 <h4>Browse all experiments in grid format</h4>
-<a href="{% url 'experiments_grid_url' 1 %}">
+<a href="{% url 'experiment_plates_grid_url' 1 %}">
   Primary screen (non-junk, official temps only)</a>
 <br>
 <br>
-<a href="{% url 'experiments_grid_url' 2 %}">
+<a href="{% url 'experiment_plates_grid_url' 2 %}">
   Secondary screen (non-junk, official temps only)</a>
 
 <hr>
@@ -96,7 +96,7 @@
     {% for experiment in display_experiments %}
     <tr>
       <td>
-        <a href="{% url 'experiment_url' experiment.id %}">
+        <a href="{% url 'experiment_plate_url' experiment.id %}">
           {{ experiment.id }}</a>
       </td>
       <td>{{ experiment.worm_strain }}</td>
