@@ -351,29 +351,29 @@ form table th, form table td {
 #library-plates #results-header, #library-plates table {
   width: 50%; }
 
-#experiments hr {
+#experiment-plates hr {
   margin: 40px 0; }
-#experiments #experiment-filter-form {
+#experiment-plates #experiment-filter-form {
   margin-top: 20px;
   margin-bottom: 40px; }
-#experiments #experiment-results {
+#experiment-plates #experiment-results {
   width: 100%; }
-#experiments .vertical-links {
+#experiment-plates .vertical-links {
   margin-left: 80px; }
-  #experiments .vertical-links span, #experiments .vertical-links a {
+  #experiment-plates .vertical-links span, #experiment-plates .vertical-links a {
     margin-left: 40px; }
 
-#experiment-grid-table {
+#experiment-grid {
   font-size: 12px;
   table-layout: fixed;
   width: 100%; }
-  #experiment-grid-table td, #experiment-grid-table th {
+  #experiment-grid td, #experiment-grid th {
     width: 60px;
     overflow: hidden; }
-  #experiment-grid-table th {
+  #experiment-grid th {
     font-weight: bold; }
 
-#experiment-plate-vertical .plate-info span {
+#experiment-plates-vertical .plate-info span {
   float: left;
   clear: both;
   width: 100%;
