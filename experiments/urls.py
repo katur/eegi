@@ -15,6 +15,8 @@ urlpatterns = patterns(
         'experiment_well', name='experiment_well_url'),
     url(r'^single-knockdown$',
         'single_knockdown_search', name='single_knockdown_search_url'),
+    url(r'^rnai-knockdown/([^/]+)$',
+        'rnai_knockdown', name='rnai_knockdown_url'),
     url(r'^rnai-knockdown/([^/]+)/([^/]+)$',
         'rnai_knockdown', name='rnai_knockdown_url'),
     url(r'^mutant-knockdown/([^/]+)/([^/]+)$',

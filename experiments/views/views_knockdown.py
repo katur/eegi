@@ -90,7 +90,7 @@ def double_knockdown(request, worm, clone, temperature):
     return render(request, 'double_knockdown.html', context)
 
 
-def rnai_knockdown(request, clone, temperature):
+def rnai_knockdown(request, clone, temperature=None):
     """Render the RNAi knockdown page."""
     clone = get_object_or_404(Clone, pk=clone)
     n2 = get_object_or_404(WormStrain, pk='N2')
@@ -103,11 +103,15 @@ def rnai_knockdown(request, clone, temperature):
     #   (library_well, (experiments_ordered_by_id))
     data = []
     for library_well in library_wells:
-        experiments = (Experiment.objects
-                       .filter(is_junk=False, worm_strain=n2,
-                               temperature=temperature,
-                               library_plate=library_well.plate)
-                       .order_by('-date', 'id'))
+        experiments = Experiment.objects.filter(
+            is_junk=False, worm_strain=n2,
+            library_plate=library_well.plate)
+
+        if temperature:
+            experiments = experiments.filter(temperature=temperature)
+
+        experiments = experiments.order_by('-date', 'id')
+
         if experiments:
             data.append((library_well, experiments))
 
@@ -241,7 +245,10 @@ def single_knockdown_search(request):
                     except ObjectDoesNotExist:
                         raise ObjectDoesNotExist('No clone matches target.')
 
-                    return redirect(rnai_knockdown, clone, temperature)
+                    if temperature:
+                        return redirect(rnai_knockdown, clone, temperature)
+                    else:
+                        return redirect(rnai_knockdown, clone)
 
                 except Exception as e:
                     error = e.message

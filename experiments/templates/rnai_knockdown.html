@@ -5,8 +5,11 @@
 
 {% block page_title %}
 Control N2 worms
-with RNAi knockdown of {{ clone }}, at
-{{ temperature|celsius }}
+with RNAi knockdown of {{ clone }}
+{% if temperature %}
+  at {{ temperature|celsius }}
+{% endif %}
+
 {% endblock %}
 
 {% block content %}
