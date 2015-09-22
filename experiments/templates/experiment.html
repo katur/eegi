@@ -6,46 +6,17 @@
 
 {% block content %}
 <div class="cleared-spaced-spans">
-  <span>
-    Worm strain:
-    <a href="{{ experiment.worm_strain.url }}">
-      {{ experiment.worm_strain }}</a>
-  </span>
-
-  {% if experiment.worm_strain.genotype %}
-    <span>Worm genotype: {{ experiment.worm_strain.genotype }}</span>
-  {% endif %}
-
-  <span>
-    Library plate:
-    <a href="{% url 'library_plate_url' experiment.library_plate.id %}">
-    {{ experiment.library_plate }}
-    </a>
-  </span>
-
-  <span>
-    Temperature: {{ experiment.temperature|celsius }}
-  </span>
-
-  <span>Date: {{ experiment.date|date:"SHORT_DATE_FORMAT" }}</span>
-
-  {% if experiment.is_junk %}
-  <span class="error-message">JUNK</span>
-  {% endif %}
-
-  {% if experiment.comment %}
-    <span>Comment: {{ experiment.comment }}</span>
-  {% endif %}
+  {% include "experiment_info.html" with experiment=experiment %}
 
   <span>
     <a href="{% url 'experiments_vertical_url' experiment.id %}">
-      See vertical view of thumbnails</a>
+      See vertical view: thumbnails</a>
     <br>
     <a href="{% url 'experiments_vertical_url' experiment.id %}?mode=big">
-      See vertical view of full-size images</a>
+      See vertical view: full-size images</a>
     <br>
     <a href="{% url 'experiments_vertical_url' experiment.id %}?mode=devstar">
-      See vertical view of DevStaR images</a>
+      See vertical view: DevStaR images</a>
   </span>
 </div>
 

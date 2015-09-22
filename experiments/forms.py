@@ -35,9 +35,6 @@ class ExperimentFilterForm(forms.Form):
                                           label='Worm allele',
                                           help_text='e.g. dd5')
 
-    library_plate = forms.CharField(required=False,
-                                    help_text='e.g. II-3-B2')
-
     temperature = forms.DecimalField(required=False,
                                      label='Exact temp',
                                      help_text='number only')
@@ -49,6 +46,8 @@ class ExperimentFilterForm(forms.Form):
     temperature__lte = forms.DecimalField(required=False,
                                           label='Max temp',
                                           help_text='inclusive')
+    library_plate = forms.CharField(required=False,
+                                    help_text='e.g. II-3-B2')
 
     date = forms.DateField(required=False,
                            label='Date',

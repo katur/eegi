@@ -62,9 +62,9 @@ class Experiment(models.Model):
         return str(self.id)
 
     def get_image_url(self, well):
-        """Get the url of an experiment image.
+        """Get the image url for this experiment, at position well.
 
-        Accepts an Experiment object, and well as a string.
+        well should be a string.
 
         """
         tile = well_to_tile(well)
@@ -72,9 +72,9 @@ class Experiment(models.Model):
         return url
 
     def get_thumbnail_url(self, well):
-        """Get the url of an experiment thumbnail image.
+        """Get the thumbnail image url for this experiment, at position well.
 
-        Accepts an Experiment object, and well as a string.
+        well should be a string.
 
         """
         tile = well_to_tile(well)
@@ -83,9 +83,9 @@ class Experiment(models.Model):
         return url
 
     def get_devstar_image_url(self, well):
-        """Get the url of a DevStaR output image.
+        """Get the DevStaR image url for this experiment, at position well.
 
-        Accepts an Experiment object, and well as a string.
+        well should be a string.
 
         """
         tile = well_to_tile(well)
@@ -93,11 +93,12 @@ class Experiment(models.Model):
         url = string.replace(url, '.bmp', 'res.png')
         return url
 
-    def get_scores(self, well=None):
-        """Get all scores for this experiment.
+    def get_manual_scores(self, well=None):
+        """Get all Manual scores for this experiment.
 
-        Defaults to all scores for the entire plate, or specify
-        well to get the scores for a particular well.
+        Defaults to returning all scores for the plate.
+        Optionally specify a well to limit to the scores for a
+        particular well.
 
         """
         if well:
@@ -109,14 +110,44 @@ class Experiment(models.Model):
 
         return scores
 
-    def is_scored(self, well=None):
-        """Determine whether an experiment has scores.
+    def get_devstar_scores(self, well=None):
+        """Get all DevStaR scores for this experiment.
 
-        Defaults to checking if any well was scored, or specify well
-        to get whether a particular well was scored.
+        Defaults to returning all scores for the plate.
+        Optionally specify a well to limit to the scores for a
+        particular well.
 
         """
-        if self.get_scores(well=well):
+        if well:
+            scores = (DevstarScore.objects
+                      .filter(Q(experiment=self), Q(well=well)))
+        else:
+            scores = DevstarScore.objects.filter(experiment=self)
+
+        return scores
+
+    def is_manually_scored(self, well=None):
+        """Determine whether an experiment was manually scored.
+
+        Defaults to checking if any well in the plate was scored.
+        Optionally specify a well to get whether a particular well
+        was scored.
+
+        """
+        if self.get_manual_scores(well=well):
+            return True
+        else:
+            return False
+
+    def is_devstar_scored(self, well=None):
+        """Determine whether an experiment was scored by DevStaR.
+
+        Defaults to checking if any well in the plate was scored.
+        Optionally specify a well to get whether a particular well
+        was scored.
+
+        """
+        if self.get_devstar_scores(well=well):
             return True
         else:
             return False

@@ -1,0 +1,25 @@
+{% load extra_tags %}
+
+<span>
+  Intended RNAi clone: {{ library_well.intended_clone}}
+</span>
+
+<span>
+  Manual scores:
+  {% is_manually_scored experiment well as manually_scored %}
+  {% if manually_scored %}
+    {% get_manual_score_summary experiment well %}
+  {% else %}
+    Not manually scored
+  {% endif %}
+</span>
+
+<span>
+  DevStaR scores:
+  {% is_devstar_scored experiment well as devstar_scored %}
+  {% if devstar_scored %}
+    {% get_devstar_score_summary experiment well %}
+  {% else %}
+    Not scored by DevStaR
+  {% endif %}
+</span>

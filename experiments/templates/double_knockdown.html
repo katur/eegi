@@ -20,12 +20,12 @@
   </span>
 
   <span>
-    RNAi clone: {{ clone }}
+    Temperature: {{ temperature|celsius }}
+    ({% get_screen_type temperature worm %})
   </span>
 
   <span>
-    Temperature: {{ temperature|celsius }}
-    ({% get_screen_type temperature worm %})
+    Intended RNAi clone: {{ clone }}
   </span>
 </div>
 
