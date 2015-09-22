@@ -12,7 +12,7 @@
 
 <span>
   Temperature: {{ experiment.temperature|celsius }}
-  ({% get_screen_type experiment.temperature experiment.worm_strain %})
+  ({{ experiment.worm_strain|get_screen_type:experiment.temperature }})
 </span>
 
 <span>

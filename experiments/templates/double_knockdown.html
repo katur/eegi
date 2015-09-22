@@ -21,7 +21,7 @@
 
   <span>
     Temperature: {{ temperature|celsius }}
-    ({% get_screen_type temperature worm %})
+    ({{ worm|get_screen_type:temperature }})
   </span>
 
   <span>

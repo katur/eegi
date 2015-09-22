@@ -38,17 +38,6 @@ def get_range(value):
     return range(value)
 
 
-@register.simple_tag
-def url_replace(request, field, value):
-    """Set GET[field] to value in the url.
-
-    Keeps other GET key/value pairs intact.
-    """
-    query_dict = request.GET.copy()
-    query_dict[field] = value
-    return query_dict.urlencode()
-
-
 @register.filter(is_safe=True)
 def concatenate_ids_with_commas(l):
     """Get a string that is elements of l, separated by commas.
@@ -74,8 +63,8 @@ def celsius(temperature):
         return None
 
 
-@register.simple_tag
-def get_screen_type(temperature, strain):
+@register.filter
+def get_screen_type(strain, temperature):
     """Get a string describing if temperature is an official screening
     temperature for strain.
 
@@ -86,24 +75,6 @@ def get_screen_type(temperature, strain):
         return 'SUP screen temperature'
     else:
         return 'neither SUP nor ENH screen temperature'
-
-
-@register.simple_tag
-def get_image_url(experiment, well, mode=None):
-    """Get the url for an image.
-
-    Set mode to 'thumbnail' or 'devstar' for either of those image
-    types. Otherwise, returns the normal full-size image.
-
-    """
-    if mode == 'thumbnail':
-        image_url = experiment.get_thumbnail_url(well)
-    elif mode == 'devstar':
-        image_url = experiment.get_devstar_image_url(well)
-    else:
-        image_url = experiment.get_image_url(well)
-
-    return image_url
 
 
 @register.simple_tag
@@ -164,3 +135,32 @@ def is_manually_scored(experiment, well):
 def is_devstar_scored(experiment, well):
     """Determine whether an experiment well was scored by DevStaR."""
     return experiment.is_devstar_scored(well)
+
+
+@register.simple_tag
+def url_replace(request, field, value):
+    """Set GET[field] to value in the url.
+
+    Keeps other GET key/value pairs intact.
+    """
+    query_dict = request.GET.copy()
+    query_dict[field] = value
+    return query_dict.urlencode()
+
+
+@register.simple_tag
+def get_image_url(experiment, well, mode=None):
+    """Get the url for an image.
+
+    Set mode to 'thumbnail' or 'devstar' for either of those image
+    types. Otherwise, returns the normal full-size image.
+
+    """
+    if mode == 'thumbnail':
+        image_url = experiment.get_thumbnail_url(well)
+    elif mode == 'devstar':
+        image_url = experiment.get_devstar_image_url(well)
+    else:
+        image_url = experiment.get_image_url(well)
+
+    return image_url
