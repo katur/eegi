@@ -397,7 +397,6 @@ form table th, form table td {
   background: #eee; }
   .knockdown-results th {
     width: 50%;
-    max-width: 50%;
     padding: 1% 0;
     text-align: center; }
   .knockdown-results td {
