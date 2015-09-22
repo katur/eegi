@@ -1,11 +1,12 @@
+from collections import OrderedDict
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
-from django.utils.datastructures import SortedDict
 
 from clones.models import Clone
-from experiments.forms import (DoubleKnockdownForm, RNAiKnockdownForm,
-                               MutantKnockdownForm)
+from experiments.forms import (
+    DoubleKnockdownForm, RNAiKnockdownForm, MutantKnockdownForm)
 from experiments.models import Experiment
 from library.models import LibraryWell, LibraryPlate
 from worms.models import WormStrain
@@ -28,7 +29,7 @@ def double_knockdown(request, worm, clone, temperature):
     #       'mutant_l4440': [(exp, well), (exp, well), ...],
     #       'n2_l4440': [(exp, well), (exp, well), ...]
     # })
-    data = SortedDict()
+    data = OrderedDict()
 
     for library_well in library_wells:
         dates = (Experiment.objects
@@ -143,7 +144,7 @@ def mutant_knockdown(request, worm, temperature):
         for l4440_well in l4440_wells:
             data[date].append((experiment, l4440_well))
 
-    sorted_data = SortedDict()
+    sorted_data = OrderedDict()
     for key in sorted(data.keys(), reverse=True):
         sorted_data[key] = data[key]
 
@@ -166,7 +167,7 @@ def rnai_knockdown(request, clone, temperature=None):
                      .order_by('-plate__screen_stage', 'id'))
 
     # data[library_well] = [(exp, well), (exp, well), ...]
-    data = SortedDict()
+    data = OrderedDict()
 
     for library_well in library_wells:
         experiments = Experiment.objects.filter(
