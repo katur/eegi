@@ -384,29 +384,32 @@ form table th, form table td {
   width: 100%;
   max-width: 1300px; }
 
-.single-knockdown-section {
+.single-knockdown-search-section {
   float: left;
   clear: both;
   margin-bottom: 40px; }
 
-.double-knockdown-results {
+.knockdown-results {
   float: left;
   clear: both;
   width: 100%;
   margin-bottom: 160px;
   background: #eee; }
-  .double-knockdown-results th {
+  .knockdown-results th {
     width: 50%;
+    max-width: 50%;
     padding: 1% 0;
     text-align: center; }
-  .double-knockdown-results td {
+  .knockdown-results td {
     width: 46%;
     padding: 0 2%;
     vertical-align: top; }
-  .double-knockdown-results thead th {
+  .knockdown-results thead th {
     font-size: 20px; }
-  .double-knockdown-results tbody th {
+  .knockdown-results tbody th {
     padding-top: 3%;
     font-size: 18px; }
-  .double-knockdown-results .carousel {
+  .knockdown-results .carousel {
     float: left; }
+  .knockdown-results.single-column {
+    max-width: 1300px; }

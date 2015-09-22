@@ -9,12 +9,11 @@ with RNAi knockdown of {{ clone }}
 {% if temperature %}
   at {{ temperature|celsius }}
 {% endif %}
-
 {% endblock %}
 
 {% block content %}
 {% for library_well, values in data.items %}
-  <table class="double-knockdown-results grayscale">
+  <table class="knockdown-results single-column grayscale">
     <thead>
       <th>
         Clone located in plate {{ library_well.plate }},
