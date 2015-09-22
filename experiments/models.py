@@ -37,6 +37,11 @@ class Experiment(models.Model):
     and put at a specific temperature.
 
     """
+    SCREEN_STAGE_CHOICES = (
+        (1, 'Primary'),
+        (2, 'Secondary'),
+    )
+
     id = models.PositiveIntegerField(primary_key=True)
     worm_strain = models.ForeignKey(WormStrain)
     library_plate = models.ForeignKey(LibraryPlate)
