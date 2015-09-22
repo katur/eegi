@@ -22,14 +22,13 @@ def double_knockdown(request, worm, clone, temperature):
                              plate__screen_stage__gt=0)
                      .order_by('-plate__screen_stage'))
 
-    # Each element of 'data' is in the format:
-    #   (library_well, date, {
-    #       'mutant_rnai': [experiments],
-    #       'n2_rnai': [experiments],
-    #       'mutant_l4440': [experiments],
-    #       'n2_l4440': [experiments]
-    #   })
-    data = []
+    # data[(library_well, date)] = {
+    #       'mutant_rnai': [(exp, well), (exp, well), ...],
+    #       'n2_rnai': [(exp, well), (exp, well), ...],
+    #       'mutant_l4440': [(exp, well), (exp, well), ...],
+    #       'n2_l4440': [(exp, well), (exp, well), ...]
+    # })
+    data = SortedDict()
 
     for library_well in library_wells:
         dates = (Experiment.objects
@@ -41,45 +40,67 @@ def double_knockdown(request, worm, clone, temperature):
                  .values('date').distinct())
 
         for date in dates:
-            mutant_rnai = (Experiment.objects.filter(
-                           Q(is_junk=False),
-                           Q(worm_strain=worm),
-                           Q(temperature=temperature),
-                           Q(date=date['date']),
-                           Q(library_plate=library_well.plate)))
+            # Create dictionary to hold info for this library_well+date combo
+            d = {}
 
-            n2_rnai = (Experiment.objects.filter(
-                       Q(is_junk=False),
-                       Q(worm_strain=n2),
-                       Q(date=date['date']),
-                       Q(library_plate=library_well.plate)))
+            # Add mutant + RNAi experiments
+            mutant_rnai_exps = (
+                Experiment.objects.filter(
+                    Q(is_junk=False),
+                    Q(worm_strain=worm),
+                    Q(temperature=temperature),
+                    Q(date=date['date']),
+                    Q(library_plate=library_well.plate)))
 
-            # For primary, L4440 is a separate plate
+            d['mutant_rnai'] = [(e, library_well) for e in mutant_rnai_exps]
+
+            # Add N2 + RNAi experiments
+            n2_rnai_exps = (
+                Experiment.objects.filter(
+                    Q(is_junk=False),
+                    Q(worm_strain=n2),
+                    Q(date=date['date']),
+                    Q(library_plate=library_well.plate)))
+
+            d['n2_rnai'] = [(e, library_well) for e in n2_rnai_exps]
+
+            # For Primary, use separate L4440 plate
             if library_well.plate.screen_stage == 1:
-                mutant_l4440 = (Experiment.objects.filter(
-                                Q(is_junk=False),
-                                Q(worm_strain=worm),
-                                Q(temperature=temperature),
-                                Q(date=date['date']),
-                                Q(library_plate=l4440_plate)))
+                mutant_l4440_exps = (
+                    Experiment.objects.filter(
+                        Q(is_junk=False),
+                        Q(worm_strain=worm),
+                        Q(temperature=temperature),
+                        Q(date=date['date']),
+                        Q(library_plate=l4440_plate)))
 
-                n2_l4440 = (Experiment.objects.filter(
-                            Q(is_junk=False),
-                            Q(worm_strain=n2),
-                            Q(date=date['date']),
-                            Q(library_plate=l4440_plate)))
+                n2_l4440_exps = (
+                    Experiment.objects.filter(
+                        Q(is_junk=False),
+                        Q(worm_strain=n2),
+                        Q(date=date['date']),
+                        Q(library_plate=l4440_plate)))
 
-            # For secondary, L4440 wells are in the same plates as RNAi
+            # For SUP Secondary, use L4440 wells from same plates as RNAi
+            # TODO: will be different for ENH secondary
             else:
-                mutant_l4440 = mutant_rnai
-                n2_l4440 = n2_rnai
+                mutant_l4440_exps = mutant_rnai_exps
+                n2_l4440_exps = n2_rnai_exps
 
-            data.append((library_well, date['date'], {
-                'mutant_rnai': mutant_rnai,
-                'n2_rnai': n2_rnai,
-                'mutant_l4440': mutant_l4440,
-                'n2_l4440': n2_l4440,
-            }))
+            # Add mutant + L4440 experiments
+            d['mutant_l4440'] = []
+            for e in mutant_l4440_exps:
+                for w in e.library_plate.get_l4440_wells():
+                    d['mutant_l4440'].append((e, w))
+
+            # Add N2 + L4440 experiments
+            d['n2_l4440'] = []
+            for e in n2_l4440_exps:
+                for w in e.library_plate.get_l4440_wells():
+                    d['n2_l4440'].append((e, w))
+
+            # Add the finished dictionary to overall data
+            data[(library_well, date['date'])] = d
 
     context = {
         'worm': worm,
@@ -91,46 +112,12 @@ def double_knockdown(request, worm, clone, temperature):
     return render(request, 'double_knockdown.html', context)
 
 
-def rnai_knockdown(request, clone, temperature=None):
-    """Render the RNAi knockdown page."""
-    clone = get_object_or_404(Clone, pk=clone)
-    n2 = get_object_or_404(WormStrain, pk='N2')
-    library_wells = (LibraryWell.objects
-                     .filter(intended_clone=clone,
-                             plate__screen_stage__gt=0)
-                     .order_by('-plate__screen_stage', 'id'))
-
-    # data[library_well] = experiments
-    data = {}
-
-    for library_well in library_wells:
-        experiments = Experiment.objects.filter(
-            is_junk=False, worm_strain=n2,
-            library_plate=library_well.plate)
-
-        if temperature:
-            experiments = experiments.filter(temperature=temperature)
-
-        experiments = experiments.order_by('-date', '-id')
-
-        if experiments:
-            data[library_well] = experiments
-
-    context = {
-        'clone': clone,
-        'temperature': temperature,
-        'data': data,
-    }
-
-    return render(request, 'rnai_knockdown.html', context)
-
-
 def mutant_knockdown(request, worm, temperature):
     """Render the mutant knockdown page."""
     worm = get_object_or_404(WormStrain, pk=worm)
     plates = LibraryPlate.objects.filter(screen_stage__gt=0)
 
-    # data[date] = [(exp, library_well), (exp, library_well), ... ]
+    # data[date] = [(exp, well), (exp, well), ... ]
     data = {}
 
     for plate in plates:
@@ -162,6 +149,40 @@ def mutant_knockdown(request, worm, temperature):
     }
 
     return render(request, 'mutant_knockdown.html', context)
+
+
+def rnai_knockdown(request, clone, temperature=None):
+    """Render the RNAi knockdown page."""
+    clone = get_object_or_404(Clone, pk=clone)
+    n2 = get_object_or_404(WormStrain, pk='N2')
+    library_wells = (LibraryWell.objects
+                     .filter(intended_clone=clone,
+                             plate__screen_stage__gt=0)
+                     .order_by('-plate__screen_stage', 'id'))
+
+    # data[library_well] = [(exp, well), (exp, well), ...]
+    data = SortedDict()
+
+    for library_well in library_wells:
+        experiments = Experiment.objects.filter(
+            is_junk=False, worm_strain=n2,
+            library_plate=library_well.plate)
+
+        if temperature:
+            experiments = experiments.filter(temperature=temperature)
+
+        experiments = experiments.order_by('-date', '-id')
+
+        if experiments:
+            data[library_well] = [(e, library_well) for e in experiments]
+
+    context = {
+        'clone': clone,
+        'temperature': temperature,
+        'data': data,
+    }
+
+    return render(request, 'rnai_knockdown.html', context)
 
 
 def double_knockdown_search(request):
