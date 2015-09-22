@@ -8,7 +8,7 @@
   Manual scores:
   {% is_manually_scored experiment well as manually_scored %}
   {% if manually_scored %}
-    {% get_manual_score_summary experiment well %}
+    {{ experiment|get_manual_score_summary:well }}
   {% else %}
     Not manually scored
   {% endif %}

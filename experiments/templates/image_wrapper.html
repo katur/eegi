@@ -32,7 +32,7 @@
   <span class="image-caption">
     <span class="image-scores">
       {% if not library_well.is_control or experiment.worm_strain.is_control %}
-        {% get_manual_score_summary experiment well %}
+        {{ experiment|get_manual_score_summary:well }}
       {% endif %}
     </span>
 

@@ -77,7 +77,7 @@ def get_screen_type(strain, temperature):
         return 'neither SUP nor ENH screen temperature'
 
 
-@register.simple_tag
+@register.filter
 def get_manual_score_summary(experiment, well):
     """Get a string summarizing the scores for this experiment.
 
