@@ -13,7 +13,7 @@ with RNAi knockdown of {{ clone }}
 {% endblock %}
 
 {% block content %}
-{% for library_well, experiments in data %}
+{% for library_well, experiments in data.items %}
   <table class="double-knockdown-results grayscale">
     <thead>
       <th>

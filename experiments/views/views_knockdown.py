@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.datastructures import SortedDict
 
 from clones.models import Clone
 from experiments.forms import (DoubleKnockdownForm, RNAiKnockdownForm,
@@ -97,11 +98,11 @@ def rnai_knockdown(request, clone, temperature=None):
     library_wells = (LibraryWell.objects
                      .filter(intended_clone=clone,
                              plate__screen_stage__gt=0)
-                     .order_by('-plate__screen_stage'))
+                     .order_by('-plate__screen_stage', 'id'))
 
-    # Each element of 'data' is in format (as needed by the template):
-    #   (library_well, (experiments_ordered_by_id))
-    data = []
+    # data[library_well] = experiments
+    data = {}
+
     for library_well in library_wells:
         experiments = Experiment.objects.filter(
             is_junk=False, worm_strain=n2,
@@ -110,10 +111,10 @@ def rnai_knockdown(request, clone, temperature=None):
         if temperature:
             experiments = experiments.filter(temperature=temperature)
 
-        experiments = experiments.order_by('-date', 'id')
+        experiments = experiments.order_by('-date', '-id')
 
         if experiments:
-            data.append((library_well, experiments))
+            data[library_well] = experiments
 
     context = {
         'clone': clone,
@@ -129,33 +130,35 @@ def mutant_knockdown(request, worm, temperature):
     worm = get_object_or_404(WormStrain, pk=worm)
     plates = LibraryPlate.objects.filter(screen_stage__gt=0)
 
-    # Each element of 'data' is in format (as needed by the template):
-    #   (experiment, l4440_wells)
+    # data[date] = [(exp, library_well), (exp, library_well), ... ]
     data = {}
+
     for plate in plates:
         l4440_wells = plate.get_l4440_wells()
         if l4440_wells:
             experiments = (Experiment.objects
-                           .filter(is_junk=False, worm_strain=worm,
+                           .filter(is_junk=False,
+                                   worm_strain=worm,
                                    temperature=temperature,
                                    library_plate=plate)
-                           .order_by('date', 'id'))
+                           .order_by('id'))
 
             for experiment in experiments:
-                experiment.l4440_wells = l4440_wells
-                if experiment.date not in data:
-                    data[experiment.date] = []
-                data[experiment.date].append(experiment)
+                date = experiment.date
+                if date not in data:
+                    data[date] = []
 
-    ordered_data = []
-    for date in sorted(data):
-        for experiment in data[date]:
-            ordered_data.append(experiment)
+                for l4440_well in l4440_wells:
+                    data[date].append((experiment, l4440_well))
+
+    sorted_data = SortedDict()
+    for key in sorted(data.keys(), reverse=True):
+        sorted_data[key] = data[key]
 
     context = {
         'worm': worm,
         'temperature': temperature,
-        'data': ordered_data,
+        'data': sorted_data,
     }
 
     return render(request, 'mutant_knockdown.html', context)
