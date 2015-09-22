@@ -115,7 +115,8 @@ def double_knockdown(request, worm, clone, temperature):
 def mutant_knockdown(request, worm, temperature):
     """Render the mutant knockdown page."""
     worm = get_object_or_404(WormStrain, pk=worm)
-    plates = LibraryPlate.objects.filter(screen_stage__gt=0)
+    plates = LibraryPlate.objects.filter(
+        Q(screen_stage__gte=2) | Q(pk='L4440'))
 
     # data[date] = [(exp, well), (exp, well), ... ]
     data = {}
