@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 
 from experiments.models import Experiment
@@ -73,7 +74,8 @@ def experiment_plates(request, context=None):
 def experiment_plates_grid(request, screen_stage):
     """Render the page showing all experiments as a grid."""
     worms = WormStrain.objects.all()
-    plates = LibraryPlate.objects.filter(screen_stage=screen_stage)
+    plates = LibraryPlate.objects.filter(
+        Q(screen_stage=screen_stage) | Q(pk='L4440'))
     experiments = (Experiment.objects
                    .filter(screen_stage=screen_stage, is_junk=False)
                    .prefetch_related('library_plate', 'worm_strain'))
