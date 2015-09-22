@@ -31,9 +31,9 @@
 
   <span class="image-caption">
     <span class="image-scores">
-      {% if not library_well.is_control or experiment.worm_strain.is_control %}
-        {{ experiment|get_manual_score_summary:well }}
-      {% endif %}
+      {{ experiment|get_manual_score_summary:well }}
+      <br>
+      {{ experiment|get_devstar_score_summary:well }}
     </span>
 
     <a class="devstar-link"

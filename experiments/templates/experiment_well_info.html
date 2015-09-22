@@ -6,8 +6,7 @@
 
 <span>
   Manual scores:
-  {% is_manually_scored experiment well as manually_scored %}
-  {% if manually_scored %}
+  {% if experiment|is_manually_scored:well %}
     {{ experiment|get_manual_score_summary:well }}
   {% else %}
     Not manually scored
@@ -16,9 +15,8 @@
 
 <span>
   DevStaR scores:
-  {% is_devstar_scored experiment well as devstar_scored %}
-  {% if devstar_scored %}
-    {% get_devstar_score_summary experiment well %}
+  {% if experiment|is_devstar_scored:well %}
+    {{ experiment|get_devstar_score_summary:well }}
   {% else %}
     Not scored by DevStaR
   {% endif %}

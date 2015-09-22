@@ -108,16 +108,22 @@ def get_manual_score_summary(experiment, well):
     return '; '.join(str(item) for item in people)
 
 
-@register.simple_tag
+@register.filter
 def get_devstar_score_summary(experiment, well):
     scores = experiment.get_devstar_scores(well)
 
     output = []
 
     for score in scores:
-        o = '{} adults, {} larvae, {} embryos, {:.2f} survival'.format(
-            score.count_adult, score.count_larva, score.count_embryo,
-            score.survival)
+
+        o = '{} adults, {} larvae, {} embryos'.format(
+            score.count_adult, score.count_larva, score.count_embryo)
+
+        if isinstance(score.survival, float):
+            o += ', {:.2f} survival'.format(score.survival)
+        else:
+            o += ', {} survival'.format(score.survival)
+
         if score.is_bacteria_present:
             o += ', bacteria detected'
         output.append(o)
@@ -125,13 +131,13 @@ def get_devstar_score_summary(experiment, well):
     return '; '.join(str(item) for item in output)
 
 
-@register.assignment_tag
+@register.filter
 def is_manually_scored(experiment, well):
     """Determine whether an experiment well was manually scored."""
     return experiment.is_manually_scored(well)
 
 
-@register.assignment_tag
+@register.filter
 def is_devstar_scored(experiment, well):
     """Determine whether an experiment well was scored by DevStaR."""
     return experiment.is_devstar_scored(well)
