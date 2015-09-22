@@ -83,6 +83,8 @@ def double_knockdown(request, worm, clone, temperature):
 
             # For SUP Secondary, use L4440 wells from same plates as RNAi
             # TODO: will be different for ENH secondary
+            # TODO: formally decide that these are the applicable controls,
+            #   as opposed to all from the date.
             else:
                 mutant_l4440_exps = mutant_rnai_exps
                 n2_l4440_exps = n2_rnai_exps
@@ -115,29 +117,31 @@ def double_knockdown(request, worm, clone, temperature):
 def mutant_knockdown(request, worm, temperature):
     """Render the mutant knockdown page."""
     worm = get_object_or_404(WormStrain, pk=worm)
-    plates = LibraryPlate.objects.filter(
-        Q(screen_stage__gte=2) | Q(pk='L4440'))
+    l4440 = get_object_or_404(Clone, pk='L4440')
 
     # data[date] = [(exp, well), (exp, well), ... ]
     data = {}
 
-    for plate in plates:
-        l4440_wells = plate.get_l4440_wells()
-        if l4440_wells:
-            experiments = (Experiment.objects
-                           .filter(is_junk=False,
-                                   worm_strain=worm,
-                                   temperature=temperature,
-                                   library_plate=plate)
-                           .order_by('id'))
+    plates = (LibraryWell.objects.filter(intended_clone=l4440)
+              .order_by('plate').values('plate').distinct())
 
-            for experiment in experiments:
-                date = experiment.date
-                if date not in data:
-                    data[date] = []
+    experiments = (Experiment.objects
+                   .filter(is_junk=False,
+                           worm_strain=worm,
+                           temperature=temperature,
+                           library_plate__in=plates))
 
-                for l4440_well in l4440_wells:
-                    data[date].append((experiment, l4440_well))
+    for experiment in experiments:
+        l4440_wells = experiment.library_plate.get_l4440_wells()
+        if not l4440_wells:
+            continue
+
+        date = experiment.date
+        if date not in data:
+            data[date] = []
+
+        for l4440_well in l4440_wells:
+            data[date].append((experiment, l4440_well))
 
     sorted_data = SortedDict()
     for key in sorted(data.keys(), reverse=True):
