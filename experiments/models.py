@@ -199,7 +199,7 @@ class ManualScoreCode(models.Model):
 class ManualScore(models.Model):
     """A score that was assigned to a particular image by a human."""
     experiment = models.ForeignKey(Experiment)
-    well = models.CharField(max_length=3)
+    well = models.CharField(max_length=3, db_index=True)
     score_code = models.ForeignKey(ManualScoreCode)
     scorer = models.ForeignKey(User)
     timestamp = models.DateTimeField()
@@ -267,7 +267,7 @@ class DevstarScore(models.Model):
 
     """
     experiment = models.ForeignKey(Experiment)
-    well = models.CharField(max_length=3)
+    well = models.CharField(max_length=3, db_index=True)
 
     # TODO: consider adding db_index=True to some of these
     area_adult = models.IntegerField(null=True, blank=True,
