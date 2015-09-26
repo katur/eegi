@@ -34,7 +34,7 @@ def celsius(temperature):
 
 
 @register.filter
-def get_screen_type(strain, temperature):
+def get_screen_category(strain, temperature):
     """Get a string describing if temperature is an official screening
     temperature for strain.
 
