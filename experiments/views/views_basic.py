@@ -74,11 +74,13 @@ def experiment_plates(request, context=None):
 def experiment_plates_grid(request, screen_stage):
     """Render the page showing all experiments as a grid."""
     worms = WormStrain.objects.all()
-    plates = LibraryPlate.objects.filter(
-        Q(screen_stage=screen_stage) | Q(pk='L4440'))
     experiments = (Experiment.objects
                    .filter(screen_stage=screen_stage, is_junk=False)
-                   .prefetch_related('library_plate', 'worm_strain'))
+                   .select_related('library_plate', 'worm_strain'))
+
+    plates = (experiments.order_by('library_plate')
+              .values_list('library_plate', flat=True)
+              .distinct())
 
     header = []
     for worm in worms:
@@ -99,7 +101,7 @@ def experiment_plates_grid(request, screen_stage):
                 e[plate][worm][worm.restrictive_temperature] = []
 
     for experiment in experiments:
-        plate = experiment.library_plate
+        plate = experiment.library_plate.pk
         worm = experiment.worm_strain
         temp = experiment.temperature
 
