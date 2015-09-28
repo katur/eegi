@@ -2,7 +2,6 @@ from collections import OrderedDict
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
-from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 
 from experiments.models import Experiment

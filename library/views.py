@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
 
+from experiments.models import Experiment
 from library.models import LibraryPlate, LibraryWell
 
 
@@ -11,8 +12,13 @@ def library_plates(request):
     """Render the page listing all library plates."""
     screen_stage = request.GET.get('screen_stage')
     if screen_stage:
+        plate_pks = (Experiment.objects
+                     .filter(screen_stage=screen_stage)
+                     .order_by('library_plate')
+                     .values_list('library_plate', flat=True)
+                     .distinct())
         library_plates = sorted(LibraryPlate.objects.filter(
-            screen_stage=screen_stage))
+            pk__in=plate_pks))
     else:
         library_plates = sorted(LibraryPlate.objects.filter(
             screen_stage__gte=1))

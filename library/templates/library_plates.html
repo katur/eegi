@@ -46,7 +46,6 @@
   <thead>
     <tr>
       <th>Plate Name</th>
-      <th>Screen Stage</th>
       <th>Number of Wells</th>
     </tr>
   </thead>
@@ -58,7 +57,6 @@
         <a href="{% url 'library_plate_url' library_plate.id %}">
           {{ library_plate }}</a>
       </td>
-      <td>{{ library_plate.screen_stage }}</td>
       <td>{{ library_plate.number_of_wells }}</td>
     </tr>
     {% endfor %}
