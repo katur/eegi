@@ -12,6 +12,8 @@ var coffeeFiles = 'website/static/js/*.coffee';
 var jsDir = 'website/static/js/';
 
 gulp.task('default', function() {
+  gulp.run('compileSass')
+  gulp.run('compileCoffee')
   gulp.watch(sassFiles, ['compileSass']);
   gulp.watch(coffeeFiles, ['compileCoffee']);
 });
