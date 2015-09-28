@@ -13,6 +13,8 @@ from eegi.settings import IMG_PATH
 HELP = '''
 Copy a set of images from the server to a local directory.
 
+Currently works only for the full-size, original .bmp images.
+
 Input is a csv, including header row, in which each row
 is in format: experiment_id, well. For example:
 
@@ -48,9 +50,10 @@ class Command(BaseCommand):
 
         for experiment_id, well in reader:
             tile = well_to_tile(well)
-            input_image_url = '{}/{}/{}'.format(IMG_PATH, experiment_id, tile)
-            output_image_path = '{}/{}_{}'.format(output_dir, experiment_id,
-                                                  tile)
+            input_image_url = '{}/{}/{}.bmp'.format(IMG_PATH, experiment_id,
+                                                    tile)
+            output_image_path = '{}/{}_{}.bmp'.format(output_dir,
+                                                      experiment_id, tile)
             r = requests.get(input_image_url, stream=True)
             if r.status_code != 200:
                 raise CommandError('non-ok GET status for {}'

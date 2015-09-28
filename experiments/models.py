@@ -1,5 +1,4 @@
 from __future__ import division
-import string
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -61,36 +60,24 @@ class Experiment(models.Model):
     def __unicode__(self):
         return str(self.id)
 
-    def get_image_url(self, well):
+    def get_image_url(self, well, mode=None):
         """Get the image url for this experiment, at position well.
 
         well should be a string.
 
-        """
-        tile = well_to_tile(well)
-        url = '/'.join((IMG_PATH, str(self.id), tile))
-        return url
-
-    def get_thumbnail_url(self, well):
-        """Get the thumbnail image url for this experiment, at position well.
-
-        well should be a string.
+        Optionally supply mode='thumbnail' or mode='devstar'.
 
         """
         tile = well_to_tile(well)
-        url = '/'.join((THUMBNAIL_PATH, str(self.id), tile))
-        url = string.replace(url, 'bmp', 'jpg')
-        return url
-
-    def get_devstar_image_url(self, well):
-        """Get the DevStaR image url for this experiment, at position well.
-
-        well should be a string.
-
-        """
-        tile = well_to_tile(well)
-        url = '/'.join((DEVSTAR_PATH, str(self.id), tile))
-        url = string.replace(url, '.bmp', 'res.png')
+        if mode == 'thumbnail':
+            url = '/'.join((THUMBNAIL_PATH, str(self.id), tile))
+            url += '.jpg'
+        elif mode == 'devstar':
+            url = '/'.join((DEVSTAR_PATH, str(self.id), tile))
+            url += 'res.png'
+        else:
+            url = '/'.join((IMG_PATH, str(self.id), tile))
+            url += '.bmp'
         return url
 
     def get_manual_scores(self, well=None):

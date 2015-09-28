@@ -84,7 +84,7 @@ class Command(BaseCommand):
             source_well = row[1].strip()
             destination_plate_name = row[2].strip()
             destination_well = row[3].strip()
-            destination_tile = well_to_tile(destination_well)
+            destination_tile = well_to_tile(destination_well) + '.bmp'
 
             try:
                 source_plate = LibraryPlate.objects.get(id=source_plate_name)

@@ -132,11 +132,4 @@ def get_image_url(experiment, well, mode=None):
     types. Otherwise, returns the normal full-size image.
 
     """
-    if mode == 'thumbnail':
-        image_url = experiment.get_thumbnail_url(well)
-    elif mode == 'devstar':
-        image_url = experiment.get_devstar_image_url(well)
-    else:
-        image_url = experiment.get_image_url(well)
-
-    return image_url
+    return experiment.get_image_url(well, mode=mode)

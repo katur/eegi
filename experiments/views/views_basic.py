@@ -168,7 +168,7 @@ def experiment_well(request, id, well):
     library_well = LibraryWell.objects.filter(
         plate=experiment.library_plate).filter(well=well)[0]
 
-    devstar_url = experiment.get_devstar_image_url(well)
+    devstar_url = experiment.get_image_url(well, mode='devstar')
     devstar_available = http_response_ok(devstar_url)
 
     context = {
