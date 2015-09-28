@@ -78,9 +78,10 @@ def experiment_plates_grid(request, screen_stage):
                    .filter(screen_stage=screen_stage, is_junk=False)
                    .select_related('library_plate', 'worm_strain'))
 
-    plates = (experiments.order_by('library_plate')
-              .values_list('library_plate', flat=True)
-              .distinct())
+    plate_pks = (experiments.order_by('library_plate')
+                 .values_list('library_plate', flat=True)
+                 .distinct())
+    plates = LibraryPlate.objects.filter(pk__in=plate_pks)
 
     header = []
     for worm in worms:
@@ -101,7 +102,7 @@ def experiment_plates_grid(request, screen_stage):
                 e[plate][worm][worm.restrictive_temperature] = []
 
     for experiment in experiments:
-        plate = experiment.library_plate.pk
+        plate = experiment.library_plate
         worm = experiment.worm_strain
         temp = experiment.temperature
 

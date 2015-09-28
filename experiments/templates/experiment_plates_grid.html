@@ -34,7 +34,8 @@ Experiments
   <tbody>
     {% for plate, worms in e.items %}
     <tr>
-      <th>{{ plate }}</th>
+      <th><a href="{% url 'library_plate_url' plate.id %}">
+          {{ plate }}</a></th>
       {% for worm, temperatures in worms.items %}
         {% for temperature, experiments in temperatures.items %}
         <td
