@@ -58,7 +58,7 @@ vi eegi.conf
 sudo ln -s /opt/local/eegi/apache2/eegi.conf /etc/apache2/sites-enabled/001-eegi.conf
 cd /etc/apache2
 vi ports.conf
-# add line to Listen 8009. comment out line to Listen 80 if port 80 not being used
+# add line to Listen 8009
 ```
 
 Apache Commands
