@@ -10,18 +10,6 @@ MySQL Database
 mysql -u eegi -p eegi < <sql dump filename>
 ```
 
-<!---
-```
-DROP DATABASE IF EXISTS eegi;
-CREATE DATABASE eegi;
-USE eegi;
-
-DROP USER eegi;
-CREATE USER 'eegi'@'%' IDENTIFIED BY '<password>';
-GRANT ALL PRIVILEGES ON eegi.* TO 'eegi'@'%' IDENTIFIED BY '<password>';
-```
--->
-
 Code
 ----
 ```
