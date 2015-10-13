@@ -4,16 +4,14 @@ from django.db import models
 class Clone(models.Model):
     """An RNAi clone used in the screen."""
     id = models.CharField(max_length=30, primary_key=True)
-    '''
-    firoz_pk = models.IntegerField(blank=True)
+    mapping_db_pk = models.IntegerField(blank=True, null=True)
     library = models.CharField(max_length=30, blank=True)
     clone_type = models.CharField(max_length=30, blank=True)
     forward_primer = models.CharField(max_length=100, blank=True)
     reverse_primer = models.CharField(max_length=100, blank=True)
-    '''
 
     class Meta:
-        db_table = 'RNAiClone'
+        db_table = 'Clone'
         ordering = ['id']
 
     def __unicode__(self):
@@ -23,12 +21,14 @@ class Clone(models.Model):
         return self.id == 'L4440'
 
 
-'''
 class CloneAlias(models.Model):
     clone = models.ForeignKey(Clone)
     alias = models.CharField(max_length=30)
     alias_type = models.CharField(max_length=30, blank=True)
     source = models.CharField(max_length=30, blank=True)
+
+    class Meta:
+        db_table = 'CloneAlias'
 
 
 class Gene(models.Model):
@@ -37,11 +37,18 @@ class Gene(models.Model):
     locus = models.CharField(max_length=30, blank=True)
     gene_type = models.CharField(max_length=30, blank=True)
 
+    class Meta:
+        db_table = 'Gene'
+
 
 class GeneAlias(models.Model):
     gene = models.ForeignKey(Gene)
     alias = models.CharField(max_length=100)
     alias_type = models.CharField(max_length=100, blank=True)
+    functional_description = models.TextField(blank=True)
+
+    class Meta:
+        db_table = 'GeneAlias'
 
 
 class CloneTarget(models.Model):
@@ -60,4 +67,6 @@ class CloneTarget(models.Model):
     unique_chunk_index = models.FloatField()
     is_on_target = models.BooleanField()
     is_primary_target = models.BooleanField()
-'''
+
+    class Meta:
+        db_table = 'CloneTarget'
