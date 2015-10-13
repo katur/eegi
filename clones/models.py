@@ -31,6 +31,9 @@ class Gene(models.Model):
     class Meta:
         db_table = 'Gene'
 
+    def __unicode__(self):
+        return self.id
+
 
 class CloneTarget(models.Model):
     clone = models.ForeignKey(Clone)
