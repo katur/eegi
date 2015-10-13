@@ -21,34 +21,15 @@ class Clone(models.Model):
         return self.id == 'L4440'
 
 
-class CloneAlias(models.Model):
-    clone = models.ForeignKey(Clone)
-    alias = models.CharField(max_length=30)
-    alias_type = models.CharField(max_length=30, blank=True)
-    source = models.CharField(max_length=30, blank=True)
-
-    class Meta:
-        db_table = 'CloneAlias'
-
-
 class Gene(models.Model):
     id = models.CharField(max_length=30, primary_key=True)
     cosmid_id = models.CharField(max_length=30)
     locus = models.CharField(max_length=30, blank=True)
     gene_type = models.CharField(max_length=30, blank=True)
-
-    class Meta:
-        db_table = 'Gene'
-
-
-class GeneAlias(models.Model):
-    gene = models.ForeignKey(Gene)
-    alias = models.CharField(max_length=100)
-    alias_type = models.CharField(max_length=100, blank=True)
     functional_description = models.TextField(blank=True)
 
     class Meta:
-        db_table = 'GeneAlias'
+        db_table = 'Gene'
 
 
 class CloneTarget(models.Model):
