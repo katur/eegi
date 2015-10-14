@@ -20,15 +20,6 @@
   </span>
 </div>
 
-<table class="plate-96">
-  {% regroup library_wells by row as library_wells_by_row %}
-  {% for row in library_wells_by_row %}
-  <tr>
-    {% for library_well in row.list %}
-      {% include "image_td.html" %}
-    {% endfor %}
-  </tr>
-  {% endfor %}
-</table>
+{% include "plate.html" %}
 
 {% endblock %}

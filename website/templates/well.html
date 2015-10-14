@@ -12,9 +12,11 @@
     <span class="parenthetical">({{ library_well.get_tile }})</span>
   </div>
 
+  {% if experiment %}
   <a href="{% url 'experiment_well_url' experiment.id well %}">
     {% include "image.html" %}
   </a>
+  {% endif %}
 
   <div class="well-caption">
     {% with library_well.intended_clone as clone %}

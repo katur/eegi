@@ -5,31 +5,6 @@
 
 {% block content %}
 
-<table class="plate-96 striped">
-  {% regroup library_wells by row as library_wells_by_row %}
-  {% for row in library_wells_by_row %}
-  <tr>
-    {% for library_well in row.list %}
-      <td {% if not library_well.intended_clone %} class="empty-well" {% endif %}>
+{% include "plate.html" %}
 
-        <div class="well-title">
-          {{ library_well.well }}
-          <span class="parenthetical">({{ library_well.get_tile }})</span>
-        </div>
-
-        <div class="well-caption">
-          {% with library_well.intended_clone as clone %}
-          {% if clone %}
-            <a href="{% url 'clone_url' clone.id %}">{{ clone }}</a>
-          {% else %}
-            {{ clone }}
-          {% endif %}
-          {% endwith %}
-        </div>
-
-      </td>
-    {% endfor %}
-  </tr>
-  {% endfor %}
-</table>
 {% endblock %}
