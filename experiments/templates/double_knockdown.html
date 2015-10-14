@@ -25,7 +25,9 @@
   </span>
 
   <span>
-    Intended RNAi clone: {{ clone }}
+    Intended RNAi clone:
+    <a href="{% url 'clone_url' clone.id %}">
+      {{ clone.id }}</a>
   </span>
 </div>
 
