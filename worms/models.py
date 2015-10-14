@@ -37,11 +37,11 @@ class WormStrain(models.Model):
     def __unicode__(self):
         return self.id
 
-    def is_control(self):
-        if not self.allele:
-            return True
-        else:
-            return False
+    def get_short_genotype(self):
+        return self.genotype.split()[0]
+
+    def get_display_string(self):
+        return '{}: {}'.format(self.id, self.get_short_genotype())
 
     def get_lab_website_url(self):
         return 'http://gunsiano.webfactional.com/strain/' + self.id
@@ -55,8 +55,11 @@ class WormStrain(models.Model):
         else:
             return self.get_wormbase_url()
 
-    def get_short_genotype(self):
-        return self.genotype.split()[0]
+    def is_control(self):
+        if not self.allele:
+            return True
+        else:
+            return False
 
     def is_permissive_temperature(self, temperature):
         return self.permissive_temperature == Decimal(temperature)

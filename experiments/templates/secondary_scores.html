@@ -26,11 +26,10 @@ criteria C (count-based):
 <table class="grayscale striped nice-padding">
   <thead>
     <tr>
-      <th>Worm Strain</th>
-      <th>Worm Genotype</th>
-      <th>Library Plate</th>
-      <th>Library Well</th>
+      <th>Mutant gene</th>
+      <th>Library Position</th>
       <th>Intended Clone</th>
+      <th>Target gene(s)</th>
       <th>Double Knockdown</th>
       <th>Passes Criteria A?</th>
       <th>Passes Criteria B?</th>
@@ -43,11 +42,14 @@ criteria C (count-based):
   <tbody>
     {% for well, experiments in s.items %}
     <tr>
-      <td>{{ worm.id }}</td>
-      <td>{{ worm.genotype }}</td>
-      <td>{{ well.plate_id }}</td>
-      <td>{{ well.well }}</td>
+      <td>{{ worm.gene }}</td>
+      <td>{{ well.plate_id }}@{{ well.well }}</td>
       <td>{{ well.intended_clone_id }}</td>
+      <td>
+        {% for target in well.intended_clone.clonetarget_set.all %}
+          {{ target.gene.get_display_string }}
+        {% endfor %}
+      </td>
 
       <td>
       {% if well.intended_clone_id %}
