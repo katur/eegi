@@ -3,9 +3,9 @@
 <span>
   RNAi clone:
   {% if clone %}
-  <a href="{% url 'clone_url' clone.id %}">{{ clone.id }}</a>
+    <a href="{% url 'clone_url' clone.id %}">{{ clone.id }}</a>
   {% else %}
-  {{ clone.id }}
+    {{ clone }}
   {% endif %}
 </span>
 
