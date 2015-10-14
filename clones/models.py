@@ -27,6 +27,7 @@ class Gene(models.Model):
     locus = models.CharField(max_length=30, blank=True)
     gene_type = models.CharField(max_length=30, blank=True)
     functional_description = models.TextField(blank=True)
+    gene_class_description = models.TextField(blank=True)
 
     class Meta:
         db_table = 'Gene'

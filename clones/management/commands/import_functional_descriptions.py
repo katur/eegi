@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand, CommandError
 from clones.models import Gene
 from utils.scripting import require_db_write_acknowledgement
 
-HELP = 'Import gene functional descriptions from Wormbase.'
+HELP = 'Import gene functional descriptions.'
 
 
 class Command(BaseCommand):
@@ -23,16 +23,15 @@ class Command(BaseCommand):
 
         genes = Gene.objects.all()
 
+        num_mismatches = 0
         for gene in genes:
             if gene.id not in descriptions:
                 raise CommandError('{} not found in WormBase file'
                                    .format(gene))
             info = descriptions[gene.id]
 
-            # Sanity checks
-            num_mismatches = 0
-
-            # Does WormBase molecular_name align with Firoz's database?
+            # Sanity check: Does WormBase molecular_name align with Firoz's
+            # database?
             wb_molecular = info['molecular_name']
             firoz_cosmid = gene.cosmid_id
             if (not wb_molecular.startswith(firoz_cosmid)):
@@ -41,7 +40,8 @@ class Command(BaseCommand):
                                   'WormBase says {}, Firoz says {}'
                                   .format(gene, wb_molecular, firoz_cosmid))
 
-            # Does WormBase public_name align with Firoz's database?
+            # Sanity check: Does WormBase public_name align with Firoz's
+            # database?
             wb_public = info['public_name']
             firoz_locus = gene.locus
             if (wb_public != firoz_locus and
@@ -51,8 +51,8 @@ class Command(BaseCommand):
                                   'WormBase says {}, Firoz says {}'
                                   .format(gene, wb_public, firoz_locus))
 
-            description = info['concise_description']
-            gene.functional_description = description
+            gene.functional_description = info['concise_description']
+            gene.gene_class_description = info['gene_class_description']
             gene.save()
 
         if num_mismatches:
@@ -62,11 +62,11 @@ class Command(BaseCommand):
     def parse_wormbase_file(self, f):
         # Skip header
         while True:
-            x = next(f)
-            if x[0] != '#':
+            row = next(f)
+            if row[0] != '#':
                 break
 
-        fieldnames = x
+        fieldnames = row
         fieldnames = fieldnames.split()
 
         reader = csv.reader(f, delimiter='\t')
