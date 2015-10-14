@@ -28,10 +28,7 @@
           </span>
 
           <span>
-            {{ experiment.worm_strain }}
-            {% if experiment.worm_strain.genotype %}
-              : {{ experiment.worm_strain.genotype }}
-            {% endif %}
+            {{ experiment.worm_strain.get_display_string }}
           </span>
 
           <span>{{ experiment.library_plate }}</span>

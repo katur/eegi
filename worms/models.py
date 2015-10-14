@@ -41,10 +41,13 @@ class WormStrain(models.Model):
         return self.genotype.split()[0]
 
     def get_display_string(self):
-        return '{}: {}'.format(self.id, self.get_short_genotype())
+        if self.genotype:
+            return '{}: {}'.format(self.id, self.get_short_genotype())
+        else:
+            return self.id
 
     def get_lab_website_url(self):
-        return 'http://gunsiano.webfactional.com/strain/' + self.id
+        return 'http://gunsaluspiano.bio.nyu.edu/strain/' + self.id
 
     def get_wormbase_url(self):
         return 'http://www.wormbase.org/species/c_elegans/strain/' + self.id

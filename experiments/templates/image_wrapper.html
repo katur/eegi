@@ -10,8 +10,8 @@
       well {{ well }},
       {{ experiment.temperature|celsius }}
 
-      (<a href="{% url 'experiment_well_url' experiment.id well %}">
-        more info</a>)
+      (<a href="{% url 'experiment_well_url' experiment.id well %}">more
+        info</a>)
     </span>
 
     <span class="placement">{{ current }} of {{ total }}</span>

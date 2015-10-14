@@ -1,0 +1,22 @@
+{% load extra_tags %}
+
+<span>
+  Worm strain:
+  <a href="{% get_worm_url worm request %}">
+    {{ worm.id }}</a>
+</span>
+
+{% if worm.genotype %}
+<span>
+  Worm genotype: {{ worm.genotype }}
+</span>
+{% endif %}
+
+{% if temperature %}
+<span>
+  Temperature: {{ temperature|celsius }}
+  {% if worm|get_screen_category:temperature %}
+    ({{ worm|get_screen_category:temperature }})
+  {% endif %}
+</span>
+{% endif %}

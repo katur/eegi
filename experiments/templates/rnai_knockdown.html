@@ -4,14 +4,19 @@
 {% block body_id %}rnai-knockdown{% endblock %}
 
 {% block page_title %}
-Control N2 worms
-with RNAi knockdown of {{ clone }}
+Control N2 Worms
+with {{ clone.id }} RNAi
 {% if temperature %}
   at {{ temperature|celsius }}
 {% endif %}
 {% endblock %}
 
 {% block content %}
+<div class="cleared-spaced-spans">
+  {% include "worm_spans.html" %}
+  {% include "clone_spans.html" %}
+</div>
+
 {% for library_well, values in data.items %}
   <table class="knockdown-results single-column grayscale">
     <thead>

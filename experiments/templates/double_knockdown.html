@@ -4,31 +4,15 @@
 {% block body_id %}double-knockdown{% endblock %}
 
 {% block page_title %}
-{{ worm }} x {{ clone }} at {{ temperature|celsius }}
+{{ worm.id }} Worms
+with {{ clone.id }} RNAi
+at {{ temperature|celsius }}
 {% endblock %}
 
 {% block content %}
 <div class="cleared-spaced-spans">
-  <span>
-    Worm strain:
-    <a href="{{ worm.get_lab_website_url }}">
-      {{ worm }}</a>
-  </span>
-
-  <span>
-    Worm genotype: {{ worm.genotype }}
-  </span>
-
-  <span>
-    Temperature: {{ temperature|celsius }}
-    ({{ worm|get_screen_category:temperature }})
-  </span>
-
-  <span>
-    Intended RNAi clone:
-    <a href="{% url 'clone_url' clone.id %}">
-      {{ clone.id }}</a>
-  </span>
+  {% include "worm_spans.html" %}
+  {% include "clone_spans.html" %}
 </div>
 
 {% for key, d in data.items %}

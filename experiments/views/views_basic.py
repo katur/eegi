@@ -140,7 +140,6 @@ def experiment_plates_vertical(request, ids):
 def experiment_plate(request, id):
     """Render the page to see a particular experiment plate."""
     experiment = get_object_or_404(Experiment, pk=id)
-    experiment.worm_strain.url = experiment.worm_strain.get_url(request)
 
     library_wells = LibraryWell.objects.filter(
         plate=experiment.library_plate).order_by('well')
@@ -163,7 +162,6 @@ def experiment_plate(request, id):
 def experiment_well(request, id, well):
     """Render the page to see a particular experiment well."""
     experiment = get_object_or_404(Experiment, pk=id)
-    experiment.worm_strain.url = experiment.worm_strain.get_url(request)
 
     library_well = LibraryWell.objects.filter(
         plate=experiment.library_plate).filter(well=well)[0]

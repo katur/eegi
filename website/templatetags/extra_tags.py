@@ -40,11 +40,11 @@ def get_screen_category(strain, temperature):
 
     """
     if strain.is_permissive_temperature(temperature):
-        return 'ENH screen temperature'
+        return 'ENH screening temperature'
     elif strain.is_restrictive_temperature(temperature):
-        return 'SUP screen temperature'
+        return 'SUP screening temperature'
     else:
-        return 'neither SUP nor ENH screen temperature'
+        return ''
 
 
 @register.filter
@@ -122,6 +122,11 @@ def url_replace(request, field, value):
     query_dict = request.GET.copy()
     query_dict[field] = value
     return query_dict.urlencode()
+
+
+@register.simple_tag
+def get_worm_url(worm, request):
+    return worm.get_url(request)
 
 
 @register.simple_tag

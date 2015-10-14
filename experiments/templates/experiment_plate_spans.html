@@ -1,0 +1,25 @@
+{% load extra_tags %}
+
+{% with worm=experiment.worm_strain temperature=experiment.temperature %}
+  {% include "worm_spans.html" %}
+{% endwith %}
+
+<span>
+  RNAi library plate:
+  <a href="{% url 'library_plate_url' experiment.library_plate.id %}">
+  {{ experiment.library_plate }}
+  </a>
+</span>
+
+<span>
+  Experiment date:
+  {{ experiment.date|date:"SHORT_DATE_FORMAT" }}
+</span>
+
+{% if experiment.is_junk %}
+<span class="error-message">JUNK</span>
+{% endif %}
+
+{% if experiment.comment %}
+<span>Comment: {{ experiment.comment }}</span>
+{% endif %}

@@ -150,6 +150,7 @@ def mutant_knockdown(request, worm, temperature):
 
     context = {
         'worm': worm,
+        'clone': l4440,
         'temperature': temperature,
         'data': sorted_data,
     }
@@ -159,8 +160,8 @@ def mutant_knockdown(request, worm, temperature):
 
 def rnai_knockdown(request, clone, temperature=None):
     """Render the RNAi knockdown page."""
-    clone = get_object_or_404(Clone, pk=clone)
     n2 = get_object_or_404(WormStrain, pk='N2')
+    clone = get_object_or_404(Clone, pk=clone)
     library_wells = (LibraryWell.objects
                      .filter(intended_clone=clone,
                              plate__screen_stage__gt=0)
@@ -183,6 +184,7 @@ def rnai_knockdown(request, clone, temperature=None):
             data[library_well] = [(e, library_well) for e in experiments]
 
     context = {
+        'worm': n2,
         'clone': clone,
         'temperature': temperature,
         'data': data,
