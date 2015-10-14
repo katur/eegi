@@ -4,7 +4,7 @@ from worms.models import WormStrain
 
 
 def worms(request):
-    """Render the page that listing all worm strains used in the screen."""
+    """Render the page listing all worm strains used in the screen."""
     worms = WormStrain.objects.all()
     for worm in worms:
         worm.url = worm.get_url(request)

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block body_id %}clone{% endblock %}
+{% block page_title %}RNAi Clone {{ clone }} {% endblock %}
+
+{% block content %}
+
+<div class="cleared-spaced-spans">
+  <span>
+    Library: {{ clone.library }}
+  </span>
+
+  <span>
+    Clone Type: {{ clone.clone_type }}
+  </span>
+
+  <span>
+    Forward Primer: {{ clone.forward_primer }}
+  </span>
+
+  <span>
+    Reverse Primer: {{ clone.reverse_primer }}
+  </span>
+
+  <span>
+    Gene Targets:
+
+    <table class="grayscale striped nice-padding">
+      <thead>
+        <tr>
+          <th>WormBase ID</th>
+          <th>Cosmid ID</th>
+          <th>Locus</th>
+          <th>Gene Type</th>
+          <th>Gene Class Description</th>
+          <th>Functional Description</th>
+        </tr>
+      <thead>
+
+      <tbody>
+        {% for target in clone.clonetarget_set.all %}
+        <tr>
+          <td>
+            <a href="{{ target.gene.get_wormbase_url }}">
+              {{ target.gene.id }}</a>
+          </td>
+          <td>{{ target.gene.cosmid_id }}</td>
+          <td>{{ target.gene.locus }}</td>
+          <td>{{ target.gene.gene_type }}</td>
+          <td>{{ target.gene.gene_class_description }}</td>
+          <td>{{ target.gene.functional_description }}</td>
+        </tr>
+
+        {% empty %}
+          No gene targets according to Firoz's database.
+        {% endfor %}
+      </tbody>
+
+    </table>
+  </span>
+</div>
+
+{% endblock %}

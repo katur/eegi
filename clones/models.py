@@ -26,8 +26,8 @@ class Gene(models.Model):
     cosmid_id = models.CharField(max_length=30)
     locus = models.CharField(max_length=30, blank=True)
     gene_type = models.CharField(max_length=30, blank=True)
-    functional_description = models.TextField(blank=True)
     gene_class_description = models.TextField(blank=True)
+    functional_description = models.TextField(blank=True)
 
     class Meta:
         db_table = 'Gene'
@@ -42,6 +42,9 @@ class Gene(models.Model):
             return self.cosmid_id
         else:
             return id
+
+    def get_wormbase_url(self):
+        return 'http://www.wormbase.org/species/c_elegans/gene/' + self.id
 
 
 class CloneTarget(models.Model):

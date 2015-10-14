@@ -24,7 +24,11 @@
   <tbody>
     {% for clone in paginated %}
     <tr>
-      <td>{{ clone.id }}</td>
+      <td>
+        <a href="{% url 'clone_url' clone.id %}">
+          {{ clone.id }}</a>
+      </td>
+
       <td>
         {% for target in clone.clonetarget_set.all %}
           {{ target.gene.get_display_string }}

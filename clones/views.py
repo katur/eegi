@@ -1,5 +1,5 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from clones.models import Clone
 
@@ -26,3 +26,14 @@ def clones(request):
     }
 
     return render(request, 'clones.html', context)
+
+
+def clone(request, id):
+    """Render the page to view a single RNAi clone."""
+    clone = get_object_or_404(Clone, pk=id)
+
+    context = {
+        'clone': clone,
+    }
+
+    return render(request, 'clone.html', context)
