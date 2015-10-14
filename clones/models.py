@@ -35,6 +35,14 @@ class Gene(models.Model):
     def __unicode__(self):
         return self.id
 
+    def get_display_string(self):
+        if self.locus:
+            return self.locus
+        elif self.cosmid_id:
+            return self.cosmid_id
+        else:
+            return id
+
 
 class CloneTarget(models.Model):
     clone = models.ForeignKey(Clone)
@@ -55,3 +63,6 @@ class CloneTarget(models.Model):
 
     class Meta:
         db_table = 'CloneTarget'
+
+    def __unicode__(self):
+        return unicode(self.clone) + ' targets ' + unicode(self.gene)

@@ -17,6 +17,7 @@
   <thead>
     <tr>
       <th>Clone Name</th>
+      <th>Gene Targets</th>
     </tr>
   </thead>
 
@@ -24,6 +25,13 @@
     {% for clone in paginated %}
     <tr>
       <td>{{ clone.id }}</td>
+      <td>
+        {% for target in clone.clonetarget_set.all %}
+          {{ target.gene.get_display_string }}
+        {% empty %}
+          <i>No gene targets</i>
+        {% endfor %}
+      </td>
     </tr>
     {% endfor %}
   </tbody>
