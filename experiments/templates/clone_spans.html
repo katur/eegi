@@ -11,7 +11,7 @@
 
 {% if clone %}
 <span>
-  RNAi clone targets:
+  RNAi targets:
   {% for target in clone.clonetarget_set.all %}
     {{ target.gene.get_display_string }}
   {% empty %}
