@@ -1,10 +1,21 @@
 {% load extra_tags %}
 
 <span>
-  Intended RNAi clone:
+  RNAi clone:
   {% if clone %}
   <a href="{% url 'clone_url' clone.id %}">{{ clone.id }}</a>
   {% else %}
   {{ clone.id }}
   {% endif %}
 </span>
+
+{% if clone %}
+<span>
+  RNAi clone targets:
+  {% for target in clone.clonetarget_set.all %}
+    {{ target.gene.get_display_string }}
+  {% empty %}
+    No targets
+  {% endfor %}
+</span>
+{% endif %}
