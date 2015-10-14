@@ -1,7 +1,14 @@
 {% load extra_tags %}
 
 <span>
-  Intended RNAi clone: {{ library_well.intended_clone}}
+  {% with library_well.intended_clone as clone %}
+  Intended RNAi clone:
+  {% if clone %}
+  <a href="{% url 'clone_url' clone.id %}">{{ clone }}</a>
+  {% else %}
+  {{ clone }}
+  {% endif %}
+  {% endwith %}
 </span>
 
 <span>
