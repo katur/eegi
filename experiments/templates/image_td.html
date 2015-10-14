@@ -16,7 +16,15 @@
     {% include "image.html" %}
   </a>
 
-  <div class="well-caption">{{ library_well.intended_clone }}</div>
+  <div class="well-caption">
+    {% with library_well.intended_clone as clone %}
+    {% if clone %}
+      <a href="{% url 'clone_url' clone.id %}">{{ clone }}</a>
+    {% else %}
+      {{ clone }}
+    {% endif %}
+    {% endwith %}
+  </div>
 </td>
 
 {% endwith %}

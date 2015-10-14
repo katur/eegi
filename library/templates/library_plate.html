@@ -11,13 +11,22 @@
   <tr>
     {% for library_well in row.list %}
       <td {% if not library_well.intended_clone %} class="empty-well" {% endif %}>
+
         <div class="well-title">
           {{ library_well.well }}
           <span class="parenthetical">({{ library_well.get_tile }})</span>
         </div>
+
         <div class="well-caption">
-          {{ library_well.intended_clone }}
+          {% with library_well.intended_clone as clone %}
+          {% if clone %}
+            <a href="{% url 'clone_url' clone.id %}">{{ clone }}</a>
+          {% else %}
+            {{ clone }}
+          {% endif %}
+          {% endwith %}
         </div>
+
       </td>
     {% endfor %}
   </tr>
