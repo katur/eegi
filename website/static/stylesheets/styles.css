@@ -417,6 +417,6 @@ form table th, form table td {
   .knockdown-results.single-column td {
     width: 100%; }
   .knockdown-results.single-column .carousel {
-    margin: auto;
+    margin: 0 auto;
     float: left;
     max-width: 1300px; }
