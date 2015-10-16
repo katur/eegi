@@ -1,6 +1,5 @@
 from collections import OrderedDict
 
-from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 
 from clones.models import Clone
@@ -133,11 +132,10 @@ def double_knockdown(request, worm, clones, temperature):
                 # Add mutant + RNAi experiments
                 mutant_rnai_exps = (
                     Experiment.objects.filter(
-                        Q(is_junk=False),
-                        Q(worm_strain=worm),
-                        Q(temperature=temperature),
-                        Q(date=date['date']),
-                        Q(library_plate=library_well.plate)))
+                        is_junk=False, worm_strain=worm,
+                        temperature=temperature,
+                        date=date['date'],
+                        library_plate=library_well.plate))
 
                 d['mutant_rnai'] = (
                     [(e, library_well) for e in mutant_rnai_exps])
@@ -145,10 +143,9 @@ def double_knockdown(request, worm, clones, temperature):
                 # Add N2 + RNAi experiments
                 n2_rnai_exps = (
                     Experiment.objects.filter(
-                        Q(is_junk=False),
-                        Q(worm_strain=n2),
-                        Q(date=date['date']),
-                        Q(library_plate=library_well.plate)))
+                        is_junk=False, worm_strain=n2,
+                        date=date['date'],
+                        library_plate=library_well.plate))
 
                 d['n2_rnai'] = [(e, library_well) for e in n2_rnai_exps]
 
@@ -156,18 +153,16 @@ def double_knockdown(request, worm, clones, temperature):
                 if library_well.plate.screen_stage == 1:
                     mutant_l4440_exps = (
                         Experiment.objects.filter(
-                            Q(is_junk=False),
-                            Q(worm_strain=worm),
-                            Q(temperature=temperature),
-                            Q(date=date['date']),
-                            Q(library_plate=l4440_plate)))
+                            is_junk=False, worm_strain=worm,
+                            temperature=temperature,
+                            date=date['date'],
+                            library_plate=l4440_plate))
 
                     n2_l4440_exps = (
                         Experiment.objects.filter(
-                            Q(is_junk=False),
-                            Q(worm_strain=n2),
-                            Q(date=date['date']),
-                            Q(library_plate=l4440_plate)))
+                            is_junk=False, worm_strain=n2,
+                            date=date['date'],
+                            library_plate=l4440_plate))
 
                 # For SUP Secondary, use L4440 wells from same plates as RNAi
                 # TODO: will be different for ENH secondary
