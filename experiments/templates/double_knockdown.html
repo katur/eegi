@@ -1,65 +1,76 @@
 {% extends "base.html" %}
 {% load extra_tags %}
 
+
 {% block body_id %}double-knockdown{% endblock %}
+
 
 {% block page_title %}
 {{ worm.id }} Worms
-with {{ clone.id }} RNAi
+&times;
+RNAi Clone{{ clones|pluralize }} {{ clones|join:', ' }}
 at {{ temperature|celsius }}
 {% endblock %}
 
+
 {% block content %}
+
 <div class="cleared-spaced-spans">
   {% include "worm_spans.html" %}
-  {% include "clone_spans.html" %}
 </div>
 
-{% for key, d in data.items %}
-{% with position=key.0 date=key.2 %}
-  <table class="knockdown-results grayscale">
-    <thead>
-      <th colspan="2">
-        Clone located in plate {{ position.plate }},
-        well {{ position.well }};
-        tested on {{ date }}
-      </th>
-    </thead>
+{% for clone, tuples in data.items %}
+<div class="knockdown-clone-section">
+  <h4>{% include "clone_spans.html" %}</h4>
 
-    <tbody>
+  {% for tuple, d in tuples.items %}
+  {% with position=tuple.0 date=tuple.1 %}
+    <table class="knockdown-results grayscale">
+      <thead>
+        <th colspan="2">
+          {{ clone }} located in
+          plate {{ position.plate }},
+          well {{ position.well }};
+          tested on {{ date }}
+        </th>
+      </thead>
 
-      <tr>
-        <th>Mutant ({{ worm.gene }}) + RNAi ({{ clone.id }})</th>
-        <th>Mutant ({{ worm.gene }}) + L4440 control</th>
-      </tr>
+      <tbody>
 
-      <tr>
-        <td>
-          {% include "carousel.html" with values=d.mutant_rnai %}
-        </td>
+        <tr>
+          <th>Mutant ({{ worm.gene }}) + RNAi ({{ clone.id }})</th>
+          <th>Mutant ({{ worm.gene }}) + L4440 control</th>
+        </tr>
 
-        <td>
-          {% include "carousel.html" with values=d.mutant_l4440 %}
-        </td>
-      </tr>
+        <tr>
+          <td>
+            {% include "carousel.html" with values=d.mutant_rnai %}
+          </td>
 
-      <tr>
-        <th>N2 control + RNAi ({{ clone.id }})</th>
-        <th>N2 control + L4440 control</th>
-      </tr>
+          <td>
+            {% include "carousel.html" with values=d.mutant_l4440 %}
+          </td>
+        </tr>
 
-      <tr>
-        <td>
-          {% include "carousel.html" with values=d.n2_rnai %}
-        </td>
+        <tr>
+          <th>N2 control + RNAi ({{ clone.id }})</th>
+          <th>N2 control + L4440 control</th>
+        </tr>
 
-        <td>
-          {% include "carousel.html" with values=d.n2_l4440 %}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-{% endwith %}
+        <tr>
+          <td>
+            {% include "carousel.html" with values=d.n2_rnai %}
+          </td>
+
+          <td>
+            {% include "carousel.html" with values=d.n2_l4440 %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  {% endwith %}
+  {% endfor %}
+</div>
 {% endfor %}
 
 {% endblock %}

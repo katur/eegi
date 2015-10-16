@@ -44,7 +44,9 @@ criteria C (count-based):
     <tr>
       <td>{{ worm.gene }}</td>
       <td>{{ well.plate_id }}@{{ well.well }}</td>
-      <td>{{ well.intended_clone_id }}</td>
+      <td>
+        <a href="{% url 'clone_url' well.intended_clone_id %}">
+          {{ well.intended_clone_id }}</a></td>
       <td>
         {% for target in well.intended_clone.clonetarget_set.all %}
           {{ target.gene.get_display_string }}

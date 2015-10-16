@@ -1,27 +1,37 @@
 {% extends "base.html" %}
 {% load extra_tags %}
 
+
 {% block body_id %}rnai-knockdown{% endblock %}
+
 
 {% block page_title %}
 Control N2 Worms
-with {{ clone.id }} RNAi
+&times;
+RNAi Clone{{ clones|pluralize }} {{ clones|join:', ' }}
+
 {% if temperature %}
   at {{ temperature|celsius }}
 {% endif %}
 {% endblock %}
 
+
 {% block content %}
+
 <div class="cleared-spaced-spans">
-  {% include "worm_spans.html" %}
-  {% include "clone_spans.html" %}
+{% include "worm_spans.html" %}
 </div>
 
-{% for library_well, values in data.items %}
+{% for clone, library_wells in data.items %}
+<div class="knockdown-clone-section">
+  <h4>{% include "clone_spans.html" %}</h4>
+
+  {% for library_well, values in library_wells.items %}
   <table class="knockdown-results single-column grayscale">
     <thead>
       <th>
-        Clone located in plate {{ library_well.plate }},
+        {{ clone }} located in
+        plate {{ library_well.plate }},
         well {{ library_well.well }}
       </th>
     </thead>
@@ -29,13 +39,22 @@ with {{ clone.id }} RNAi
     <tbody>
       <tr>
         <td>
-          <div class="carousel">
-            {% include "carousel.html" %}
-          </div>
+          {% include "carousel.html" %}
         </td>
       </tr>
     </tbody>
   </table>
+  {% endfor %}
+</div>
+
+{% empty %}
+
+<div class="cleared-spaced-spans">
+  <span class="error-message">
+    Clone{{ clones|pluralize }} never tested at this temperature
+  </span>
+</div>
+
 {% endfor %}
 
 {% endblock %}

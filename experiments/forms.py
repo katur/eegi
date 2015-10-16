@@ -1,6 +1,13 @@
 from django import forms
 from experiments.models import Experiment
 
+SCREEN_CHOICES = [('SUP', 'suppressor'), ('ENH', 'enhancer')]
+MUTANT_QUERY_LABEL = 'Mutant query'
+RNAI_QUERY_LABEL = 'RNAi query'
+MUTANT_QUERY_HELP_TEXT = 'gene, allele, or worm strain name'
+RNAI_QUERY_HELP_TEXT = ('gene target (WormBase id, cosmid id, or locus) or '
+                        'clone name')
+
 
 class BlankNullBooleanSelect(forms.NullBooleanSelect):
     def __init__(self, attrs=None):
@@ -72,41 +79,38 @@ class ExperimentFilterForm(forms.Form):
 
 class DoubleKnockdownForm(forms.Form):
     """Form for finding a double knockdown."""
-    query = forms.CharField(label='Mutant query',
-                            help_text='gene, allele, or worm strain name')
-    target = forms.CharField(label='RNAi Target',
-                             help_text=('clone (once mapping database '
-                                        'is complete, will also accept gene, '
-                                        'cosmid, and position)'))
-    screen = forms.ChoiceField(
-        choices=[('SUP', 'suppressor'), ('ENH', 'enhancer')],
-        widget=forms.RadioSelect)
+    mutant_query = forms.CharField(label=MUTANT_QUERY_LABEL,
+                                   help_text=MUTANT_QUERY_HELP_TEXT)
+
+    rnai_query = forms.CharField(label=RNAI_QUERY_LABEL,
+                                 help_text=RNAI_QUERY_HELP_TEXT)
+
+    screen = forms.ChoiceField(choices=SCREEN_CHOICES,
+                               widget=forms.RadioSelect)
+
+
+class MutantKnockdownForm(forms.Form):
+    """Form for finding a mutant worm with the control bacteria."""
+    mutant_query = forms.CharField(label=MUTANT_QUERY_LABEL,
+                                   help_text=MUTANT_QUERY_HELP_TEXT)
+
+    screen = forms.ChoiceField(choices=SCREEN_CHOICES,
+                               widget=forms.RadioSelect)
 
 
 class RNAiKnockdownForm(forms.Form):
     """Form for finding wildtype worms tested with a single RNAi clone."""
-    target = forms.CharField(label='RNAi Target',
-                             help_text=('clone (once mapping database '
-                                        'is complete, will also accept gene, '
-                                        'cosmid, and position)'))
+    rnai_query = forms.CharField(label=RNAI_QUERY_LABEL,
+                                 help_text=RNAI_QUERY_HELP_TEXT)
+
     temperature = forms.DecimalField(required=False,
                                      label='Temperature',
                                      help_text='optional')
 
 
-class MutantKnockdownForm(forms.Form):
-    """Form for finding a mutant worm with the control bacteria."""
-    query = forms.CharField(label='Mutant query',
-                            help_text='gene, allele, or worm strain name')
-    screen = forms.ChoiceField(
-        choices=[('SUP', 'suppressor'), ('ENH', 'enhancer')],
-        widget=forms.RadioSelect)
-
-
 class SecondaryScoresForm(forms.Form):
     """Form for getting all secondary scores for a strain."""
-    query = forms.CharField(label='Mutant query',
-                            help_text='gene, allele, or worm strain name')
-    screen = forms.ChoiceField(
-        choices=[('SUP', 'suppressor'), ('ENH', 'enhancer')],
-        widget=forms.RadioSelect)
+    query = forms.CharField(label=MUTANT_QUERY_LABEL,
+                            help_text=MUTANT_QUERY_HELP_TEXT)
+    screen = forms.ChoiceField(choices=SCREEN_CHOICES,
+                               widget=forms.RadioSelect)

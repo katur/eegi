@@ -12,7 +12,8 @@
   </span>
   {% endif %}
 
-  <h4>Control N2 worms with knockdown by RNAi</h4>
+  <h4>Knockdown by RNAi only</h4>
+
   {% if rnai_form.errors %}
   <span class="error-message">
     Please correct the error{{ rnai_form.errors|pluralize }} below.
@@ -29,7 +30,8 @@
 </div>
 
 <div class="single-knockdown-section error-form">
-  <h4>Mutant worms with control L4440 bacteria</h4>
+  <h4>Knockdown by mutation only</h4>
+
   {% if mutant_form.errors %}
   <span class="error-message">
     Please correct the error{{ mutant_form.errors|pluralize }} below.

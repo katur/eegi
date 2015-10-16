@@ -389,6 +389,10 @@ form table th, form table td {
   clear: both;
   margin-bottom: 40px; }
 
+.knockdown-clone-section h4 {
+  width: 100%;
+  text-align: center; }
+
 .knockdown-results {
   float: left;
   clear: both;
@@ -410,5 +414,9 @@ form table th, form table td {
     font-size: 18px; }
   .knockdown-results .carousel {
     float: left; }
-  .knockdown-results.single-column {
+  .knockdown-results.single-column td {
+    width: 100%; }
+  .knockdown-results.single-column .carousel {
+    margin: auto;
+    float: left;
     max-width: 1300px; }
