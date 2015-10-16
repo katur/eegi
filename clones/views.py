@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
 
+from clones.helpers.queries import get_clones
 from clones.models import Clone
 
 
@@ -9,7 +10,12 @@ CLONES_PER_PAGE = 100
 
 def clones(request):
     """Render the page listing all RNAi clones."""
-    clones = Clone.objects.all()
+    if 'query' in request.GET:
+        clones = get_clones(request.GET['query'])
+
+    else:
+        clones = Clone.objects.all()
+
     paginator = Paginator(clones, CLONES_PER_PAGE)
     page = request.GET.get('page')
 

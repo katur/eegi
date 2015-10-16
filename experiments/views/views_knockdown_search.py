@@ -1,69 +1,24 @@
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
 from django.shortcuts import render, redirect
 
-from clones.models import Clone, CloneTarget, Gene
+from clones.helpers.queries import get_clones
 from experiments.forms import (
     DoubleKnockdownForm, MutantKnockdownForm, RNAiKnockdownForm)
 from experiments.views import (
     double_knockdown, mutant_knockdown, rnai_knockdown)
-from worms.models import WormStrain
+from worms.helpers.queries import get_worm_and_temperature
 
 
-def get_worm_and_temperature(mutant_query, screen):
-    if screen != 'ENH' and screen != 'SUP':
-        raise Exception('screen must be ENH or SUP')
+def get_clone_ids(query):
+    """Get a comma-separated string listing the clones that match a query term.
 
-    if screen == 'ENH':
-        worms = (WormStrain.objects
-                 .filter(Q(gene=mutant_query) |
-                         Q(allele=mutant_query) |
-                         Q(id=mutant_query))
-                 .exclude(permissive_temperature__isnull=True))
-    else:
-        worms = (WormStrain.objects
-                 .filter(Q(gene=mutant_query) |
-                         Q(allele=mutant_query) |
-                         Q(id=mutant_query))
-                 .exclude(restrictive_temperature__isnull=True))
+    The clone could match the query term either in the clone's name, or
+    in the wormbase id, cosmid id, or locus of any of its targets.
 
-    if len(worms) == 0:
-        raise Exception('No worm strain matches query.')
-    elif len(worms) > 1:
-        raise Exception('Multiple worm strains match query.')
-    else:
-        worm = worms[0]
-
-    if screen == 'ENH':
-        temperature = worm.permissive_temperature
-    else:
-        temperature = worm.restrictive_temperature
-
-    return (worm, temperature)
-
-
-def get_clone_ids(rnai_query):
-    try:
-        clone = Clone.objects.get(pk=rnai_query)
-        clone_ids = [clone.id]
-
-    except ObjectDoesNotExist:
-        genes = (Gene.objects
-                 .filter(Q(id=rnai_query) |
-                         Q(cosmid_id=rnai_query) |
-                         Q(locus=rnai_query)))
-
-        if len(genes) == 0:
-            raise Exception('No clone or gene matches target.')
-        elif len(genes) > 1:
-            raise Exception('Multiple genes match target.')
-        else:
-            gene = genes[0]
-
-        clone_ids = (CloneTarget.objects.filter(gene=gene)
-                     .values_list('clone_id', flat=True))
-
-    return ','.join(clone_id for clone_id in clone_ids)
+    """
+    clones = get_clones(query)
+    if not clones:
+        return None
+    return ','.join(clone.id for clone in clones)
 
 
 def double_knockdown_search(request):
@@ -84,9 +39,14 @@ def double_knockdown_search(request):
                 if rnai_query == 'L4440':
                     raise Exception('rnai query cannot be L4440')
 
-                worm, temperature = get_worm_and_temperature(mutant_query,
-                                                             screen)
+                worm_and_temp = get_worm_and_temperature(mutant_query, screen)
+                if not worm_and_temp:
+                    raise Exception('no mutant match')
+                worm, temperature = worm_and_temp
+
                 clones = get_clone_ids(rnai_query)
+                if not clones:
+                    raise Exception('no rnai match')
 
                 return redirect(double_knockdown, worm, clones, temperature)
 
@@ -118,6 +78,8 @@ def single_knockdown_search(request):
                 temperature = data['temperature']
 
                 clones = get_clone_ids(rnai_query)
+                if not clones:
+                    raise Exception('no match')
 
                 if temperature:
                     return redirect(rnai_knockdown, clones, temperature)
@@ -136,8 +98,10 @@ def single_knockdown_search(request):
                 mutant_query = data['mutant_query']
                 screen = data['screen']
 
-                worm, temperature = get_worm_and_temperature(mutant_query,
-                                                             screen)
+                worm_and_temp = get_worm_and_temperature(mutant_query, screen)
+                if not worm_and_temp:
+                    raise Exception('no mutant match')
+                worm, temperature = worm_and_temp
 
                 return redirect(mutant_knockdown, worm, temperature)
 
