@@ -41,12 +41,12 @@ def double_knockdown_search(request):
 
                 worm_and_temp = get_worm_and_temperature(mutant_query, screen)
                 if not worm_and_temp:
-                    raise Exception('no mutant match')
+                    raise Exception('No mutant match')
                 worm, temperature = worm_and_temp
 
                 clones = get_clone_ids(rnai_query)
                 if not clones:
-                    raise Exception('no rnai match')
+                    raise Exception('No RNAi match')
 
                 return redirect(double_knockdown, worm, clones, temperature)
 
@@ -79,7 +79,7 @@ def single_knockdown_search(request):
 
                 clones = get_clone_ids(rnai_query)
                 if not clones:
-                    raise Exception('no match')
+                    raise Exception('No RNAi match')
 
                 if temperature:
                     return redirect(rnai_knockdown, clones, temperature)
@@ -100,7 +100,7 @@ def single_knockdown_search(request):
 
                 worm_and_temp = get_worm_and_temperature(mutant_query, screen)
                 if not worm_and_temp:
-                    raise Exception('no mutant match')
+                    raise Exception('No mutant match')
                 worm, temperature = worm_and_temp
 
                 return redirect(mutant_knockdown, worm, temperature)
