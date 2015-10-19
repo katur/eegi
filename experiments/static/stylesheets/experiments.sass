@@ -55,6 +55,9 @@
     width: 100%
     text-align: center
 
+    span
+      display: block
+
 
 .knockdown-results
   float: left
@@ -83,7 +86,7 @@
       font-size: $base-font-size + 2
 
   .carousel
-    float: left
+    @include clearfix
 
   &.single-column
     td
@@ -91,5 +94,4 @@
 
     .carousel
       margin: 0 auto
-      float: left
       max-width: $max-image-width

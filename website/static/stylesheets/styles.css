@@ -392,6 +392,8 @@ form table th, form table td {
 .knockdown-clone-section h4 {
   width: 100%;
   text-align: center; }
+  .knockdown-clone-section h4 span {
+    display: block; }
 
 .knockdown-results {
   float: left;
@@ -412,11 +414,12 @@ form table th, form table td {
   .knockdown-results tbody th {
     padding-top: 3%;
     font-size: 18px; }
-  .knockdown-results .carousel {
-    float: left; }
+  .knockdown-results .carousel:after {
+    content: "";
+    display: table;
+    clear: both; }
   .knockdown-results.single-column td {
     width: 100%; }
   .knockdown-results.single-column .carousel {
     margin: 0 auto;
-    float: left;
     max-width: 1300px; }

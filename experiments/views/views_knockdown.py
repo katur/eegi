@@ -191,7 +191,6 @@ def double_knockdown(request, worm, clones, temperature):
         if len(data_by_well):
             data[clone] = data_by_well
 
-    print data
     context = {
         'worm': worm,
         'clones': clones,
