@@ -31,7 +31,7 @@
     {% for clone in paginated %}
     <tr>
       <td>
-        <a href="{% url 'clone_url' clone.id %}">
+        <a href="{{ clone.get_absolute_url }}">
           {{ clone.id }}</a>
       </td>
 

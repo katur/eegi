@@ -2,20 +2,24 @@
 
 <span>
   RNAi clone:
+
   {% if clone %}
-    <a href="{% url 'clone_url' clone.id %}">{{ clone.id }}</a>
+  <a href="{{ clone.get_absolute_url }}">{{ clone.id }}</a>
+
   {% else %}
-    {{ clone }}
+  {{ clone }}
   {% endif %}
 </span>
 
 {% if clone %}
 <span>
   RNAi targets:
+
   {% for target in clone.clonetarget_set.all %}
-    {{ target.gene.get_display_string }}
+  {{ target.gene.get_display_string }}
+
   {% empty %}
-    No targets
+  No targets
   {% endfor %}
 </span>
 {% endif %}

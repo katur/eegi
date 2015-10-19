@@ -6,7 +6,7 @@
 
 <span>
   RNAi library plate:
-  <a href="{% url 'library_plate_url' experiment.library_plate.id %}">
+  <a href="{{ experiment.library_plate.get_absolute_url }}">
   {{ experiment.library_plate }}
   </a>
 </span>

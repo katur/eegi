@@ -54,7 +54,7 @@
     {% for library_plate in paginated %}
     <tr>
       <td>
-        <a href="{% url 'library_plate_url' library_plate.id %}">
+        <a href="{{ library_plate.get_absolute_url }}">
           {{ library_plate }}</a>
       </td>
       <td>{{ library_plate.number_of_wells }}</td>

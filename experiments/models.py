@@ -1,6 +1,7 @@
 from __future__ import division
 
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 

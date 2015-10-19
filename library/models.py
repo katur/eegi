@@ -1,5 +1,6 @@
 import re
 
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 
@@ -54,6 +55,9 @@ class LibraryPlate(models.Model):
 
     def __unicode__(self):
         return self.id
+
+    def get_absolute_url(self):
+        return reverse('library.views.library_plate', args=[self.id])
 
     def get_all_wells(self):
         return LibraryWell.objects.filter(plate=self)

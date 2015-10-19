@@ -21,9 +21,11 @@
   <div class="well-caption">
     {% with library_well.intended_clone as clone %}
     {% if clone %}
-      <a href="{% url 'clone_url' clone.id %}">{{ clone }}</a>
+    <a href="{{ clone.get_absolute_url }}">{{ clone }}</a>
+
     {% else %}
-      {{ clone }}
+    {{ clone }}
+
     {% endif %}
     {% endwith %}
   </div>

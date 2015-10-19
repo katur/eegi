@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.db import models
 
 
@@ -16,6 +17,9 @@ class Clone(models.Model):
 
     def __unicode__(self):
         return self.id
+
+    def get_absolute_url(self):
+        return reverse('clones.views.clone', args=[self.id])
 
     def is_control(self):
         return self.id == 'L4440'
