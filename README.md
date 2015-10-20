@@ -1,9 +1,14 @@
-# Genome-Wide EEGI (Early Embryogenesis Genetic Interactions) Project
+# Genome-Wide Early Embryogenesis Genetic Interactions Project
 
 Django-based web interface and programs for a genome-wide
 *Caenorhabditis elegans* screen, which used millions of pairwise gene
 knockdown experiments to uncover suppressor and enhancer phenotypes to
 reveal genetic interactions.
+
+
+## Installation
+
+See [INSTALL.md](INSTALL.md) for sample Ubuntu deployment steps.
 
 
 ## Dependencies
@@ -26,9 +31,6 @@ mkvirtualenv eegi
 workon eegi
 pip install -r requirements.txt
 ```
-
-For a more in-depth description of how I deployed this on Ubuntu,
-please see [INSTALL.md](INSTALL.md).
 
 
 ## Database
