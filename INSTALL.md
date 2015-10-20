@@ -56,8 +56,8 @@ cd apache2
 vi eegi.conf
 # add project-specific apache settings, using port 8009
 sudo ln -s /opt/local/eegi/apache2/eegi.conf /etc/apache2/sites-enabled/001-eegi.conf
-cd /etc/apache2
-vi ports.conf
+
+sudo vi /etc/apache2/ports.conf
 # add line to Listen 8009
 ```
 
@@ -69,26 +69,39 @@ sudo service apache2 start
 sudo service apache2 stop
 ```
 
-Deploying (to be fleshed out and automated)
--------------------------------------------
+Deploying in a Nutshell -- DRAFT
+--------------------------------
+### As user eegi
 ```
-### As user eegi...
 # dump database, in case reverting is necessary
 # record the currently-deployed git commit, in case reverting is necessary
+
+# Activate Python virtual environment
 cd /opt/local/eegi/eegi
 source opt/local/eegi/eegivirtualenv/bin/activate
-git pull
-# if requirements.txt changed:
-pip install -r requirements.txt
-# if new database migrations:
-./manage.py migrate
-# if any scripts must be run, e.g. to modify data in keeping with schema changes:
-./manage.py scriptname
-# if unit tests:
-./manage.py test
 
-### As user katherine...
-sudo service apache2 restart
-# if front-end changes, visual inspection of site
-# if necessary, revert the repo, db, and packages to the recorded versions.
+# Pull changes
+git pull
+
+# If changes to requirements.txt:
+pip install -r requirements.txt
+
+# If new/changed static files:
+./manage.py collectstatic
+
+# If new database migrations:
+./manage.py migrate
+
+# If any scripts must be run
+./manage.py scriptname
+
+# If there are unit tests:
+./manage.py test
 ```
+
+### As user with sudo
+```
+sudo service apache2 restart
+```
+
+If front-end changes, inspect visually.
