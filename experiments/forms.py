@@ -94,7 +94,8 @@ class MutantKnockdownForm(forms.Form):
     mutant_query = forms.CharField(label=MUTANT_QUERY_LABEL,
                                    help_text=MUTANT_QUERY_HELP_TEXT)
 
-    screen = forms.ChoiceField(choices=SCREEN_CHOICES,
+    screen = forms.ChoiceField(label="Screen temperature",
+                               choices=SCREEN_CHOICES,
                                widget=forms.RadioSelect)
 
 
