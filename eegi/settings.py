@@ -11,6 +11,7 @@ from local_settings import DATABASES, DEBUG, LOCKDOWN_PASSWORDS, SECRET_KEY
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+MATERIALS_DIR = BASE_DIR + '/materials'
 
 TEMPLATE_DEBUG = DEBUG
 

@@ -5,6 +5,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 
+from eegi.settings import MATERIALS_DIR
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm
 from library.models import LibraryWell, LibraryPlate
@@ -184,7 +185,7 @@ def experiment_well(request, id, well):
     return render(request, 'experiment_well.html', context)
 
 
-BEFORE_AND_AFTER_DIR = 'materials/before_and_after/categories'
+BEFORE_AND_AFTER_DIR = MATERIALS_DIR + '/before_and_after/categories'
 
 
 def before_and_after_category(request, category):
