@@ -24,6 +24,9 @@ class Clone(models.Model):
     def is_control(self):
         return self.id == 'L4440'
 
+    def get_targets(self):
+        return self.clonetarget_set.all()
+
 
 class Gene(models.Model):
     id = models.CharField(max_length=30, primary_key=True)

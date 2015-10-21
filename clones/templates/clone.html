@@ -38,7 +38,7 @@
       <thead>
 
       <tbody>
-        {% for target in clone.clonetarget_set.all %}
+        {% for target in clone.get_targets %}
         <tr>
           <td>
             <a href="{{ target.gene.get_wormbase_url }}">

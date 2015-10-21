@@ -138,3 +138,13 @@ def get_image_url(experiment, well, mode=None):
 
     """
     return experiment.get_image_url(well, mode=mode)
+
+
+@register.filter
+def list_targets(clone):
+    targets = clone.get_targets()
+    displays = [x.gene.get_display_string() for x in targets]
+    if displays:
+        return ', '.join(displays)
+    else:
+        return "No targets (according to Firoz's database)"

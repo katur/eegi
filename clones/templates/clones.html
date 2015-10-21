@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load extra_tags %}
 
 {% block body_id %}clones{% endblock %}
 {% block page_title %}RNAi Clones{% endblock %}
@@ -36,11 +37,7 @@
       </td>
 
       <td>
-        {% for target in clone.clonetarget_set.all %}
-          {{ target.gene.get_display_string }}
-        {% empty %}
-          <i>No gene targets</i>
-        {% endfor %}
+        {{ clone|list_targets }}
       </td>
     </tr>
     {% endfor %}

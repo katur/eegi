@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load extra_tags %}
 
 {% block body_id %}secondary-scores{% endblock %}
 
@@ -48,9 +49,9 @@ criteria C (count-based):
         <a href="{{ well.intended_clone.get_absolute_url }}">
           {{ well.intended_clone.id }}</a></td>
       <td>
-        {% for target in well.intended_clone.clonetarget_set.all %}
-          {{ target.gene.get_display_string }}
-        {% endfor %}
+        {% if well.intended_clone %}
+        {{ well.intended_clone|list_targets }}
+        {% endif %}
       </td>
 
       <td>
