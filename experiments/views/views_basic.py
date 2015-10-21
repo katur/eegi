@@ -184,13 +184,13 @@ def experiment_well(request, id, well):
     return render(request, 'experiment_well.html', context)
 
 
-BEFORE_AND_AFTER_DIR = 'materials/before_and_after/categories/'
+BEFORE_AND_AFTER_DIR = 'materials/before_and_after/categories'
 
 
 def before_and_after_category(request, category):
     tuples = []
 
-    f = open(BEFORE_AND_AFTER_DIR + category, 'r')
+    f = open(BEFORE_AND_AFTER_DIR + '/' + category, 'r')
     rows = f.readlines()
     for row in rows:
         experiment_id, tile = row.split('_')
