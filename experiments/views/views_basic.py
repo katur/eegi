@@ -190,7 +190,7 @@ BEFORE_AND_AFTER_DIR = 'materials/before_and_after/categories/'
 def before_and_after_category(request, category):
     tuples = []
 
-    f = open(BEFORE_AND_AFTER_DIR + category, 'rb')
+    f = open(BEFORE_AND_AFTER_DIR + category, 'r')
     rows = f.readlines()
     for row in rows:
         experiment_id, tile = row.split('_')
