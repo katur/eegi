@@ -1,3 +1,4 @@
+import os
 from collections import OrderedDict
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -7,6 +8,7 @@ from django.shortcuts import render, get_object_or_404
 from experiments.models import Experiment
 from experiments.forms import ExperimentFilterForm
 from library.models import LibraryWell, LibraryPlate
+from utils.well_tile_conversion import tile_to_well
 from utils.http import http_response_ok
 from worms.models import WormStrain
 
@@ -180,3 +182,47 @@ def experiment_well(request, id, well):
     }
 
     return render(request, 'experiment_well.html', context)
+
+
+BEFORE_AND_AFTER_DIR = 'materials/before_and_after/categories/'
+
+
+def before_and_after_category(request, category):
+    tuples = []
+
+    with open(BEFORE_AND_AFTER_DIR + category, 'rb') as f:
+        rows = f.readlines()
+        for row in rows:
+            experiment_id, tile = row.split('_')
+            experiment = get_object_or_404(Experiment, pk=experiment_id)
+            tile = tile.split('.bmp')[0]
+            well = tile_to_well(tile)
+            tuples.append((experiment, well, tile))
+
+    paginator = Paginator(tuples, 10)
+    page = request.GET.get('page')
+
+    try:
+        display_tuples = paginator.page(page)
+    except PageNotAnInteger:
+        display_tuples = paginator.page(1)
+    except EmptyPage:
+        display_tuples = paginator.page(paginator.num_pages)
+
+    context = {
+        'category': category,
+        'tuples': tuples,
+        'paginated': display_tuples,
+    }
+
+    return render(request, 'before_and_after_category.html', context)
+
+
+def before_and_after_categories(request):
+    categories = os.listdir(BEFORE_AND_AFTER_DIR)
+
+    context = {
+        'categories': categories,
+    }
+
+    return render(request, 'before_and_after_categories.html', context)

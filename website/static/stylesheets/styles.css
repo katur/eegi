@@ -351,6 +351,12 @@ form table th, form table td {
 #library-plates #results-header, #library-plates table {
   width: 50%; }
 
+#before-and-after-category td {
+  padding: 20px;
+  vertical-align: middle; }
+#before-and-after-category .image-frame {
+  width: 800px; }
+
 #experiment-plates hr {
   margin: 40px 0; }
 #experiment-plates #experiment-filter-form {

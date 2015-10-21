@@ -29,4 +29,8 @@ urlpatterns = patterns(
         'secondary_scores_search', name='secondary_scores_search_url'),
     url(r'^secondary-scores/([^/]+)/([^/]+)$',
         'secondary_scores', name='secondary_scores_url'),
+    url(r'^before-and-after$', 'before_and_after_categories',
+        name='before_and_after_categories_url'),
+    url(r'^before-and-after/([^/]+)', 'before_and_after_category',
+        name='before_and_after_category_url'),
 )

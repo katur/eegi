@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load extra_tags %}
+
+{% block body_id %}before-and-after-category{% endblock %}
+
+{% block page_title %}
+Image Category: {{ category }}
+{% endblock %}
+
+{% block content %}
+<div id="results-header">
+  <span id="total">
+    {{ tuples|length }} total
+  </span>
+
+  {% include "pagination_status.html" %}
+</div>
+
+<table id="before-and-after">
+  {% for experiment, well, tile in paginated %}
+  <tr>
+    <td>
+      {{ experiment.id }}_{{ tile }}
+    </td>
+
+    <td>
+      <a href="{% url 'experiment_well_url' experiment.id well %}">
+        {% include "image.html" %}
+      </a>
+    </td>
+
+    <td>
+      <a href="{% url 'experiment_well_url' experiment.id well %}?mode=devstar">
+        {% include "image.html" with mode="devstar" %}
+      </a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
