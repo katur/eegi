@@ -190,14 +190,15 @@ BEFORE_AND_AFTER_DIR = 'materials/before_and_after/categories/'
 def before_and_after_category(request, category):
     tuples = []
 
-    with open(BEFORE_AND_AFTER_DIR + category, 'rb') as f:
-        rows = f.readlines()
-        for row in rows:
-            experiment_id, tile = row.split('_')
-            experiment = get_object_or_404(Experiment, pk=experiment_id)
-            tile = tile.split('.bmp')[0]
-            well = tile_to_well(tile)
-            tuples.append((experiment, well, tile))
+    f = open(BEFORE_AND_AFTER_DIR + category, 'rb')
+    rows = f.readlines()
+    for row in rows:
+        experiment_id, tile = row.split('_')
+        experiment = get_object_or_404(Experiment, pk=experiment_id)
+        tile = tile.split('.bmp')[0]
+        well = tile_to_well(tile)
+        tuples.append((experiment, well, tile))
+    f.close()
 
     paginator = Paginator(tuples, 10)
     page = request.GET.get('page')
