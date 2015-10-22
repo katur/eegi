@@ -97,7 +97,7 @@ a {
   color: green;
   font-weight: bold; }
 
-.error-message {
+.error-message, .errorlist {
   color: #CC3355;
   font-weight: bold; }
 

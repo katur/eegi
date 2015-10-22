@@ -6,18 +6,6 @@
 {% block content %}
 
 <div class="error-form">
-  {% if error %}
-  <span class="error-message">
-    Please try again: {{ error }}
-  </span>
-  {% endif %}
-
-  {% if form.errors %}
-  <span class="error-message">
-    Please correct the error{{ form.errors|pluralize }} below.
-  </span>
-  {% endif %}
-
   <form action="" method="post">
     {% csrf_token %}
 
