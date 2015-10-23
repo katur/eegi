@@ -19,7 +19,7 @@ EXPERIMENTS_PER_PAGE = 100
 
 def experiment_plates(request, context=None):
     """Render the page to search for experiment plates."""
-    total_results = None
+    experiments = None
     display_experiments = None
     link_to_vertical = None
 
@@ -27,9 +27,8 @@ def experiment_plates(request, context=None):
         form = ExperimentFilterForm(request.GET)
         if form.is_valid():
             experiments = form.cleaned_data['experiments']
-            total_results = len(experiments)
 
-            if total_results > 0:
+            if experiments:
                 ids = ','.join([str(e.id) for e in experiments])
                 link_to_vertical = reverse(
                     'experiment_plates_vertical_url',
@@ -49,7 +48,7 @@ def experiment_plates(request, context=None):
 
     context = {
         'form': form,
-        'total_results': total_results,
+        'experiments': experiments,
         'display_experiments': display_experiments,
         'link_to_vertical': link_to_vertical,
     }

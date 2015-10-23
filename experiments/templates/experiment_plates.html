@@ -31,53 +31,34 @@
   <input type="submit" value="Submit">
 </form>
 
-{% ifnotequal total_results None %}
+{% ifnotequal experiments None %}
 <div id="results-header">
   <span id="total">
-    {{ total_results }} matching experiment{{ total_results|pluralize }}
+    {{ experiments|length }} matching experiment{{ experiments|pluralize }}
   </span>
 
   {% if link_to_vertical %}
   <span class="vertical-links">
 
     <a href="{{ link_to_vertical }}"
-        {% if total_results > 500 %}class="inactive-link"{% endif %}>
+        {% if experiments|length > 500 %}class="inactive-link"{% endif %}>
       See all thumbnails (max 500 expts)</a>
 
     <a href="{{ link_to_vertical }}?mode=big"
-        {% if total_results > 50 %}class="inactive-link"{% endif %}>
+        {% if experiments|length > 50 %}class="inactive-link"{% endif %}>
       See all full-size images (max 50)</a>
 
     <a href="{{ link_to_vertical }}?mode=devstar"
-        {% if total_results > 50 %}class="inactive-link"{% endif %}>
+        {% if experiments|length > 50 %}class="inactive-link"{% endif %}>
       See all DevStaR images (max 50)</a>
   </span>
   {% endif %}
 
-  {% if total_results %}
-  <div class="pagination-status">
-    {% if display_experiments.has_previous %}
-    <a href="?{% url_replace request 'page' display_experiments.previous_page_number %}">
-      previous
-    </a>
-    {% endif %}
-
-    <span>
-      Page {{ display_experiments.number }}
-      of {{ display_experiments.paginator.num_pages }}.
-    </span>
-
-    {% if display_experiments.has_next %}
-    <a href="?{% url_replace request 'page' display_experiments.next_page_number %}">
-      next
-    </a>
-    {% endif %}
-  </div>
-  {% endif %}
+  {% include "pagination_status.html" with paginated=display_experiments %}
 </div>
 {% endifnotequal %}
 
-{% if total_results %}
+{% if experiments %}
 <table id="experiment-results" class="grayscale striped nice-padding">
   <thead>
     <tr>
