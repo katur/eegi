@@ -22,15 +22,6 @@
     class="active"
     {% endifequal %}
   >Secondary screen</a>
-
-  <!--
-  Commented out due to current plate views expecting full 96-well plates
-  <a href="{% url 'library_plates_url' %}?screen_stage=0"
-    {% ifequal request.GET.screen_stage "0" %}
-    class="active"
-    {% endifequal %}
-  >Source plates (not used for screening)</a>
-  -->
 </div>
 
 
