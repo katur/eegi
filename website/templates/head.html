@@ -1,8 +1,10 @@
+{% load staticfiles %}
+
 <head>
-  <link href="{{ STATIC_URL }}images/favicon.ico"
+  <link href="{% static 'images/favicon.ico' %}"
     rel="icon" type="image/x-icon">
 
-  <link href="{{ STATIC_URL }}stylesheets/styles.css"
+  <link href="{% static 'stylesheets/styles.css %}"
     rel="stylesheet" type="text/css" />
 
   <script
@@ -11,12 +13,12 @@
   </script>
 
   <script
-    src="{{ STATIC_URL }}js/website.js"
+    src="{% static 'js/website.js' %}"
     type="text/javascript">
   </script>
 
   <script
-    src="{{ STATIC_URL }}js/images.js"
+    src="{% static 'js/images.js' %}"
     type="text/javascript">
   </script>
 
