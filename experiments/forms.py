@@ -73,6 +73,23 @@ class ExperimentFilterForm(forms.Form):
         choices=[('', '')] + list(Experiment.SCREEN_STAGE_CHOICES),
         required=False)
 
+    def clean(self):
+        cleaned_data = super(ExperimentFilterForm, self).clean()
+
+        for k, v in cleaned_data.items():
+            # Retain 'False' as a legitimate filter
+            if v is False:
+                continue
+
+            # Ditch empty strings and None as filters
+            if not v:
+                del cleaned_data[k]
+
+        cleaned_data['experiments'] = (
+            Experiment.objects.filter(**cleaned_data))
+
+        return cleaned_data
+
 
 class MutantKnockdownField(forms.CharField):
     """Field to find a mutant worm.

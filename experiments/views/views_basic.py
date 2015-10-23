@@ -26,39 +26,23 @@ def experiment_plates(request, context=None):
     if len(request.GET):
         form = ExperimentFilterForm(request.GET)
         if form.is_valid():
-            filters = form.cleaned_data
-            for k, v in filters.items():
-                # Retain 'False' as a legitimate filter
-                if v is False:
-                    continue
+            experiments = form.cleaned_data['experiments']
+            total_results = len(experiments)
 
-                # Ditch empty strings and None as filters
-                if not v:
-                    del filters[k]
+            if total_results > 0:
+                ids = ','.join([str(e.id) for e in experiments])
+                link_to_vertical = reverse(
+                    'experiment_plates_vertical_url',
+                    args=[ids])
 
-            if filters:
-                experiments = (
-                    Experiment.objects.filter(**filters)
-                    .values('id', 'worm_strain', 'worm_strain__genotype',
-                            'library_plate', 'temperature', 'date',
-                            'is_junk', 'comment'))
-                total_results = len(experiments)
-
-                if total_results > 0:
-                    ids = experiments.values_list('id')
-                    ids = (str(i[0]) for i in ids)
-                    id_string = ','.join(ids)
-                    link_to_vertical = reverse(
-                        'experiment_plates_vertical_url', args=[id_string])
-
-                paginator = Paginator(experiments, EXPERIMENTS_PER_PAGE)
-                page = request.GET.get('page')
-                try:
-                    display_experiments = paginator.page(page)
-                except PageNotAnInteger:
-                    display_experiments = paginator.page(1)
-                except EmptyPage:
-                    display_experiments = paginator.page(paginator.num_pages)
+            paginator = Paginator(experiments, EXPERIMENTS_PER_PAGE)
+            page = request.GET.get('page')
+            try:
+                display_experiments = paginator.page(page)
+            except PageNotAnInteger:
+                display_experiments = paginator.page(1)
+            except EmptyPage:
+                display_experiments = paginator.page(paginator.num_pages)
 
     else:
         form = ExperimentFilterForm()
