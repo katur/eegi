@@ -165,18 +165,17 @@ hr {
   clear: both;
   margin-bottom: 20px; }
 
+.page-section {
+  margin-bottom: 40px; }
+  .page-section:last-of-type {
+    margin-bottom: 0; }
+
 form table th {
   padding-right: 5px;
   text-align: left;
   padding-right: 20px; }
 form table th, form table td {
   padding-bottom: 5px; }
-
-.error-form .error-message, .error-form form {
-  float: left;
-  clear: both; }
-.error-form .error-message {
-  margin-bottom: 20px; }
 
 .grayscale {
   background: #eee; }
@@ -359,17 +358,10 @@ form table th, form table td {
 #before-and-after-category .image-frame {
   width: 800px; }
 
-#experiment-plates hr {
-  margin: 40px 0; }
-#experiment-plates #experiment-filter-form {
-  margin-top: 20px;
-  margin-bottom: 40px; }
 #experiment-plates #experiment-results {
   width: 100%; }
-#experiment-plates .vertical-links {
-  margin-left: 80px; }
-  #experiment-plates .vertical-links span, #experiment-plates .vertical-links a {
-    margin-left: 40px; }
+#experiment-plates .vertical-links a {
+  margin-left: 40px; }
 
 #experiment-grid {
   font-size: 12px;
@@ -391,11 +383,6 @@ form table th, form table td {
   clear: both;
   width: 100%;
   max-width: 1300px; }
-
-.single-knockdown-search-section {
-  float: left;
-  clear: both;
-  margin-bottom: 40px; }
 
 .knockdown-clone-section h4 {
   width: 100%;

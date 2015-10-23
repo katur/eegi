@@ -8,13 +8,11 @@
 
 
 {% block content %}
-<div class="error-form">
-  <form action="" method="post">
-    {% csrf_token %}
+<form action="" method="post">
+  {% csrf_token %}
 
-    <table>{{ form.as_table }}</table>
+  <table>{{ form.as_table }}</table>
 
-    <input type="submit" value="Submit">
-  </form>
-</div>
+  <input type="submit" value="Submit">
+</form>
 {% endblock %}
