@@ -9,11 +9,15 @@
 
 
 {% block content %}
+
 <h4>Browse all experiments in grid format</h4>
+
 <a href="{% url 'experiment_plates_grid_url' 1 %}">
   Primary screen (non-junk, official temps only)</a>
+
 <br>
 <br>
+
 <a href="{% url 'experiment_plates_grid_url' 2 %}">
   Secondary screen (non-junk, official temps only)</a>
 
@@ -40,6 +44,7 @@
     {{ experiments|length }} matching experiment{{ experiments|pluralize }}
   </span>
 
+  {% if experiments %}
   {% url 'experiment_plates_vertical_url' experiments|concatenate_ids_with_commas as vertical_url %}
   <span class="vertical-links">
     <a href="{{ vertical_url }}"
@@ -56,6 +61,8 @@
   </span>
 
   {% include 'pagination_status.html' with paginated=display_experiments %}
+
+  {% endif %}
 </div>
 {% endifnotequal %}
 
