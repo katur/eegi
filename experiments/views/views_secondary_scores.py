@@ -1,7 +1,6 @@
 from __future__ import division
 from collections import OrderedDict
 
-from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 
 from experiments.forms import SecondaryScoresForm
@@ -76,57 +75,22 @@ def secondary_scores(request, worm, temperature):
 
 
 def secondary_scores_search(request):
-    """Render the page to search for secondary scores for a particular mutant.
+    """Render the page to search for secondar scores for a mutant/screen combo.
     """
-    error = ''
     if request.method == 'POST':
         form = SecondaryScoresForm(request.POST)
+
         if form.is_valid():
-            try:
-                data = form.cleaned_data
-                query = data['query']
-                screen = data['screen']
-
-                if screen != 'ENH' and screen != 'SUP':
-                    raise Exception('screen must be ENH or SUP')
-
-                if query == 'N2':
-                    raise Exception('query must be a mutant, not N2')
-
-                if screen == 'ENH':
-                    worms = (WormStrain.objects
-                             .filter(Q(gene=query) | Q(allele=query) |
-                                     Q(id=query))
-                             .exclude(permissive_temperature__isnull=True))
-                else:
-                    worms = (WormStrain.objects
-                             .filter(Q(gene=query) | Q(allele=query) |
-                                     Q(id=query))
-                             .exclude(restrictive_temperature__isnull=True))
-
-                if len(worms) == 0:
-                    raise Exception('No worm strain matches query.')
-                elif len(worms) > 1:
-                    raise Exception('Multiple worm strains match query.')
-                else:
-                    worm = worms[0]
-
-                if screen == 'ENH':
-                    temperature = worm.permissive_temperature
-                else:
-                    temperature = worm.restrictive_temperature
-
-                return redirect(secondary_scores, worm, temperature)
-
-            except Exception as e:
-                error = e.message
+            data = form.cleaned_data
+            worm = data['worm']
+            temperature = data['temperature']
+            return redirect(secondary_scores, worm, temperature)
 
     else:
         form = SecondaryScoresForm(initial={'screen': 'SUP'})
 
     context = {
         'form': form,
-        'error': error,
     }
 
     return render(request, 'secondary_scores_search.html', context)

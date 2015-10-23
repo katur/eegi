@@ -8,19 +8,11 @@
 
 
 {% block content %}
-<div class="error-form">
-  {% if error %}
-  <span class="error-message">
-    Please try again: {{ error }}
-  </span>
-  {% endif %}
+<form action="" method="post">
+  {% csrf_token %}
 
-  <form action="" method="post">
-    {% csrf_token %}
+  <table>{{ form.as_table }}</table>
 
-    <table>{{ form.as_table }}</table>
-
-    <input type="submit" value="Submit">
-  </form>
-</div>
+  <input type="submit" value="Submit">
+</form>
 {% endblock %}

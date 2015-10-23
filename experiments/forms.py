@@ -122,5 +122,10 @@ class DoubleKnockdownForm(forms.Form):
 
 class SecondaryScoresForm(forms.Form):
     """Form for getting all secondary scores for a worm/screen combo."""
-    query = MutantKnockdownField()
+    mutant_query = MutantKnockdownField()
     screen = ScreenChoiceField()
+
+    def clean(self):
+        cleaned_data = super(SecondaryScoresForm, self).clean()
+        cleaned_data = clean_mutant_query_and_screen(self, cleaned_data)
+        return cleaned_data
