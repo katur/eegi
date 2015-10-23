@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load extra_tags %}
 
 
@@ -17,9 +17,8 @@ RNAi Clone{{ clones|pluralize }} {{ clones|join:', ' }}
 
 
 {% block content %}
-
 <div class="cleared-spaced-spans">
-{% include "worm_spans.html" %}
+  {% include 'worm_spans.html' %}
 </div>
 
 {% for clone, library_wells in data.items %}
@@ -39,7 +38,7 @@ RNAi Clone{{ clones|pluralize }} {{ clones|join:', ' }}
     <tbody>
       <tr>
         <td>
-          {% include "carousel.html" %}
+          {% include 'carousel.html' %}
         </td>
       </tr>
     </tbody>

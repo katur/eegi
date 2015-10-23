@@ -1,11 +1,10 @@
 {% load extra_tags %}
 
+
 <span>
   RNAi clone:
-
   {% if clone %}
   <a href="{{ clone.get_absolute_url }}">{{ clone.id }}</a>
-
   {% else %}
   {{ clone }}
   {% endif %}

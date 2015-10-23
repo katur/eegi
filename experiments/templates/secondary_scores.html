@@ -1,26 +1,35 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load extra_tags %}
 
+
 {% block body_id %}secondary-scores{% endblock %}
+
 
 {% block page_title %}
   Secondary Scores for {{ worm.id }} ({{ screen }} screen)
 {% endblock %}
 
+
 {% block content %}
 
 {{ s|length }} total library well{{ s|length|pluralize}}
+
 <br>
-{{ num_passes_stringent }} pass{{ num_passes_stringent|pluralize:"es," }}
+
+{{ num_passes_stringent }} pass{{ num_passes_stringent|pluralize:'es,' }}
 criteria A (stringent):
 0.375 m/s
+
 <br>
-{{ num_passes_percentage }} pass{{ num_passes_percentage|pluralize:"es," }}
+
+{{ num_passes_percentage }} pass{{ num_passes_percentage|pluralize:'es,' }}
 criteria B (percentage-based):
 (0.375 m/s) OR (0.5 w/m/s AND 0.125 m/s) OR (0.625 w/m/s).
 NOTE: if < 8 scorable replicates, becomes count-based.
+
 <br>
-{{ num_passes_count }} pass{{ num_passes_count|pluralize:"es," }}
+
+{{ num_passes_count }} pass{{ num_passes_count|pluralize:'es,' }}
 criteria C (count-based):
 (3 m/s) OR (4 w/m/s AND 1 m/s) OR (5 w/m/s)
 

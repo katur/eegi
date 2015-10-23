@@ -1,20 +1,17 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
 
 {% block body_id %}secondary-scores-search{% endblock %}
+
+
 {% block page_title %}Browse Secondary Scores{% endblock %}
 
-{% block content %}
 
+{% block content %}
 <div class="error-form">
   {% if error %}
   <span class="error-message">
     Please try again: {{ error }}
-  </span>
-  {% endif %}
-
-  {% if form.errors %}
-  <span class="error-message">
-    Please correct the error{{ form.errors|pluralize }} below.
   </span>
   {% endif %}
 
@@ -26,5 +23,4 @@
     <input type="submit" value="Submit">
   </form>
 </div>
-
 {% endblock %}

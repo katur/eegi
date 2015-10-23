@@ -1,8 +1,14 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load extra_tags %}
 
+
 {% block body_id %}experiment-plate{% endblock %}
-{% block page_title %}Experiment Plate {{ experiment.id }}{% endblock %}
+
+
+{% block page_title %}
+Experiment Plate {{ experiment.id }}
+{% endblock %}
+
 
 {% block content %}
 <div class="cleared-spaced-spans">

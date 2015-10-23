@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block body_id %}library-plates{% endblock %}
 {% block page_title %}RNAi Library Plates{% endblock %}
@@ -30,7 +30,7 @@
     {{ library_plates|length }} total
   </span>
 
-  {% include "pagination_status.html" with paginated=display_plates %}
+  {% include 'pagination_status.html' with paginated=display_plates %}
 </div>
 
 <table class="grayscale striped nice-padding">

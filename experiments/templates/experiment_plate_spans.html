@@ -1,7 +1,7 @@
 {% load extra_tags %}
 
 {% with worm=experiment.worm_strain temperature=experiment.temperature %}
-  {% include "worm_spans.html" %}
+  {% include 'worm_spans.html' %}
 {% endwith %}
 
 <span>
@@ -13,7 +13,7 @@
 
 <span>
   Experiment date:
-  {{ experiment.date|date:"SHORT_DATE_FORMAT" }}
+  {{ experiment.date|date:'SHORT_DATE_FORMAT' }}
 </span>
 
 {% if experiment.is_junk %}

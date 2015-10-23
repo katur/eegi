@@ -3,7 +3,7 @@
 
 {% for i in values %}
   {% with experiment=i.0 library_well=i.1 %}
-  {% include "image_wrapper.html" with current=forloop.counter %}
+    {% include 'image_wrapper.html' with current=forloop.counter %}
   {% endwith %}
 {% endfor %}
 

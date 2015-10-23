@@ -1,23 +1,25 @@
 {% load extra_tags %}
 
 {% with library_well.intended_clone as clone %}
-  {% include "clone_spans.html" %}
+  {% include 'clone_spans.html' %}
 {% endwith %}
 
 <span>
   Manual scores:
+
   {% if experiment|is_manually_scored:well %}
-    {{ experiment|get_manual_score_summary:well }}
+  {{ experiment|get_manual_score_summary:well }}
   {% else %}
-    Not manually scored
+  Not manually scored
   {% endif %}
 </span>
 
 <span>
   DevStaR scores:
+
   {% if experiment|is_devstar_scored:well %}
-    {{ experiment|get_devstar_score_summary:well }}
+  {{ experiment|get_devstar_score_summary:well }}
   {% else %}
-    Not scored by DevStaR
+  Not scored by DevStaR
   {% endif %}
 </span>

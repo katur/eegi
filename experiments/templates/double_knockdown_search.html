@@ -1,10 +1,13 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
 
 {% block body_id %}double-knockdown-search{% endblock %}
+
+
 {% block page_title %}Search for a Double Knockdown{% endblock %}
 
-{% block content %}
 
+{% block content %}
 <div class="error-form">
   <form action="" method="post">
     {% csrf_token %}
@@ -14,5 +17,4 @@
     <input type="submit" value="Submit">
   </form>
 </div>
-
 {% endblock %}

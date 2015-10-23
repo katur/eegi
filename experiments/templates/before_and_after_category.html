@@ -1,11 +1,14 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load extra_tags %}
 
+
 {% block body_id %}before-and-after-category{% endblock %}
+
 
 {% block page_title %}
 Image Category: {{ category }}
 {% endblock %}
+
 
 {% block content %}
 <div id="results-header">
@@ -13,7 +16,7 @@ Image Category: {{ category }}
     {{ tuples|length }} total
   </span>
 
-  {% include "pagination_status.html" with paginated=display_tuples %}
+  {% include 'pagination_status.html' with paginated=display_tuples %}
 </div>
 
 <table id="before-and-after">
@@ -25,13 +28,13 @@ Image Category: {{ category }}
 
     <td>
       <a href="{% url 'experiment_well_url' experiment.id well %}">
-        {% include "image.html" %}
+        {% include 'image.html' %}
       </a>
     </td>
 
     <td>
       <a href="{% url 'experiment_well_url' experiment.id well %}?mode=devstar">
-        {% include "image.html" with mode="devstar" %}
+        {% include 'image.html' with mode="devstar" %}
       </a>
     </td>
   </tr>

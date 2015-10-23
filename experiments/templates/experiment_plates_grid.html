@@ -1,7 +1,9 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load extra_tags %}
 
+
 {% block body_id %}experiment-plates-grid{% endblock %}
+
 
 {% block page_title %}
 Grid of All
@@ -13,8 +15,8 @@ Secondary
 Experiments
 {% endblock %}
 
-{% block content %}
 
+{% block content %}
 <table id="experiment-grid" class="grid">
   <thead>
     <tr>
@@ -79,5 +81,4 @@ Experiments
     {% endfor %}
   </tbody>
 </table>
-
 {% endblock %}

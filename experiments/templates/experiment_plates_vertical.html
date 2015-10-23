@@ -1,13 +1,17 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load extra_tags %}
 
+
 {% block body_id %}experiment-plates-vertical{% endblock %}
+
+
 {% block page_title %}
   Vertical Tile View of Experiments:
   {% for experiment in experiments %}
     {{ experiment.id }}{% if not forloop.last %},{% endif %}
   {% endfor %}
 {% endblock %}
+
 
 {% block content %}
 <!-- Outer table is in case there are multiple experiments -->
@@ -35,7 +39,7 @@
 
           <span>{{ experiment.temperature|celsius }}</span>
 
-          <span>{{ experiment.date|date:"SHORT_DATE_FORMAT" }}</span>
+          <span>{{ experiment.date|date:'SHORT_DATE_FORMAT' }}</span>
 
           <span
           {% if experiment.is_junk %}
@@ -51,7 +55,7 @@
     <tbody>
       {% for library_well in experiment.library_wells %}
       <tr>
-        {% include "well.html" %}
+        {% include 'well.html' %}
       </tr>
       {% endfor %}
     </tbody>

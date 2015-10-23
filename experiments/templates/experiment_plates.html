@@ -1,11 +1,14 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 {% load extra_tags %}
 
+
 {% block body_id %}experiment-plates{% endblock %}
+
+
 {% block page_title %}Experiment Plates{% endblock %}
 
-{% block content %}
 
+{% block content %}
 <h4>Browse all experiments in grid format</h4>
 <a href="{% url 'experiment_plates_grid_url' 1 %}">
   Primary screen (non-junk, official temps only)</a>
@@ -52,7 +55,7 @@
       See all DevStaR images (max 50)</a>
   </span>
 
-  {% include "pagination_status.html" with paginated=display_experiments %}
+  {% include 'pagination_status.html' with paginated=display_experiments %}
 </div>
 {% endifnotequal %}
 
