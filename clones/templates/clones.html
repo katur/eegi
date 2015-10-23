@@ -17,7 +17,7 @@
     {{ clones|length }} total
   </span>
 
-  {% include "pagination_status.html" %}
+  {% include "pagination_status.html" with paginated=display_clones %}
 </div>
 
 <table class="grayscale striped nice-padding">
@@ -29,7 +29,7 @@
   </thead>
 
   <tbody>
-    {% for clone in paginated %}
+    {% for clone in display_clones %}
     <tr>
       <td>
         <a href="{{ clone.get_absolute_url }}">

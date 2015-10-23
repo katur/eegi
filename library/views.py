@@ -35,7 +35,7 @@ def library_plates(request):
 
     context = {
         'library_plates': library_plates,
-        'paginated': display_plates,
+        'display_plates': display_plates,
     }
 
     return render(request, 'library_plates.html', context)

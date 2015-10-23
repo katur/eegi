@@ -39,7 +39,7 @@
     {{ library_plates|length }} total
   </span>
 
-  {% include "pagination_status.html" %}
+  {% include "pagination_status.html" with paginated=display_plates %}
 </div>
 
 <table class="grayscale striped nice-padding">
@@ -51,7 +51,7 @@
   </thead>
 
   <tbody>
-    {% for library_plate in paginated %}
+    {% for library_plate in display_plates %}
     <tr>
       <td>
         <a href="{{ library_plate.get_absolute_url }}">

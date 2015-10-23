@@ -13,11 +13,11 @@ Image Category: {{ category }}
     {{ tuples|length }} total
   </span>
 
-  {% include "pagination_status.html" %}
+  {% include "pagination_status.html" with paginated=display_tuples %}
 </div>
 
 <table id="before-and-after">
-  {% for experiment, well, tile in paginated %}
+  {% for experiment, well, tile in display_tuples %}
   <tr>
     <td>
       {{ experiment.id }}_{{ tile }}

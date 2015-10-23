@@ -170,6 +170,7 @@ def experiment_well(request, id, well):
 
 
 BEFORE_AND_AFTER_DIR = MATERIALS_DIR + '/before_and_after/categories'
+BEFORE_AND_AFTER_PER_PAGE = 10
 
 
 def before_and_after_category(request, category):
@@ -185,7 +186,7 @@ def before_and_after_category(request, category):
         tuples.append((experiment, well, tile))
     f.close()
 
-    paginator = Paginator(tuples, 10)
+    paginator = Paginator(tuples, BEFORE_AND_AFTER_PER_PAGE)
     page = request.GET.get('page')
 
     try:
@@ -198,7 +199,7 @@ def before_and_after_category(request, category):
     context = {
         'category': category,
         'tuples': tuples,
-        'paginated': display_tuples,
+        'display_tuples': display_tuples,
     }
 
     return render(request, 'before_and_after_category.html', context)

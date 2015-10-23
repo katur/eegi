@@ -27,15 +27,15 @@ def clones(request):
     page = request.GET.get('page')
 
     try:
-        paginated = paginator.page(page)
+        display_clones = paginator.page(page)
     except PageNotAnInteger:
-        paginated = paginator.page(1)
+        display_clones = paginator.page(1)
     except EmptyPage:
-        paginated = paginator.page(paginator.num_pages)
+        display_clones = paginator.page(paginator.num_pages)
 
     context = {
         'clones': clones,
-        'paginated': paginated,
+        'display_clones': display_clones,
         'form': form,
     }
 
