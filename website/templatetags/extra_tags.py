@@ -15,13 +15,7 @@ def concatenate_ids_with_commas(l):
     Does not add spaces before or after the commas.
 
     """
-    s = ''
-    for item in l:
-        s += str(item.id) + ','
-    if len(s) > 0:
-        s = s[:-1]
-
-    return s
+    return ','.join([str(item.id) for item in l])
 
 
 @register.filter(is_safe=True)

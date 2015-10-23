@@ -2,7 +2,6 @@ import os
 from collections import OrderedDict
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 
 from eegi.settings import MATERIALS_DIR
@@ -21,18 +20,11 @@ def experiment_plates(request, context=None):
     """Render the page to search for experiment plates."""
     experiments = None
     display_experiments = None
-    link_to_vertical = None
 
     if len(request.GET):
         form = ExperimentFilterForm(request.GET)
         if form.is_valid():
             experiments = form.cleaned_data['experiments']
-
-            if experiments:
-                ids = ','.join([str(e.id) for e in experiments])
-                link_to_vertical = reverse(
-                    'experiment_plates_vertical_url',
-                    args=[ids])
 
             paginator = Paginator(experiments, EXPERIMENTS_PER_PAGE)
             page = request.GET.get('page')
@@ -50,7 +42,6 @@ def experiment_plates(request, context=None):
         'form': form,
         'experiments': experiments,
         'display_experiments': display_experiments,
-        'link_to_vertical': link_to_vertical,
     }
 
     return render(request, 'experiment_plates.html', context)

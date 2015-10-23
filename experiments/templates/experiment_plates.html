@@ -37,22 +37,20 @@
     {{ experiments|length }} matching experiment{{ experiments|pluralize }}
   </span>
 
-  {% if link_to_vertical %}
+  {% url 'experiment_plates_vertical_url' experiments|concatenate_ids_with_commas as vertical_url %}
   <span class="vertical-links">
-
-    <a href="{{ link_to_vertical }}"
+    <a href="{{ vertical_url }}"
         {% if experiments|length > 500 %}class="inactive-link"{% endif %}>
       See all thumbnails (max 500 expts)</a>
 
-    <a href="{{ link_to_vertical }}?mode=big"
+    <a href="{{ vertical_url }}?mode=big"
         {% if experiments|length > 50 %}class="inactive-link"{% endif %}>
       See all full-size images (max 50)</a>
 
-    <a href="{{ link_to_vertical }}?mode=devstar"
+    <a href="{{ vertical_url }}?mode=devstar"
         {% if experiments|length > 50 %}class="inactive-link"{% endif %}>
       See all DevStaR images (max 50)</a>
   </span>
-  {% endif %}
 
   {% include "pagination_status.html" with paginated=display_experiments %}
 </div>
