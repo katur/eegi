@@ -5,12 +5,24 @@ from clones.models import Clone, CloneTarget, Gene
 
 
 def get_clones(search_term):
+    '''Get list of clones matching a search term.
+
+    If no search_term is provided, raises a ValueError. This is
+    to distinguish the case of no search term from the case of
+    no match.
+
+    Matching is defined as a perfect match between search_term and
+    clone.pk, or if that does not exist, a perfect match between
+    search_term and the gene.locus, gene.cosmid, or gene.pk of
+    one of the clone's targets.
+
+    '''
     if not search_term:
-        return Clone.objects.all()
+        raise ValueError('Search term is required')
 
     try:
         clone = Clone.objects.get(pk=search_term)
-        clones = [clone]
+        return [clone]
 
     except ObjectDoesNotExist:
         genes = (Gene.objects
@@ -20,6 +32,4 @@ def get_clones(search_term):
 
         clone_ids = (CloneTarget.objects.filter(gene__in=genes)
                      .values_list('clone_id', flat=True))
-        clones = Clone.objects.filter(id__in=clone_ids)
-
-    return clones
+        return Clone.objects.filter(id__in=clone_ids)

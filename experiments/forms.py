@@ -1,6 +1,7 @@
 from django import forms
+from django.core.validators import MinLengthValidator
 
-from clones.helpers.queries import get_clones
+from clones.forms import RNAiKnockdownField
 from experiments.models import Experiment
 from worms.helpers.queries import get_worm_and_temperature
 
@@ -73,36 +74,53 @@ class ExperimentFilterForm(forms.Form):
         required=False)
 
 
-class MutantQueryField(forms.CharField):
-    def __init__(self):
-        super(MutantQueryField, self).__init__(
-            label='Mutant query',
-            help_text='gene, allele, or worm strain name')
+class MutantKnockdownField(forms.CharField):
+    """Field to find a mutant worm.
 
+    Since this is meant for finding knockdowns,
+    N2 (the control worm with no mutation) is not allowed.
 
-class RNAiQueryField(forms.CharField):
-    def __init__(self):
-        super(RNAiQueryField, self).__init__(
-            label='RNAi query',
-            help_text='gene target (WormBase id, cosmid id, or locus)'
-                      ' or clone name')
+    Since this is meant as a field to define a knockdown page,
+    if no value is entered, a ValidationError is raised.
+
+    Otherwise, the value is simply returned. (It is not coerced
+    to a WormStrain object, because the particular WormStrain
+    cannot be figured out without also checking the ScreenType
+    value.)
+
+    """
+    def __init__(self, **kwargs):
+        if 'help_text' not in kwargs:
+            kwargs['help_text'] = 'gene, allele, or worm strain name'
+
+        super(MutantKnockdownField, self).__init__(**kwargs)
+
+    def to_python(self, value):
+        if value == 'N2':
+            raise forms.ValidationError('Mutant query cannot be N2')
+        return value
 
 
 class ScreenChoiceField(forms.ChoiceField):
-    def __init__(self):
-        super(ScreenChoiceField, self).__init__(
-            choices=[('SUP', 'suppressor'), ('ENH', 'enhancer')],
-            widget=forms.RadioSelect)
+    """Field defining the screen as SUP or ENH."""
+    def __init__(self, **kwargs):
+        if 'widget' not in kwargs:
+            kwargs['widget'] = forms.RadioSelect
+
+        if 'choices' not in kwargs:
+            kwargs['choices'] = [('SUP', 'suppressor'), ('ENH', 'enhancer')]
+        super(ScreenChoiceField, self).__init__(**kwargs)
 
 
 def _clean_mutant_query_and_screen(form, cleaned_data):
+    """Helper method to coerce a mutant query term and a screen into
+    a particular worm strain.
+
+    """
     mutant_query = cleaned_data.get('mutant_query')
     screen = cleaned_data.get('screen')
 
-    if mutant_query == 'N2':
-        form.add_error('mutant_query', 'Mutant query cannot be N2')
-
-    elif mutant_query:
+    if mutant_query and screen:
         worm_and_temp = get_worm_and_temperature(mutant_query, screen)
         if worm_and_temp:
             cleaned_data['worm'] = worm_and_temp[0]
@@ -113,35 +131,19 @@ def _clean_mutant_query_and_screen(form, cleaned_data):
     return cleaned_data
 
 
-def _clean_rnai_query(form, cleaned_data):
-    rnai_query = cleaned_data.get('rnai_query')
-
-    if rnai_query == 'L4440':
-        form.add_error('rnai_query', 'RNAi query cannot be L4440')
-
-    clones = get_clones(rnai_query)
-    if clones:
-        cleaned_data['clones'] = clones
-    else:
-        form.add_error('rnai_query', 'No RNAi match')
-
-
-class DoubleKnockdownForm(forms.Form):
-    """Form for finding a double knockdown."""
-    mutant_query = MutantQueryField()
-    rnai_query = RNAiQueryField()
-    screen = ScreenChoiceField()
-
-    def clean(self):
-        cleaned_data = super(DoubleKnockdownForm, self).clean()
-        cleaned_data = _clean_mutant_query_and_screen(self, cleaned_data)
-        cleaned_data = _clean_rnai_query(self, cleaned_data)
-        return cleaned_data
+class RNAiKnockdownForm(forms.Form):
+    """Form for finding wildtype worms tested with a single RNAi clone."""
+    rnai_query = RNAiKnockdownField(
+        label='RNAi query',
+        validators=[MinLengthValidator(1, message='No clone matches')])
+    temperature = forms.DecimalField(required=False,
+                                     label='Temperature',
+                                     help_text='optional')
 
 
 class MutantKnockdownForm(forms.Form):
     """Form for finding a mutant worm with the control bacteria."""
-    mutant_query = MutantQueryField()
+    mutant_query = MutantKnockdownField()
     screen = ScreenChoiceField()
 
     def clean(self):
@@ -150,20 +152,21 @@ class MutantKnockdownForm(forms.Form):
         return cleaned_data
 
 
-class RNAiKnockdownForm(forms.Form):
-    """Form for finding wildtype worms tested with a single RNAi clone."""
-    rnai_query = RNAiQueryField()
-    temperature = forms.DecimalField(required=False,
-                                     label='Temperature',
-                                     help_text='optional')
+class DoubleKnockdownForm(forms.Form):
+    """Form for finding a double knockdown."""
+    mutant_query = MutantKnockdownField()
+    rnai_query = RNAiKnockdownField(
+        label='RNAi query',
+        validators=[MinLengthValidator(1, message='No clone matches')])
+    screen = ScreenChoiceField()
 
     def clean(self):
-        cleaned_data = super(RNAiKnockdownForm, self).clean()
-        cleaned_data = _clean_rnai_query(self, cleaned_data)
+        cleaned_data = super(DoubleKnockdownForm, self).clean()
+        cleaned_data = _clean_mutant_query_and_screen(self, cleaned_data)
         return cleaned_data
 
 
 class SecondaryScoresForm(forms.Form):
-    """Form for getting all secondary scores for a strain."""
-    query = MutantQueryField()
+    """Form for getting all secondary scores for a worm/screen combo."""
+    query = MutantKnockdownField()
     screen = ScreenChoiceField()
