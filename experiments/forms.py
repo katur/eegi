@@ -3,15 +3,8 @@ from django.core.validators import MinLengthValidator
 
 from clones.forms import RNAiKnockdownField
 from experiments.models import Experiment
+from utils.forms import BlankNullBooleanSelect
 from worms.helpers.queries import get_worm_and_temperature
-
-
-class BlankNullBooleanSelect(forms.NullBooleanSelect):
-    def __init__(self, attrs=None):
-        choices = ((u'1', u''),
-                   (u'3', u'No'),
-                   (u'2', u'Yes'))
-        forms.Select.__init__(self, attrs, choices)
 
 
 class ExperimentFilterForm(forms.Form):
