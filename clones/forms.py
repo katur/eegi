@@ -5,7 +5,7 @@ from clones.models import Clone
 
 
 class CloneSearchField(forms.CharField):
-    '''Field to query for a clone, by clone.pk or its gene targets.
+    """Field to query for a clone, by clone.pk or its gene targets.
 
     Since this is meant as generic search field for finding clones,
     if no value is entered, all clones are returned.
@@ -17,7 +17,7 @@ class CloneSearchField(forms.CharField):
           the search term (on locus, cosmid, or pk)
         - if no clone.pk match and no target match, an empty list
 
-    '''
+    """
     def __init__(self, **kwargs):
         if 'help_text' not in kwargs:
             kwargs['help_text'] = ('clone name or gene target '
@@ -33,7 +33,7 @@ class CloneSearchField(forms.CharField):
 
 
 class RNAiKnockdownField(CloneSearchField):
-    '''Field to find RNAi clone(s).
+    """Field to find RNAi clone(s).
 
     Since this is meant for finding knockdowns,
     L4440 (the control clone with no RNAi effect) is not allowed.
@@ -43,7 +43,7 @@ class RNAiKnockdownField(CloneSearchField):
 
     Otherwise, a match is defined as in CloneSearchField.
 
-    '''
+    """
     def to_python(self, value):
         if value == 'L4440':
             raise forms.ValidationError('RNAi query cannot be L4440')
@@ -54,5 +54,5 @@ class RNAiKnockdownField(CloneSearchField):
 
 
 class CloneSearchForm(forms.Form):
-    '''Form to search for clones.'''
+    """Form to search for clones."""
     clone_query = CloneSearchField(required=False)

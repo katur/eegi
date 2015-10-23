@@ -227,8 +227,7 @@ class Command(BaseCommand):
                 return
 
     def process_qscrl_row(self, row):
-        '''
-        Process a row of QSCRL information.
+        """Process a row of QSCRL information.
 
         Need sample_plate_name and sample_tube_number because they are
         how we label our samples (to identify what sequence well came
@@ -239,7 +238,7 @@ class Command(BaseCommand):
 
         Also, avoid Template_Name... sometimes e.g. 'GC1'
 
-        '''
+        """
 
         tracking_number = row['trackingNumber']
         tube_label = row['TubeLabel']

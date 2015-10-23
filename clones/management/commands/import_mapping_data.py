@@ -8,7 +8,7 @@ from eegi.local_settings import MAPPING_DATABASE
 from utils.db import get_field_dictionary
 from utils.scripting import require_db_write_acknowledgement
 
-HELP = '''Import clone data from Firoz's RNAiCloneMapper database.'''
+HELP = "Import clone data from Firoz's RNAiCloneMapper database."
 
 
 class Command(BaseCommand):
