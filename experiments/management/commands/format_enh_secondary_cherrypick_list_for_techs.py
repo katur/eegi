@@ -19,7 +19,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         f = options['file']
 
-        # print header
+        # Print header
         self.stdout.write(f.readline())
 
         # Keep track of source/destination plate combos in order
