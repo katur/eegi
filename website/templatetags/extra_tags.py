@@ -22,7 +22,7 @@ def concatenate_ids_with_commas(l):
 def celsius(temperature):
     """Return temperature in format 22.5C, including degree sign."""
     if temperature:
-        return unicode(temperature) + u'\xb0' + 'C'
+        return unicode(temperature) + u'\N{DEGREE SIGN}' + 'C'
     else:
         return None
 
