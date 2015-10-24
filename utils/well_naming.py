@@ -52,7 +52,4 @@ def is_proper_well_name(well, is_384=False):
         rows = ROWS_96
         cols = COLS_96
 
-    if row not in rows or col not in cols:
-        return False
-
-    return True
+    return row in rows and col in cols

@@ -29,13 +29,9 @@ def passes_sup_positive_percentage_criteria(scores):
     yes = yes / total
     maybe = maybe / total
 
-    if (
-            yes >= .375 or
+    return (yes >= .375 or
             (yes >= .125 and yes + maybe >= .5) or
-            yes + maybe >= .625):
-        return True
-
-    return False
+            yes + maybe >= .625)
 
 
 def passes_sup_positive_count_criteria(scores):
@@ -53,13 +49,9 @@ def passes_sup_positive_count_criteria(scores):
         elif score.is_weak():
             maybe += 1
 
-    if (
-            yes >= 3 or
+    return (yes >= 3 or
             (yes >= 1 and yes + maybe >= 4) or
-            yes + maybe >= 5):
-        return True
-
-    return False
+            yes + maybe >= 5)
 
 
 def passes_sup_stringent_criteria(scores):
@@ -75,10 +67,7 @@ def passes_sup_stringent_criteria(scores):
         if score.is_strong() or score.is_medium():
             yes += 1
 
-    if (yes / total) >= .375:
-        return True
-
-    return False
+    return (yes / total) >= .375
 
 
 def passes_enh_secondary_criteria(scores, singles=[]):

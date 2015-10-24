@@ -9,7 +9,5 @@ def http_response_ok(url):
         r = urllib2.urlopen(url)
     except urllib2.URLError:
         return False
-    if r.code == 200:
-        return True
-    else:
-        return False
+
+    return r.code == 200

@@ -59,10 +59,7 @@ class WormStrain(models.Model):
             return self.get_wormbase_url()
 
     def is_control(self):
-        if not self.allele:
-            return True
-        else:
-            return False
+        return not self.allele
 
     def is_permissive_temperature(self, temperature):
         return self.permissive_temperature == Decimal(temperature)
