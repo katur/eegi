@@ -45,11 +45,6 @@ class Command(BaseCommand):
         for plate in plate_wells:
             missing_wells = get_missing_wells(plate_wells[plate],
                                               wells_96)
-            if plate.is_ahringer_96_plate():
-                is_ahringer = True
-            else:
-                is_ahringer = False
-
             for missing_well in missing_wells:
                 well = LibraryWell(
                     id=get_library_well_name(plate.id, missing_well),
@@ -59,7 +54,7 @@ class Command(BaseCommand):
                     intended_clone=None,
                 )
 
-                if is_ahringer:
+                if plate.is_ahringer_96_plate():
                     well.parent_library_well = get_384_parent_well(well)
 
                 well.save()
@@ -72,6 +67,7 @@ def get_missing_wells(present, complete):
 def get_384_parent_well(well):
     """Get the 384 format well from which a particular 96 format well is
     derived, assuming standard Ahringer naming.
+
     """
     child_plate_parts = well.plate.id.split('-')
     parent_plate_name = child_plate_parts[0] + '-' + child_plate_parts[1]
