@@ -79,7 +79,7 @@ def rnai_knockdown(request, clones, temperature=None):
             if expts:
                 data_by_well[library_well] = [(e, library_well) for e in expts]
 
-        if len(data_by_well):
+        if data_by_well:
             data[clone] = data_by_well
 
     context = {
@@ -188,7 +188,7 @@ def double_knockdown(request, worm, clones, temperature):
                 data_by_well[(library_well, date['date'])] = d
 
         # Add the finished dictionary for this library well
-        if len(data_by_well):
+        if data_by_well:
             data[clone] = data_by_well
 
     context = {

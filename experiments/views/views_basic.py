@@ -21,7 +21,7 @@ def experiment_plates(request, context=None):
     experiments = None
     display_experiments = None
 
-    if len(request.GET):
+    if request.GET:
         form = ExperimentFilterForm(request.GET)
         if form.is_valid():
             experiments = form.cleaned_data['experiments']

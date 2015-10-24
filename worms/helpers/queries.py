@@ -26,7 +26,7 @@ def get_worm_and_temperature(query, screen):
                  .filter(Q(gene=query) | Q(allele=query) | Q(id=query))
                  .exclude(restrictive_temperature__isnull=True))
 
-    if len(worms) == 0:
+    if not worms:
         return None
 
     elif len(worms) > 1:
