@@ -177,6 +177,9 @@ form table th {
 form table th, form table td {
   padding-bottom: 5px; }
 
+table thead th {
+  text-align: left; }
+
 .grayscale {
   background: #eee; }
   .grayscale thead {
