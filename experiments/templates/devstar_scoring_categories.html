@@ -2,11 +2,8 @@
 {% load extra_tags %}
 
 
-{% block body_id %}before-and-after-categories{% endblock %}
-
-
 {% block page_title %}
-Image Categories
+DevStaR Scoring Categories
 {% endblock %}
 
 
@@ -14,7 +11,7 @@ Image Categories
 <ul>
   {% for category in categories %}
   <li>
-    <a href="{% url 'before_and_after_category_url' category %}">
+    <a href="{% url 'devstar_scoring_category_url' category %}">
       {{ category }}</a>
   </li>
   {% endfor %}

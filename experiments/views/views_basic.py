@@ -159,24 +159,37 @@ def experiment_well(request, id, well):
     return render(request, 'experiment_well.html', context)
 
 
-BEFORE_AND_AFTER_DIR = MATERIALS_DIR + '/before_and_after/categories'
-BEFORE_AND_AFTER_PER_PAGE = 10
+DEVSTAR_SCORING_CATEGORIES_DIR = MATERIALS_DIR + '/devstar_scoring/categories'
+DEVSTAR_SCORING_IMAGES_PER_PAGE = 10
 
 
-def before_and_after_category(request, category):
+def devstar_scoring_categories(request):
+    categories = os.listdir(DEVSTAR_SCORING_CATEGORIES_DIR)
+
+    context = {
+        'categories': categories,
+    }
+
+    return render(request, 'devstar_scoring_categories.html', context)
+
+
+def devstar_scoring_category(request, category):
     tuples = []
 
-    f = open(BEFORE_AND_AFTER_DIR + '/' + category, 'r')
+    f = open(DEVSTAR_SCORING_CATEGORIES_DIR + '/' + category, 'r')
+
     rows = f.readlines()
+
     for row in rows:
         experiment_id, tile = row.split('_')
         experiment = get_object_or_404(Experiment, pk=experiment_id)
         tile = tile.split('.bmp')[0]
         well = tile_to_well(tile)
         tuples.append((experiment, well, tile))
+
     f.close()
 
-    paginator = Paginator(tuples, BEFORE_AND_AFTER_PER_PAGE)
+    paginator = Paginator(tuples, DEVSTAR_SCORING_IMAGES_PER_PAGE)
     page = request.GET.get('page')
 
     try:
@@ -192,14 +205,4 @@ def before_and_after_category(request, category):
         'display_tuples': display_tuples,
     }
 
-    return render(request, 'before_and_after_category.html', context)
-
-
-def before_and_after_categories(request):
-    categories = os.listdir(BEFORE_AND_AFTER_DIR)
-
-    context = {
-        'categories': categories,
-    }
-
-    return render(request, 'before_and_after_categories.html', context)
+    return render(request, 'devstar_scoring_category.html', context)

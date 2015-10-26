@@ -2,11 +2,8 @@
 {% load extra_tags %}
 
 
-{% block body_id %}before-and-after-category{% endblock %}
-
-
 {% block page_title %}
-Image Category: {{ category }}
+DevStaR Scoring Category: {{ category }}
 {% endblock %}
 
 
@@ -19,7 +16,7 @@ Image Category: {{ category }}
   {% include 'pagination_status.html' with paginated=display_tuples %}
 </div>
 
-<table id="before-and-after">
+<table id="devstar-scoring-category">
   {% for experiment, well, tile in display_tuples %}
   <tr>
     <td>
