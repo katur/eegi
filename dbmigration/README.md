@@ -236,9 +236,11 @@ datatype for embryo per adult, larva per adult | INTEGER | FLOAT
 datatype for survival/lethality | truncated to 6 digits past decimal | more precision
 survival and lethality, if no adults | 0 | calculate the regular way, using embryo and larva numbers
 embryo per adult and larva per adult, if no adults | 0 | null
+adult (or larva) count if area is 0 | -1 | null
 
 **Still to do**
 - Per HL, I kept the embryo count as an integer. Should we change it to a float?
+- Amelia did not define adult/larva counts if adult/larva area was 0. HL made these -1. I made these NULL. But perhaps they make most sense as 0. Confirm by looking at examples.
 
 
 
