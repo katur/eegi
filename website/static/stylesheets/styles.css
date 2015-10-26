@@ -333,6 +333,10 @@ table thead th {
     .plate-96 .well-title.well-caption,
     .plate-96 .well-caption.well-caption {
       bottom: 0; }
+  .plate-96 .well-caption a {
+    color: #bb99dd; }
+    .plate-96 .well-caption a:hover, .plate-96 .well-caption a.active {
+      color: #a5a5a5; }
   .plate-96 .image-frame {
     display: block; }
   .plate-96 .well-title {
