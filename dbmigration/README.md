@@ -240,7 +240,7 @@ adult (or larva) count if area is 0 | -1 | null
 
 **Still to do**
 - Per HL, I kept the embryo count as an integer. Should we change it to a float?
-- Amelia did not define adult/larva counts if adult/larva area was 0. HL made these -1. I made these NULL. But perhaps they make most sense as 0. Confirm by looking at examples.
+- Amelia did not define adult/larva counts if adult/larva area was 0. HL made these -1. I made these NULL. But perhaps they make most sense as 0. Confirm by looking at examples. Also, need to make sure cases with legitimate lack of object pixel areas are distinguishable from cases where the first part of DevStaR ran, but the second part did not.
 
 
 
