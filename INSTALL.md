@@ -1,5 +1,7 @@
-Installing eegi Project
-=======================
+# Installing eegi Project
+
+## Production installation
+
 Here is a walkthrough of how I deployed this with Apache and modwsgi on pyxis (which runs Ubuntu).
 
 This assumes that most sysadmin setup is already complete.
@@ -16,14 +18,14 @@ This sysadmin steps includes the following:
 - creating the project directory, owned by the UNIX project user (in this case /opt/local/eegi)
 - creating a MySQL user and MySQL database per project (in this case, both named eegi)
 
-MySQL Database
---------------
+### MySQL Database
+
 ```
 mysql -u eegi -p eegi < <sql dump filename>
 ```
 
-Code
-----
+### Code
+
 ```
 cd /opt/local/eegi
 git clone https://github.com/katur/eegi.git
@@ -33,8 +35,8 @@ cd /opt/local/eegi/eegi/eegi
 # edit local_settings with database connection info, setting DEBUG=False
 ```
 
-Virtual Environment and Dependencies
-------------------------------------
+### Virtual Environment and Dependencies
+
 ```
 cd /opt/local/eegi
 virtualenv --python=/usr/bin/python2.7 eegivirtualenv
@@ -46,29 +48,24 @@ source eegivirtualenv/bin/activate
 pip install -r eegi/requirements.txt
 ```
 
-Static Files
-------------
+### Collecting Static Files
+
 ```
 source /opt/local/eegi/eegivirtualenv/bin/activate
 cd /opt/local/eegi/eegi
 ./manage.py collectstatic
 ```
 
-Running Django Built-in Development Server
-------------------------------------------
-```
-source /opt/local/eegi/eegivirtualenv/bin/activate
-/opt/local/eegi/eegi/manage.py runserver <IP address>:8000
-```
+### Apache Configuration
 
-Apache Configuration
---------------------
 ```
 cd /opt/local/eegi
 mkdir apache2
 
-cd apache2/eegi.conf
+vi /opt/local/eegi/apache2/eegi.conf
 # add project-specific apache settings, using port 8009
+# note that part of this configuration involves serving static files directly
+# please see the above file, on pyxis, for details
 
 sudo ln -s /opt/local/eegi/apache2/eegi.conf /etc/apache2/sites-enabled/001-eegi.conf
 
@@ -76,17 +73,16 @@ sudo vi /etc/apache2/ports.conf
 # add line to Listen 8009
 ```
 
-Apache Commands
----------------
+### Apache Commands
 ```
 sudo service apache2 restart
 sudo service apache2 start
 sudo service apache2 stop
 ```
 
-Deploying in a Nutshell -- DRAFT
---------------------------------
-### As user eegi
+### Deploying in a Nutshell -- DRAFT
+
+#### *As user eegi...*
 ```
 # dump database, in case reverting is necessary
 # record the currently-deployed git commit, in case reverting is necessary
@@ -114,7 +110,7 @@ pip install -r requirements.txt
 ./manage.py test
 ```
 
-### As user with sudo
+#### *As user with sudo...*
 ```
 sudo service apache2 restart
 ```
