@@ -2,9 +2,9 @@ Installing eegi Project
 =======================
 Here is a walkthrough of deploying on Ubuntu, with Apache and modwsgi. 
 
-This assumes that most system-level setup is already complete.
-Lior performed this system-level setup on pyxis, and has the documentation.
-This system-level setup includes the following steps:
+This assumes that most sysadmin setup is already complete.
+Lior performed the sysadmin setup on pyxis, and has the documentation.
+This sysadmin steps includes the following:
 
 - installing git
 - installing Python
