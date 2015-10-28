@@ -1,8 +1,20 @@
 Installing eegi Project
 =======================
-Here is a walkthrough of an Ubuntu deploy, using Apache
-and modwsgi. WORK IN PROGRESS.
+Here is a walkthrough of deploying on Ubuntu, with Apache and modwsgi. 
 
+This assumes that most system-level setup is already complete.
+Lior performed this system-level setup on pyxis, and has the documentation.
+This system-level setup includes the following steps:
+
+- installing git
+- installing Python
+- installing virtualenv (for managing Python packages, including Django, within virtual environments)
+- installing / setting up MySQL
+- installing / setting up Apache
+- installing modwsgi
+- creating a UNIX user per project (in this case, eegi)
+- creating the project directory, owned by the UNIX project user (in this case /opt/local/eegi)
+- creating a MySQL user and MySQL database per project (in this case, both named eegi)
 
 MySQL Database
 --------------
