@@ -1,6 +1,6 @@
 Installing eegi Project
 =======================
-Here is a walkthrough of deploying on Ubuntu, with Apache and modwsgi. 
+Here is a walkthrough of how I deployed this with Apache and modwsgi on pyxis (which runs Ubuntu).
 
 This assumes that most sysadmin setup is already complete.
 Lior performed the sysadmin setup on pyxis, and has the documentation.
@@ -27,9 +27,10 @@ Code
 ```
 cd /opt/local/eegi
 git clone https://github.com/katur/eegi.git
+
 cd /opt/local/eegi/eegi/eegi
 # copy local_settings.py from development computer
-# edit local_settings with database connection info, and set DEBUG=False
+# edit local_settings with database connection info, setting DEBUG=False
 ```
 
 Virtual Environment and Dependencies
@@ -40,6 +41,7 @@ virtualenv --python=/usr/bin/python2.7 eegivirtualenv
 # NOTE: This use of virtualenv hardcodes the name and location of the virtualenv dir.
 # But the --relocatable arg has problems and is to be deprecated.
 # So, to move or rename it, delete and recreate the virtualenv dir.
+
 source eegivirtualenv/bin/activate
 pip install -r eegi/requirements.txt
 ```
@@ -64,9 +66,10 @@ Apache Configuration
 ```
 cd /opt/local/eegi
 mkdir apache2
-cd apache2
-vi eegi.conf
+
+cd apache2/eegi.conf
 # add project-specific apache settings, using port 8009
+
 sudo ln -s /opt/local/eegi/apache2/eegi.conf /etc/apache2/sites-enabled/001-eegi.conf
 
 sudo vi /etc/apache2/ports.conf
