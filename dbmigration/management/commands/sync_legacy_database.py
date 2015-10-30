@@ -22,7 +22,7 @@ reference the steps below (dependencies in parentheses):
     2: ManualScoreCode
     3: ManualScore_primary (1, 2)
     4: DevstarScore (1)
-    5: Clone (named RNAiClone in database)
+    5: Clone
     6: LibraryWell (0, 5)
     7: ManualScore_secondary (1, 2)
 
