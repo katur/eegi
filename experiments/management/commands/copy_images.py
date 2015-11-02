@@ -1,6 +1,7 @@
 import argparse
 import csv
 import os
+import re
 import requests
 import shutil
 
@@ -31,7 +32,7 @@ class Command(BaseCommand):
         parser.add_argument('input_file', type=argparse.FileType('r'))
         parser.add_argument('output_dir')
 
-    def handle(self, *args, **options):
+    def handle(self, **options):
         input_file = options['input_file']
         output_dir = options['output_dir']
 
@@ -49,7 +50,13 @@ class Command(BaseCommand):
         next(reader)
 
         for experiment_id, well in reader:
-            tile = well_to_tile(well)
+            if re.match('Tile0000\d\d\.bmp', well):
+                tile = well.split('.bmp')[0]
+            elif re.match('Tile0000\d\d', well):
+                tile = well
+            else:
+                tile = well_to_tile(well)
+
             input_image_url = '{}/{}/{}.bmp'.format(IMG_PATH, experiment_id,
                                                     tile)
             output_image_path = '{}/{}_{}.bmp'.format(output_dir,
