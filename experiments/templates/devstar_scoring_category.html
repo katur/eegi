@@ -37,4 +37,8 @@ DevStaR Scoring Category: {{ category }}
   </tr>
   {% endfor %}
 </table>
+
+<div id="results-header">
+  {% include 'pagination_status.html' with paginated=display_tuples %}
+</div>
 {% endblock %}
