@@ -16,24 +16,20 @@ Experiment Plate {{ experiment.id }}, Well {{ well }}
   {% include "experiment_well_spans.html" %}
 
   <span>
-    <a href="{% url 'experiment_plate_url' experiment.id %}">
-      See entire experiment plate</a>
-
     {% if devstar_available %}
-      <br>
-
       {% if mode != 'devstar' %}
-
       <a href="?mode=devstar">
         See DevStaR-labelled image</a>
-
       {% else %}
-
       <a href="?{% url_replace request 'mode' 'big' %}">
         See unlabelled image</a>
-
       {% endif %}
+      <br>
     {% endif %}
+
+    <a href="{% url 'experiment_plate_url' experiment.id %}">
+      See full experiment plate</a>
+
 
     {% if library_well.intended_clone and not library_well.intended_clone.is_control and not experiment.worm_strain.is_control %}
     <br>
