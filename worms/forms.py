@@ -1,6 +1,6 @@
 from django import forms
 
-from worms.helpers.queries import get_worm_and_temperature
+from worms.helpers.queries import get_worm_and_temperature_from_search_term
 
 
 class MutantKnockdownField(forms.CharField):
@@ -56,7 +56,8 @@ def clean_mutant_query_and_screen(form, cleaned_data):
     screen = cleaned_data.get('screen')
 
     if mutant_query and screen:
-        worm_and_temp = get_worm_and_temperature(mutant_query, screen)
+        worm_and_temp = get_worm_and_temperature_from_search_term(
+            mutant_query, screen)
         if worm_and_temp:
             cleaned_data['worm'] = worm_and_temp[0]
             cleaned_data['temperature'] = worm_and_temp[1]

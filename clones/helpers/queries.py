@@ -4,7 +4,7 @@ from django.db.models import Q
 from clones.models import Clone, CloneTarget, Gene
 
 
-def get_clones(search_term):
+def get_clones_from_search_term(search_term):
     """Get list of clones matching a search term.
 
     If no search_term is provided, raises a ValueError. This is
