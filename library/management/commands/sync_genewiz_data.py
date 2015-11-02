@@ -49,6 +49,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         tracking_numbers = options['tracking_numbers']
         self.genewiz_root = options['genewiz_root']
+
         if not os.path.isdir(self.genewiz_root):
             raise CommandError('genewiz_root directory not found')
 

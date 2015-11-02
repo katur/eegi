@@ -28,7 +28,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('file', type=argparse.FileType('r'))
 
-    def handle(self, *args, **options):
+    def handle(self, **options):
         f = options['file']
 
         require_db_write_acknowledgement()
