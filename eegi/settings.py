@@ -10,6 +10,8 @@ from local_settings import (DEBUG, DATABASE,
                             LOCKDOWN_PASSWORDS, SECRET_KEY)
 
 
+### TEST
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 
 import os
