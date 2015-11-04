@@ -5,8 +5,8 @@
 {% endwith %}
 
 <span>
-  Manual scores:
-
+  <b>Manual scores</b>
+  &nbsp;
   {% if experiment|is_manually_scored:well %}
   {{ experiment|get_manual_score_summary:well }}
   {% else %}
@@ -15,8 +15,8 @@
 </span>
 
 <span>
-  DevStaR scores:
-
+  <b>DevStaR scores</b>
+  &nbsp;
   {% if experiment|is_devstar_scored:well %}
   {{ experiment|get_devstar_score_summary:well }}
   {% else %}

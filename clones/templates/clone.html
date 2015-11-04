@@ -5,59 +5,66 @@
 
 {% block content %}
 
-<div class="cleared-spaced-spans">
+<div class="page-section cleared-spaced-spans">
   <span>
-    Library: {{ clone.library }}
+    <b>Library</b>
+    &nbsp;
+    {{ clone.library }}
   </span>
 
   <span>
-    Clone Type: {{ clone.clone_type }}
+    <b>Clone Type</b>
+    &nbsp;
+    {{ clone.clone_type }}
   </span>
 
   <span>
-    Forward Primer: {{ clone.forward_primer }}
+    <b>Forward Primer</b>
+    &nbsp;
+    {{ clone.forward_primer }}
   </span>
 
   <span>
-    Reverse Primer: {{ clone.reverse_primer }}
+    <b>Reverse Primer</b>
+    &nbsp;
+    {{ clone.reverse_primer }}
   </span>
+</div>
 
-  <span>
-    Gene Targets:
+<div class="page-section">
+  <h4>Gene Targets</h4>
+  <table class="grayscale striped nice-padding">
+    <thead>
+      <tr>
+        <th>WormBase ID</th>
+        <th>Cosmid ID</th>
+        <th>Locus</th>
+        <th>Gene Type</th>
+        <th>Gene Class Description</th>
+        <th>Functional Description</th>
+      </tr>
+    <thead>
 
-    <table class="grayscale striped nice-padding">
-      <thead>
-        <tr>
-          <th>WormBase ID</th>
-          <th>Cosmid ID</th>
-          <th>Locus</th>
-          <th>Gene Type</th>
-          <th>Gene Class Description</th>
-          <th>Functional Description</th>
-        </tr>
-      <thead>
+    <tbody>
+      {% for target in clone.get_targets %}
+      <tr>
+        <td>
+          <a href="{{ target.gene.get_wormbase_url }}">
+            {{ target.gene.id }}</a>
+        </td>
+        <td>{{ target.gene.cosmid_id }}</td>
+        <td>{{ target.gene.locus }}</td>
+        <td>{{ target.gene.gene_type }}</td>
+        <td>{{ target.gene.gene_class_description }}</td>
+        <td>{{ target.gene.functional_description }}</td>
+      </tr>
 
-      <tbody>
-        {% for target in clone.get_targets %}
-        <tr>
-          <td>
-            <a href="{{ target.gene.get_wormbase_url }}">
-              {{ target.gene.id }}</a>
-          </td>
-          <td>{{ target.gene.cosmid_id }}</td>
-          <td>{{ target.gene.locus }}</td>
-          <td>{{ target.gene.gene_type }}</td>
-          <td>{{ target.gene.gene_class_description }}</td>
-          <td>{{ target.gene.functional_description }}</td>
-        </tr>
+      {% empty %}
+        No gene targets according to Firoz's database.
+      {% endfor %}
+    </tbody>
 
-        {% empty %}
-          No gene targets according to Firoz's database.
-        {% endfor %}
-      </tbody>
-
-    </table>
-  </span>
+  </table>
 </div>
 
 {% endblock %}

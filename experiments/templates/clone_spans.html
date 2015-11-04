@@ -2,7 +2,8 @@
 
 
 <span>
-  RNAi clone:
+  <b>RNAi clone</b>
+  &nbsp;
   {% if clone %}
   <a href="{{ clone.get_absolute_url }}">{{ clone.id }}</a>
   {% else %}
@@ -12,7 +13,8 @@
 
 {% if clone %}
 <span>
-  RNAi targets:
+  <b>RNAi targets</b>
+  &nbsp;
   {{ clone|list_targets }}
 </span>
 {% endif %}

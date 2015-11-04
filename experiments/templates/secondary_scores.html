@@ -36,7 +36,7 @@ criteria C (count-based):
 <table class="grayscale striped nice-padding">
   <thead>
     <tr>
-      <th>Mutant gene</th>
+      <th>Worm strain</th>
       <th>Library Position</th>
       <th>Intended Clone</th>
       <th>Target gene(s)</th>
@@ -52,7 +52,7 @@ criteria C (count-based):
   <tbody>
     {% for well, experiments in s.items %}
     <tr>
-      <td>{{ worm.gene }}</td>
+      <td>{{ worm.get_display_string }}</td>
       <td>{{ well.plate_id }}@{{ well.well }}</td>
       <td>
         <a href="{{ well.intended_clone.get_absolute_url }}">

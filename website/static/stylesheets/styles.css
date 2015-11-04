@@ -169,6 +169,8 @@ hr {
   margin-bottom: 40px; }
   .page-section:last-of-type {
     margin-bottom: 0; }
+  .page-section.cleared-spaced-spans {
+    float: left; }
 
 form table th {
   padding-right: 5px;

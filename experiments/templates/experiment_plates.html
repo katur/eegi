@@ -80,7 +80,6 @@
     <tr>
       <th>Experiment ID</th>
       <th>Worm Strain</th>
-      <th>Worm Genotype</th>
       <th>RNAi Library Plate</th>
       <th>Temperature</th>
       <th>Date</th>
@@ -96,8 +95,9 @@
         <a href="{% url 'experiment_plate_url' experiment.id %}">
           {{ experiment.id }}</a>
       </td>
-      <td>{{ experiment.worm_strain }}</td>
-      <td>{{ experiment.worm_strain__genotype }}</td>
+      <td>
+        {{ experiment.worm_strain.get_display_string }}
+      </td>
       <td>{{ experiment.library_plate }}</td>
       <td>{{ experiment.temperature|celsius }}</td>
       <td>{{ experiment.date|date:"SHORT_DATE_FORMAT" }}</td>
