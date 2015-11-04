@@ -106,6 +106,7 @@ def update_LibraryPlate_table(cursor):
                                                             legacy_row[1])
         else:
             legacy_plate_name = legacy_row[0]
+
         legacy_plate = LibraryPlate(id=legacy_plate_name,
                                     screen_stage=screen_stage,
                                     number_of_wells=number_of_wells)
