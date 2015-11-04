@@ -36,13 +36,19 @@ pip install -r requirements.txt
 ## Database
 
 [Click here](https://www.lucidchart.com/documents/view/b63066e2-0f57-4d04-a828-65cf62bf1bb0)
-to view the database schema (current version) on Lucidchart.
+to view the current database schema on Lucidchart 
+(or [click here](https://www.lucidchart.com/publicSegments/view/85dfbf91-11fd-4afa-9392-84d26330b648/image.pdf) 
+to download PDF).
 
 [Click here](https://www.lucidchart.com/documents/view/18217c4a-69c6-44f8-bf4f-0acf15e28973)
-to view the database schema (refactored version) on Lucidchart.
+to view the refactored database schema on Lucidchart
+(or [click here](https://www.lucidchart.com/publicSegments/view/a3361480-4c9a-43ba-8be5-84f798391cef/image.pdf)
+to download PDF).
 
 [Click here](https://www.lucidchart.com/documents/view/aa16dc41-3f3f-4944-bc5b-982697bb8ba9)
-to view the database schema of Firoz's clone mapping database on Lucidchart.
+to view Firoz's clone mapping database schema on Lucidchart
+(or [click here](https://www.lucidchart.com/publicSegments/view/84b7950c-3e2c-4446-a954-47208a38d098/image.pdf)
+to download PDF).
 
 Notes on migrating the data from the old database
 (`GenomeWideGI` on pleiades)
