@@ -6,9 +6,12 @@ https://docs.djangoproject.com/en/dev/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
-from local_settings import DATABASES, DEBUG, LOCKDOWN_PASSWORDS, SECRET_KEY
+from local_settings import (DEBUG, DATABASES,
+                            LOCKDOWN_PASSWORDS, SECRET_KEY)
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 MATERIALS_DIR = BASE_DIR + '/materials'
