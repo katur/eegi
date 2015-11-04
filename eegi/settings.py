@@ -6,7 +6,7 @@ https://docs.djangoproject.com/en/dev/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
-from local_settings import (DEBUG, DATABASES,
+from local_settings import (DEBUG, DATABASE_MASTER,
                             LOCKDOWN_PASSWORDS, SECRET_KEY)
 
 
@@ -17,6 +17,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 MATERIALS_DIR = BASE_DIR + '/materials'
 
 TEMPLATE_DEBUG = DEBUG
+
+DATABASES = {'default': DATABASE_MASTER}
 
 
 # Allow all hosts
