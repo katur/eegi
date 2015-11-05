@@ -105,9 +105,9 @@ vi /opt/local/eegi/secret/eegi.my.cnf
 mkdir /opt/local/eegi/bin
 chmod 775 /opt/local/eegi/bin
 
-vi ~/.profile
-> PATH="/opt/local/eegi/bin:$PATH"
-source ~/.profile
+vi ~/.zshenv
+> path=(/opt/local/eegi/bin $path)
+source ~/.zshenv
 
 touch /opt/local/eegi/bin/mysqldump_eegi
 chmod 774 /opt/local/eegi/bin/mysqldump_eegi
