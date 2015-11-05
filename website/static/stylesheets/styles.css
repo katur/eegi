@@ -348,7 +348,8 @@ table thead th {
       font-weight: normal; }
 
 #clones #results-header, #clones table {
-  width: 50%; }
+  width: 100%;
+  max-width: 700px; }
 #clones form {
   margin-bottom: 40px; }
 
@@ -359,7 +360,8 @@ table thead th {
     #library-plates #plate-filters a:first-child {
       margin-left: 0; }
 #library-plates #results-header, #library-plates table {
-  width: 50%; }
+  width: 100%;
+  max-width: 700px; }
 
 #experiment-plates #experiment-results {
   width: 100%; }
