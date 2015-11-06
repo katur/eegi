@@ -63,12 +63,12 @@ class CloneTarget(models.Model):
 
     """
     clone = models.ForeignKey(Clone)
+    gene = models.ForeignKey(Gene)
+    transcript_isoform = models.CharField(max_length=30, blank=True)
     clone_amplicon_id = models.IntegerField()
     amplicon_evidence = models.CharField(max_length=4)
     amplicon_is_designed = models.BooleanField()
     amplicon_is_unique = models.BooleanField()
-    gene = models.ForeignKey(Gene)
-    transcript_isoform = models.CharField(max_length=30, blank=True)
     length_span = models.IntegerField()
     raw_score = models.IntegerField()
     unique_raw_score = models.IntegerField()
