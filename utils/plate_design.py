@@ -15,8 +15,8 @@ This module includes functions to:
 
 import random
 
-from constants import (ROWS_96, COLS_96, NUM_WELLS_96, ROWS_384, COLS_384,
-                       NUM_WELLS_384)
+from constants import (ROWS_96, COLS_96, NUM_WELLS_96,
+                       ROWS_384, COLS_384, NUM_WELLS_384)
 from plate_layout import get_well_list, is_symmetric
 from well_naming import get_well_name
 

@@ -33,6 +33,7 @@ def get_timestamp(year, month, day, time, ymd):
         timestamp = timezone.make_aware(
             datetime.datetime.strptime(string, '%Y-%b-%d::%H:%M:%S'),
             timezone.get_default_timezone())
+
     except Exception:
         return None
 
