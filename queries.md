@@ -52,7 +52,7 @@ the enhancer secondary. The number is not exact, for several reasons:
 
     SELECT LibraryWell.id, intended_clone_id, COUNT(*) FROM LibraryWell
     LEFT JOIN LibraryPlate
-    ON LibraryPlate.id = LibraryWell.plate_id
+    ON LibraryPlate.id = LibraryWell.library_plate_id
     WHERE screen_stage=2
     AND intended_clone_id IS NOT NULL
     AND intended_clone_id != "L4440"
@@ -65,8 +65,8 @@ the enhancer secondary. The number is not exact, for several reasons:
     LibraryPlate AS C, LibraryPlate AS D
     WHERE A.id != B.id
     AND C.id != D.id
-    AND A.plate_id = C.id
-    AND B.plate_id = D.id
+    AND A.library_plate_id = C.id
+    AND B.library_plate_id = D.id
     AND A.intended_clone_id = B.intended_clone_id
     AND A.intended_clone_id IS NOT NULL
     AND A.intended_clone_id != "L4440"
