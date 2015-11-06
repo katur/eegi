@@ -8,6 +8,17 @@ def get_range(value):
     return range(value)
 
 
+@register.simple_tag
+def url_replace(request, field, value):
+    """Set GET[field] to value in the url.
+
+    Keeps other GET key/value pairs intact.
+    """
+    query_dict = request.GET.copy()
+    query_dict[field] = value
+    return query_dict.urlencode()
+
+
 @register.filter(is_safe=True)
 def concatenate_ids_with_commas(l):
     """Get a string that is elements of l, separated by commas.
@@ -28,17 +39,29 @@ def celsius(temperature):
 
 
 @register.filter
-def get_screen_category(strain, temperature):
+def get_screen_category(worm, temperature):
     """Get a string describing if temperature is an official screening
-    temperature for strain.
+    temperature for worm strain.
 
     """
-    if strain.is_permissive_temperature(temperature):
+    if worm.is_permissive_temperature(temperature):
         return 'ENH screening temperature'
-    elif strain.is_restrictive_temperature(temperature):
+    elif worm.is_restrictive_temperature(temperature):
         return 'SUP screening temperature'
     else:
         return ''
+
+
+@register.filter
+def is_manually_scored(experiment, well):
+    """Determine whether an experiment well was manually scored."""
+    return experiment.is_manually_scored(well)
+
+
+@register.filter
+def is_devstar_scored(experiment, well):
+    """Determine whether an experiment well was scored by DevStaR."""
+    return experiment.is_devstar_scored(well)
 
 
 @register.filter
@@ -79,7 +102,6 @@ def get_devstar_score_summary(experiment, well):
     output = []
 
     for score in scores:
-
         o = '{} adults, {} larvae, {} embryos'.format(
             score.count_adult, score.count_larva, score.count_embryo)
 
@@ -93,29 +115,6 @@ def get_devstar_score_summary(experiment, well):
         output.append(o)
 
     return '; '.join(str(item) for item in output)
-
-
-@register.filter
-def is_manually_scored(experiment, well):
-    """Determine whether an experiment well was manually scored."""
-    return experiment.is_manually_scored(well)
-
-
-@register.filter
-def is_devstar_scored(experiment, well):
-    """Determine whether an experiment well was scored by DevStaR."""
-    return experiment.is_devstar_scored(well)
-
-
-@register.simple_tag
-def url_replace(request, field, value):
-    """Set GET[field] to value in the url.
-
-    Keeps other GET key/value pairs intact.
-    """
-    query_dict = request.GET.copy()
-    query_dict[field] = value
-    return query_dict.urlencode()
 
 
 @register.simple_tag
@@ -141,4 +140,4 @@ def list_targets(clone):
     if displays:
         return ', '.join(displays)
     else:
-        return "No targets (according to Firoz's database)"
+        return 'No targets (according to Firoz's database)'
