@@ -108,7 +108,9 @@ class Command(BaseCommand):
 
         for seq_plate_number in full_seq_plates:
             source_plate_id = full_seq_plates[seq_plate_number]
-            library_wells = LibraryWell.objects.filter(plate=source_plate_id)
+            library_wells = LibraryWell.objects.filter(
+                library_plate=source_plate_id)
+
             for library_well in library_wells:
                 row = (source_plate_id, library_well.well, seq_plate_number,
                        library_well.well)

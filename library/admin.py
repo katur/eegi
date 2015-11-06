@@ -9,8 +9,8 @@ from website.admin import ReadOnlyAdmin
 class LibraryPlateAdmin(ReadOnlyAdmin):
     list_display = (
         'id',
-        'screen_stage',
         'number_of_wells',
+        'screen_stage',
     )
 
     list_filter = ('screen_stage', 'number_of_wells',)
@@ -21,15 +21,13 @@ class LibraryPlateAdmin(ReadOnlyAdmin):
 class LibraryWellAdmin(ReadOnlyAdmin):
     list_display = (
         'id',
-        'plate',
-        'well',
-        'intended_clone',
         'parent_library_well',
+        'intended_clone',
     )
 
-    list_filter = ('plate',)
+    list_filter = ('library_plate',)
 
-    search_fields = ('plate', 'intended_clone',)
+    search_fields = ('id', 'library_plate', 'intended_clone',)
 
 
 class LibrarySequencingAdmin(ReadOnlyAdmin):

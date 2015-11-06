@@ -83,13 +83,13 @@ class LibraryWell(models.Model):
 
     """
     id = models.CharField(max_length=24, primary_key=True)
-    plate = models.ForeignKey(LibraryPlate, related_name='wells')
-    well = models.CharField(max_length=3, db_index=True)
+    library_plate = models.ForeignKey(LibraryPlate, related_name='wells')
+    well = models.CharField(max_length=3)
+    parent_library_well = models.ForeignKey('self', null=True, blank=True)
     intended_clone = models.ForeignKey(Clone, null=True, blank=True)
     sequence_verified_clone = models.ForeignKey(Clone, default=None,
                                                 null=True, blank=True,
                                                 related_name='seq_clone')
-    parent_library_well = models.ForeignKey('self', null=True, blank=True)
 
     class Meta:
         db_table = 'LibraryWell'

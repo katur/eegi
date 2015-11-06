@@ -9,7 +9,7 @@ def get_organized_library_wells(screen_stage=None):
     Optionally provide a screen_stage, to limit to the Primary or Secondary
     screen.
     """
-    wells = LibraryWell.objects.select_related('plate')
+    wells = LibraryWell.objects.select_related('library_plate')
     if screen_stage:
         wells = wells.filter(plate__screen_stage=screen_stage)
     else:
@@ -25,7 +25,7 @@ def organize_library_wells(library_wells):
     """
     l = {}
     for library_well in library_wells:
-        plate = library_well.plate
+        plate = library_well.library_plate
         well = library_well.well
         if plate not in l:
             l[plate] = {}
