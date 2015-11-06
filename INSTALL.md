@@ -12,83 +12,25 @@ This sysadmin steps includes the following:
 - installing git
 - installing Python
 - installing virtualenv (for managing Python packages, including Django, within virtual environments)
-- installing / setting up MySQL
-- installing / setting up Apache
+- installing Apache
 - installing modwsgi
-- creating a UNIX user per project (in this case, eegi)
-- creating the project directory, owned by the UNIX project user (in this case /opt/local/eegi)
-- creating a MySQL user and MySQL database per project (in this case, both named eegi)
+- installing MySQL
+- creating a UNIX user for this project (named eegi)
+- creating the project directory at /opt/local/eegi, owned by eegi
+- creating a directory for project backups at /volume/data1/project/eegi, owned by eegi
+- creating a MySQL database (eegi)
+- creating a MySQL read-write user (eegi) and a MySQL read-only user (eegi_ro)
 
 
-### MySQL Database
+### Import Database
 
 ```
 mysql -u eegi -p eegi < <sql dump filename>
 ```
 
 
-### Code
+### Set Up Database Backups
 
-```
-cd /opt/local/eegi
-git clone https://github.com/katur/eegi.git
-
-cd /opt/local/eegi/eegi/eegi
-# copy local_settings.py from development computer
-# edit local_settings with database connection info, setting DEBUG=False
-```
-
-
-### Virtual Environment and Dependencies
-
-```
-cd /opt/local/eegi
-virtualenv --python=/usr/bin/python2.7 eegivirtualenv
-# NOTE: This use of virtualenv hardcodes the name and location of the virtualenv dir.
-# But the --relocatable arg has problems and is to be deprecated.
-# So, to move or rename it, delete and recreate the virtualenv dir.
-
-source eegivirtualenv/bin/activate
-pip install -r eegi/requirements.txt
-```
-
-
-### Collecting Static Files
-
-```
-source /opt/local/eegi/eegivirtualenv/bin/activate
-cd /opt/local/eegi/eegi
-./manage.py collectstatic
-```
-
-
-### Apache Configuration
-
-```
-cd /opt/local/eegi
-mkdir apache2
-
-vi /opt/local/eegi/apache2/eegi.conf
-# add project-specific apache settings, using port 8009
-# note that part of this configuration involves serving static files directly
-# please see the above file, on pyxis, for details
-
-sudo ln -s /opt/local/eegi/apache2/eegi.conf /etc/apache2/sites-enabled/001-eegi.conf
-
-sudo vi /etc/apache2/ports.conf
-# add line to Listen 8009
-```
-
-
-### Apache Commands
-```
-sudo service apache2 restart
-sudo service apache2 start
-sudo service apache2 stop
-```
-
-
-### Database Backups
 ```
 mkdir /volume/data1/project/eegi/database_backups
 
@@ -119,16 +61,77 @@ vi /opt/local/eegi/bin/mysqldump_eegi
 ```
 
 
+### Code
+
+```
+cd /opt/local/eegi
+git clone https://github.com/katur/eegi.git
+
+cd /opt/local/eegi/eegi/eegi
+# create local_settings.py with database connection info, setting DEBUG=False
+```
+
+
+### Virtual Environment and Dependencies
+
+```
+cd /opt/local/eegi
+virtualenv --python=/usr/bin/python2.7 eegivirtualenv
+# NOTE: This use of virtualenv hardcodes the name and location of the virtualenv dir.
+# But the --relocatable arg has problems and is to be deprecated.
+# So, to move or rename it, delete and recreate the virtualenv dir.
+
+source /opt/local/eegi/eegivirtualenv/bin/activate
+pip install -r /opt/local/eegi/eegi/requirements.txt
+```
+
+
+### Collecting Static Files
+
+```
+source /opt/local/eegi/eegivirtualenv/bin/activate
+cd /opt/local/eegi/eegi
+./manage.py collectstatic
+```
+
+
+### Apache Configuration
+
+```
+mkdir /opt/local/eegi/apache2
+
+vi /opt/local/eegi/apache2/eegi.conf
+# add project-specific apache settings, using port 8009
+# note that part of this configuration involves serving static files directly
+# please see the above file, on pyxis, for details
+
+sudo ln -s /opt/local/eegi/apache2/eegi.conf /etc/apache2/sites-enabled/001-eegi.conf
+
+sudo vi /etc/apache2/ports.conf
+# add line to Listen 8009
+```
+
+
+### Apache Commands
+```
+sudo service apache2 restart
+sudo service apache2 start
+sudo service apache2 stop
+```
+
+
 ### Deploying in a Nutshell -- DRAFT
 
 #### *As user eegi...*
 ```
-# dump database, in case reverting is necessary
-# record the currently-deployed git commit, in case reverting is necessary
+# Dump database, in case reverting is necessary
+
+# Record the currently-deployed git commit, in case reverting is necessary
 
 # Activate Python virtual environment
+source /opt/local/eegi/eegivirtualenv/bin/activate
+
 cd /opt/local/eegi/eegi
-source opt/local/eegi/eegivirtualenv/bin/activate
 
 # Pull changes
 git pull
