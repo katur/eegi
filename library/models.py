@@ -121,8 +121,6 @@ class LibraryWell(models.Model):
 class LibrarySequencing(models.Model):
     """A Genewiz sequencing result from a particular LibraryWell."""
     source_library_well = models.ForeignKey(LibraryWell, null=True, blank=True)
-    library_plate_copy_number = models.PositiveSmallIntegerField(null=True,
-                                                                 blank=True)
     sample_plate_name = models.CharField(max_length=10, blank=True)
     sample_tube_number = models.IntegerField(null=True, blank=True)
 
