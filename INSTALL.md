@@ -100,7 +100,7 @@ This sysadmin steps includes the following:
 - installing MySQL
 - creating a UNIX user for this project (named eegi)
 - creating the project directory at /opt/local/eegi, owned by eegi
-- creating a directory for data and backups at /volume/data1/project/eegi owned by eegi
+- creating a directory for data and backups at /volume/data1/project/eegi, owned by eegi
 - creating a MySQL database (eegi)
 - creating a MySQL read-write user (eegi) and a MySQL read-only user (eegi_ro)
 
