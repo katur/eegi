@@ -5,6 +5,11 @@ Django web interface and programs for a genome-wide
 knockdown experiments to uncover suppressor and enhancer phenotypes to
 reveal genetic interactions.
 
+1. [Code](#code)
+1. [Apps](#apps)
+1. [Database](#database)
+1. [Installation](#installation)
+
 
 ## Code
 
