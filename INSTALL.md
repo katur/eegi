@@ -1,19 +1,94 @@
-# Installing eegi Project
+# Installing `eegi` Project
 
 
-## Production installation
+## Development Installation
 
-Here is a walkthrough of how I deployed this with Apache and modwsgi on pyxis (which runs Ubuntu).
+
+### Get code
+
+```
+git clone https://github.com/katur/eegi.git
+vi eegi/eegi/local_settings.py
+# Add local_settings, setting DEBUG=True
+```
+
+### Set up dev database
+
+In `eegi/eegi/local_settings.py`, add connection info for dev database.
+This could be a dev database that already exists on another dev
+machine, or a new database on your own machine; you could 
+import an existing dump, or you could generate an empty dev database
+from scratch with `./manage.py migrate`; whatever suits your needs.
+
+
+### Python dependencies
+
+Python version is listed in [runtime.txt](runtime.txt).
+
+Python package dependencies, including Django,
+are listed in [requirements.txt](requirements.txt).
+These should be [pip](https://pypi.python.org/pypi/pip)-install into a fresh
+[Python virtual environment](http://virtualenv.readthedocs.org/). I use
+[virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/)
+to make working with Python virtual environments easier.
+
+In a nutshell (assuming pip, virtualenv, and virtualenvwrapper installed):
+```
+mkvirtualenv eegi
+workon eegi
+pip install -r requirements.txt
+
+# To deactivate virtual environment
+deactivate
+```
+
+
+### CSS/JavaScript dev dependencies
+
+To compile SASS to CSS:
+```
+sass --compile --style compressed website/static/stylesheets/styles.sass
+```
+
+To compile CoffeeScript to Javascript:
+```
+coffee --compile website/static/js/*.coffee
+```
+
+Instead of compiling SASS and CoffeeScript separately,
+feel free to use the [Gulp.js build script](gulpfile.js), which watches
+for changes in SASS and CoffeeScript files and automatically compiles.
+
+To set up, assuming [Gulp.js](http://gulpjs.com/) is installed on the system,
+run the following in the project root (which will install dependencies
+in a git-ignored directory called `node_modules`):
+```
+npm install --dev-save
+```
+
+And to start the gulp build script, run the following in the project root:
+```
+gulp
+```
+
+
+### Some other notes about development
+
+- There is no need to collect static files in development.
+(When DEBUG=True, Django finds static files dynamically across the apps.)
+
+
+## Production Installation
+
+Here is a walkthrough of how I deployed this with Apache and modwsgi on Ubuntu.
 
 This assumes that most sysadmin setup is already complete.
 Lior performed the sysadmin setup on pyxis, and has the documentation.
 This sysadmin steps includes the following:
 
+- installing Python and virtualenv
+- installing Apache and modwsgi
 - installing git
-- installing Python
-- installing virtualenv (for managing Python packages, including Django, within virtual environments)
-- installing Apache
-- installing modwsgi
 - installing MySQL
 - creating a UNIX user for this project (named eegi)
 - creating the project directory at /opt/local/eegi, owned by eegi
@@ -22,14 +97,14 @@ This sysadmin steps includes the following:
 - creating a MySQL read-write user (eegi) and a MySQL read-only user (eegi_ro)
 
 
-### Import Database
+### Import database
 
 ```
 mysql -u eegi -p eegi < <sql dump filename>
 ```
 
 
-### Set Up Database Backups
+### Automate database backups
 
 ```
 mkdir /volume/data1/project/eegi/database_backups
@@ -54,14 +129,16 @@ source ~/.zshenv
 touch /opt/local/eegi/bin/mysqldump_eegi
 chmod 774 /opt/local/eegi/bin/mysqldump_eegi
 vi /opt/local/eegi/bin/mysqldump_eegi
-
 > #!/bin/sh
 >
 > /usr/bin/mysqldump --defaults-file=/opt/local/eegi/secret/eegi.my.cnf --single-transaction eegi | pbzip2 -c -p16 > /volume/data1/project/eegi/database_backups/eegi_`date +%Y-%m-%d_%H-%M-%S`.sql.bz2
+
+crontab -e
+> 0 4 * * 7 /opt/local/eegi/bin/mysqldump_eegi
 ```
 
 
-### Code
+### Get code
 
 ```
 cd /opt/local/eegi
@@ -72,7 +149,7 @@ cd /opt/local/eegi/eegi/eegi
 ```
 
 
-### Virtual Environment and Dependencies
+### Virtual environment and dependencies
 
 ```
 cd /opt/local/eegi
@@ -86,7 +163,7 @@ pip install -r /opt/local/eegi/eegi/requirements.txt
 ```
 
 
-### Collecting Static Files
+### Collecting static files
 
 ```
 source /opt/local/eegi/eegivirtualenv/bin/activate
@@ -95,7 +172,7 @@ cd /opt/local/eegi/eegi
 ```
 
 
-### Apache Configuration
+### Apache configuration
 
 ```
 mkdir /opt/local/eegi/apache2
@@ -112,7 +189,7 @@ sudo vi /etc/apache2/ports.conf
 ```
 
 
-### Apache Commands
+### Apache commands
 ```
 sudo service apache2 restart
 sudo service apache2 start
@@ -120,35 +197,33 @@ sudo service apache2 stop
 ```
 
 
-### Deploying in a Nutshell -- DRAFT
+### Deploying changes -- DRAFT
 
-#### *As user eegi...*
+#### *As project user...*
 ```
-# Dump database, in case reverting is necessary
-
-# Record the currently-deployed git commit, in case reverting is necessary
+# Dump database and record the currently-deployed git commit, 
+# in case reverting is necessary
 
 # Activate Python virtual environment
 source /opt/local/eegi/eegivirtualenv/bin/activate
 
-cd /opt/local/eegi/eegi
-
 # Pull changes
+cd /opt/local/eegi/eegi
 git pull
 
-# If changes to requirements.txt:
+# If changes to requirements.txt
 pip install -r requirements.txt
 
-# If new/changed static files:
+# If new/changed static files
 ./manage.py collectstatic
 
-# If new database migrations:
+# If new database migrations
 ./manage.py migrate
 
 # If any scripts must be run
 ./manage.py scriptname
 
-# If there are unit tests:
+# If there are unit tests
 ./manage.py test
 ```
 
