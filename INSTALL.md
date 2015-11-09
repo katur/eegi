@@ -12,9 +12,10 @@ vi eegi/eegi/local_settings.py
 # Add local_settings, setting DEBUG=True
 ```
 
+
 ### Set up dev database
 
-Add dev database connection info to `eegi/eegi/local_settings.py`.
+Add dev database connection info to `eegi/local_settings.py`.
 This might be a dev database that already exists on another machine,
 or a new database on your own machine.
 You might import an existing dump, or you might generate an empty database
@@ -72,10 +73,18 @@ gulp
 ```
 
 
+### Running Django's built-in dev server
+
+```
+./manage.py runserver <IP address>:8000
+```
+
+
 ### Some other notes about development
 
 - There is no need to collect static files in development.
 (When DEBUG=True, Django finds static files dynamically across the apps.)
+
 
 
 ## Production Installation
@@ -91,7 +100,7 @@ This sysadmin steps includes the following:
 - installing MySQL
 - creating a UNIX user for this project (named eegi)
 - creating the project directory at /opt/local/eegi, owned by eegi
-- creating a directory for project backups at /volume/data1/project/eegi, owned by eegi
+- creating a directory for data and backups at /volume/data1/project/eegi owned by eegi
 - creating a MySQL database (eegi)
 - creating a MySQL read-write user (eegi) and a MySQL read-only user (eegi_ro)
 
