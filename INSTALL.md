@@ -9,8 +9,16 @@
 ```
 git clone https://github.com/katur/eegi.git
 vi eegi/eegi/local_settings.py
-# Add dev database connection info, and set DEBUG=True
+# Add local_settings, setting DEBUG=True
 ```
+
+### Database
+
+Also in local_settings.py, add connection info for dev database.
+This could be a dev database that already exists on another dev
+machine, or a new database on your own machine; you could 
+import an existing dump, or you could generate the database schema
+from scratch with `./manage.py migrate`; whatever suits your needs.
 
 
 ### Python dependencies
@@ -67,9 +75,8 @@ gulp
 
 ### Some other notes about development
 
-- There is no need to collect static files. If DEBUG=True, Django finds
-static files dynamically across the apps.
--
+- There is no need to collect static files in development.
+(When DEBUG=True, Django finds static files dynamically across the apps.)
 
 
 ## Production Installation
@@ -192,35 +199,33 @@ sudo service apache2 stop
 ```
 
 
-### Deploying in a Nutshell -- DRAFT
+### Deploying Changes -- DRAFT
 
 #### *As user eegi...*
 ```
-# Dump database, in case reverting is necessary
-
-# Record the currently-deployed git commit, in case reverting is necessary
+# Dump database and record the currently-deployed git commit, 
+# in case reverting is necessary
 
 # Activate Python virtual environment
 source /opt/local/eegi/eegivirtualenv/bin/activate
 
-cd /opt/local/eegi/eegi
-
 # Pull changes
+cd /opt/local/eegi/eegi
 git pull
 
-# If changes to requirements.txt:
+# If changes to requirements.txt
 pip install -r requirements.txt
 
-# If new/changed static files:
+# If new/changed static files
 ./manage.py collectstatic
 
-# If new database migrations:
+# If new database migrations
 ./manage.py migrate
 
 # If any scripts must be run
 ./manage.py scriptname
 
-# If there are unit tests:
+# If there are unit tests
 ./manage.py test
 ```
 
