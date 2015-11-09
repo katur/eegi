@@ -199,7 +199,7 @@ sudo service apache2 stop
 
 ### Deploying changes -- DRAFT
 
-#### *As user eegi...*
+#### *As project user...*
 ```
 # Dump database and record the currently-deployed git commit, 
 # in case reverting is necessary
