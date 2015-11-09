@@ -53,15 +53,15 @@ There are two other, organizational Django apps:
 the legacy database
 
 
-Finally, here is an explanation of other top-level Python directories, which
+Finally, here is an explanation of some other top-level directories, which
 are not Django apps:
 
-- [utils](utils) holds a few very general helper functions
+- [utils](utils) holds some very general helper functions
+- [antiquated](antiquated) holds some old code that predates this Django project
 - `materials`, excluded from the repo, holds various input files (Genewiz
 sequencing output, the official Ahringer RNAi library Excel database, etc.)
 - `backups`, excluded from the repo, holds MySQL database backups, schema
 backups, etc.
-- [antiquated](antiquated) holds older code that predates this Django project
 
 
 ## Database
