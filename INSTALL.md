@@ -14,7 +14,7 @@ vi eegi/eegi/local_settings.py
 
 ### Database
 
-Also in local_settings.py, add connection info for dev database.
+In `eegi/eegi/local_settings.py`, add connection info for dev database.
 This could be a dev database that already exists on another dev
 machine, or a new database on your own machine; you could 
 import an existing dump, or you could generate the database schema
@@ -57,8 +57,7 @@ coffee --compile website/static/js/*.coffee
 
 Instead of compiling SASS and CoffeeScript separately,
 feel free to use the [Gulp.js build script](gulpfile.js), which watches
-for changes in SASS and CoffeeScript files and automatically compiles to
-CSS and JavaScript.
+for changes in SASS and CoffeeScript files and automatically compiles.
 
 To set up, assuming [Gulp.js](http://gulpjs.com/) is installed on the system,
 run the following in the project root (which will install dependencies
