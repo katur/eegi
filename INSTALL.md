@@ -1,19 +1,88 @@
 # Installing eegi Project
 
 
-## Production installation
+## Dev Installation
 
-Here is a walkthrough of how I deployed this with Apache and modwsgi on pyxis (which runs Ubuntu).
+
+### Get code
+
+```
+git clone https://github.com/katur/eegi.git
+vi eegi/eegi/local_settings.py
+# Add dev database connection info, and set DEBUG=True
+```
+
+
+### Python dependencies
+
+Python version is listed in [runtime.txt](runtime.txt).
+
+Python package dependencies, including Django,
+are listed in [requirements.txt](requirements.txt).
+These should be [pip](https://pypi.python.org/pypi/pip)-install into a fresh
+[Python virtual environment](http://virtualenv.readthedocs.org/). I use
+[virtualenvwrapper](http://virtualenvwrapper.readthedocs.org/en/latest/)
+to make working with Python virtual environments easier.
+
+In a nutshell (assuming pip, virtualenv, and virtualenvwrapper installed):
+```
+mkvirtualenv eegi
+workon eegi
+pip install -r requirements.txt
+
+# To deactivate virtual environment
+deactivate
+```
+
+
+### CSS/JavaScript development dependencies
+
+To compile SASS to CSS:
+```
+sass --compile --style compressed website/static/stylesheets/styles.sass
+```
+
+To compile CoffeeScript to Javascript:
+```
+coffee --compile website/static/js/*.coffee
+```
+
+Instead of compiling SASS and CoffeeScript separately,
+feel free to use the [Gulp.js build script](gulpfile.js), which watches
+for changes in SASS and CoffeeScript files and automatically compiles to
+CSS and JavaScript.
+
+To set up, assuming [Gulp.js](http://gulpjs.com/) is installed on the system,
+run the following in the project root (which will install dependencies
+in a git-ignored directory called `node_modules`):
+```
+npm install --dev-save
+```
+
+And to start the gulp build script, run the following in the project root:
+```
+gulp
+```
+
+
+### Some other notes about development
+
+- There is no need to collect static files. If DEBUG=True, Django finds
+static files dynamically across the apps.
+-
+
+
+## Production Installation
+
+Here is a walkthrough of how I deployed this with Apache and modwsgi on Ubuntu.
 
 This assumes that most sysadmin setup is already complete.
 Lior performed the sysadmin setup on pyxis, and has the documentation.
 This sysadmin steps includes the following:
 
+- installing Python and virtualenv
+- installing Apache and modwsgi
 - installing git
-- installing Python
-- installing virtualenv (for managing Python packages, including Django, within virtual environments)
-- installing Apache
-- installing modwsgi
 - installing MySQL
 - creating a UNIX user for this project (named eegi)
 - creating the project directory at /opt/local/eegi, owned by eegi
@@ -29,7 +98,7 @@ mysql -u eegi -p eegi < <sql dump filename>
 ```
 
 
-### Set Up Database Backups
+### Automate Database Backups
 
 ```
 mkdir /volume/data1/project/eegi/database_backups
@@ -58,10 +127,13 @@ vi /opt/local/eegi/bin/mysqldump_eegi
 > #!/bin/sh
 >
 > /usr/bin/mysqldump --defaults-file=/opt/local/eegi/secret/eegi.my.cnf --single-transaction eegi | pbzip2 -c -p16 > /volume/data1/project/eegi/database_backups/eegi_`date +%Y-%m-%d_%H-%M-%S`.sql.bz2
+
+crontab -e
+> 0 4 * * 7 /opt/local/eegi/bin/mysqldump_eegi
 ```
 
 
-### Code
+### Get Code
 
 ```
 cd /opt/local/eegi
