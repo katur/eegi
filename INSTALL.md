@@ -12,18 +12,52 @@ This sysadmin steps includes the following:
 - installing git
 - installing Python
 - installing virtualenv (for managing Python packages, including Django, within virtual environments)
-- installing / setting up MySQL
-- installing / setting up Apache
+- installing Apache
 - installing modwsgi
-- creating a UNIX user per project (in this case, eegi)
-- creating the project directory, owned by the UNIX project user (in this case /opt/local/eegi)
-- creating a MySQL user and MySQL database per project (in this case, both named eegi)
+- installing MySQL
+- creating a UNIX user for this project (named eegi)
+- creating the project directory at /opt/local/eegi, owned by eegi
+- creating a directory for project backups at /volume/data1/project/eegi, owned by eegi
+- creating a MySQL database (eegi)
+- creating a MySQL read-write user (eegi) and a MySQL read-only user (eegi_ro)
 
 
-### MySQL Database
+### Import Database
 
 ```
 mysql -u eegi -p eegi < <sql dump filename>
+```
+
+
+### Set Up Database Backups
+
+```
+mkdir /volume/data1/project/eegi/database_backups
+
+mkdir /opt/local/eegi/secret
+chmod 700 /opt/local/eegi/secret
+
+touch /opt/local/eegi/secret/eegi.my.cnf
+chmod 600 /opt/local/eegi/secret/eegi.my.cnf
+vi /opt/local/eegi/secret/eegi.my.cnf
+> [client]
+> user = eegi_ro
+> password = <password>
+
+mkdir /opt/local/eegi/bin
+chmod 775 /opt/local/eegi/bin
+
+vi ~/.zshenv
+> path=(/opt/local/eegi/bin $path)
+source ~/.zshenv
+
+touch /opt/local/eegi/bin/mysqldump_eegi
+chmod 774 /opt/local/eegi/bin/mysqldump_eegi
+vi /opt/local/eegi/bin/mysqldump_eegi
+
+> #!/bin/sh
+>
+> /usr/bin/mysqldump --defaults-file=/opt/local/eegi/secret/eegi.my.cnf --single-transaction eegi | pbzip2 -c -p16 > /volume/data1/project/eegi/database_backups/eegi_`date +%Y-%m-%d_%H-%M-%S`.sql.bz2
 ```
 
 
@@ -34,8 +68,7 @@ cd /opt/local/eegi
 git clone https://github.com/katur/eegi.git
 
 cd /opt/local/eegi/eegi/eegi
-# copy local_settings.py from development computer
-# edit local_settings with database connection info, setting DEBUG=False
+# create local_settings.py with database connection info, setting DEBUG=False
 ```
 
 
@@ -48,8 +81,8 @@ virtualenv --python=/usr/bin/python2.7 eegivirtualenv
 # But the --relocatable arg has problems and is to be deprecated.
 # So, to move or rename it, delete and recreate the virtualenv dir.
 
-source eegivirtualenv/bin/activate
-pip install -r eegi/requirements.txt
+source /opt/local/eegi/eegivirtualenv/bin/activate
+pip install -r /opt/local/eegi/eegi/requirements.txt
 ```
 
 
@@ -65,8 +98,7 @@ cd /opt/local/eegi/eegi
 ### Apache Configuration
 
 ```
-cd /opt/local/eegi
-mkdir apache2
+mkdir /opt/local/eegi/apache2
 
 vi /opt/local/eegi/apache2/eegi.conf
 # add project-specific apache settings, using port 8009
@@ -88,47 +120,18 @@ sudo service apache2 stop
 ```
 
 
-### Database Backups
-```
-mkdir /volume/data1/project/eegi/database_backups
-
-mkdir /opt/local/eegi/secret
-chmod 700 /opt/local/eegi/secret
-
-touch /opt/local/eegi/secret/eegi.my.cnf
-chmod 600 /opt/local/eegi/secret/eegi.my.cnf
-vi /opt/local/eegi/secret/eegi.my.cnf
-> [client]
-> user = eegi_ro
-> password = <password>
-
-mkdir /opt/local/eegi/bin
-chmod 775 /opt/local/eegi/bin
-
-vi ~/.profile
-> PATH="/opt/local/eegi/bin:$PATH"
-source ~/.profile
-
-touch /opt/local/eegi/bin/mysqldump_eegi
-chmod 774 /opt/local/eegi/bin/mysqldump_eegi
-vi /opt/local/eegi/bin/mysqldump_eegi
-
-> #!/bin/sh
->
-> /usr/bin/mysqldump --defaults-file=/opt/local/eegi/secret/eegi.my.cnf --single-transaction eegi | pbzip2 -c -p16 > /volume/data1/project/eegi/database_backups/eegi_`date +%Y-%m-%d_%H-%M-%S`.sql.bz2
-```
-
-
 ### Deploying in a Nutshell -- DRAFT
 
 #### *As user eegi...*
 ```
-# dump database, in case reverting is necessary
-# record the currently-deployed git commit, in case reverting is necessary
+# Dump database, in case reverting is necessary
+
+# Record the currently-deployed git commit, in case reverting is necessary
 
 # Activate Python virtual environment
+source /opt/local/eegi/eegivirtualenv/bin/activate
+
 cd /opt/local/eegi/eegi
-source opt/local/eegi/eegivirtualenv/bin/activate
 
 # Pull changes
 git pull
