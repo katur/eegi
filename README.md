@@ -36,8 +36,8 @@ pip install -r requirements.txt
 ## Database
 
 [Click here](https://www.lucidchart.com/documents/view/b63066e2-0f57-4d04-a828-65cf62bf1bb0)
-to view the current database schema on Lucidchart 
-(or [click here](https://www.lucidchart.com/publicSegments/view/85dfbf91-11fd-4afa-9392-84d26330b648/image.pdf) 
+to view the current database schema on Lucidchart
+(or [click here](https://www.lucidchart.com/publicSegments/view/85dfbf91-11fd-4afa-9392-84d26330b648/image.pdf)
 to download PDF).
 
 [Click here](https://www.lucidchart.com/documents/view/18217c4a-69c6-44f8-bf4f-0acf15e28973)
@@ -104,19 +104,12 @@ to compile (assuming coffee is installed).
 
 Instead of compiling the SASS and CoffeeScript separately,
 feel free to use the [Gulp.js build script](gulpfile.js),
-run simply with `gulp`.
-
-To set up the project for gulping (assuming [Gulp.js](http://gulpjs.com/)
-is installed on the system), run the following in the project root
-to install project-specific gulp packages in a git-ignored directory called
-`node_modules`:
-
+run simply with `gulp`. To set up the project for gulping,
+assuming [Gulp.js](http://gulpjs.com/) is installed on the system,
+run the following in the project root (which will install dependencies
+in a git-ignored directory called `node_modules`):
 ```
-npm install --dev-save gulp
-npm install --dev-save gulp-util
-npm install --dev-save gulp-plumber
-npm install --dev-save gulp-ruby-sass
-npm install --dev-save gulp-coffee
+npm install --dev-save
 ```
 
 Managerial scripts
