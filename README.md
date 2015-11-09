@@ -85,6 +85,6 @@ Notes on migrating the data from the old database
 are in [dbmigration/README.md](dbmigration/README.md).
 
 
-## Dependencies and Installation
+## Installation
 
 See [INSTALL.md](INSTALL.md).
