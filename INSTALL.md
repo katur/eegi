@@ -14,11 +14,11 @@ vi eegi/eegi/local_settings.py
 
 ### Set up dev database
 
-In `eegi/eegi/local_settings.py`, add connection info for dev database.
-This could be a dev database that already exists on another dev
-machine, or a new database on your own machine; you could 
-import an existing dump, or you could generate an empty dev database
-from scratch with `./manage.py migrate`; whatever suits your needs.
+Add dev database connection info to `eegi/eegi/local_settings.py`.
+This might be a dev database that already exists on another machine,
+or a new database on your own machine.
+You might import an existing dump, or you might generate an empty database
+from scratch with `./manage.py migrate`. Do whatever suits your needs.
 
 
 ### Python dependencies
@@ -83,7 +83,6 @@ gulp
 Here is a walkthrough of how I deployed this with Apache and modwsgi on Ubuntu.
 
 This assumes that most sysadmin setup is already complete.
-Lior performed the sysadmin setup on pyxis, and has the documentation.
 This sysadmin steps includes the following:
 
 - installing Python and virtualenv
@@ -178,14 +177,14 @@ cd /opt/local/eegi/eegi
 mkdir /opt/local/eegi/apache2
 
 vi /opt/local/eegi/apache2/eegi.conf
-# add project-specific apache settings, using port 8009
-# note that part of this configuration involves serving static files directly
-# please see the above file, on pyxis, for details
+# Add project-specific apache settings.
+# Note that part of this configuration involves serving static files directly.
+# Please see the above file, on pyxis, for details.
 
 sudo ln -s /opt/local/eegi/apache2/eegi.conf /etc/apache2/sites-enabled/001-eegi.conf
 
 sudo vi /etc/apache2/ports.conf
-# add line to Listen 8009
+# Enable/add line to Listen 8009
 ```
 
 
@@ -197,11 +196,11 @@ sudo service apache2 stop
 ```
 
 
-### Deploying changes -- DRAFT
+### Deploying changes
 
 #### *As project user...*
 ```
-# Dump database and record the currently-deployed git commit, 
+# Dump database and record the currently-deployed git commit,
 # in case reverting is necessary
 
 # Activate Python virtual environment
