@@ -5,6 +5,7 @@ from clones.models import Clone
 from experiments.models import ExperimentPlate, ManualScoreCode
 from library.models import LibraryPlate, LibraryWell
 from worms.models import WormStrain
+from dbmigration.helpers.name_getters import get_library_plate_name
 
 
 def get_missing_object_message(klass, **kwargs):
@@ -32,14 +33,16 @@ def get_worm_strain(mutant, mutantAllele):
             'WormStrain', gene=mutant, allele=mutantAllele))
 
 
-def get_library_plate(library_plate_name):
+def get_library_plate(legacy_plate_name):
     """Get a library plate from its plate name."""
+    legacy_plate_name = get_library_plate_name(legacy_plate_name)
+
     try:
-        return LibraryPlate.objects.get(id=library_plate_name)
+        return LibraryPlate.objects.get(id=legacy_plate_name)
 
     except ObjectDoesNotExist:
         raise ObjectDoesNotExist(get_missing_object_message(
-            'LibraryPlate', id=library_plate_name))
+            'LibraryPlate', id=legacy_plate_name))
 
 
 def get_experiment_plate(experiment_plate_id):
