@@ -1,34 +1,27 @@
-import MySQLdb
+"""This command migrates legacy data to the new database.
 
-from django.core.management.base import BaseCommand, CommandError
+Summary:
+    The migration is split into 8 steps. For each step,
+    records are queried from the old database for a
+    particular table. For each record, various conversions and
+    validations are performed to make a Python object that is
+    compatible with the new database. This Python object is inserted
+    into the new database if not present, or used to update an existing
+    record if changes have occurred.
 
-from dbmigration.helpers.sync_legacy_database_steps import (
-    update_LibraryPlate_table, update_Experiment_table,
-    update_ManualScoreCode_table, update_ManualScore_table,
-    update_DevstarScore_table, update_Clone_table,
-    update_LibraryWell_table, update_ManualScore_table_secondary)
-from eegi.local_settings import LEGACY_DATABASE, LEGACY_DATABASE_2
-from utils.scripting import require_db_write_acknowledgement
 
-HELP = '''
-Sync the database according to any changes in the legacy database.
-
-Optionally provide start and end args to limit which tables are synced.
-start is inclusive, end is exclusive, and the values for start and end
-reference the steps below (dependencies in parentheses):
-
-    0: LibraryPlate
-    1: Experiment (WormStrain, 0)
-    2: ManualScoreCode
-    3: ManualScore_primary (1, 2)
-    4: DevstarScore (1)
-    5: Clone
-    6: LibraryWell (0, 5)
-    7: ManualScore_secondary (1, 2)
-
+The steps (dependencies in parentheses):
+    0: LibraryPlate;
+    1: Clone;
+    2: LibraryWell (0, 1);
+    3: ExperimentPlate and ExperimentWell (WormStrain, 0);
+    4: DevstarScore (3);
+    5: ManualScoreCode;
+    6: ManualScore_primary (3, 5);
+    7: ManualScore_secondary (3, 5);
 
 Requirements:
-    Several steps require that the WormStrain table is already populated
+    Step 3 requires that WormStrain table be populated
     (this table is small enough that I populated it by hand, referencing
     written records about the worm strains used in the screen).
 
@@ -40,68 +33,100 @@ Requirements:
 
 
 Output:
-    Stdout reports whether or not a particular large step had changes.
+    Stdout reports whether or not a particular step had changes.
 
-    Stderr reports every change (such as an added row), and thus can get
-        quite long; consider redirecting with 2> stderr.out.
+    Stderr reports every change (such as an added row), so can get
+    quite long; consider redirecting with 2> stderr.out.
+
+"""
+import MySQLdb
+
+from django.core.management.base import BaseCommand, CommandError
+
+from dbmigration.helpers.sync_steps_library import (
+    update_LibraryPlate_table, update_Clone_table, update_LibraryWell_table)
+
+from dbmigration.helpers.sync_steps_experiments import (
+    update_Experiment_tables, update_DevstarScore_table,
+    update_ManualScoreCode_table, update_ManualScore_table_primary,
+    update_ManualScore_table_secondary)
+
+from eegi.local_settings import LEGACY_DATABASE, LEGACY_DATABASE_2
+from utils.scripting import require_db_write_acknowledgement
+
+HELP = '''
+Sync the database according to any changes in the legacy database.
+
+Optionally provide start and end steps (both inclusive):
+
+    0: LibraryPlate;
+    1: Clone;
+    2: LibraryWell (0, 1);
+    3: ExperimentPlate and ExperimentWell (WormStrain, 0);
+    4: DevstarScore (3);
+    5: ManualScoreCode;
+    6: ManualScore_primary (3, 5);
+    7: ManualScore_secondary (3, 5);
 
 '''
 
+STEPS = (
+    update_LibraryPlate_table,
+    update_Clone_table,
+    update_LibraryWell_table,
+    update_Experiment_tables,
+    update_DevstarScore_table,
+    update_ManualScoreCode_table,
+    update_ManualScore_table_primary,
+    update_ManualScore_table_secondary,
+)
+
+LAST_STEP = len(STEPS) - 1
+
 
 class Command(BaseCommand):
-    args = '[start end]'
     help = HELP
 
-    def handle(self, *args, **options):
-        steps = (
-            update_LibraryPlate_table,
-            update_Experiment_table,
-            update_ManualScoreCode_table,
-            update_ManualScore_table,
-            update_DevstarScore_table,
-            update_Clone_table,
-            update_LibraryWell_table,
-            update_ManualScore_table_secondary,
-        )
+    def add_arguments(self, parser):
+        parser.add_argument('start', type=int, nargs='?', default=0)
+        parser.add_argument('end', type=int, nargs='?', default=LAST_STEP)
 
-        if args:
-            if len(args) != 2:
-                raise CommandError('Command requires 0 or 2 arguments')
-            try:
-                start = int(args[0])
-                end = int(args[1])
-            except ValueError:
-                raise CommandError('Start and endpoints must be integers')
-            if start >= end:
-                raise CommandError('Start must be less than end')
-            if (start < 0) or (end > len(steps)):
-                raise CommandError('Start and end must be in range 0-{}'
-                                   .format(str(len(steps))))
+    def handle(self, **options):
+        start = options['start']
+        end = options['end']
+
+        if start > end:
+            raise CommandError('Start cannot be greater than end')
+
+        if (start < 0) or (end > len(STEPS) - 1):
+            raise CommandError('Start and end must be in range 0-{}'
+                               .format(LAST_STEP))
+
+        if end == LAST_STEP:
+            do_last_step = True
+            end = LAST_STEP - 1
+
         else:
-            start = 0
-            end = len(steps)
+            do_last_step = False
 
         require_db_write_acknowledgement()
 
+        # Do the steps that involve connecting to Huey-Ling's legacy_db
         legacy_db = MySQLdb.connect(host=LEGACY_DATABASE['HOST'],
                                     user=LEGACY_DATABASE['USER'],
                                     passwd=LEGACY_DATABASE['PASSWORD'],
                                     db=LEGACY_DATABASE['NAME'])
+
         cursor = legacy_db.cursor()
 
-        if end == 8:
-            step_seven = True
-            end = 7
-        else:
-            step_seven = False
+        for step in range(start, end + 1):
+            STEPS[step](self, cursor)
 
-        for step in range(start, end):
-            steps[step](cursor)
-
-        if step_seven:
+        # This step requires connecting to Kris's legacy_db_2
+        if do_last_step:
             legacy_db_2 = MySQLdb.connect(host=LEGACY_DATABASE_2['HOST'],
                                           user=LEGACY_DATABASE_2['USER'],
                                           passwd=LEGACY_DATABASE_2['PASSWORD'],
                                           db=LEGACY_DATABASE_2['NAME'])
             cursor = legacy_db_2.cursor()
-            steps[7](cursor)
+            STEPS[LAST_STEP](self, cursor)
