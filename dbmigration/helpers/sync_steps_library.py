@@ -155,7 +155,7 @@ def update_LibraryWell_table(command, cursor):
 
     """
     recorded_wells = LibraryWell.objects.all()
-    fields_to_compare = ('plate', 'well', 'parent_library_well',
+    fields_to_compare = ('library_plate', 'well', 'parent_library_well',
                          'intended_clone')
 
     # 'Source' plates are Ahringer 384 plates and original Orfeome
@@ -184,7 +184,7 @@ def update_LibraryWell_table(command, cursor):
 
         legacy_well = LibraryWell(
             id=get_library_well_name(plate_name, well_proper),
-            plate=get_library_plate(plate_name),
+            library_plate=get_library_plate(plate_name),
             well=well_proper,
             parent_library_well=None,
             intended_clone=get_clone(clone_name))
@@ -203,8 +203,7 @@ def update_LibraryWell_table(command, cursor):
 
     def sync_primary_row(legacy_row):
         plate_name = legacy_row[0]
-        well_improper = legacy_row[1]
-        well_proper = get_three_character_well(well_improper)
+        well = get_three_character_well(legacy_row[1])
         clone_name = legacy_row[2]
         parent_plate_name = legacy_row[4]
 
@@ -234,9 +233,9 @@ def update_LibraryWell_table(command, cursor):
                                    .format(clone_name))
 
         legacy_well = LibraryWell(
-            id=get_library_well_name(plate_name, well_proper),
-            plate=get_library_plate(plate_name),
-            well=well_proper,
+            id=get_library_well_name(plate_name, well),
+            library_plate=get_library_plate(plate_name),
+            well=well,
             parent_library_well=parent_library_well,
             intended_clone=intended_clone)
 
@@ -252,13 +251,12 @@ def update_LibraryWell_table(command, cursor):
 
     def sync_secondary_L4440_row(legacy_row):
         plate_name = legacy_row[0]
-        well_improper = legacy_row[1]
-        well_proper = get_three_character_well(well_improper)
+        well = get_three_character_well(legacy_row[1])
 
         legacy_well = LibraryWell(
-            id=get_library_well_name(plate_name, well_proper),
-            plate=get_library_plate(plate_name),
-            well=well_proper,
+            id=get_library_well_name(plate_name, well),
+            library_plate=get_library_plate(plate_name),
+            well=well,
             parent_library_well=None,
             intended_clone=get_clone('L4440'))
 
@@ -291,8 +289,7 @@ def update_LibraryWell_table(command, cursor):
 
     def sync_secondary_row(legacy_row):
         plate_name = legacy_row[0]
-        well_improper = legacy_row[1]
-        well_proper = get_three_character_well(well_improper)
+        well = get_three_character_well(legacy_row[1])
         clone_name = legacy_row[2]
 
         definite_parent_plate_name = legacy_row[3]
@@ -311,15 +308,13 @@ def update_LibraryWell_table(command, cursor):
                 definite_parent_plate_name != likely_parent_plate_name):
             raise CommandError(
                 'ERROR: definite and likely parent plates disagree '
-                'for {} {}\n'
-                .format(plate_name, well_proper))
+                'for {} {}\n'.format(plate_name, well))
 
         if (definite_parent_well and likely_parent_well and
                 definite_parent_well != likely_parent_well):
             raise CommandError(
                 'ERROR: definite and likely parent wells disagree '
-                'for {} {}\n'
-                .format(plate_name, well_proper))
+                'for {} {}\n'.format(plate_name, well))
 
         if definite_parent_plate_name and definite_parent_well:
             parent_library_well_name = get_library_well_name(
@@ -335,8 +330,7 @@ def update_LibraryWell_table(command, cursor):
         except ObjectDoesNotExist:
             command.stderr.write(
                 'WARNING for LibraryWell {} {}: parent not '
-                'found in LibraryWell\n'
-                .format(plate_name, well_proper))
+                'found in LibraryWell\n'.format(plate_name, well))
 
             parent_library_well = None
             intended_clone = None
@@ -346,29 +340,27 @@ def update_LibraryWell_table(command, cursor):
                 'WARNING for LibraryWell {} {}: clone recorded '
                 'in CherryPickRNAiPlate is inconsistent with '
                 'CherryPickTemplate source/destination records\n'
-                .format(plate_name, well_proper))
+                .format(plate_name, well))
 
         if re.match('sjj', clone_name):
             try:
                 recorded_clone = get_clone(clone_name)
                 if recorded_clone != intended_clone:
                     command.stderr.write(
-                        'WARNING for LibraryWell {} {}: '
-                        'clone recorded in CherryPickRNAiPlate '
-                        'does not match its parent\'s clone\n'
-                        .format(plate_name, well_proper))
+                        'WARNING for LibraryWell {} {}: clone recorded '
+                        'in CherryPickRNAiPlate does not match its '
+                        'parent\'s clone\n'.format(plate_name, well))
 
             except ObjectDoesNotExist:
                 command.stderr.write(
-                    'WARNING for LibraryWell {} {}: clone '
-                    'recorded in CherryPickRNAiPlate not found '
-                    'at all in RNAiPlate\n'
-                    .format(plate_name, well_proper))
+                    'WARNING for LibraryWell {} {}: clone recorded in '
+                    'CherryPickRNAiPlate not found at all in RNAiPlate\n'
+                    .format(plate_name, well))
 
         legacy_well = LibraryWell(
-            id=get_library_well_name(plate_name, well_proper),
-            plate=get_library_plate(plate_name),
-            well=well_proper,
+            id=get_library_well_name(plate_name, well),
+            library_plate=get_library_plate(plate_name),
+            well=well,
             parent_library_well=parent_library_well,
             intended_clone=intended_clone)
 
