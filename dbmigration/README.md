@@ -7,6 +7,25 @@ to the redesigned MySQL database (eegi).
 
 -----------------------------------------------------------------------------------
 
+## Steps to populate an empty database: REFACTOR
+```
+# Migrate the schema
+./manage.py migrate
+
+# Sync LibraryPlate and Clone tables
+./manage.py sync_legacy_database 0 1
+
+# Import mapping data and functional descriptions
+./manage.py import_mapping_data
+./manage.py import_functional_descriptions materials/functional_descriptions/c_elegans.PRJNA13758.WS240.functional_descriptions.txt
+
+# Sync LibraryWell table
+./manage.py sync_legacy_database 2 2
+
+# Import seqencing data
+```
+
+
 ## Main Database Migration Script
 
 A script is used to migrate new or updated records.
