@@ -37,7 +37,7 @@ class Command(BaseCommand):
             firoz_cosmid = gene.cosmid_id
             if (not wb_molecular.startswith(firoz_cosmid)):
                 num_mismatches += 1
-                self.stdout.write('Molecular/cosmid mismatch for {}: '
+                self.stderr.write('Molecular/cosmid mismatch for {}: '
                                   'WormBase says {}, Firoz says {}'
                                   .format(gene, wb_molecular, firoz_cosmid))
 
@@ -48,7 +48,7 @@ class Command(BaseCommand):
             if (wb_public != firoz_locus and
                     not (firoz_locus == '' and wb_public == firoz_cosmid)):
                 num_mismatches += 1
-                self.stdout.write('Public/locus mismatch for {}: '
+                self.stderr.write('Public/locus mismatch for {}: '
                                   'WormBase says {}, Firoz says {}'
                                   .format(gene, wb_public, firoz_locus))
 
@@ -57,7 +57,7 @@ class Command(BaseCommand):
             gene.save()
 
         if num_mismatches:
-            self.stdout.write('Total number mismatches: {}'
+            self.stderr.write('Total number mismatches: {}'
                               .format(num_mismatches))
 
     def parse_wormbase_file(self, f):
