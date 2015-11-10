@@ -1,16 +1,18 @@
 """This command migrates legacy data to the new database.
 
 Summary:
+
     The migration is split into 8 steps. For each step,
-    records are queried from the old database for a
-    particular table. For each record, various conversions and
-    validations are performed to make a Python object that is
-    compatible with the new database. This Python object is inserted
-    into the new database if not present, or used to update an existing
-    record if changes have occurred.
+    records are queried from the old database for a particular
+    table. For each record, various conversions and validations
+    are performed to make a Python object(s) that is compatible
+    with the new database. This Python object(s) is inserted
+    into the new database if not present, or used to update an
+    existing record if changes have occurred.
 
 
-The steps (dependencies in parentheses):
+The steps are (dependencies in parentheses):
+
     0: LibraryPlate;
     1: Clone;
     2: LibraryWell (0, 1);
@@ -21,9 +23,10 @@ The steps (dependencies in parentheses):
     7: ManualScore_secondary (3, 5);
 
 Requirements:
+
     Step 3 requires that WormStrain table be populated
-    (this table is small enough that I populated it by hand, referencing
-    written records about the worm strains used in the screen).
+    (this table is small enough that I populated it by hand,
+    referencing the Google Doc about the worms used in the screen).
 
     Steps 0-6 require that LEGACY_DATABASE be defined in local_settings.py,
     to connect to the GenomeWideGI legacy database.
@@ -33,6 +36,7 @@ Requirements:
 
 
 Output:
+
     Stdout reports whether or not a particular step had changes.
 
     Stderr reports every change (such as an added row), so can get
@@ -44,7 +48,8 @@ import MySQLdb
 from django.core.management.base import BaseCommand, CommandError
 
 from dbmigration.helpers.sync_steps_library import (
-    update_LibraryPlate_table, update_Clone_table, update_LibraryWell_table)
+    update_LibraryPlate_table, update_Clone_table,
+    update_LibraryWell_table)
 
 from dbmigration.helpers.sync_steps_experiments import (
     update_Experiment_tables, update_DevstarScore_table,

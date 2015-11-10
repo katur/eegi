@@ -1,6 +1,5 @@
 """This module contains helpers for the sync_legacy_database command,
-particularly functions to sync sets of rows, and to sync individual
-objects.
+e.g. functions to sync sets of rows and to sync individual objects.
 
 """
 from django.core.exceptions import ObjectDoesNotExist

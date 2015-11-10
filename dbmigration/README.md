@@ -13,6 +13,7 @@ to the redesigned MySQL database (eegi).
 ./manage.py migrate
 
 # Sync LibraryPlate and Clone tables
+TODO: Clone should come before LibraryPlate (clearer)
 ./manage.py sync_legacy_database 0 1
 
 # Import mapping data and functional descriptions
@@ -22,7 +23,15 @@ to the redesigned MySQL database (eegi).
 # Sync LibraryWell table
 ./manage.py sync_legacy_database 2 2
 
-# Import seqencing data
+# Add empty LibraryWells
+TODO: refactor and run this script
+./manage.py add_empty_library_wells
+
+# Import seqencing data and Firoz's blat results
+./manage.py import_genewiz_data
+./manage.py import_blat_results
+
+
 ```
 
 
