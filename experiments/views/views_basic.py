@@ -5,8 +5,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
 
 from eegi.settings import MATERIALS_DIR
-from experiments.models import Experiment
-from experiments.forms import ExperimentFilterForm
+from experiments.models import ExperimentPlate
+from experiments.forms import ExperimentPlateFilterForm
 from library.models import LibraryWell, LibraryPlate
 from utils.well_tile_conversion import tile_to_well
 from utils.http import http_response_ok
@@ -22,7 +22,7 @@ def experiment_plates(request, context=None):
     display_experiments = None
 
     if request.GET:
-        form = ExperimentFilterForm(request.GET)
+        form = ExperimentPlateFilterForm(request.GET)
         if form.is_valid():
             experiments = form.cleaned_data['experiments']
 
@@ -36,7 +36,7 @@ def experiment_plates(request, context=None):
                 display_experiments = paginator.page(paginator.num_pages)
 
     else:
-        form = ExperimentFilterForm()
+        form = ExperimentPlateFilterForm()
 
     context = {
         'form': form,
@@ -50,7 +50,7 @@ def experiment_plates(request, context=None):
 def experiment_plates_grid(request, screen_stage):
     """Render the page showing all experiments as a grid."""
     worms = WormStrain.objects.all()
-    experiments = (Experiment.objects
+    experiments = (ExperimentPlate.objects
                    .filter(screen_stage=screen_stage, is_junk=False)
                    .select_related('library_plate', 'worm_strain'))
 
@@ -99,7 +99,7 @@ def experiment_plates_vertical(request, ids):
     ids = ids.split(',')
     experiments = []
     for id in ids:
-        experiment = get_object_or_404(Experiment, pk=id)
+        experiment = get_object_or_404(ExperimentPlate, pk=id)
         experiment.library_wells = LibraryWell.objects.filter(
             plate=experiment.library_plate).order_by('well')
         experiments.append(experiment)
@@ -116,7 +116,7 @@ def experiment_plates_vertical(request, ids):
 
 def experiment_plate(request, id):
     """Render the page to see a particular experiment plate."""
-    experiment = get_object_or_404(Experiment, pk=id)
+    experiment = get_object_or_404(ExperimentPlate, pk=id)
 
     library_wells = LibraryWell.objects.filter(
         plate=experiment.library_plate).order_by('well')
@@ -138,7 +138,7 @@ def experiment_plate(request, id):
 
 def experiment_well(request, id, well):
     """Render the page to see a particular experiment well."""
-    experiment = get_object_or_404(Experiment, pk=id)
+    experiment = get_object_or_404(ExperimentPlate, pk=id)
 
     library_well = LibraryWell.objects.filter(
         plate=experiment.library_plate).filter(well=well)[0]
@@ -182,7 +182,7 @@ def devstar_scoring_category(request, category):
 
     for row in rows:
         experiment_id, tile = row.split('_')
-        experiment = get_object_or_404(Experiment, pk=experiment_id)
+        experiment = get_object_or_404(ExperimentPlate, pk=experiment_id)
         tile = tile.split('.bmp')[0]
         well = tile_to_well(tile)
         tuples.append((experiment, well, tile))

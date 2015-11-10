@@ -3,7 +3,7 @@ from collections import OrderedDict
 from django.shortcuts import render, get_object_or_404
 
 from clones.models import Clone
-from experiments.models import Experiment
+from experiments.models import ExperimentPlate
 from library.models import LibraryWell, LibraryPlate
 from worms.models import WormStrain
 
@@ -19,10 +19,10 @@ def mutant_knockdown(request, worm, temperature):
     plates = (LibraryWell.objects.filter(intended_clone=l4440)
               .order_by('plate').values('plate').distinct())
 
-    expts = (Experiment.objects.filter(is_junk=False,
-                                       worm_strain=worm,
-                                       temperature=temperature,
-                                       library_plate__in=plates))
+    expts = (ExperimentPlate.objects.filter(is_junk=False,
+                                            worm_strain=worm,
+                                            temperature=temperature,
+                                            library_plate__in=plates))
 
     for expt in expts:
         l4440_wells = expt.library_plate.get_l4440_wells()
@@ -67,7 +67,7 @@ def rnai_knockdown(request, clones, temperature=None):
         data_by_well = OrderedDict()
 
         for library_well in library_wells:
-            expts = Experiment.objects.filter(
+            expts = ExperimentPlate.objects.filter(
                 is_junk=False, worm_strain=n2,
                 library_plate=library_well.plate)
 
@@ -116,7 +116,7 @@ def double_knockdown(request, worm, clones, temperature):
         data_by_well = OrderedDict()
 
         for library_well in library_wells:
-            dates = (Experiment.objects
+            dates = (ExperimentPlate.objects
                      .filter(is_junk=False)
                      .filter(worm_strain=worm)
                      .filter(temperature=temperature)
@@ -131,7 +131,7 @@ def double_knockdown(request, worm, clones, temperature):
 
                 # Add mutant + RNAi experiments
                 mutant_rnai_exps = (
-                    Experiment.objects.filter(
+                    ExperimentPlate.objects.filter(
                         is_junk=False, worm_strain=worm,
                         temperature=temperature,
                         date=date['date'],
@@ -142,7 +142,7 @@ def double_knockdown(request, worm, clones, temperature):
 
                 # Add N2 + RNAi experiments
                 n2_rnai_exps = (
-                    Experiment.objects.filter(
+                    ExperimentPlate.objects.filter(
                         is_junk=False, worm_strain=n2,
                         date=date['date'],
                         library_plate=library_well.plate))
@@ -152,14 +152,14 @@ def double_knockdown(request, worm, clones, temperature):
                 # For Primary, use separate L4440 plate
                 if library_well.plate.screen_stage == 1:
                     mutant_l4440_exps = (
-                        Experiment.objects.filter(
+                        ExperimentPlate.objects.filter(
                             is_junk=False, worm_strain=worm,
                             temperature=temperature,
                             date=date['date'],
                             library_plate=l4440_plate))
 
                     n2_l4440_exps = (
-                        Experiment.objects.filter(
+                        ExperimentPlate.objects.filter(
                             is_junk=False, worm_strain=n2,
                             date=date['date'],
                             library_plate=l4440_plate))

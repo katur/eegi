@@ -1,31 +1,40 @@
 from django.contrib import admin
 
-from experiments.models import (Experiment, ManualScoreCode, ManualScore,
-                                DevstarScore)
+from experiments.models import (ExperimentPlate, ExperimentWell,
+                                ManualScoreCode, ManualScore, DevstarScore)
 from website.admin import ReadOnlyAdmin
 
 
-class ExperimentAdmin(admin.ModelAdmin):
+class ExperimentPlateAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        'worm_strain',
-        'library_plate',
+        'screen_stage',
         'temperature',
         'date',
-        'is_junk',
         'comment',
     )
 
     list_filter = (
-        'is_junk',
-        'date',
+        'screen_stage',
         'temperature',
-        'worm_strain',
+        'date',
     )
 
     search_fields = (
         'id',
-        'library_plate__id',
+    )
+
+
+class ExperimentWellAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'worm_strain',
+        'library_well',
+        'is_junk',
+    )
+
+    search_fields = (
+        'id',
     )
 
 
@@ -45,26 +54,23 @@ class ManualScoreCodeAdmin(admin.ModelAdmin):
 
 class ManualScoreAdmin(admin.ModelAdmin):
     list_display = (
-        'experiment',
-        'well',
+        'experiment_well',
         'scorer',
         'score_code',
     )
 
     list_filter = (
         'scorer',
-        'timestamp',
     )
 
     search_fields = (
-        'experiment__id',
+        'experiment_well__id',
     )
 
 
 class DevstarScoreAdmin(ReadOnlyAdmin):
     list_display = (
-        'experiment',
-        'well',
+        'experiment_well',
         'area_adult',
         'area_larva',
         'area_embryo',
@@ -72,17 +78,13 @@ class DevstarScoreAdmin(ReadOnlyAdmin):
         'count_larva',
     )
 
-    list_filter = (
-        'experiment__worm_strain',
-    )
-
     search_fields = (
-        'experiment__id',
-        'experiment__worm_strain',
+        'experiment_well__id',
     )
 
 
-admin.site.register(Experiment, ExperimentAdmin)
+admin.site.register(ExperimentPlate, ExperimentPlateAdmin)
+admin.site.register(ExperimentWell, ExperimentWellAdmin)
 admin.site.register(ManualScoreCode, ManualScoreCodeAdmin)
 admin.site.register(ManualScore, ManualScoreAdmin)
 admin.site.register(DevstarScore, DevstarScoreAdmin)

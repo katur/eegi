@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 from django.db.models import Count
 
-from experiments.models import ManualScore, Experiment
+from experiments.models import ManualScore, ExperimentPlate
 from library.helpers.retrieval import get_organized_library_wells
 from worms.models import WormStrain
 
@@ -236,13 +236,13 @@ def get_primary_single_replicate_experiments(screen):
 
     for worm in worms:
         if screen == 'SUP':
-            experiments = (Experiment.objects
+            experiments = (ExperimentPlate.objects
                            .filter(is_junk=False, screen_stage=1,
                                    worm_strain=worm,
                                    temperature=worm.restrictive_temperature)
                            .order_by('library_plate'))
         else:
-            experiments = (Experiment.objects
+            experiments = (ExperimentPlate.objects
                            .filter(is_junk=False, screen_stage=1,
                                    worm_strain=worm,
                                    temperature=worm.permissive_temperature)

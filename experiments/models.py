@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models import Q
 
 from eegi.settings import IMG_PATH, THUMBNAIL_PATH, DEVSTAR_PATH
-from library.models import LibraryPlate
+from library.models import LibraryWell
 from utils.well_tile_conversion import well_to_tile
 from worms.models import WormStrain
 
@@ -29,32 +29,22 @@ RELEVANCE_PER_REPLICATE = (OTHER, NEGATIVE, WEAK, MEDIUM, STRONG)
 RELEVANCE_ACROSS_REPLICATES = (NEGATIVE, OTHER, UNSCORED, WEAK, MEDIUM, STRONG)
 
 
-class Experiment(models.Model):
-    """A plate-level experiment.
-
-    I.e., flat-bottom plate in which worms and RNAi clones were combined
-    and put at a specific temperature.
-
-    """
+class ExperimentPlate(models.Model):
+    """A plate-level experiment."""
     SCREEN_STAGE_CHOICES = (
         (1, 'Primary'),
         (2, 'Secondary'),
     )
 
     id = models.PositiveIntegerField(primary_key=True)
-    worm_strain = models.ForeignKey(WormStrain)
-    library_plate = models.ForeignKey(LibraryPlate)
-    library_plate_copy_number = models.PositiveSmallIntegerField(null=True,
-                                                                 blank=True)
     screen_stage = models.PositiveSmallIntegerField(db_index=True)
     temperature = models.DecimalField(max_digits=3, decimal_places=1,
                                       db_index=True)
     date = models.DateField(db_index=True)
-    is_junk = models.BooleanField(default=False, db_index=True)
     comment = models.TextField(blank=True)
 
     class Meta:
-        db_table = 'Experiment'
+        db_table = 'ExperimentPlate'
         ordering = ['id']
 
     def __unicode__(self):
@@ -140,6 +130,23 @@ class Experiment(models.Model):
             return False
 
 
+class ExperimentWell(models.Model):
+    id = models.CharField(max_length=20, primary_key=True)
+    experiment_plate = models.ForeignKey(ExperimentPlate)
+    well = models.CharField(max_length=3)
+    worm_strain = models.ForeignKey(WormStrain)
+    library_well = models.ForeignKey(LibraryWell)
+    is_junk = models.BooleanField(default=False, db_index=True)
+    comment = models.TextField(blank=True)
+
+    class Meta:
+        db_table = 'ExperimentWell'
+        ordering = ['id']
+
+    def __unicode__(self):
+        return str(self.id)
+
+
 class ManualScoreCode(models.Model):
     """A class of score that could be assigned to an image by a human."""
     id = models.IntegerField(primary_key=True)
@@ -185,8 +192,7 @@ class ManualScoreCode(models.Model):
 
 class ManualScore(models.Model):
     """A score that was assigned to a particular image by a human."""
-    experiment = models.ForeignKey(Experiment)
-    well = models.CharField(max_length=3, db_index=True)
+    experiment_well = models.ForeignKey(ExperimentWell)
     score_code = models.ForeignKey(ManualScoreCode)
     scorer = models.ForeignKey(User)
     timestamp = models.DateTimeField()
@@ -253,8 +259,7 @@ class DevstarScore(models.Model):
     program.
 
     """
-    experiment = models.ForeignKey(Experiment)
-    well = models.CharField(max_length=3, db_index=True)
+    experiment_well = models.ForeignKey(ExperimentWell)
 
     # TODO: consider adding db_index=True to some of these
     area_adult = models.IntegerField(null=True, blank=True,

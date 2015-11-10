@@ -2,14 +2,14 @@ from django import forms
 from django.core.validators import MinLengthValidator
 
 from clones.forms import RNAiKnockdownField
-from experiments.models import Experiment
+from experiments.models import ExperimentPlate
 from utils.forms import BlankNullBooleanSelect
 from worms.forms import (MutantKnockdownField, ScreenChoiceField,
                          clean_mutant_query_and_screen)
 
 
-class ExperimentFilterForm(forms.Form):
-    """Form for filtering Experiment instances."""
+class ExperimentPlateFilterForm(forms.Form):
+    """Form for filtering ExperimentPlate instances."""
     id = forms.IntegerField(required=False,
                             label='Exact id',
                             help_text='e.g. 32412')
@@ -44,6 +44,7 @@ class ExperimentFilterForm(forms.Form):
     temperature__lte = forms.DecimalField(required=False,
                                           label='Max temp',
                                           help_text='inclusive')
+
     library_plate = forms.CharField(required=False,
                                     help_text='e.g. II-3-B2')
 
@@ -59,16 +60,16 @@ class ExperimentFilterForm(forms.Form):
                                 label='Max date',
                                 help_text='inclusive')
 
-    is_junk = forms.NullBooleanField(required=False,
-                                     initial=False,
-                                     widget=BlankNullBooleanSelect)
+    has_junk = forms.NullBooleanField(required=False,
+                                      initial=False,
+                                      widget=BlankNullBooleanSelect)
 
     screen_stage = forms.ChoiceField(
-        choices=[('', '')] + list(Experiment.SCREEN_STAGE_CHOICES),
+        choices=[('', '')] + list(ExperimentPlate.SCREEN_STAGE_CHOICES),
         required=False)
 
     def clean(self):
-        cleaned_data = super(ExperimentFilterForm, self).clean()
+        cleaned_data = super(ExperimentPlateFilterForm, self).clean()
 
         for k, v in cleaned_data.items():
             # Retain 'False' as a legitimate filter
@@ -80,7 +81,7 @@ class ExperimentFilterForm(forms.Form):
                 del cleaned_data[k]
 
         cleaned_data['experiments'] = (
-            Experiment.objects.filter(**cleaned_data))
+            ExperimentPlate.objects.filter(**cleaned_data))
 
         return cleaned_data
 
