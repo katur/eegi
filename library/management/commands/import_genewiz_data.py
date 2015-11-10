@@ -1,3 +1,26 @@
+"""This command syncs sequencing data from Genewiz output files.
+
+This script requires that LEGACY_DATABASE be defined in local_settings.py,
+to connect to the GenomeWideGI legacy database.
+
+tracking_numbers should be a csv dump of the Google Doc in which we
+kept track of our Genewiz tracking numbers, which is necessary so that this
+script examines only the GI data (and not data from Genewiz for other lab
+members). This file currently lives at:
+
+   materials/sequencing/genewiz/tracking_numbers.csv
+
+genewiz_root should be the root of a directory containing the Genewiz
+output. Inside that directory are several Perl scripts that HueyLing used
+to make the Genewiz output more convenient to parse. The only one of
+these Perl scripts that is required to have been run before using this
+script is rmDateFromSeqAB1.pl, which removes the date from certain
+filenames. Otherwise, this script is flexible about dealing with
+Genewiz's Excel format, or Huey-Ling's text file format.
+This directory currently lives at:
+
+    materials/sequencing/genewiz/genewiz_data
+"""
 import argparse
 import csv
 import glob
@@ -13,30 +36,8 @@ from library.models import LibraryWell, LibrarySequencing
 from utils.scripting import require_db_write_acknowledgement
 from utils.well_naming import get_well_name
 
-HELP = '''
-Sync the sequencing data from the Genewiz output files to the database.
 
-This script requires that LEGACY_DATABASE be defined in local_settings.py,
-to connect to the GenomeWideGI legacy database.
-
-tracking_numbers should be a csv dump of the Google Doc in which we
-kept track of our Genewiz tracking numbers, which is necessary so that this
-script examines only the GI data (and not data from Genewiz for other lab
-members). This file currently lives at:
-
-   materials/sequencing/genewiz/tracking_numbers.csv
-
-genewiz_root should be the root of a directory containing the Genewiz
-output. Inside that directory are several Perl scripts that HueyLing used
-to make the Genewiz output more convenient to parse. The only one of
-these Perl scripts that is required to have been run before using this script
-is rmDateFromSeqAB1.pl, which removes the date from certain filenames.
-Otherwise, this script is flexible about dealing with Genewiz's Excel
-format, or Huey-Ling's text file format. This directory currently lives at:
-
-    materials/sequencing/genewiz/genewiz_data
-
-'''
+HELP = "Sync sequencing data from Genewiz output files."
 
 
 class Command(BaseCommand):
