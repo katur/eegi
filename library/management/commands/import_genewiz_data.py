@@ -36,8 +36,7 @@ from library.models import LibraryWell, LibrarySequencing
 from utils.scripting import require_db_write_acknowledgement
 from utils.well_naming import get_well_name
 
-
-HELP = "Sync sequencing data from Genewiz output files."
+HELP = 'Sync sequencing data from Genewiz output files'
 
 
 class Command(BaseCommand):
