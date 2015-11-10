@@ -21,8 +21,8 @@ from utils.well_naming import get_three_character_well
 
 
 def update_LibraryPlate_table(command, cursor):
-    """Update the LibraryPlate table according to distinct plates recorded
-    in legacy tables RNAiPlate and CherryPickRNAiPlate.
+    """Update LibraryPlate table with distinct plates in legacy tables
+    RNAiPlate and CherryPickRNAiPlate.
 
     Find original Ahringer 384-well plates through the chromosome and
     384PlateID fields of RNAiPlate (384PlateID NOT LIKE GHR-%, != 0).
@@ -106,8 +106,8 @@ def update_LibraryPlate_table(command, cursor):
 
 
 def update_Clone_table(command, cursor):
-    """Update the Clone table, according to the distinct clones in legacy
-    table RNAiPlate.
+    """Update the Clone table with distinct clones from legacy table
+    RNAiPlate.
 
     Find the distinct Ahringer clone names (in 'sjj_X' format) and
     the L4440 empty vector clone (just called 'L4440')
