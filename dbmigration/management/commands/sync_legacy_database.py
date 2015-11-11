@@ -1,48 +1,3 @@
-"""Command to sync legacy databases to the new database.
-
-Summary:
-
-    The synchronization is split into 8 steps. For each step,
-    records are queried from the old database for a particular
-    table. For each record, various conversions and validations
-    are performed to make a Python object(s) that is compatible
-    with the new database. This Python object(s) is inserted
-    into the new database if not present, or used to update an
-    existing record if changes have occurred.
-
-
-The steps are (dependencies in parentheses):
-
-    0: Clone;
-    1: LibraryPlate;
-    2: LibraryWell (0,1);
-    3: ExperimentPlate&ExperimentWell (WormStrain,1);
-    4: DevstarScore (3);
-    5: ManualScoreCode;
-    6: ManualScore primary (3,5);
-    7: ManualScore secondary (3,5);
-
-Requirements:
-
-    Step 3 requires that WormStrain table be populated
-    (this table is small enough that I populated it by hand,
-    referencing the Google Doc about the worms used in the screen).
-
-    Steps 0-6 require that LEGACY_DATABASE be defined in local_settings.py,
-    to connect to the GenomeWideGI legacy database.
-
-    Step 7 requires that LEGACY_DATABASE_2 be defined in local_settings.py,
-    to connect to the GWGI2 database.
-
-
-Output:
-
-    Stdout reports whether or not a particular step had changes.
-
-    Stderr reports every change (such as an added row), so can get
-    quite long; consider redirecting with 2> stderr.out.
-
-"""
 import MySQLdb
 
 from django.core.management.base import BaseCommand, CommandError
@@ -61,8 +16,7 @@ from utils.scripting import require_db_write_acknowledgement
 HELP = 'Sync the database according to any changes in the legacy database.'
 
 ARG_HELP = '''
-    Step to {} with, inclusive.
-    If not provided, defaults to {}.
+    Step to {} with, inclusive. If not provided, defaults to {}.
     The steps are (dependencies in parentheses):
         [0: Clone;
         1: LibraryPlate;
@@ -89,6 +43,51 @@ LAST_STEP = len(STEPS) - 1
 
 
 class Command(BaseCommand):
+    """Command to sync legacy databases to the new database.
+
+    Summary:
+
+        The synchronization is split into 8 steps. For each step,
+        records are queried from the old database for a particular
+        table. For each record, various conversions and validations
+        are performed to make a Python object(s) that is compatible
+        with the new database. This Python object(s) is inserted
+        into the new database if not present, or used to update an
+        existing record if changes have occurred.
+
+
+    The steps are (dependencies in parentheses):
+
+        0: Clone;
+        1: LibraryPlate;
+        2: LibraryWell (0,1);
+        3: ExperimentPlate&ExperimentWell (WormStrain,1);
+        4: DevstarScore (3);
+        5: ManualScoreCode;
+        6: ManualScore primary (3,5);
+        7: ManualScore secondary (3,5);
+
+    Requirements:
+
+        Step 3 requires that WormStrain table be populated
+        (this table is small enough that I populated it by hand,
+        referencing the Google Doc about the worms used in the screen).
+
+        Steps 0-6 require that LEGACY_DATABASE be defined in local_settings.py,
+        to connect to the GenomeWideGI legacy database.
+
+        Step 7 requires that LEGACY_DATABASE_2 be defined in local_settings.py,
+        to connect to the GWGI2 database.
+
+
+    Output:
+
+        Stdout reports whether or not a particular step had changes.
+
+        Stderr reports every change (such as an added row), so can get
+        quite long; consider redirecting with 2> stderr.out.
+
+    """
     help = HELP
 
     def add_arguments(self, parser):
