@@ -1,4 +1,15 @@
-import sys
+"""Command to add empty (i.e. no intended clone) library wells to the database.
+
+This is not one of the steps of syncing to the legacy database,
+because empty library wells were not represented in the legacy database.
+
+It is useful to have empty wells represented in the database.
+This is because these wells are still photographed, and there
+are cases where despite there being no intended clone according
+to the library manufacturer, we do have bacteria that grows in the
+well, whose identity can be resolved through sequencing.
+
+"""
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
@@ -9,19 +20,7 @@ from library.models import LibraryWell
 from utils.plate_layout import get_96_well_set, get_384_position
 from utils.scripting import require_db_write_acknowledgement
 
-HELP = '''
-Add empty library wells (i.e., wells without intended clones) to the database.
-
-These empty library wells are not added while syncing with the legacy database,
-because the legacy database does not include empty wells.
-
-It is useful to have empty wells represented in the database, if with no
-intended clone. This is because these wells are still photographed,
-and there are cases where despite there being no intended clone according
-to the library creator, we do have bacteria that grows in the well,
-whose identity can be resolved through sequencing.
-
-'''
+HELP = 'Add empty (i.e. no intended clone) library wells to the database.'
 
 
 class Command(BaseCommand):
@@ -32,58 +31,65 @@ class Command(BaseCommand):
 
         wells_96 = get_96_well_set()
 
+        # Do not add empty wells for the 'GHR-' style plates, since we don't
+        # have these plates in the lab (they are the original plates from
+        # which our Vidal rearrays were generated).
         library_wells = (LibraryWell.objects.filter(plate__number_of_wells=96)
                          .exclude(plate__id__startswith='GHR-'))
 
         plate_wells = {}
-        for well in library_wells:
-            if well.plate not in plate_wells:
-                plate_wells[well.plate] = set()
 
-            plate_wells[well.plate].add(well.well)
+        for library_well in library_wells:
+            if library_well.library_plate not in plate_wells:
+                plate_wells[library_well.library_plate] = set()
 
-        for plate in plate_wells:
-            missing_wells = get_missing_wells(plate_wells[plate],
-                                              wells_96)
+            plate_wells[library_well.library_plate].add(library_well.well)
+
+        for library_plate in plate_wells:
+            missing_wells = wells_96 - plate_wells[library_plate]
+
             for missing_well in missing_wells:
-                well = LibraryWell(
-                    id=get_library_well_name(plate.id, missing_well),
-                    plate=plate,
+                library_well = LibraryWell(
+                    id=get_library_well_name(library_plate.id, missing_well),
+                    plate=library_plate,
                     well=missing_well,
                     parent_library_well=None,
                     intended_clone=None,
                 )
 
-                if plate.is_ahringer_96_plate():
-                    well.parent_library_well = get_384_parent_well(well)
+                if library_plate.is_ahringer_96_plate():
+                    parent_well = get_ahringer_384_parent_well(library_well)
 
-                well.save()
+                    if parent_well.intended_clone:
+                        self.stderr.write(
+                            '384 well {} has a non-null intended clone, '
+                            'but its 96-well derivative {} is empty\n'
+                            .format(parent_well, library_well))
+
+                    library_well.parent_library_well = parent_well
+
+                library_well.save()
 
 
-def get_missing_wells(present, complete):
-    return complete - present
-
-
-def get_384_parent_well(well):
+def get_ahringer_384_parent_well(child_well):
     """Get the 384 format well from which a particular 96 format well is
     derived, assuming standard Ahringer naming.
 
+    If the parent doesn't exist, creates it, assuming same parent
+    as the child.
+
     """
-    child_plate_parts = well.plate.id.split('-')
+    child_plate_parts = child_well.plate.id.split('-')
     parent_plate_name = child_plate_parts[0] + '-' + child_plate_parts[1]
     parent_plate = get_library_plate(parent_plate_name)
 
-    child_position = well.well
+    child_position = child_well.well
     parent_position = get_384_position(child_plate_parts[2], child_position)
 
     parent_well_pk = get_library_well_name(parent_plate_name, parent_position)
 
     try:
         parent_well = LibraryWell.objects.get(pk=parent_well_pk)
-        if parent_well.intended_clone:
-            sys.stderr.write('384 well {} has a non-null intended clone, '
-                             'while its 96-well derivative {} is empty\n'
-                             .format(parent_well, well))
 
     except ObjectDoesNotExist:
         parent_well = LibraryWell(
@@ -91,7 +97,7 @@ def get_384_parent_well(well):
             plate=parent_plate,
             well=parent_position,
             parent_library_well=None,
-            intended_clone=None,
+            intended_clone=child_well.intended_clone,
         )
 
         parent_well.save()
