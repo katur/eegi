@@ -24,7 +24,6 @@ TODO: Clone should come before LibraryPlate (clearer)
 ./manage.py sync_legacy_database 2 2
 
 # Add empty LibraryWells
-TODO: refactor and run this script
 ./manage.py add_empty_library_wells
 
 # Import seqencing data and Firoz's blat results
