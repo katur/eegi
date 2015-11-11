@@ -51,7 +51,7 @@ class Command(BaseCommand):
             for missing_well in missing_wells:
                 library_well = LibraryWell(
                     id=get_library_well_name(library_plate.id, missing_well),
-                    plate=library_plate,
+                    library_plate=library_plate,
                     well=missing_well,
                     parent_library_well=None,
                     intended_clone=None,
@@ -94,7 +94,7 @@ def get_ahringer_384_parent_well(child_well):
     except ObjectDoesNotExist:
         parent_well = LibraryWell(
             id=parent_well_pk,
-            plate=parent_plate,
+            library_plate=parent_plate,
             well=parent_position,
             parent_library_well=None,
             intended_clone=child_well.intended_clone,
