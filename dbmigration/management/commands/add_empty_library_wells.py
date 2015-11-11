@@ -31,11 +31,18 @@ class Command(BaseCommand):
 
         wells_96 = get_96_well_set()
 
-        # Do not add empty wells for the 'GHR-' style plates, since we don't
-        # have these plates in the lab (they are the original plates from
-        # which our Vidal rearrays were generated).
-        library_wells = (LibraryWell.objects.filter(plate__number_of_wells=96)
-                         .exclude(plate__id__startswith='GHR-'))
+        # Get all wells, to determine which wells are missing.
+        #
+        # Skip 384-well plates, since the empty wells from these Ahringer
+        # parent plates can be created in concert with their 96-well children.
+        #
+        # Also skip 'GHR-' style plates. Since we don't actually have these
+        # plates in the lab, we only care about the small fraction of the
+        # wells from these plates that were used to generated our Vidal
+        # rearrays.
+        library_wells = (LibraryWell.objects
+                         .filter(library_plate__number_of_wells=96)
+                         .exclude(library_plate__id__startswith='GHR-'))
 
         plate_wells = {}
 
