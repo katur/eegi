@@ -8,6 +8,7 @@ import xlrd
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 
+from dbmigration.helpers.object_getters import get_library_well
 from eegi.local_settings import LEGACY_DATABASE
 from library.models import LibraryWell, LibrarySequencing
 from utils.scripting import require_db_write_acknowledgement
@@ -68,49 +69,61 @@ class Command(BaseCommand):
                                     db=LEGACY_DATABASE['NAME'])
         cursor = legacy_db.cursor()
 
-        # Add raw genewiz data to database (sequence and quality scores).
-        # Use tracking_numbers to limit to GI sequences only
-        # (as opposed to sequences for other lab members)
+        ######################################################
+        # FIRST STAGE
+        #
+        #   Add raw genewiz data (sequence and quality scores)
+        #
+        ######################################################
+
         reader = csv.DictReader(tracking_numbers)
 
         for row in reader:
             tracking_number = row['tracking_number'].strip()
             self._process_tracking_number(tracking_number)
 
-        # Retrieve all the sequencing objects just recorded
+        ######################################
+        # SECOND STAGE
+        #
+        #   Add source LibraryWell information
+        #
+        ######################################
+
         self.sequences = LibrarySequencing.objects.all()
 
         # Create a dictionary to translate from sequencing well to tube number
-        # (choose SeqPlateID=1 because it happens to have all 96 wells)
+        #   (choose SeqPlateID=1 because it happens to have all 96 wells)
         cursor.execute('SELECT tubeNum, Seq96well FROM SeqPlate '
                        'WHERE SeqPlateID=1')
+
         self.seq_well_to_tube = {}
         for row in cursor.fetchall():
             self.seq_well_to_tube[row[1]] = row[0]
 
         # Process source information for plates 1-56
-        # (from the legacy database)
+        #   (from the legacy database)
         legacy_query = ('SELECT RNAiPlateID, 96well, SeqPlateID, Seq96Well, '
                         'oriClone, receiptID FROM SeqPlate')
         cursor.execute(legacy_query)
         legacy_rows = cursor.fetchall()
 
         for row in legacy_rows:
-            self._process_source_information(row)
+            try:
+                source_library_well = get_library_well(row[0], row[1])
 
-        # Process source information plates 57-66
-        # (not in legacy database; entire plate sequenced)
+            except ObjectDoesNotExist:
+                raise CommandError('LibraryWell not found for {} {}\n'
+                                   .format(row[0], row[1]))
+
+            self._process_source_information(source_library_well, row[2],
+                                             row[3], row[4], row[5])
+
+        # Process source information for plates 57-66
+        #   (these are NOT in legacy database; entire plate sequenced)
         full_seq_plates = {
-            57: 'hybrid_F1',
-            58: 'hybrid_F2',
-            59: 'hybrid_F3',
-            60: 'hybrid_F4',
-            61: 'hybrid_F5',
-            62: 'hybrid_F6',
-            63: 'universal_F5',
-            64: 'or346_F6',
-            65: 'or346_F7',
-            66: 'mr17_F3',
+            57: 'hybrid-F1', 58: 'hybrid-F2', 59: 'hybrid-F3',
+            60: 'hybrid-F4', 61: 'hybrid-F5', 62: 'hybrid-F6',
+            63: 'universal-F5', 64: 'or346-F6', 65: 'or346-F7', 66: 'mr17-F3',
         }
 
         for seq_plate_number in full_seq_plates:
@@ -119,76 +132,77 @@ class Command(BaseCommand):
                 library_plate=source_plate_id)
 
             for library_well in library_wells:
-                row = (source_plate_id, library_well.well, seq_plate_number,
-                       library_well.well)
-                self._process_source_information(row)
+                self._process_source_information(
+                    library_well, seq_plate_number, library_well.well)
 
         # Process plates 67-on
-        # (not in legacy database; only certain columns sequenced)
+        #   (these are NOT in legacy database, and only some columns sequenced)
         full_seq_columns = {
             67: {
-                1: ('hc69_F7', 1),
-                2: ('hc69_F7', 3),
-                3: ('hc69_F7', 4),
-                4: ('hc69_F7', 5),
-                5: ('g53_F2', 8),
-                6: ('g53_F2', 9),
-                7: ('g53_F2', 10),
-                8: ('it5_F3', 4, 'DEFGH'),
-                9: ('it5_F3', 5),
-                10: ('it57_F4', 4, 'GH'),
-                11: ('ye60_F2', 8),
-                12: ('b244_F1', 12),
+                1: ('hc69-F7', 1),
+                2: ('hc69-F7', 3),
+                3: ('hc69-F7', 4),
+                4: ('hc69-F7', 5),
+                5: ('g53-F2', 8),
+                6: ('g53-F2', 9),
+                7: ('g53-F2', 10),
+                8: ('it5-F3', 4, 'DEFGH'),
+                9: ('it5-F3', 5),
+                10: ('it57-F4', 4, 'GH'),
+                11: ('ye60-F2', 8),
+                12: ('b244-F1', 12),
             },
             68: {
-                1: ('or191_F1', 1),
-                2: ('or191_F1', 3),
-                3: ('or191_F1', 4),
-                4: ('or191_F1', 5),
-                5: ('or191_F1', 6),
-                6: ('or191_F1', 8),
-                7: ('or191_F1', 9),
-                8: ('or191_F1', 10),
-                9: ('or191_F1', 12),
-                10: ('or191_F2', 1),
-                11: ('or191_F2', 3),
-                12: ('or191_F2', 4),
+                1: ('or191-F1', 1),
+                2: ('or191-F1', 3),
+                3: ('or191-F1', 4),
+                4: ('or191-F1', 5),
+                5: ('or191-F1', 6),
+                6: ('or191-F1', 8),
+                7: ('or191-F1', 9),
+                8: ('or191-F1', 10),
+                9: ('or191-F1', 12),
+                10: ('or191-F2', 1),
+                11: ('or191-F2', 3),
+                12: ('or191-F2', 4),
             },
             69: {
-                1: ('or191_F2', 5),
-                2: ('or191_F2', 6),
-                3: ('or191_F2', 8),
-                4: ('or191_F2', 9),
-                5: ('or191_F2', 10),
-                6: ('or191_F2', 12),
-                7: ('or191_F3', 1),
-                8: ('or191_F3', 3),
-                9: ('b235_F5', 1),
-                10: ('b235_F5', 3),
-                11: ('b235_F5', 4),
-                12: ('b235_F5', 5),
+                1: ('or191-F2', 5),
+                2: ('or191-F2', 6),
+                3: ('or191-F2', 8),
+                4: ('or191-F2', 9),
+                5: ('or191-F2', 10),
+                6: ('or191-F2', 12),
+                7: ('or191-F3', 1),
+                8: ('or191-F3', 3),
+                9: ('b235-F5', 1),
+                10: ('b235-F5', 3),
+                11: ('b235-F5', 4),
+                12: ('b235-F5', 5),
             },
             70: {
-                1: ('b235_F5', 6),
-                2: ('b235_F5', 8),
-                3: ('b235_F5', 9),
-                4: ('b235_F5', 10),
-                5: ('b235_F5', 12),
-                6: ('b235_F6', 1),
-                7: ('b235_F6', 3),
-                8: ('b235_F6', 4),
-                9: ('b235_F6', 5),
-                10: ('b235_F6', 6),
-                11: ('b235_F6', 8),
-                12: ('b235_F6', 9),
+                1: ('b235-F5', 6),
+                2: ('b235-F5', 8),
+                3: ('b235-F5', 9),
+                4: ('b235-F5', 10),
+                5: ('b235-F5', 12),
+                6: ('b235-F6', 1),
+                7: ('b235-F6', 3),
+                8: ('b235-F6', 4),
+                9: ('b235-F6', 5),
+                10: ('b235-F6', 6),
+                11: ('b235-F6', 8),
+                12: ('b235-F6', 9),
             },
         }
 
         for seq_plate_number in full_seq_columns:
             seq_columns = full_seq_columns[seq_plate_number]
+
             for seq_column in seq_columns:
                 source_plate_id = seq_columns[seq_column][0]
                 source_column = seq_columns[seq_column][1]
+
                 if len(seq_columns[seq_column]) > 2:
                     letters = seq_columns[seq_column][2]
                 else:
@@ -197,15 +211,23 @@ class Command(BaseCommand):
                 for letter in letters:
                     seq_well = get_well_name(letter, seq_column)
                     source_well = get_well_name(letter, source_column)
-                    row = (source_plate_id, source_well, seq_plate_number,
-                           seq_well)
-                    self._process_source_information(row)
+                    source_library_well = get_library_well(source_plate_id,
+                                                           source_well)
+
+                    self._process_source_information(
+                        source_library_well, seq_plate_number, seq_well)
 
     def _process_tracking_number(self, tracking_number):
+        """Process all the rows for a particular Genewiz tracking number.
+
+        A Genewiz tracking number corresponds to one sequencing plate.
+
+        """
         qscrl_txt = ('{}/{}_qscrl.txt'.format(self.genewiz_root,
                                               tracking_number))
         qscrl_xls = ('{}/{}_qscrl.xls'.format(self.genewiz_root,
                                               tracking_number))
+        # First try .txt file
         try:
             qscrl_file = open(qscrl_txt, 'rb')
             with qscrl_file:
@@ -216,6 +238,7 @@ class Command(BaseCommand):
                     # in the case of resequencing.
                     self._process_qscrl_row(row)
 
+        # If .txt file does not work, try .xls
         except IOError:
             try:
                 book = xlrd.open_workbook(qscrl_xls, on_demand=True)
@@ -230,12 +253,12 @@ class Command(BaseCommand):
 
                     self._process_qscrl_row(row)
 
+            # If neither .txt or .xls file, error
             except IOError as e:
-                self.stderr.write('QSCRL file missing or could not be open '
-                                  'for tracking number {}. I/O error({}): {}\n'
-                                  .format(tracking_number, e.errno,
-                                          e.strerror))
-                return
+                raise CommandError(
+                    'QSCRL file missing or could not be open for '
+                    'tracking number {}. I/O error({}): {}\n'
+                    .format(tracking_number, e.errno, e.strerror))
 
     def _process_qscrl_row(self, row):
         """Process a row of QSCRL information.
@@ -267,9 +290,9 @@ class Command(BaseCommand):
             seq_file = open(glob.glob(seq_filepath)[0], 'rb')
 
         except IOError:
-            self.stderr.write('Seq file missing for tracking number '
-                              '{}, dna {}\n'
-                              .format(tracking_number, dna_name))
+            raise CommandError('Seq file missing for tracking number '
+                               '{}, dna {}\n'
+                               .format(tracking_number, dna_name))
         with seq_file:
             ab1_filename = seq_file.next()
             ab1_filename = ab1_filename.strip()
@@ -298,78 +321,50 @@ class Command(BaseCommand):
                 si_a=row['SI_A'],
                 si_c=row['SI_C'],
                 si_g=row['SI_G'],
-                si_t=row['SI_T']
-            )
+                si_t=row['SI_T'])
+
             new_sequence.save()
 
-    def _process_source_information(self, row):
-        # The plate and well that the sequencing result came from
-        source_plate_id = row[0]
-        source_well = row[1]
+    def _process_source_information(self, source_library_well,
+                                    seq_plate_number, seq_well,
+                                    legacy_clone=None, legacy_tracking=None):
+        """Process the source information for a sequencing sample.
 
-        # Identifying information for the plate/tube that were sequenced
-        sample_plate_name = 'JL' + str(row[2])
-        sample_well = row[3]
-        sample_tube_number = self.seq_well_to_tube[sample_well]
+        source_library_well is the library position that was sequenced.
 
-        # Legacy clone and legacy tracking just for double checking
-        if len(row) > 4:
-            legacy_clone = row[4]
-            legacy_tracking = row[5]
-        else:
-            legacy_clone = None
-            legacy_tracking = None
+        seq_plate_number and seq_well are identifying information re:
+        the sequencing plate/tube that was sent off to Genewiz.
 
-        sequences = self.sequences.filter(
-            sample_plate_name=sample_plate_name,
-            sample_tube_number=sample_tube_number)
+        """
+        # Sanity check that clone matches
+        if legacy_clone:
+            clone = source_library_well.intended_clone
+            if (not clone or (legacy_clone != clone.id and
+                              'GHR' not in clone.id)):
+                self.stderr.write(
+                    'ERROR: Clone mismatch for {}: {} {}\n'
+                    .format(source_library_well, clone, legacy_clone))
+
+        seq_plate_name = 'JL' + str(seq_plate_number)
+        seq_tube_number = self.seq_well_to_tube[seq_well]
+
+        sequences = self.sequences.filter(sample_plate_name=seq_plate_name,
+                                          sample_tube_number=seq_tube_number)
 
         if not sequences:
-            self.stderr.write('No record in new database for sequencing '
-                              'record {} {}\n'.format(sample_plate_name,
-                                                      sample_tube_number))
-        else:
-            for sequence in sequences:
-                if (legacy_tracking and
-                        legacy_tracking != sequence.genewiz_tracking_number):
-                    self.stderr.write('Tracking number mismatch for '
-                                      'sequencing record {} {}\n'.format(
-                                          sample_plate_name,
-                                          sample_tube_number))
-                source_library_well_id = '{}_{}'.format(source_plate_id,
-                                                        source_well)
-                try:
-                    source_library_well = LibraryWell.objects.get(
-                        pk=source_library_well_id)
-                    try:
-                        # Double check that clone matches
-                        clone = source_library_well.intended_clone.id
-                        if (legacy_clone and ('GHR' not in clone)
-                                and clone != legacy_clone):
-                            self.stderr.write(
-                                'Clone mismatch for {} {}: {} {}\n'
-                                .format(source_plate_id, source_well,
-                                        clone, legacy_clone))
+            raise CommandError('No record in database for sequencing '
+                               'record {} {}\n'.format(seq_plate_name,
+                                                       seq_tube_number))
 
-                    except AttributeError:
-                        # Due to a few cases of no intended clone
-                        # being sequenced
-                        self.stderr.write('LibraryWell {} has no intended '
-                                          'clone\n'
-                                          .format(source_library_well_id))
+        for sequence in sequences:
+            # Sanity check for tracking number match
+            if (legacy_tracking and
+                    legacy_tracking != sequence.genewiz_tracking_number):
+                raise CommandError('Tracking number mismatch for sequencing '
+                                   'record {}\n'.format(sequence))
 
-                    # Save the source well, regardless of clone issues
-                    sequence.source_library_well = source_library_well
-                    sequence.save()
-
-                except ObjectDoesNotExist:
-                    # Due to Hueyling deleting from CherryPickRNAiPlate
-                    # the wells that did not grow, but not deleting these
-                    # from CherryPickTemplate or SeqPlate.
-                    # When I go back and add all empty wells to be
-                    # represented, these should get added.
-                    self.stderr.write('LibraryWell {} not found\n'
-                                      .format(source_library_well_id))
+            sequence.source_library_well = source_library_well
+            sequence.save()
 
 
 def _get_plate_name_from_dna_name(dna_name):
