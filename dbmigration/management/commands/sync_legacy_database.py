@@ -1,8 +1,8 @@
-"""This command migrates legacy data to the new database.
+"""Command to sync legacy databases to the new database.
 
 Summary:
 
-    The migration is split into 8 steps. For each step,
+    The synchronization is split into 8 steps. For each step,
     records are queried from the old database for a particular
     table. For each record, various conversions and validations
     are performed to make a Python object(s) that is compatible
@@ -13,14 +13,14 @@ Summary:
 
 The steps are (dependencies in parentheses):
 
-    0: LibraryPlate;
-    1: Clone;
-    2: LibraryWell (0, 1);
-    3: ExperimentPlate and ExperimentWell (WormStrain, 0);
+    0: Clone;
+    1: LibraryPlate;
+    2: LibraryWell (0,1);
+    3: ExperimentPlate&ExperimentWell (WormStrain,1);
     4: DevstarScore (3);
     5: ManualScoreCode;
-    6: ManualScore_primary (3, 5);
-    7: ManualScore_secondary (3, 5);
+    6: ManualScore primary (3,5);
+    7: ManualScore secondary (3,5);
 
 Requirements:
 
@@ -48,8 +48,7 @@ import MySQLdb
 from django.core.management.base import BaseCommand, CommandError
 
 from dbmigration.helpers.sync_steps_library import (
-    update_LibraryPlate_table, update_Clone_table,
-    update_LibraryWell_table)
+    update_Clone_table, update_LibraryPlate_table, update_LibraryWell_table)
 
 from dbmigration.helpers.sync_steps_experiments import (
     update_Experiment_tables, update_DevstarScore_table,
@@ -59,25 +58,25 @@ from dbmigration.helpers.sync_steps_experiments import (
 from eegi.local_settings import LEGACY_DATABASE, LEGACY_DATABASE_2
 from utils.scripting import require_db_write_acknowledgement
 
-HELP = '''
-Sync the database according to any changes in the legacy database.
+HELP = 'Sync the database according to any changes in the legacy database.'
 
-Optionally provide start and end steps (both inclusive):
-
-    0: LibraryPlate;
-    1: Clone;
-    2: LibraryWell (0, 1);
-    3: ExperimentPlate and ExperimentWell (WormStrain, 0);
-    4: DevstarScore (3);
-    5: ManualScoreCode;
-    6: ManualScore_primary (3, 5);
-    7: ManualScore_secondary (3, 5);
-
+ARG_HELP = '''
+    Step to {} with, inclusive.
+    If not provided, defaults to {}.
+    The steps are (dependencies in parentheses):
+        [0: Clone;
+        1: LibraryPlate;
+        2: LibraryWell (0,1);
+        3: ExperimentWell&ExperimentPlate (WormStrain,1);
+        4: DevstarScore (3);
+        5: ManualScoreCode;
+        6: ManualScore primary (3,5);
+        7: ManualScore secondary (3,5);]
 '''
 
 STEPS = (
-    update_LibraryPlate_table,
     update_Clone_table,
+    update_LibraryPlate_table,
     update_LibraryWell_table,
     update_Experiment_tables,
     update_DevstarScore_table,
@@ -93,8 +92,10 @@ class Command(BaseCommand):
     help = HELP
 
     def add_arguments(self, parser):
-        parser.add_argument('start', type=int, nargs='?', default=0)
-        parser.add_argument('end', type=int, nargs='?', default=LAST_STEP)
+        parser.add_argument('start', type=int, nargs='?', default=0,
+                            help=(ARG_HELP.format('start', 0)))
+        parser.add_argument('end', type=int, nargs='?', default=LAST_STEP,
+                            help=(ARG_HELP.format('end', LAST_STEP)))
 
     def handle(self, **options):
         start = options['start']

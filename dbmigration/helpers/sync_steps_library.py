@@ -20,6 +20,44 @@ from library.models import LibraryPlate, LibraryWell
 from utils.well_naming import get_three_character_well
 
 
+def update_Clone_table(command, cursor):
+    """Update the Clone table with distinct clones from legacy table
+    RNAiPlate.
+
+    Find the distinct Ahringer clone names (in 'sjj_X' format) and
+    the L4440 empty vector clone (just called 'L4440')
+    from the clone field of RNAiPlate.
+
+    Find the distinct Vidal clone names (in 'GHR-X@X' format)
+    from the 384PlateID and 384Well fields of RNAiPlate
+    (note that we are no longer using the 'mv_X'-style Vidal clone names,
+    and our PK for Vidal clones will now be in 'GHR-X@X' style).
+
+    """
+    recorded_clones = Clone.objects.all()
+    fields_to_compare = None
+
+    legacy_query = ('SELECT DISTINCT clone FROM RNAiPlate '
+                    'WHERE clone LIKE "sjj%" OR clone = "L4440"')
+
+    def sync_clone_row(legacy_row):
+        legacy_clone = Clone(id=legacy_row[0])
+        return update_or_save_object(
+            command, legacy_clone, recorded_clones, fields_to_compare)
+
+    legacy_query_vidal = ('SELECT DISTINCT 384PlateID, 384Well FROM RNAiPlate '
+                          'WHERE clone LIKE "mv%"')
+
+    def sync_clone_row_vidal(legacy_row):
+        vidal_clone_name = get_vidal_clone_name(legacy_row[0], legacy_row[1])
+        legacy_clone = Clone(id=vidal_clone_name)
+        return update_or_save_object(
+            command, legacy_clone, recorded_clones, fields_to_compare)
+
+    sync_rows(command, cursor, legacy_query, sync_clone_row)
+    sync_rows(command, cursor, legacy_query_vidal, sync_clone_row_vidal)
+
+
 def update_LibraryPlate_table(command, cursor):
     """Update LibraryPlate table with distinct plates in legacy tables
     RNAiPlate and CherryPickRNAiPlate.
@@ -103,44 +141,6 @@ def update_LibraryPlate_table(command, cursor):
     # Sync the 96-well plates used for our Secondary experiments
     sync_rows(command, cursor, legacy_query_secondary_plates,
               sync_library_plate_row, screen_stage=2)
-
-
-def update_Clone_table(command, cursor):
-    """Update the Clone table with distinct clones from legacy table
-    RNAiPlate.
-
-    Find the distinct Ahringer clone names (in 'sjj_X' format) and
-    the L4440 empty vector clone (just called 'L4440')
-    from the clone field of RNAiPlate.
-
-    Find the distinct Vidal clone names (in 'GHR-X@X' format)
-    from the 384PlateID and 384Well fields of RNAiPlate
-    (note that we are no longer using the 'mv_X'-style Vidal clone names,
-    and our PK for Vidal clones will now be in 'GHR-X@X' style).
-
-    """
-    recorded_clones = Clone.objects.all()
-    fields_to_compare = None
-
-    legacy_query = ('SELECT DISTINCT clone FROM RNAiPlate '
-                    'WHERE clone LIKE "sjj%" OR clone = "L4440"')
-
-    def sync_clone_row(legacy_row):
-        legacy_clone = Clone(id=legacy_row[0])
-        return update_or_save_object(
-            command, legacy_clone, recorded_clones, fields_to_compare)
-
-    legacy_query_vidal = ('SELECT DISTINCT 384PlateID, 384Well FROM RNAiPlate '
-                          'WHERE clone LIKE "mv%"')
-
-    def sync_clone_row_vidal(legacy_row):
-        vidal_clone_name = get_vidal_clone_name(legacy_row[0], legacy_row[1])
-        legacy_clone = Clone(id=vidal_clone_name)
-        return update_or_save_object(
-            command, legacy_clone, recorded_clones, fields_to_compare)
-
-    sync_rows(command, cursor, legacy_query, sync_clone_row)
-    sync_rows(command, cursor, legacy_query_vidal, sync_clone_row_vidal)
 
 
 def update_LibraryWell_table(command, cursor):
