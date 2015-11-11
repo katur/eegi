@@ -26,7 +26,7 @@ to the redesigned MySQL database (eegi).
 ./manage.py add_empty_library_wells
 
 # Import seqencing data and Firoz's blat results
-./manage.py import_genewiz_data
+./manage.py import_genewiz_data materials/sequencing/genewiz/tracking_numbers.csv materials/sequencing/genewiz/genewiz_data
 ./manage.py import_blat_results
 
 ```
