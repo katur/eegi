@@ -1,3 +1,7 @@
+"""This module contains methods for retrieving objects that already
+exist in the new database, based on legacy values.
+
+"""
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -85,17 +89,15 @@ def get_score_code(score_code_id):
             'ManualScoreCode', id=score_code_id))
 
 
-def get_user(username):
+def get_user(legacy_username):
     """Get a user from its username."""
-    if username == 'Julie':
-        username = 'julie'
-
-    if username == 'patricia':
-        username = 'giselle'
+    if legacy_username == 'Julie':
+        legacy_username = 'julie'
+    if legacy_username == 'patricia':
+        legacy_username = 'giselle'
 
     try:
-        return User.objects.get(username=username)
-
+        return User.objects.get(username=legacy_username)
     except ObjectDoesNotExist:
         raise ObjectDoesNotExist(get_missing_object_message(
-            'User', username=username))
+            'User', username=legacy_username))
