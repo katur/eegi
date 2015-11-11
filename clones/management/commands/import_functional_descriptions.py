@@ -1,16 +1,3 @@
-"""Command to add WormBase gene functional descriptions.
-
-The WormBase file can be found at:
-
-ftp://ftp.wormbase.org/pub/wormbase/releases/WSX/species/c_elegans/
-PRJNA13758/annotation/c_elegans.PRJNA13758.WSX.functional_descriptions.txt.gz
-
-where WSX should be replaced with the desired WormBase version.
-
-As of November 2015, Firoz's mapping database uses WS240, so Katherine
-also used WS240 for the functional descriptions.
-
-"""
 import argparse
 import csv
 
@@ -23,18 +10,33 @@ HELP = 'Import gene functional descriptions.'
 
 
 class Command(BaseCommand):
+    """Command to add WormBase gene functional descriptions.
+
+    The WormBase file can be found at:
+
+    ftp://ftp.wormbase.org/pub/wormbase/releases/WSX/species/c_elegans/
+    PRJNA13758/annotation/c_elegans.PRJNA13758.WSX.functional_descriptions.txt.gz
+
+    where WSX should be replaced with the desired WormBase version.
+
+    As of November 2015, Firoz's mapping database uses WS240, so Katherine
+    also used WS240 for the functional descriptions.
+
+    """
     help = HELP
 
     def add_arguments(self, parser):
         parser.add_argument('file', type=argparse.FileType('r'),
-                            help=('WormBase functional descriptions file'))
+                            help="WormBase functional descriptions file. "
+                                 "See this command's docstring "
+                                 "for more details.")
 
     def handle(self, **options):
         f = options['file']
 
         require_db_write_acknowledgement()
 
-        descriptions = parse_wormbase_file(f)
+        descriptions = _parse_wormbase_file(f)
 
         genes = Gene.objects.all()
 
@@ -75,7 +77,7 @@ class Command(BaseCommand):
                               .format(num_mismatches))
 
 
-def parse_wormbase_file(f):
+def _parse_wormbase_file(f):
     # Skip header
     while True:
         row = next(f)

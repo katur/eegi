@@ -1,8 +1,3 @@
-"""Command to import Firoz's RNAi clone mapping data.
-
-Mapping data is queried directly from Firoz's RNAiCloneMapper database.
-
-"""
 import MySQLdb
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,6 +12,11 @@ HELP = "Import RNAi clone mapping data from Firoz's database."
 
 
 class Command(BaseCommand):
+    """Command to import Firoz's RNAi clone mapping data.
+
+    Mapping data is queried directly from Firoz's RNAiCloneMapper database.
+
+    """
     help = HELP
 
     def handle(self, **options):
@@ -29,10 +29,10 @@ class Command(BaseCommand):
 
         cursor = mapping_db.cursor()
 
-        self.mapping_alias_to_pk = get_mapping_alias_to_pk(cursor)
-        self.mapping_clones = get_mapping_clones(cursor)
-        self.mapping_genes = get_mapping_genes(cursor)
-        self.mapping_targets = get_mapping_targets(cursor)
+        self.mapping_alias_to_pk = _get_mapping_alias_to_pk(cursor)
+        self.mapping_clones = _get_mapping_clones(cursor)
+        self.mapping_genes = _get_mapping_genes(cursor)
+        self.mapping_targets = _get_mapping_targets(cursor)
 
         self.number_clones_no_targets = 0
         self.number_clones_multiple_targets = 0
@@ -40,14 +40,14 @@ class Command(BaseCommand):
         clones = Clone.objects.all()
 
         for clone in clones:
-            self.process_clone(clone)
+            self._process_clone(clone)
 
         self.stdout.write('{} clones with no targets.'
                           .format(self.number_clones_no_targets))
         self.stdout.write('{} clones with multiple targets.'
                           .format(self.number_clones_multiple_targets))
 
-    def process_clone(self, clone):
+    def _process_clone(self, clone):
         """Do all processing for this clone, both its info and targets."""
         if clone.pk == 'L4440':
             return
@@ -61,11 +61,11 @@ class Command(BaseCommand):
             raise CommandError('>1 alias match for {}'.format(clone.pk))
 
         clone.mapping_db_pk = mapping_pks[0]
-        update_clone_info(clone, self.mapping_clones[clone.mapping_db_pk])
+        _update_clone_info(clone, self.mapping_clones[clone.mapping_db_pk])
 
-        self.update_clone_targets(clone)
+        self._process_clone_targets(clone)
 
-    def update_clone_targets(self, clone):
+    def _process_clone_targets(self, clone):
         """Do all processing for this clone's targets."""
         try:
             mapping_targets = self.mapping_targets[clone.mapping_db_pk]
@@ -92,7 +92,7 @@ class Command(BaseCommand):
                                       'present in gene table'.format(gene_id))
                     continue
 
-            update_gene_info(gene, self.mapping_genes[gene.id])
+            _update_gene_info(gene, self.mapping_genes[gene.id])
 
             target_id = target_info['id']
 
@@ -102,10 +102,10 @@ class Command(BaseCommand):
             except ObjectDoesNotExist:
                 target = CloneTarget(id=target_id)
 
-            update_target_info(target, clone, gene, target_info)
+            _update_target_info(target, clone, gene, target_info)
 
 
-def get_mapping_alias_to_pk(cursor):
+def _get_mapping_alias_to_pk(cursor):
     """Get a dictionary to translate mapping_alias to mapping_pk."""
     query = 'SELECT alias, clone_id FROM CloneAlias'
 
@@ -126,7 +126,7 @@ def get_mapping_alias_to_pk(cursor):
     return mapping_alias_to_pk
 
 
-def get_mapping_clones(cursor):
+def _get_mapping_clones(cursor):
     """Get dictionary of all clones from the mapping database.
 
     This dictionary is keyed on the clone's pk in the mapping
@@ -141,7 +141,7 @@ def get_mapping_clones(cursor):
     return get_field_dictionary(cursor, 'Clone', fieldnames)
 
 
-def get_mapping_genes(cursor):
+def _get_mapping_genes(cursor):
     """Get dictionary of all genes from the mapping database.
 
     This dictionary is keyed on the gene's pk in the mapping
@@ -155,7 +155,7 @@ def get_mapping_genes(cursor):
     return get_field_dictionary(cursor, 'Gene', fieldnames)
 
 
-def get_mapping_targets(cursor):
+def _get_mapping_targets(cursor):
     """Get dictionary of all targets from the mapping database.
 
     This dictionary is keyed on the clone's pk in the mapping database.
@@ -194,7 +194,7 @@ def get_mapping_targets(cursor):
     return all_targets
 
 
-def update_clone_info(clone, clone_mapping_info):
+def _update_clone_info(clone, clone_mapping_info):
     clone.library = clone_mapping_info['library']
     clone.clone_type = clone_mapping_info['clone_type']
     clone.forward_primer = clone_mapping_info['forward_primer']
@@ -202,7 +202,7 @@ def update_clone_info(clone, clone_mapping_info):
     clone.save()
 
 
-def update_gene_info(gene, gene_mapping_info):
+def _update_gene_info(gene, gene_mapping_info):
     gene.cosmid_id = gene_mapping_info['cosmid_id']
     gene.locus = gene_mapping_info['locus']
     if gene.locus == 'NA':
@@ -211,7 +211,7 @@ def update_gene_info(gene, gene_mapping_info):
     gene.save()
 
 
-def update_target_info(target, clone, gene, target_info):
+def _update_target_info(target, clone, gene, target_info):
     target.clone = clone
     target.gene = gene
     target.clone_amplicon_id = target_info['clone_amplicon_id']
