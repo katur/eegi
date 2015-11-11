@@ -1,16 +1,3 @@
-"""Command to add empty (i.e. no intended clone) library wells to the database.
-
-This is not one of the steps of syncing to the legacy database,
-because empty library wells were not represented in the legacy database.
-
-It is useful to have empty wells represented in the database.
-This is because these wells are still photographed, and there
-are cases where despite there being no intended clone according
-to the library manufacturer, we do have bacteria that grows in the
-well, whose identity can be resolved through sequencing.
-
-"""
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 
@@ -24,6 +11,18 @@ HELP = 'Add empty (i.e. no intended clone) library wells to the database.'
 
 
 class Command(BaseCommand):
+    """Command to add empty (no intended clone) library wells to the database.
+
+    This is not one of the legacy database syncing steps, because
+    empty library wells were not represented in the legacy database.
+
+    It is useful to have empty wells represented in the database.
+    This is because these wells are still photographed, and there
+    are cases where despite there being no intended clone according
+    to the library manufacturer, we do have bacteria that grows in the
+    well, whose identity can be resolved through sequencing.
+
+    """
     help = HELP
 
     def handle(self, **options):
@@ -58,7 +57,7 @@ class Command(BaseCommand):
                 )
 
                 if library_plate.is_ahringer_96_plate():
-                    parent_well = get_ahringer_384_parent_well(library_well)
+                    parent_well = _get_ahringer_384_parent_well(library_well)
 
                     if parent_well.intended_clone:
                         self.stderr.write(
@@ -71,7 +70,7 @@ class Command(BaseCommand):
                 library_well.save()
 
 
-def get_ahringer_384_parent_well(child_well):
+def _get_ahringer_384_parent_well(child_well):
     """Get the 384 format well from which a particular 96 format well is
     derived, assuming standard Ahringer naming.
 
