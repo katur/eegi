@@ -1,3 +1,9 @@
+"""This module contains functions establishing naming conventions
+for certain objects created while syncing to the legacy database.
+
+"""
+
+
 def get_ahringer_384_plate_name(chromosome, plate_number):
     return '{}-{}'.format(chromosome, plate_number)
 

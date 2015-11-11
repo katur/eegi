@@ -1,6 +1,8 @@
 """This module contains methods for retrieving objects that already
 exist in the new database, based on legacy values.
 
+These helpers are meant for use while syncing to the legacy database.
+
 """
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
