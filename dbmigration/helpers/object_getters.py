@@ -11,7 +11,8 @@ from clones.models import Clone
 from experiments.models import ExperimentPlate, ManualScoreCode
 from library.models import LibraryPlate, LibraryWell
 from worms.models import WormStrain
-from dbmigration.helpers.name_getters import get_library_plate_name
+from dbmigration.helpers.name_getters import (get_library_plate_name,
+                                              get_library_well_name)
 
 
 def get_missing_object_message(klass, **kwargs):
@@ -41,8 +42,10 @@ def get_library_plate(legacy_plate_name):
             'LibraryPlate', id=legacy_plate_name))
 
 
-def get_library_well(library_well_name):
-    """Get a library well from its name."""
+def get_library_well(legacy_plate_name, well):
+    """Get a library well from its legacy plate name and well."""
+    library_well_name = get_library_well_name(legacy_plate_name, well)
+
     try:
         return LibraryWell.objects.get(id=library_well_name)
 

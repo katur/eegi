@@ -223,9 +223,8 @@ def update_LibraryWell_table(command, cursor):
 
         else:
             parent_well_proper = get_three_character_well(parent_well_improper)
-            parent_library_well_name = get_library_well_name(
-                parent_plate_name, parent_well_proper)
-            parent_library_well = get_library_well(parent_library_well_name)
+            parent_library_well = get_library_well(parent_plate_name,
+                                                   parent_well_proper)
 
             # Confirm that this intended clone matches parent's clone
             if parent_library_well.intended_clone != intended_clone:
@@ -316,15 +315,15 @@ def update_LibraryWell_table(command, cursor):
                 'ERROR: definite and likely parent wells disagree '
                 'for {} {}\n'.format(plate_name, well))
 
-        if definite_parent_plate_name and definite_parent_well:
-            parent_library_well_name = get_library_well_name(
-                definite_parent_plate_name, definite_parent_well)
-        else:
-            parent_library_well_name = get_library_well_name(
-                likely_parent_plate_name, likely_parent_well)
-
         try:
-            parent_library_well = get_library_well(parent_library_well_name)
+            if definite_parent_plate_name and definite_parent_well:
+                parent_library_well = get_library_well(
+                    definite_parent_plate_name, definite_parent_well)
+
+            else:
+                parent_library_well = get_library_well(
+                    likely_parent_plate_name, likely_parent_well)
+
             intended_clone = parent_library_well.intended_clone
 
         except ObjectDoesNotExist:
