@@ -19,9 +19,13 @@ class Command(BaseCommand):
     LibrarySequencingBlatResult.
 
     The input is the CSV file provided by Firoz, with a few simple UNIX
-    transformations. It is currently at:
+    transformations. The transformed file currently lives at:
 
         materials/sequencing/blat_results_from_firoz/joined
+
+    The transformation script, which explains itself:
+
+        materials/sequencing/blat_results_from_firoz/transform
 
     """
     help = HELP
