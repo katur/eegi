@@ -17,6 +17,38 @@ def get_missing_object_message(klass, **kwargs):
             .format(klass, str(kwargs)))
 
 
+def get_clone(clone_name):
+    """Get a clone from its clone name."""
+    try:
+        return Clone.objects.get(id=clone_name)
+
+    except ObjectDoesNotExist:
+        raise ObjectDoesNotExist(get_missing_object_message(
+            'Clone', id=clone_name))
+
+
+def get_library_plate(legacy_plate_name):
+    """Get a library plate from a legacy library plate name."""
+    legacy_plate_name = get_library_plate_name(legacy_plate_name)
+
+    try:
+        return LibraryPlate.objects.get(id=legacy_plate_name)
+
+    except ObjectDoesNotExist:
+        raise ObjectDoesNotExist(get_missing_object_message(
+            'LibraryPlate', id=legacy_plate_name))
+
+
+def get_library_well(library_well_name):
+    """Get a library well from its name."""
+    try:
+        return LibraryWell.objects.get(id=library_well_name)
+
+    except ObjectDoesNotExist:
+        raise ObjectDoesNotExist(get_missing_object_message(
+            'LibraryWell', id=library_well_name))
+
+
 def get_worm_strain(mutant, mutantAllele):
     """Get a worm strain from its mutant gene and mutant allele."""
     try:
@@ -35,38 +67,6 @@ def get_worm_strain(mutant, mutantAllele):
     except ObjectDoesNotExist:
         raise ObjectDoesNotExist(get_missing_object_message(
             'WormStrain', gene=mutant, allele=mutantAllele))
-
-
-def get_library_plate(legacy_plate_name):
-    """Get a library plate from a legacy library plate name."""
-    legacy_plate_name = get_library_plate_name(legacy_plate_name)
-
-    try:
-        return LibraryPlate.objects.get(id=legacy_plate_name)
-
-    except ObjectDoesNotExist:
-        raise ObjectDoesNotExist(get_missing_object_message(
-            'LibraryPlate', id=legacy_plate_name))
-
-
-def get_clone(clone_name):
-    """Get a clone from its clone name."""
-    try:
-        return Clone.objects.get(id=clone_name)
-
-    except ObjectDoesNotExist:
-        raise ObjectDoesNotExist(get_missing_object_message(
-            'Clone', id=clone_name))
-
-
-def get_library_well(library_well_name):
-    """Get a library well from its name."""
-    try:
-        return LibraryWell.objects.get(id=library_well_name)
-
-    except ObjectDoesNotExist:
-        raise ObjectDoesNotExist(get_missing_object_message(
-            'LibraryWell', id=library_well_name))
 
 
 def get_experiment_plate(experiment_plate_id):
