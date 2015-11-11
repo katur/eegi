@@ -1,27 +1,3 @@
-"""This command syncs sequencing data from Genewiz output files.
-
-This script requires that LEGACY_DATABASE be defined in local_settings.py,
-to connect to the GenomeWideGI legacy database.
-
-tracking_numbers should be a csv dump of the Google Doc in which we
-kept track of our Genewiz tracking numbers, which is necessary so that this
-script examines only the GI data (and not data from Genewiz for other lab
-members). This file currently lives at:
-
-   materials/sequencing/genewiz/tracking_numbers.csv
-
-genewiz_root should be the root of a directory containing the Genewiz
-output. Inside that directory are several Perl scripts that HueyLing used
-to make the Genewiz output more convenient to parse. The only one of
-these Perl scripts that is required to have been run before using this
-script is rmDateFromSeqAB1.pl, which removes the date from certain
-filenames. Otherwise, this script is flexible about dealing with
-Genewiz's Excel format, or Huey-Ling's text file format.
-This directory currently lives at:
-
-    materials/sequencing/genewiz/genewiz_data
-
-"""
 import argparse
 import csv
 import glob
@@ -41,11 +17,41 @@ HELP = 'Sync sequencing data from Genewiz output files'
 
 
 class Command(BaseCommand):
+    """Command to sync SUP Secondary sequencing data from Genewiz output files.
+
+    This script requires that LEGACY_DATABASE be defined in local_settings.py,
+    to connect to the GenomeWideGI legacy database.
+
+    tracking_numbers should be a csv dump of the Google Doc in which we
+    kept track of our Genewiz tracking numbers, necessary so that this
+    command skips Genewiz data unrelated to the GI screen. This file
+    currently lives at:
+
+       materials/sequencing/genewiz/tracking_numbers.csv
+
+    genewiz_root should be the root of the directory where Genewiz dumps our
+    sequencing data. Inside that directory are several Perl scripts that
+    Huey-Ling used to make the Genewiz output more convenient to parse. The
+    only one of these Perl scripts that is required to have been run before
+    using this command is rmDateFromSeqAB1.pl, which removes the date from
+    certain filenames. Otherwise, this script is flexible about dealing with
+    Genewiz's Excel format, or Huey-Ling's text file format.
+    This directory currently lives at:
+
+        materials/sequencing/genewiz/genewiz_data
+
+    """
     help = HELP
 
     def add_arguments(self, parser):
-        parser.add_argument('tracking_numbers', type=argparse.FileType('r'))
-        parser.add_argument('genewiz_root')
+        parser.add_argument('tracking_numbers', type=argparse.FileType('r'),
+                            help="CSV of Genewiz tracking numbers. "
+                                 "See this command's docstring "
+                                 "for more details.")
+        parser.add_argument('genewiz_root',
+                            help="Root Genewiz output directory. "
+                                 "See this command's docstring "
+                                 "for more details.")
 
     def handle(self, **options):
         tracking_numbers = options['tracking_numbers']
@@ -69,7 +75,7 @@ class Command(BaseCommand):
 
         for row in reader:
             tracking_number = row['tracking_number'].strip()
-            self.process_tracking_number(tracking_number)
+            self._process_tracking_number(tracking_number)
 
         # Retrieve all the sequencing objects just recorded
         self.sequences = LibrarySequencing.objects.all()
@@ -90,7 +96,7 @@ class Command(BaseCommand):
         legacy_rows = cursor.fetchall()
 
         for row in legacy_rows:
-            self.process_source_information(row)
+            self._process_source_information(row)
 
         # Process source information plates 57-66
         # (not in legacy database; entire plate sequenced)
@@ -113,7 +119,7 @@ class Command(BaseCommand):
             for library_well in library_wells:
                 row = (source_plate_id, library_well.well, seq_plate_number,
                        library_well.well)
-                self.process_source_information(row)
+                self._process_source_information(row)
 
         # Process plates 67-on
         # (not in legacy database; only certain columns sequenced)
@@ -185,14 +191,15 @@ class Command(BaseCommand):
                     letters = seq_columns[seq_column][2]
                 else:
                     letters = 'ABCDEFGH'
+
                 for letter in letters:
                     seq_well = get_well_name(letter, seq_column)
                     source_well = get_well_name(letter, source_column)
                     row = (source_plate_id, source_well, seq_plate_number,
                            seq_well)
-                    self.process_source_information(row)
+                    self._process_source_information(row)
 
-    def process_tracking_number(self, tracking_number):
+    def _process_tracking_number(self, tracking_number):
         qscrl_txt = ('{}/{}_qscrl.txt'.format(self.genewiz_root,
                                               tracking_number))
         qscrl_xls = ('{}/{}_qscrl.xls'.format(self.genewiz_root,
@@ -205,7 +212,7 @@ class Command(BaseCommand):
                     # need tracking number and tube label because they are the
                     # fields that genewiz uses to uniquely define sequences,
                     # in the case of resequencing.
-                    self.process_qscrl_row(row)
+                    self._process_qscrl_row(row)
 
         except IOError:
             try:
@@ -219,7 +226,7 @@ class Command(BaseCommand):
                         cell_value = sheet.cell_value(row_index, col_index)
                         row[keys[col_index]] = cell_value
 
-                    self.process_qscrl_row(row)
+                    self._process_qscrl_row(row)
 
             except IOError as e:
                 self.stderr.write('QSCRL file missing or could not be open '
@@ -228,7 +235,7 @@ class Command(BaseCommand):
                                           e.strerror))
                 return
 
-    def process_qscrl_row(self, row):
+    def _process_qscrl_row(self, row):
         """Process a row of QSCRL information.
 
         Need sample_plate_name and sample_tube_number because they are
@@ -245,8 +252,8 @@ class Command(BaseCommand):
         tracking_number = row['trackingNumber']
         tube_label = row['TubeLabel']
         dna_name = row['DNAName']
-        sample_plate_name = get_plate_name_from_dna_name(dna_name)
-        sample_tube_number = get_tube_number_from_dna_name(dna_name)
+        sample_plate_name = _get_plate_name_from_dna_name(dna_name)
+        sample_tube_number = _get_tube_number_from_dna_name(dna_name)
 
         if '_R' in tube_label:
             dna_name += '_R'
@@ -274,6 +281,7 @@ class Command(BaseCommand):
             LibrarySequencing.objects.get(
                 genewiz_tracking_number=tracking_number,
                 genewiz_tube_label=tube_label)
+
         except ObjectDoesNotExist:
             new_sequence = LibrarySequencing(
                 sample_plate_name=sample_plate_name,
@@ -292,7 +300,7 @@ class Command(BaseCommand):
             )
             new_sequence.save()
 
-    def process_source_information(self, row):
+    def _process_source_information(self, row):
         # The plate and well that the sequencing result came from
         source_plate_id = row[0]
         source_well = row[1]
@@ -362,11 +370,11 @@ class Command(BaseCommand):
                                       .format(source_library_well_id))
 
 
-def get_plate_name_from_dna_name(dna_name):
+def _get_plate_name_from_dna_name(dna_name):
     return dna_name.split('_')[0]
 
 
-def get_tube_number_from_dna_name(dna_name):
+def _get_tube_number_from_dna_name(dna_name):
     try:
         return int(dna_name.split('_')[1].split('-')[0])
     except ValueError:
