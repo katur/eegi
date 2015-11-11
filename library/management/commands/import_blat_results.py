@@ -18,9 +18,10 @@ class Command(BaseCommand):
     It is okay to do this because no other tables depend on
     LibrarySequencingBlatResult.
 
-    The input is the CSV file provided by Firoz. It is currently at:
+    The input is the CSV file provided by Firoz, with a few simple UNIX
+    transformations. It is currently at:
 
-        materials/sequencing/blat_results_from_firoz/BLAT_RES_eegi_seq3_all_ranking.txt
+        materials/sequencing/blat_results_from_firoz/joined
 
     """
     help = HELP
@@ -41,18 +42,22 @@ class Command(BaseCommand):
         reader = csv.DictReader(f, delimiter='\t')
 
         for row in reader:
-            query_pk = row['query_pk']
+            genewiz_tracking_number = row['genewiz_tracking_number']
+            genewiz_tube_label = row['genewiz_tube_label']
             clone_hit = row['clone']
             e_value = row['BLAT_e-value']
             bit_score = row['bit_score']
             hit_rank = row['hit_rank']
 
             try:
-                sequencing = LibrarySequencing.objects.get(pk=query_pk)
+                sequencing = LibrarySequencing.objects.get(
+                    genewiz_tracking_number=genewiz_tracking_number,
+                    genewiz_tube_label=genewiz_tube_label)
             except ObjectDoesNotExist:
-                raise CommandError('query_pk {} not found in '
+                raise CommandError('Genewiz tracking {}, tube {} not found in '
                                    'LibrarySequencing'
-                                   .format(query_pk))
+                                   .format(genewiz_tracking_number,
+                                           genewiz_tube_label))
 
             try:
                 clone = Clone.objects.get(pk=clone_hit)
