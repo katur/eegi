@@ -5,7 +5,7 @@ The WormBase file can be found at:
 ftp://ftp.wormbase.org/pub/wormbase/releases/WSX/species/c_elegans/
 PRJNA13758/annotation/c_elegans.PRJNA13758.WSX.functional_descriptions.txt.gz
 
-Where WSX should be replaced with the desired WormBase version.
+where WSX should be replaced with the desired WormBase version.
 
 As of November 2015, Firoz's mapping database uses WS240, so Katherine
 also used WS240 for the functional descriptions.
