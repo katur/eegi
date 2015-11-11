@@ -27,7 +27,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('file', type=argparse.FileType('r'),
-                            help=('WormBase functional descriptions file'))
+                            help="WormBase functional descriptions file. "
+                                 "See this command's module docstring "
+                                 "for more details.")
 
     def handle(self, **options):
         f = options['file']
