@@ -92,8 +92,13 @@ def update_LibraryPlate_table(command, cursor):
                                    'FROM RNAiPlate '
                                    'WHERE 384PlateID LIKE "GHR-%"')
 
+    legacy_query_l4440_plate = ('SELECT DISTINCT RNAiPlateID '
+                                'FROM RNAiPlate '
+                                'WHERE RNAiPlateID = "L4440"')
+
     legacy_query_primary_plates = ('SELECT DISTINCT RNAiPlateID '
-                                   'FROM RNAiPlate')
+                                   'FROM RNAiPlate '
+                                   'WHERE RNAiPlateID != "L4440"')
 
     legacy_query_eliana_rearrays = ('SELECT DISTINCT RNAiPlateID FROM '
                                     'ReArrayRNAiPlate WHERE RNAiPlateID '
@@ -103,7 +108,8 @@ def update_LibraryPlate_table(command, cursor):
                                      'FROM CherryPickRNAiPlate '
                                      'WHERE RNAiPlateID != "L4440"')
 
-    def sync_library_plate_row(legacy_row, screen_stage, number_of_wells=96):
+    def sync_library_plate_row(legacy_row, screen_stage=None,
+                               number_of_wells=96):
         if len(legacy_row) > 1:
             plate_name = get_ahringer_384_plate_name(legacy_row[0],
                                                      legacy_row[1])
@@ -128,8 +134,12 @@ def update_LibraryPlate_table(command, cursor):
     sync_rows(command, cursor, legacy_query_orfeome_plates,
               sync_library_plate_row, screen_stage=0)
 
+    # Sync the L4440 plate used in both Primary and Seconday experiments
+    sync_rows(command, cursor, legacy_query_l4440_plate,
+              sync_library_plate_row)
+
     # Sync the 96-well plates used in our Primary experiments (includes
-    # L4440 plate, Ahringer plates, and Vidal plates)
+    # Ahringer plates and Vidal plates)
     sync_rows(command, cursor, legacy_query_primary_plates,
               sync_library_plate_row, screen_stage=1)
 
