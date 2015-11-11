@@ -71,7 +71,7 @@ class Command(BaseCommand):
             mapping_targets = self.mapping_targets[clone.mapping_db_pk]
 
         except KeyError:
-            self.stderr.write('Clone {} has no targets'.format(clone))
+            self.stderr.write('WARNING: Clone {} has no targets'.format(clone))
             self.number_clones_no_targets += 1
             return
 
@@ -88,8 +88,8 @@ class Command(BaseCommand):
                 if gene_id in self.mapping_genes:
                     gene = Gene(id=gene_id)
                 else:
-                    self.stderr.write('Gene {} from targets table not present '
-                                      'in gene table'.format(gene_id))
+                    self.stderr.write('ERROR: Gene {} from targets table not '
+                                      'present in gene table'.format(gene_id))
                     continue
 
             update_gene_info(gene, self.mapping_genes[gene.id])
