@@ -8,25 +8,28 @@ from clones.models import Clone
 from library.models import LibrarySequencing, LibrarySequencingBlatResult
 from utils.scripting import require_db_write_acknowledgement
 
-HELP = '''
-Import the BLAT hits of our sequencing results to the database.
-
-This script starts by clearing the LibrarySequencingBlatResult table.
-It is okay to do this because no other tables depend on
-LibrarySequencingBlatResult.
-
-The input_file is the csv provided by Firoz. It is currently at:
-
-    materials/sequencing/blat_results_from_firoz/BLAT_RES_eegi_seq3_all_ranking.txt
-
-'''
+HELP = 'Import the BLAT hits of our sequencing results.'
 
 
 class Command(BaseCommand):
+    """Command to import Firoz's BLAT hits of our sequencing results.
+
+    This script starts by clearing the LibrarySequencingBlatResult table.
+    It is okay to do this because no other tables depend on
+    LibrarySequencingBlatResult.
+
+    The input is the CSV file provided by Firoz. It is currently at:
+
+        materials/sequencing/blat_results_from_firoz/BLAT_RES_eegi_seq3_all_ranking.txt
+
+    """
     help = HELP
 
     def add_arguments(self, parser):
-        parser.add_argument('file', type=argparse.FileType('r'))
+        parser.add_argument('file', type=argparse.FileType('r'),
+                            help="CSV of BLAT hits from Firoz. "
+                                 "See this command's docstring "
+                                 "for more details.")
 
     def handle(self, **options):
         f = options['file']
