@@ -18,9 +18,16 @@ class LibraryPlate(models.Model):
 
     """
     id = models.CharField(max_length=20, primary_key=True)
+    number_of_wells = models.PositiveSmallIntegerField()
+
+    # screen_stage:
+    #   1 means Primary screen only
+    #   2 means Secondary screen only
+    #   None means no limitations (e.g. L4440 plate which is used in both
+    #       Primary and Secondary screens)
+    #   0 means not used in screen stages (e.g. Ahringer 384 plates)
     screen_stage = models.PositiveSmallIntegerField(null=True, blank=True,
                                                     db_index=True)
-    number_of_wells = models.PositiveSmallIntegerField()
 
     class Meta:
         db_table = 'LibraryPlate'
@@ -94,6 +101,7 @@ class LibraryWell(models.Model):
     class Meta:
         db_table = 'LibraryWell'
         ordering = ['id']
+        unique_together = ('library_plate', 'well')
 
     def __cmp__(self, other):
         if self.plate == other.plate:

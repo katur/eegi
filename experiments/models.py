@@ -142,6 +142,7 @@ class ExperimentWell(models.Model):
     class Meta:
         db_table = 'ExperimentWell'
         ordering = ['id']
+        unique_together = ('experiment_plate', 'well')
 
     def __unicode__(self):
         return str(self.id)
