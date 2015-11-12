@@ -5,8 +5,6 @@ from django.core.management.base import BaseCommand, CommandError
 
 from clones.models import Clone
 
-HELP = "Compare this database's Ahringer library to another version"
-
 
 class Command(BaseCommand):
     """Command to compare the Ahringer library as in the database to another.
@@ -23,7 +21,7 @@ class Command(BaseCommand):
         materials/ahringer_plates/sbs_ahringer_orig.csv
 
     """
-    help = HELP
+    help = "Compare this database's Ahringer library to another version"
 
     def add_arguments(self, parser):
         parser.add_argument('file', type=argparse.FileType('r'),

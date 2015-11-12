@@ -6,16 +6,15 @@ from django.core.management.base import BaseCommand, CommandError
 from clones.models import Gene
 from utils.scripting import require_db_write_acknowledgement
 
-HELP = 'Import gene functional descriptions.'
-
 
 class Command(BaseCommand):
     """Command to add WormBase gene functional descriptions.
 
     The WormBase file can be found at:
 
-    ftp://ftp.wormbase.org/pub/wormbase/releases/WSX/species/c_elegans/
-    PRJNA13758/annotation/c_elegans.PRJNA13758.WSX.functional_descriptions.txt.gz
+        ftp://ftp.wormbase.org/pub/wormbase/releases/WSX/species/c_elegans/
+        PRJNA13758/annotation/
+        c_elegans.PRJNA13758.WSX.functional_descriptions.txt.gz
 
     where WSX should be replaced with the desired WormBase version.
 
@@ -23,7 +22,7 @@ class Command(BaseCommand):
     also used WS240 for the functional descriptions.
 
     """
-    help = HELP
+    help = 'Import gene functional descriptions.'
 
     def add_arguments(self, parser):
         parser.add_argument('file', type=argparse.FileType('r'),
