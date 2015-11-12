@@ -1,5 +1,5 @@
 <table class="plate-96">
-  {% regroup library_wells by row as library_wells_by_row %}
+  {% regroup library_wells by get_row as library_wells_by_row %}
   {% for row in library_wells_by_row %}
   <tr>
     {% for library_well in row.list %}

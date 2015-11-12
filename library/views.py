@@ -46,8 +46,6 @@ def library_plate(request, id):
     library_plate = get_object_or_404(LibraryPlate, pk=id)
     library_wells = LibraryWell.objects.filter(
         library_plate=library_plate).order_by('well')
-    for library_well in library_wells:
-        library_well.row = library_well.get_row()
 
     context = {
         'library_plate': library_plate,
