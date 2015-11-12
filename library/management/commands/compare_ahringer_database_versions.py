@@ -16,7 +16,7 @@ class Command(BaseCommand):
         http://www.lifesciences.sourcebioscience.com/clone-products/non-mammalian/
             c-elegans/c-elegans-rnai-library/celegans-database/
 
-    The input_file (copied/pasted from the above link) is currently at:
+    The input file (copied/pasted from the above link) is currently at:
 
         materials/ahringer_database/sbs_ahringer_orig.csv
 
@@ -56,10 +56,10 @@ class Command(BaseCommand):
         ahringer_online_only = ahringer_online.difference(ahringer_db)
         ahringer_db_only = ahringer_db.difference(ahringer_online)
 
-        self.stdout.write('{} sjj clones in database\n'
-                          '{} sjj clones in input_file\n'
-                          '{} sjj clones in database ONLY\n'
-                          '{} sjj clones in input_file ONLY\n'
+        self.stdout.write('{} sjj clones in this database\n'
+                          '{} sjj clones in input file\n'
+                          '{} sjj clones in this database ONLY\n'
+                          '{} sjj clones in input file ONLY\n'
                           .format(len(ahringer_db),
                                   len(ahringer_online),
                                   len(ahringer_db_only),
