@@ -8,59 +8,45 @@ from library.helpers.sequencing import (categorize_sequences_by_blat_results,
                                         get_number_decent_quality)
 from library.models import LibrarySequencing
 
-HELP = '''
-Write to stdout a categorized summary of our sequencing results, according to
-how high up the intended clone appears in the BLAT hits.
-
-The purpose of this script is to get a general sense of the quality of the
-sequencing and BLAT hits.
-
-Important categories:
-- Category X (where X is an integer):
-    The blat results for this sequencing result include the intended clone,
-    with hit_rank X (see Firoz's documentation for meaning of hit rank)
-- Category intended clone, does not match BLAT results:
-    There are blat results for this sequencing result, but they do not
-    include the intended clone.
-- Category intended clone, no BLAT results:
-    There are no blat results for this sequencing result
-
-In addition, there are some categories included as controls / for
-curiosity's sake, for sequencing results corresponding to L4440 and
-supposedly empty wells (categorized by whether or not they have BLAT results).
-
-This categorization is done for:
-    1) all sequences
-    2) sequences corresponding to positives only
-    3) sequences corresponding to high confidence positives only
-
-'''
-
 
 class Command(BaseCommand):
-    help = HELP
+    """Command to summarize our sequencing results.
 
-    def print_categories(self, header, s):
-        self.stdout.write('=========='
-                          ' {} '
-                          '=========='
-                          .format(header))
-        running_total = 0
-        for category, seqs in sorted(s.iteritems()):
-            number_in_category = len(seqs)
-            running_total += number_in_category
-            self.stdout.write(
-                'Category {}:\n'
-                '\t{} total\n'
-                '\t\t{} "decent"\n'
-                '\t\t{} avg CRL, {} avg quality score\n'
-                .format(category,
-                        number_in_category,
-                        get_number_decent_quality(seqs),
-                        get_avg_crl(seqs),
-                        get_avg_qs(seqs))
-            )
-        self.stdout.write('(TOTAL: {})\n\n'.format(running_total))
+    Writes to stdout a categorized summary of our sequencing results,
+    according to how high up the intended clone appears in the BLAT hits.
+
+    The purpose of this script is to get a general sense of the quality of the
+    sequencing and BLAT hits.
+
+
+    Categories:
+
+        - "Category X" (where X is an integer)
+            The blat result for this sequencing result includes the intended
+            clone, at hit rank X (see Firoz's documentation for meaning of
+            hit rank).
+
+        - "Category intended clone, does not match BLAT results"
+            There are blat results for this sequencing result, but they do not
+            include the intended clone.
+
+        - "Category intended clone, no BLAT results"
+            There are no blat results for this sequencing result.
+
+        - other categories
+            There are more categories included as controls / for curiosity's
+            sake, e.g., sequences of L4440 wells and supposedly empty wells.
+
+
+    The categorization is done for:
+
+        1) all sequences
+        2) sequences corresponding to positives only
+        3) sequences corresponding to high confidence positives only
+
+    """
+    help = ('Summarize sequencing results. '
+            'See command docstring for more details.')
 
     def handle(self, **options):
         seq_starter = (LibrarySequencing.objects
@@ -87,3 +73,27 @@ class Command(BaseCommand):
         seqs_high_blat = categorize_sequences_by_blat_results(seqs_high)
         self.print_categories('SEQUENCES CORRESPONDING TO HIGH CONFIDENCE '
                               'POSITIVES ONLY', seqs_high_blat)
+
+    def print_categories(self, header, s):
+        self.stdout.write('=========='
+                          ' {} '
+                          '=========='
+                          .format(header))
+        running_total = 0
+
+        for category, seqs in sorted(s.iteritems()):
+            number_in_category = len(seqs)
+            running_total += number_in_category
+            self.stdout.write(
+                'Category {}:\n'
+                '\t{} total\n'
+                '\t\t{} "decent"\n'
+                '\t\t{} avg CRL, {} avg quality score\n'
+                .format(category,
+                        number_in_category,
+                        get_number_decent_quality(seqs),
+                        get_avg_crl(seqs),
+                        get_avg_qs(seqs))
+            )
+
+        self.stdout.write('(TOTAL: {})\n\n'.format(running_total))
