@@ -5,38 +5,40 @@ from django.core.management.base import BaseCommand, CommandError
 
 from clones.models import Clone
 
-HELP = '''
-Get some quick stats comparing the Ahringer library as listed in the database
-to another version.
-
-Currently, this is useful for comparing the library as listed in the database
-(currently derived from Huey-Ling's version in GenomeWideGI)
-to that currently listed online at Source BioScience:
-
-    http://www.lifesciences.sourcebioscience.com/clone-products/non-mammalian/
-        c-elegans/c-elegans-rnai-library/celegans-database/
-
-The input_file (copied/pasted from the aforementioned link) is currently at:
-
-    materials/ahringer_plates/sbs_ahringer_orig.csv
-
-'''
-
 
 class Command(BaseCommand):
-    help = HELP
+    """Command to compare the Ahringer library as in the database to another.
+
+    Currently, this is useful for comparing the library as listed in the
+    database (currently derived from Huey-Ling's version in GenomeWideGI)
+    to that currently listed online at Source BioScience:
+
+        http://www.lifesciences.sourcebioscience.com/clone-products/non-mammalian/
+            c-elegans/c-elegans-rnai-library/celegans-database/
+
+    The input_file (copied/pasted from the above link) is currently at:
+
+        materials/ahringer_plates/sbs_ahringer_orig.csv
+
+    """
+    help = "Compare this database's Ahringer library to another version"
 
     def add_arguments(self, parser):
-        parser.add_argument('file', type=argparse.FileType('r'))
+        parser.add_argument('file', type=argparse.FileType('r'),
+                            help="Ahringer library from Source BioScience. "
+                                 "See this command's docstring "
+                                 "for more details.")
 
     def handle(self, **options):
         f = options['file']
 
+        # Get Ahringer clones in this database
         ahringer_db = set()
-        ahringer_online = set()
-
         for clone in Clone.objects.filter(id__startswith='sjj'):
             ahringer_db.add(clone)
+
+        # Get Ahringer clones from Source BioScience
+        ahringer_online = set()
 
         # Skip header
         f.readline()

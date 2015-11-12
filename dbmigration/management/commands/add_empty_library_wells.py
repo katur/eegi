@@ -7,8 +7,6 @@ from library.models import LibraryWell
 from utils.plate_layout import get_96_well_set, get_384_position
 from utils.scripting import require_db_write_acknowledgement
 
-HELP = 'Add empty (i.e. no intended clone) library wells to the database.'
-
 
 class Command(BaseCommand):
     """Command to add empty (no intended clone) library wells to the database.
@@ -23,7 +21,7 @@ class Command(BaseCommand):
     well, whose identity can be resolved through sequencing.
 
     """
-    help = HELP
+    help = 'Add empty (i.e. no intended clone) library wells to the database.'
 
     def handle(self, **options):
         require_db_write_acknowledgement()

@@ -14,8 +14,6 @@ from library.models import LibraryWell, LibrarySequencing
 from utils.scripting import require_db_write_acknowledgement
 from utils.well_naming import get_well_name
 
-HELP = 'Sync sequencing data from Genewiz output files'
-
 
 class Command(BaseCommand):
     """Command to sync SUP Secondary sequencing data from Genewiz output files.
@@ -42,7 +40,7 @@ class Command(BaseCommand):
         materials/sequencing/genewiz/genewiz_data
 
     """
-    help = HELP
+    help = 'Sync sequencing data from Genewiz output files'
 
     def add_arguments(self, parser):
         parser.add_argument('tracking_numbers', type=argparse.FileType('r'),

@@ -8,8 +8,6 @@ from clones.models import Clone
 from library.models import LibrarySequencing, LibrarySequencingBlatResult
 from utils.scripting import require_db_write_acknowledgement
 
-HELP = 'Import the BLAT hits of our sequencing results.'
-
 
 class Command(BaseCommand):
     """Command to import Firoz's BLAT hits of our sequencing results.
@@ -28,7 +26,7 @@ class Command(BaseCommand):
         materials/sequencing/blat_results_from_firoz/transform
 
     """
-    help = HELP
+    help = 'Import the BLAT hits of our sequencing results.'
 
     def add_arguments(self, parser):
         parser.add_argument('file', type=argparse.FileType('r'),
