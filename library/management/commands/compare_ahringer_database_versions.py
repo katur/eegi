@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
     The input_file (copied/pasted from the above link) is currently at:
 
-        materials/ahringer_plates/sbs_ahringer_orig.csv
+        materials/ahringer_database/sbs_ahringer_orig.csv
 
     """
     help = "Compare this database's Ahringer library to another version"
