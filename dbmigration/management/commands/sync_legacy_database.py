@@ -13,7 +13,18 @@ from dbmigration.helpers.sync_steps_experiments import (
 from eegi.local_settings import LEGACY_DATABASE, LEGACY_DATABASE_2
 from utils.scripting import require_db_write_acknowledgement
 
-HELP = 'Sync the database according to any changes in the legacy database.'
+STEPS = (
+    update_Clone_table,
+    update_LibraryPlate_table,
+    update_LibraryWell_table,
+    update_Experiment_tables,
+    update_DevstarScore_table,
+    update_ManualScoreCode_table,
+    update_ManualScore_table_primary,
+    update_ManualScore_table_secondary,
+)
+
+LAST_STEP = len(STEPS) - 1
 
 ARG_HELP = '''
     Step to {} with, inclusive. If not provided, defaults to {}.
@@ -27,19 +38,6 @@ ARG_HELP = '''
         6: ManualScore primary (3,5);
         7: ManualScore secondary (3,5);]
 '''
-
-STEPS = (
-    update_Clone_table,
-    update_LibraryPlate_table,
-    update_LibraryWell_table,
-    update_Experiment_tables,
-    update_DevstarScore_table,
-    update_ManualScoreCode_table,
-    update_ManualScore_table_primary,
-    update_ManualScore_table_secondary,
-)
-
-LAST_STEP = len(STEPS) - 1
 
 
 class Command(BaseCommand):
@@ -88,7 +86,7 @@ class Command(BaseCommand):
         quite long; consider redirecting with 2> stderr.out.
 
     """
-    help = HELP
+    help = 'Sync the database according to any changes in the legacy database.'
 
     def add_arguments(self, parser):
         parser.add_argument('start', type=int, nargs='?', default=0,
