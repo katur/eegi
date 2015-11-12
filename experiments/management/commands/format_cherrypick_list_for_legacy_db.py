@@ -7,33 +7,42 @@ from worms.models import WormStrain
 from utils.well_tile_conversion import well_to_tile
 
 
-HELP = '''
-Format the Enhancer Secondary screen cherry-picking list such that it
-is can be imported into the legacy database GenomeWideGI
-(into table CherryPickRNAiPlate).
-
-'''
-
-
 class Command(BaseCommand):
-    help = HELP
+    """Command to format a cherry-pick list for importing into legacy database
+    GenomeWideGI (table CherryPickRNAiPlate).
+
+    Arguments
+
+    - cherrypick_list should be a comma-separated file, including header
+      row, where each row is in format:
+
+        source_plate,source_well,destination_plate,destination_well
+
+    - legacy_clones should be a comma-separated dump, without header row,
+      of the following legacy database query:
+
+        SELECT clone, node_primary_name, 384PlateID, 384Well
+        FROM RNAiPlate WHERE RNAiPlateID != "L4440"
+
+    """
+    help = 'Format a cherry-pick list for legacy database.'
 
     def add_arguments(self, parser):
-        parser.add_argument('cherrypick_list', type=argparse.FileType('r'))
-        parser.add_argument('legacy_clones', type=argparse.FileType('r'))
+        parser.add_argument('cherrypick_list', type=argparse.FileType('r'),
+                            help="CSV of cherry-pick list. "
+                                 "See this command's docstring "
+                                 "for more details.")
+        parser.add_argument('legacy_clones', type=argparse.FileType('r'),
+                            help="CSV of legacy database clone info. "
+                                 "See this command's docstring "
+                                 "for more details.")
 
     def handle(self, **options):
-
         # Create a dictionary to translate from new canonical clones names
         # to the various fields which need to be entered into the legacy
-        # database
+        # database.
 
         new_to_old = {}
-
-        # Iterate over the dump of legacy clone information to populate
-        # the dictionary. This dump can be gotten with the query:
-        # SELECT clone, node_primary_name, 384PlateID, 384Well
-        # FROM RNAiPlate WHERE RNAiPlateID != "L4440"
 
         for line in options['legacy_clones']:
             row = line.split(',')
@@ -64,7 +73,8 @@ class Command(BaseCommand):
         # 'clone', 'node_primary_name', 'seq_node_primary_name']
         '''
         # Don't print legacy fieldnames (easier to import with phpmyadmin
-        # without field names
+        # without)
+
         legacy_fields = ('mutant', 'mutantAllele', 'RNAiPlateID', '96well',
                          'ImgName', 'clone', 'node_primary_name',
                          'seq_node_primary_name')
@@ -117,7 +127,8 @@ class Command(BaseCommand):
             if source_library_well.intended_clone:
                 new_clone_name = source_library_well.intended_clone.id
                 old_clone_name = new_to_old[new_clone_name]['old_clone_name']
-                node_primary_name = new_to_old[new_clone_name]['node_primary_name']
+                node_primary_name = (
+                    new_to_old[new_clone_name]['node_primary_name'])
                 if node_primary_name == 'NULL':
                     node_primary_name = ''
 

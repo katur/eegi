@@ -5,20 +5,19 @@ from experiments.helpers.scores import get_secondary_candidates
 from utils.plate_design import assign_to_plates, get_plate_assignment_rows
 from utils.plate_layout import is_symmetric
 
-
-HELP = '''
-Get the library wells to be cherry-picked for the Enhancer Secondary screen,
-and assign to new plates.
-
-This list is based on the manual scores of the Enhancer Primary screen.
-
-'''
-
 UNIVERSAL_THRESHOLD = 4
 
 
 class Command(BaseCommand):
-    help = HELP
+    """Command to generate the ENH secondary cherry-pick list.
+
+    Determines the library wells to be cherry-picked for the ENH
+    secondary screen, and assigns them to new plates.
+
+    This list is based on the manual scores of the ENH Primary screen.
+
+    """
+    help = 'Generate the ENH secondary cherry-pick list.'
 
     def add_arguments(self, parser):
         parser.add_argument('--summary',
@@ -26,16 +25,6 @@ class Command(BaseCommand):
                             action='store_true',
                             default=False,
                             help='Print summary of counts only')
-
-    def print_candidates_by_worm(self, candidates_by_worm):
-        total = 0
-        for worm in sorted(candidates_by_worm):
-            label = worm.genotype if hasattr(worm, 'genotype') else worm
-            num_candidates = len(candidates_by_worm[worm])
-            total += num_candidates
-            self.stdout.write('\t{}: {} wells'.format(label, num_candidates))
-
-        self.stdout.write('Total: {} wells'.format(total))
 
     def handle(self, **options):
         summary_mode = options['summary']
@@ -48,7 +37,7 @@ class Command(BaseCommand):
             self.stdout.write('Total clones to cherry pick: {}'
                               .format(len(candidates_by_clone)))
             self.stdout.write('\n\nBefore accounting for universals:')
-            self.print_candidates_by_worm(candidates_by_worm)
+            self._print_candidates_by_worm(candidates_by_worm)
 
         # Move relevant clones from individual worm lists to 'universal' list
         candidates_by_worm['universal'] = []
@@ -61,7 +50,7 @@ class Command(BaseCommand):
 
         if summary_mode:
             self.stdout.write('\n\nAfter accounting for universals:')
-            self.print_candidates_by_worm(candidates_by_worm)
+            self._print_candidates_by_worm(candidates_by_worm)
             return
 
         # Create official cherry pick list, including randomized empty wells
@@ -137,3 +126,13 @@ class Command(BaseCommand):
                                   .format(plate, wells))
 
             seen.add(wells)
+
+    def _print_candidates_by_worm(self, candidates_by_worm):
+        total = 0
+        for worm in sorted(candidates_by_worm):
+            label = worm.genotype if hasattr(worm, 'genotype') else worm
+            num_candidates = len(candidates_by_worm[worm])
+            total += num_candidates
+            self.stdout.write('\t{}: {} wells'.format(label, num_candidates))
+
+        self.stdout.write('Total: {} wells'.format(total))

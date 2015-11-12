@@ -11,26 +11,35 @@ from utils.well_tile_conversion import well_to_tile
 from eegi.settings import IMG_PATH
 
 
-HELP = '''
-Copy a set of images from the server to a local directory.
-
-Currently works only for the full-size, original .bmp images.
-
-Input is a csv, including header row, in which each row
-is in format: experiment_id, well. For example:
-
-    54034,A05
-    12412,B12
-    32412,H02
-'''
-
-
 class Command(BaseCommand):
-    help = HELP
+    """Command to copy a set of images from the server to a local directory.
+
+    Currently works only for the full-size, original .bmp images.
+
+    Input is a csv, including header row, in which each row
+    is in format `experiment_id,well` or `experiment_id,tile`.
+    For example, all these rows are okay:
+
+        54034,A05
+        12412,B12
+        32412,H02
+        22314,Tile000036
+        25123,Tile000096.bmp
+
+    Copied images will be prefixed with experiment_id,
+    e.g. 54034_Tile000005.bmp.
+
+    """
+    help = 'Copy a set of images to a local directory.'
 
     def add_arguments(self, parser):
-        parser.add_argument('input_file', type=argparse.FileType('r'))
-        parser.add_argument('output_dir')
+        parser.add_argument('input_file', type=argparse.FileType('r'),
+                            help="CSV of experiment, wells to copy. "
+                                 "See this command's docstring "
+                                 "for more details.")
+
+        parser.add_argument('output_dir',
+                            help='Directory in which to write the images.')
 
     def handle(self, **options):
         input_file = options['input_file']
