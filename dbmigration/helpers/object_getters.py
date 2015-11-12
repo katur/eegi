@@ -14,6 +14,7 @@ from library.models import LibraryPlate, LibraryWell
 from worms.models import WormStrain
 from dbmigration.helpers.name_getters import (get_library_plate_name,
                                               get_library_well_name)
+from utils.well_naming import get_three_character_well
 
 
 def get_missing_object_message(klass, **kwargs):
@@ -88,7 +89,7 @@ def get_experiment_plate(exp_id):
 def get_experiment_well(exp_id, well):
     try:
         return ExperimentWell.objects.get(
-            experiment_plate_id=exp_id, well=well)
+            experiment_plate_id=exp_id, well=get_three_character_well(well))
 
     except ObjectDoesNotExist:
         raise ObjectDoesNotExist(get_missing_object_message(
