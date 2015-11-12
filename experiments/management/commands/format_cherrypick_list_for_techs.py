@@ -3,18 +3,28 @@ import argparse
 from django.core.management.base import BaseCommand
 
 
-HELP = '''
-Format the Enhancer Secondary screen cherry-picking list such that it
-is easier to cherry-pick from.
-
-'''
-
-
 class Command(BaseCommand):
-    help = HELP
+    """Command to format a cherry-pick list so that it is easier for techs
+    to cherry-pick from.
+
+    Simply adds blank lines at the points where the techs would need to
+    change the plates in front of them.
+
+    Arguments
+
+    - file should be a comma-separated file, including header row,
+      where each row is in format:
+
+        source_plate,source_well,destination_plate,destination_well
+
+    """
+    help = 'Format a cherry-pick list for techs.'
 
     def add_arguments(self, parser):
-        parser.add_argument('file', type=argparse.FileType('r'))
+        parser.add_argument('file', type=argparse.FileType('r'),
+                            help="CSV of cherry-pick list. "
+                                 "See this command's docstring "
+                                 "for more details.")
 
     def handle(self, **options):
         f = options['file']

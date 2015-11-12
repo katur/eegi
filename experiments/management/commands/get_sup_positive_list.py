@@ -6,16 +6,15 @@ from library.helpers.sequencing import categorize_sequences_by_blat_results
 from library.models import LibrarySequencing
 from worms.models import WormStrain
 
-HELP = '''
-Get the list of SUP secondary positives, limiting it for now to
-just those that are sequence-verified, and to the more stringent
-'high confidence criteria'.
-
-'''
-
 
 class Command(BaseCommand):
-    help = HELP
+    """Command to get the list of SUP secondary positives.
+
+    Limited for now to just those that are sequence-verified, and to the most
+    stringent 'high confidence criteria'.
+
+    """
+    help = 'Get the list of SUP secondary positives.'
 
     def add_arguments(self, parser):
         parser.add_argument('--summary',
