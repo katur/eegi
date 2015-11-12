@@ -121,10 +121,6 @@ def experiment_plate(request, id):
     library_wells = LibraryWell.objects.filter(
         plate=experiment.library_plate).order_by('well')
 
-    # Add row attribute in order to use regroup template tag
-    for library_well in library_wells:
-        library_well.row = library_well.get_row()
-
     context = {
         'experiment': experiment,
         'library_wells': library_wells,
