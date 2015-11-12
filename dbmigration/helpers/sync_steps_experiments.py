@@ -4,15 +4,19 @@ that involve the experiments app.
 """
 from django.core.management.base import CommandError
 
+from dbmigration.helpers.name_getters import get_experiment_well_name
+
 from dbmigration.helpers.object_getters import (
-    get_worm_strain, get_library_plate,
-    get_user, get_experiment_plate, get_score_code)
+    get_worm_strain, get_library_well,
+    get_experiment_plate, get_score_code, get_user)
+
 from dbmigration.helpers.sync_helpers import sync_rows, update_or_save_object
 
-from experiments.models import (
-    ExperimentPlate, DevstarScore, ManualScoreCode, ManualScore)
+from experiments.models import (ExperimentPlate, ExperimentWell,
+                                DevstarScore, ManualScoreCode, ManualScore)
 
 from utils.comparison import compare_floats_for_equality
+from utils.plate_layout import get_well_list
 from utils.time_conversion import get_timestamp, get_timestamp_from_ymd
 from utils.well_naming import get_three_character_well
 from utils.well_tile_conversion import tile_to_well
@@ -24,19 +28,26 @@ def update_Experiment_tables(command, cursor):
 
     Several datatype transforms occur from the old to the new schema:
 
-        - mutant/mutantAllele become a FK to WormStrain
-        - RNAiPlateID becomes a FK to LibraryPlate
-        - temperature as string (with 'C') becomes a decimal
-        - recordDate as string becomes a DATE
-        - isJunk becomes a boolean (with both 1 and -1 becoming True)
+        - recordDate string becomes a DATE
+        - temperature string (suffixed 'C') becomes a decimal
+        - plate-level mutant/mutantAllele becomes well-level FK to WormStrain
+        - plate-level RNAiPlateID becomes becomes well-level pointers to
+          LibraryWells
+        - plate-level isJunk with three values (-1, 0, 1) becomes a boolean
+          (with both 1 and -1 becoming 1), and and becomes well-level
 
     Also, experiments of Julie's (which were done with a line of spn-4 worms
     later deemed untrustworthy) are excluded.
 
     """
-    recorded_experiments = ExperimentPlate.objects.all()
-    fields_to_compare = ('worm_strain', 'library_plate', 'screen_stage',
-                         'temperature', 'date', 'is_junk', 'comment',)
+    recorded_plates = ExperimentPlate.objects.all()
+    recorded_wells = ExperimentWell.objects.all()
+
+    plate_fields_to_compare = ('screen_stage', 'temperature', 'date',
+                               'comment')
+
+    well_fields_to_compare = ('experiment_plate', 'well', 'worm_strain',
+                              'library_well', 'is_junk')
 
     legacy_query = ('SELECT expID, mutant, mutantAllele, RNAiPlateID, '
                     'CAST(SUBSTRING_INDEX(temperature, "C", 1) '
@@ -47,26 +58,49 @@ def update_Experiment_tables(command, cursor):
                     'AND RNAiPlateID NOT LIKE "Julie%"')
 
     def sync_experiment_row(legacy_row):
-        expID = legacy_row[0]
+        exp_plate_id = legacy_row[0]
+        worm_strain = get_worm_strain(legacy_row[1], legacy_row[2])
+        legacy_library_plate_name = legacy_row[3]
+        temperature = legacy_row[4]
+        date = legacy_row[5]
+        is_junk = legacy_row[6]
+        comment = legacy_row[7]
 
-        if expID < 40000:
+        all_match = True
+
+        if exp_plate_id < 40000:
             screen_stage = 1
         else:
             screen_stage = 2
 
-        legacy_experiment = ExperimentPlate(
-            id=legacy_row[0],
-            worm_strain=get_worm_strain(legacy_row[1], legacy_row[2]),
-            library_plate=get_library_plate(legacy_row[3]),
+        legacy_plate = ExperimentPlate(
+            id=exp_plate_id,
             screen_stage=screen_stage,
-            temperature=legacy_row[4],
-            date=legacy_row[5],
-            is_junk=legacy_row[6],
-            comment=legacy_row[7])
+            temperature=temperature,
+            date=date,
+            comment=comment)
 
-        return update_or_save_object(
-            command, legacy_experiment, recorded_experiments,
-            fields_to_compare)
+        all_match &= update_or_save_object(
+            command, legacy_plate, recorded_plates,
+            plate_fields_to_compare)
+
+        experiment_plate = get_experiment_plate(exp_plate_id)
+
+        for well in get_well_list():
+            legacy_well = ExperimentWell(
+                id=get_experiment_well_name(exp_plate_id, well),
+                experiment_plate=experiment_plate,
+                well=well,
+                worm_strain=worm_strain,
+                library_well=get_library_well(
+                    legacy_library_plate_name, well),
+                is_junk=is_junk)
+
+            all_match &= update_or_save_object(
+                command, legacy_well, recorded_wells,
+                well_fields_to_compare)
+
+        return all_match
 
     sync_rows(command, cursor, legacy_query, sync_experiment_row)
 
