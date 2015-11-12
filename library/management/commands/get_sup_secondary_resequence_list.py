@@ -8,29 +8,29 @@ from library.helpers.sequencing import (categorize_sequences_by_blat_results,
 from library.models import LibrarySequencing
 from utils.plate_design import assign_to_plates, get_plate_assignment_rows
 
-HELP = '''
-Get list of SUP Secondary wells to resequence.
-
-We are resequencing all wells for which the sequencing result
-corresponds to a positive, and for which the top hit of the sequencing result
-does not agree with the intended clone.
-
-'''
-
 
 class Command(BaseCommand):
-    help = HELP
+    """Command to get list of SUP Secondary wells to resequence.
+
+    We are resequencing all wells for which the sequencing result corresponds
+    to a positive, and for which the top hit of the sequencing result does
+    not agree with the intended clone.
+
+    """
+    help = 'Get list of SUP Secondary wells to resequence.'
 
     def handle(self, **options):
         positives = get_positives_across_all_worms(
             'SUP', 2, passes_sup_positive_percentage_criteria)
+
         seqs = (LibrarySequencing.objects
                 .filter(source_library_well__in=positives)
                 .select_related('source_library_well',
                                 'source_library_well__intended_clone'))
+
         seqs_blat = categorize_sequences_by_blat_results(seqs)
 
-        reseq_wells = get_wells_to_resequence(seqs_blat)
+        reseq_wells = _get_wells_to_resequence(seqs_blat)
 
         assigned = assign_to_plates(reseq_wells)
 
@@ -55,7 +55,7 @@ class Command(BaseCommand):
                               .format(plate, well, row[0], row[1]))
 
 
-def get_wells_to_resequence(s):
+def _get_wells_to_resequence(s):
     wells_to_resequence = []
 
     for key in s:

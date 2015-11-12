@@ -40,7 +40,7 @@ class Command(BaseCommand):
         materials/sequencing/genewiz/genewiz_data
 
     """
-    help = 'Sync sequencing data from Genewiz output files'
+    help = 'Import sequencing data from Genewiz output files'
 
     def add_arguments(self, parser):
         parser.add_argument('tracking_numbers', type=argparse.FileType('r'),
