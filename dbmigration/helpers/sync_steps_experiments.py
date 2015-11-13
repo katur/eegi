@@ -144,6 +144,7 @@ def update_DevstarScore_table(command, cursor):
                     'GIscoreLarvaePerWorm, GIscoreSurvival '
                     'FROM RawDataWithScore '
                     'WHERE (expID < 40000 OR expID >= 50000) '
+                    'AND expID >= 460 '
                     'AND RNAiPlateID NOT LIKE "Julie%" '
                     'ORDER BY expID, 96well')
 
@@ -180,7 +181,7 @@ def update_DevstarScore_table(command, cursor):
 
         errors = []
 
-        new_allele = new_score.experiment.worm_strain.allele
+        new_allele = new_score.experiment_well.worm_strain.allele
         if (new_allele != legacy_row[2]):
             # Deal with case of legacy database using zc310 instead of zu310
             if (legacy_row[2] == 'zc310' and
@@ -203,9 +204,15 @@ def update_DevstarScore_table(command, cursor):
         # however it is still worthwhile to perform this check in order
         # to find the mismatches, and to confirm manually that each one
         # makes sense.
-        if (new_score.experiment.library_plate.id != legacy_row[4] and
-                new_score.experiment.id != 461 and
-                new_score.experiment.id != 8345):
+        new_lp = new_score.experiment_well.library_well.library_plate_id
+        legacy_lp = legacy_row[4]
+        if (legacy_lp != new_lp and
+                new_score.experiment_well.experiment_plate_id not in (
+                    461, 8345) and
+                legacy_lp != new_lp.replace('-', '_') and
+                legacy_lp != new_lp.replace('zu310', 'zc310') and
+                ('vidal-' not in new_lp or
+                    legacy_lp != new_lp.split('vidal-')[1])):
             errors.append('RNAi plate mismatch')
 
         if new_score.count_embryo != legacy_row[10]:
