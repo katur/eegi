@@ -41,18 +41,18 @@ def update_Clone_table(command, cursor):
                     'WHERE clone LIKE "sjj%" OR clone = "L4440"')
 
     def sync_clone_row(legacy_row):
-        legacy_clone = Clone(id=legacy_row[0])
-        return update_or_save_object(
-            command, legacy_clone, recorded_clones, fields_to_compare)
+        new_clone = Clone(id=legacy_row[0])
+        return update_or_save_object(command, new_clone, recorded_clones,
+                                     fields_to_compare)
 
     legacy_query_vidal = ('SELECT DISTINCT 384PlateID, 384Well FROM RNAiPlate '
                           'WHERE clone LIKE "mv%"')
 
     def sync_clone_row_vidal(legacy_row):
         vidal_clone_name = get_vidal_clone_name(legacy_row[0], legacy_row[1])
-        legacy_clone = Clone(id=vidal_clone_name)
-        return update_or_save_object(
-            command, legacy_clone, recorded_clones, fields_to_compare)
+        new_clone = Clone(id=vidal_clone_name)
+        return update_or_save_object(command, new_clone, recorded_clones,
+                                     fields_to_compare)
 
     sync_rows(command, cursor, legacy_query, sync_clone_row)
     sync_rows(command, cursor, legacy_query_vidal, sync_clone_row_vidal)
@@ -116,12 +116,11 @@ def update_LibraryPlate_table(command, cursor):
         else:
             plate_name = get_library_plate_name(legacy_row[0])
 
-        legacy_plate = LibraryPlate(id=plate_name,
-                                    screen_stage=screen_stage,
-                                    number_of_wells=number_of_wells)
+        new_plate = LibraryPlate(id=plate_name, screen_stage=screen_stage,
+                                 number_of_wells=number_of_wells)
 
-        return update_or_save_object(
-            command, legacy_plate, recorded_plates, fields_to_compare)
+        return update_or_save_object(command, new_plate, recorded_plates,
+                                     fields_to_compare)
 
     # Sync the 384-well Ahringer plates from which our 96-well Ahringer plates
     # were arrayed
@@ -192,15 +191,15 @@ def update_LibraryWell_table(command, cursor):
         if re.match('mv', clone_name):
             clone_name = get_vidal_clone_name(plate_name, well_improper)
 
-        legacy_well = LibraryWell(
+        new_well = LibraryWell(
             id=get_library_well_name(plate_name, well_proper),
             library_plate=get_library_plate(plate_name),
             well=well_proper,
             parent_library_well=None,
             intended_clone=get_clone(clone_name))
 
-        return update_or_save_object(
-            command, legacy_well, recorded_wells, fields_to_compare)
+        return update_or_save_object(command, new_well, recorded_wells,
+                                     fields_to_compare)
 
     # Primary well layout captured in RNAiPlate table (fields RNAiPlateID
     # and 96well). Clone is determined the same way as described in
@@ -241,15 +240,15 @@ def update_LibraryWell_table(command, cursor):
                 raise CommandError('Clone {} does not match parent\n'
                                    .format(clone_name))
 
-        legacy_well = LibraryWell(
+        new_well = LibraryWell(
             id=get_library_well_name(plate_name, well),
             library_plate=get_library_plate(plate_name),
             well=well,
             parent_library_well=parent_library_well,
             intended_clone=intended_clone)
 
-        return update_or_save_object(
-            command, legacy_well, recorded_wells, fields_to_compare)
+        return update_or_save_object(command, new_well, recorded_wells,
+                                     fields_to_compare)
 
     # L4440 wells from secondary screen are treated specially (since
     # the complicated join used to resolve parents below complicates things
@@ -262,15 +261,15 @@ def update_LibraryWell_table(command, cursor):
         plate_name = legacy_row[0]
         well = get_three_character_well(legacy_row[1])
 
-        legacy_well = LibraryWell(
+        new_well = LibraryWell(
             id=get_library_well_name(plate_name, well),
             library_plate=get_library_plate(plate_name),
             well=well,
             parent_library_well=None,
             intended_clone=get_clone('L4440'))
 
-        return update_or_save_object(
-            command, legacy_well, recorded_wells, fields_to_compare)
+        return update_or_save_object(command, new_well, recorded_wells,
+                                     fields_to_compare)
 
     # Secondary well layout is captured in CherryPickRNAiPlate table (fields
     # RNAiPlate and 96well). However, there are no columns in this table
@@ -311,6 +310,7 @@ def update_LibraryWell_table(command, cursor):
         likely_parent_well = legacy_row[6]
         if likely_parent_well:
             likely_parent_well = get_three_character_well(likely_parent_well)
+
         likely_parent_clone_name = legacy_row[7]
 
         if (definite_parent_plate_name and likely_parent_plate_name and
@@ -366,19 +366,46 @@ def update_LibraryWell_table(command, cursor):
                     'CherryPickRNAiPlate not found at all in RNAiPlate\n'
                     .format(plate_name, well))
 
-        legacy_well = LibraryWell(
+        new_well = LibraryWell(
             id=get_library_well_name(plate_name, well),
             library_plate=get_library_plate(plate_name),
             well=well,
             parent_library_well=parent_library_well,
             intended_clone=intended_clone)
 
-        return update_or_save_object(
-            command, legacy_well, recorded_wells, fields_to_compare)
+        return update_or_save_object(command, new_well, recorded_wells,
+                                     fields_to_compare)
+
+    legacy_query_eliana = (
+        'SELECT RNAiPlateID, 96well, OldPlateID, OldWellPosition '
+        'FROM ReArrayRNAiPlate WHERE RNAiPlateID LIKE "Eliana%"')
+
+    def sync_eliana_row(legacy_row):
+        plate_name = legacy_row[0]
+        well = get_three_character_well(legacy_row[1])
+
+        if legacy_row[2]:
+            parent_library_well = get_library_well(legacy_row[2],
+                                                   legacy_row[3])
+            intended_clone = parent_library_well.intended_clone
+
+        else:
+            parent_library_well = None
+            intended_clone = None
+
+        new_well = LibraryWell(
+            id=get_library_well_name(plate_name, well),
+            library_plate=get_library_plate(plate_name),
+            well=well,
+            parent_library_well=parent_library_well,
+            intended_clone=intended_clone)
+
+        return update_or_save_object(command, new_well, recorded_wells,
+                                     fields_to_compare)
 
     sync_rows(command, cursor, legacy_query_source, sync_source_row)
     sync_rows(command, cursor, legacy_query_primary, sync_primary_row)
+    sync_rows(command, cursor, legacy_query_eliana, sync_eliana_row)
     sync_rows(command, cursor, legacy_query_secondary_L4440,
               sync_secondary_L4440_row)
-    sync_rows(command, cursor, legacy_query_secondary,
-              sync_secondary_row)
+    sync_rows(command, cursor, legacy_query_secondary, sync_secondary_row)

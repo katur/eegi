@@ -54,7 +54,8 @@ def update_Experiment_tables(command, cursor):
                     'CAST(recordDate AS DATE), ABS(isJunk), comment '
                     'FROM RawData '
                     'WHERE (expID < 40000 OR expID >= 50000) '
-                    'AND RNAiPlateID NOT LIKE "Julie%"')
+                    'AND RNAiPlateID NOT LIKE "Julie%" '
+                    'ORDER BY expID')
 
     def sync_experiment_row(legacy_row):
         exp_plate_id = legacy_row[0]

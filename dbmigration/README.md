@@ -29,7 +29,15 @@ to the redesigned MySQL database (eegi).
 ./manage.py import_genewiz_data materials/sequencing/genewiz/tracking_numbers.csv materials/sequencing/genewiz/genewiz_data
 ./manage.py import_blat_results materials/sequencing/blat_results_from_firoz/joined
 
-# Import worm strain table from materials/worm_strains/worm_strains.csv
+# Import WormStrain rows from materials/worm_strains/worm_strains.csv
+
+# Import ExperimentWell and ExperimentPlate
+./manage.py sync_legacy_database 3 3
+
+# Import auth_user rows from materials/users/users.csv
+
+# Import scores
+./manage.py sync_legacy_database 4
 ```
 
 
