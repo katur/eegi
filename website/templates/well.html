@@ -1,33 +1,30 @@
-{% with well=library_well.well %}
+{% load extra_tags %}
+
 
 <td
-  {% if not library_well.intended_clone %}
+  {% if not well.intended_clone %}
   class="empty-well"
   {% endif %}>
 
   <div class="well-title">
-    {{ well }}
+    {{ well.well }}
 
-    <span class="parenthetical">({{ library_well.get_tile }})</span>
+    <span class="parenthetical">({{ well.well|get_tile }})</span>
   </div>
 
-  {% if experiment %}
-  <a href="{% url 'experiment_well_url' experiment.id well %}">
-    {% include "image.html" %}
+  {% if is_experiment %}
+  <a href="{% url 'experiment_well_url' well %}">
+    {% include 'image.html' with experiment_well=well %}
   </a>
   {% endif %}
 
   <div class="well-caption">
-    {% with library_well.intended_clone as clone %}
-    {% if clone %}
-    <a href="{{ clone.get_absolute_url }}">{{ clone }}</a>
+    {% if well.intended_clone %}
+    <a href="{{ well.intended_clone.get_absolute_url }}">
+      {{ well.intended_clone }}</a>
 
     {% else %}
-    {{ clone }}
-
+    None
     {% endif %}
-    {% endwith %}
   </div>
 </td>
-
-{% endwith %}

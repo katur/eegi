@@ -6,26 +6,30 @@
 
 
 {% block page_title %}
-Experiment Plate {{ experiment.id }}
+Experiment Plate {{ experiment_plate.id }}
 {% endblock %}
 
 
 {% block content %}
 <div class="cleared-spaced-spans">
-  {% include "experiment_plate_spans.html" %}
+  {% include 'experiment_plate_spans.html' %}
 
   <span>
-    <a href="{% url 'experiment_plates_vertical_url' experiment.id %}">
+    <a href="{% url 'experiment_plates_vertical_url' experiment_plate.id %}">
       See vertical view: thumbnails</a>
+
     <br>
-    <a href="{% url 'experiment_plates_vertical_url' experiment.id %}?mode=big">
+
+    <a href="{% url 'experiment_plates_vertical_url' experiment_plate.id %}?mode=big">
       See vertical view: full-size images</a>
+
     <br>
-    <a href="{% url 'experiment_plates_vertical_url' experiment.id %}?mode=devstar">
+
+    <a href="{% url 'experiment_plates_vertical_url' experiment_plate.id %}?mode=devstar">
       See vertical view: DevStaR images</a>
   </span>
 </div>
 
-{% include "plate.html" %}
+{% include 'plate.html' with wells=experiment_wells is_experiment=True %}
 
 {% endblock %}

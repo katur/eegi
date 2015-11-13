@@ -1,5 +1,7 @@
 from django import template
 
+from utils.well_tile_conversion import well_to_tile
+
 register = template.Library()
 
 
@@ -45,34 +47,39 @@ def get_screen_category(worm, temperature):
 
     """
     if worm.is_permissive_temperature(temperature):
-        return 'ENH screening temperature'
+        return 'ENH'
     elif worm.is_restrictive_temperature(temperature):
-        return 'SUP screening temperature'
+        return 'SUP'
     else:
         return ''
 
 
 @register.filter
-def is_manually_scored(experiment, well):
+def is_manually_scored(experiment_well):
     """Determine whether an experiment well was manually scored."""
-    return experiment.is_manually_scored(well)
+    return experiment_well.is_manually_scored()
 
 
 @register.filter
-def is_devstar_scored(experiment, well):
+def is_devstar_scored(experiment_well):
     """Determine whether an experiment well was scored by DevStaR."""
-    return experiment.is_devstar_scored(well)
+    return experiment_well.is_devstar_scored()
 
 
 @register.filter
-def get_manual_score_summary(experiment, well):
+def get_tile(well):
+    return well_to_tile(well)
+
+
+@register.filter
+def get_manual_score_summary(experiment_well):
     """Get a string summarizing the scores for this experiment.
 
     Groups such that scores by different scorers, and scores made at
     different timepoints, can be distinguished.
 
     """
-    scores = experiment.get_manual_scores(well)
+    scores = experiment_well.get_manual_scores()
     d = {}
     for score in scores:
         scorer = score.scorer
@@ -96,8 +103,8 @@ def get_manual_score_summary(experiment, well):
 
 
 @register.filter
-def get_devstar_score_summary(experiment, well):
-    scores = experiment.get_devstar_scores(well)
+def get_devstar_score_summary(experiment_well):
+    scores = experiment_well.get_devstar_scores()
 
     output = []
 
@@ -123,14 +130,14 @@ def get_worm_url(worm, request):
 
 
 @register.simple_tag
-def get_image_url(experiment, well, mode=None):
+def get_image_url(experiment_well, mode=None):
     """Get the url for an image.
 
     Set mode to 'thumbnail' or 'devstar' for either of those image
     types. Otherwise, returns the normal full-size image.
 
     """
-    return experiment.get_image_url(well, mode=mode)
+    return experiment_well.get_image_url(mode=mode)
 
 
 @register.filter

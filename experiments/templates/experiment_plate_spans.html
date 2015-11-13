@@ -1,31 +1,41 @@
 {% load extra_tags %}
 
-{% with worm=experiment.worm_strain temperature=experiment.temperature %}
-  {% include 'worm_spans.html' %}
-{% endwith %}
-
 <span>
-  <b>RNAi library plate</b>
+  <b>Date</b>
   &nbsp;
-  <a href="{{ experiment.library_plate.get_absolute_url }}">
-  {{ experiment.library_plate }}
-  </a>
+  {{ experiment_plate.date|date:'SHORT_DATE_FORMAT' }}
 </span>
 
 <span>
-  <b>Experiment date</b>
+  <b>Temperature</b>
   &nbsp;
-  {{ experiment.date|date:'SHORT_DATE_FORMAT' }}
+  {{ experiment_plate.temperature|celsius }}
 </span>
 
-{% if experiment.is_junk %}
-<span class="error-message">JUNK</span>
-{% endif %}
-
-{% if experiment.comment %}
 <span>
-  <b>Comment</b>
+  <b>Screen stage</b>
   &nbsp;
-  {{ experiment.comment }}
+  {{ experiment_plate.screen_stage }}
+</span>
+
+{% if experiment_plate.comment %}
+<span>
+  <b>Plate comment</b>
+  &nbsp;
+  {{ experiment_plate.comment }}
+</span>
+
+<span>
+  {% with worms=experiment_plate.get_worm_strains %}
+  <b>Worm strain{{ worms|pluralize }}</b>
+  &nbsp;
+
+  {% for worm in worms %}
+  <a href="{% get_worm_url worm request %}">
+    {{ worm.get_display_string }}</a>
+  {% if not forloop.last %},{% endif %}
+  {% endfor %}
+
+  {% endwith %}
 </span>
 {% endif %}

@@ -1,23 +1,22 @@
 {% load extra_tags %}
 
-{% with well=library_well.well %}
+{% with experiment_plate=experiment_well.experiment_plate %}
 
 <div class="individual-image">
   <span class="image-topbar">
 
     <span class="image-title">
-      Experiment {{ experiment.id }},
-      well {{ well }},
-      {{ experiment.temperature|celsius }}
+      Experiment {{ experiment_well.id }},
+      {{ experiment_plate.temperature|celsius }}
 
-      (<a href="{% url 'experiment_well_url' experiment.id well %}">more
+      (<a href="{% url 'experiment_well_url' experiment_well %}">more
         info</a>)
     </span>
 
     <span class="placement">{{ current }} of {{ total }}</span>
   </span>
 
-  <div class="image-frame" data-src="{% get_image_url experiment well %}">
+  <div class="image-frame" data-src="{% get_image_url experiment_well %}">
 
     <a href="#" class="image-frame-navigation image-frame-previous">
       <span>&laquo;</span>
@@ -31,9 +30,9 @@
 
   <span class="image-caption">
     <span class="image-scores">
-      {{ experiment|get_manual_score_summary:well }}
+      {{ experiment_well|get_manual_score_summary }}
       <br>
-      DevStaR: {{ experiment|get_devstar_score_summary:well }}
+      DevStaR: {{ experiment_well|get_devstar_score_summary }}
     </span>
 </div>
 

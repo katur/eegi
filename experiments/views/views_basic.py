@@ -5,7 +5,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
 
 from eegi.settings import MATERIALS_DIR
-from experiments.models import ExperimentPlate
+from experiments.models import ExperimentPlate, ExperimentWell
 from experiments.forms import ExperimentPlateFilterForm
 from library.models import LibraryWell, LibraryPlate
 from utils.well_tile_conversion import tile_to_well
@@ -114,16 +114,14 @@ def experiment_plates_vertical(request, ids):
     return render(request, 'experiment_plates_vertical.html', context)
 
 
-def experiment_plate(request, id):
+def experiment_plate(request, pk):
     """Render the page to see a particular experiment plate."""
-    experiment = get_object_or_404(ExperimentPlate, pk=id)
-
-    library_wells = LibraryWell.objects.filter(
-        plate=experiment.library_plate).order_by('well')
+    experiment_plate = get_object_or_404(ExperimentPlate, pk=pk)
 
     context = {
-        'experiment': experiment,
-        'library_wells': library_wells,
+        'experiment_plate': experiment_plate,
+        'experiment_wells': (experiment_plate.experimentwell_set
+                             .order_by('well')),
 
         # Default to thumbnail
         'mode': request.GET.get('mode', 'thumbnail'),
@@ -132,20 +130,19 @@ def experiment_plate(request, id):
     return render(request, 'experiment_plate.html', context)
 
 
-def experiment_well(request, id, well):
+def experiment_well(request, pk):
     """Render the page to see a particular experiment well."""
-    experiment = get_object_or_404(ExperimentPlate, pk=id)
+    experiment_well = get_object_or_404(ExperimentWell, pk=pk)
 
-    library_well = LibraryWell.objects.filter(
-        plate=experiment.library_plate).filter(well=well)[0]
-
-    devstar_url = experiment.get_image_url(well, mode='devstar')
+    devstar_url = experiment_well.get_image_url(mode='devstar')
     devstar_available = http_response_ok(devstar_url)
 
     context = {
-        'experiment': experiment,
-        'well': well,
-        'library_well': library_well,
+        'experiment_well': experiment_well,
+        'experiment_plate': experiment_well.experiment_plate,
+        'library_well': experiment_well.library_well,
+        'intended_clone': experiment_well.library_well.intended_clone,
+        'worm_strain': experiment_well.worm_strain,
         'devstar_available': devstar_available,
 
         # Default to full-size images
