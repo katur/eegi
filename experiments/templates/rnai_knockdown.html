@@ -25,12 +25,12 @@ RNAi Clone{{ clones|pluralize }} {{ clones|join:', ' }}
 <div class="knockdown-clone-section">
   <h4>{% include "clone_spans.html" %}</h4>
 
-  {% for library_well, values in library_wells.items %}
+  {% for library_well, experiment_wells in library_wells.items %}
   <table class="knockdown-results single-column grayscale">
     <thead>
       <th>
         {{ clone }} located in
-        plate {{ library_well.plate }},
+        plate {{ library_well.library_plate }},
         well {{ library_well.well }}
       </th>
     </thead>

@@ -3,51 +3,9 @@ from collections import OrderedDict
 from django.shortcuts import render, get_object_or_404
 
 from clones.models import Clone
-from experiments.models import ExperimentPlate
+from experiments.models import ExperimentPlate, ExperimentWell
 from library.models import LibraryWell, LibraryPlate
 from worms.models import WormStrain
-
-
-def mutant_knockdown(request, worm, temperature):
-    """Render the page showing knockdown by mutation only."""
-    worm = get_object_or_404(WormStrain, pk=worm)
-    l4440 = get_object_or_404(Clone, pk='L4440')
-
-    # data[date] = [(expt, well), (expt, well), ... ]
-    data = {}
-
-    plates = (LibraryWell.objects.filter(intended_clone=l4440)
-              .order_by('plate').values('plate').distinct())
-
-    expts = (ExperimentPlate.objects.filter(is_junk=False,
-                                            worm_strain=worm,
-                                            temperature=temperature,
-                                            library_plate__in=plates))
-
-    for expt in expts:
-        l4440_wells = expt.library_plate.get_l4440_wells()
-        if not l4440_wells:
-            continue
-
-        date = expt.date
-        if date not in data:
-            data[date] = []
-
-        for l4440_well in l4440_wells:
-            data[date].append((expt, l4440_well))
-
-    sorted_data = OrderedDict()
-    for key in sorted(data.keys(), reverse=True):
-        sorted_data[key] = data[key]
-
-    context = {
-        'worm': worm,
-        'clone': l4440,
-        'temperature': temperature,
-        'data': sorted_data,
-    }
-
-    return render(request, 'mutant_knockdown.html', context)
 
 
 def rnai_knockdown(request, clones, temperature=None):
@@ -55,29 +13,32 @@ def rnai_knockdown(request, clones, temperature=None):
     n2 = get_object_or_404(WormStrain, pk='N2')
     clones = Clone.objects.filter(pk__in=clones.split(','))
 
-    # data[clone][library_well] = [(expt, well), (expt, well), ...]
+    # data = {clone: {library_well: [experiments]}}
     data = OrderedDict()
 
     for clone in clones:
-        library_wells = (LibraryWell.objects
-                         .filter(intended_clone=clone,
-                                 plate__screen_stage__gt=0)
-                         .order_by('-plate__screen_stage', 'id'))
+        experiment_wells = (ExperimentWell.objects
+                            .filter(is_junk=False, worm_strain=n2,
+                                    library_well__intended_clone=clone))
+
+        if temperature:
+            experiment_wells = experiment_wells.filter(
+                experiment_plate__temperature=temperature)
+
+        experiment_wells = (
+            experiment_wells
+            .select_related('worm_strain', 'library_well__intended_clone',
+                            'experiment_plate', 'library_well__library_plate')
+            .prefetch_related('manualscore_set', 'devstarscore_set')
+            .order_by('-library_well__library_plate__screen_stage',
+                      'library_well', '-experiment_plate__date', 'id'))
 
         data_by_well = OrderedDict()
 
-        for library_well in library_wells:
-            expts = ExperimentPlate.objects.filter(
-                is_junk=False, worm_strain=n2,
-                library_plate=library_well.plate)
-
-            if temperature:
-                expts = expts.filter(temperature=temperature)
-
-            expts = expts.order_by('-date', '-id')
-
-            if expts:
-                data_by_well[library_well] = [(e, library_well) for e in expts]
+        for e in experiment_wells:
+            if e.library_well not in data_by_well:
+                data_by_well[e.library_well] = []
+            data_by_well[e.library_well].append(e)
 
         if data_by_well:
             data[clone] = data_by_well
@@ -90,6 +51,37 @@ def rnai_knockdown(request, clones, temperature=None):
     }
 
     return render(request, 'rnai_knockdown.html', context)
+
+
+def mutant_knockdown(request, worm, temperature):
+    """Render the page showing knockdown by mutation only."""
+    worm = get_object_or_404(WormStrain, pk=worm)
+    l4440 = get_object_or_404(Clone, pk='L4440')
+
+    experiment_wells = (ExperimentWell.objects
+                        .filter(is_junk=False, worm_strain=worm,
+                                library_well__intended_clone=l4440,
+                                experiment_plate__temperature=temperature)
+                        .order_by('-experiment_plate__date', 'library_well'))
+
+    # data = {date: [experiments]}
+    data = OrderedDict()
+
+    for e in experiment_wells:
+        date = e.experiment_plate.date
+        if date not in data:
+            data[date] = []
+
+        data[date].append(e)
+
+    context = {
+        'worm': worm,
+        'clone': l4440,
+        'temperature': temperature,
+        'data': data,
+    }
+
+    return render(request, 'mutant_knockdown.html', context)
 
 
 def double_knockdown(request, worm, clones, temperature):
