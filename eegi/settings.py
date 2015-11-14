@@ -28,7 +28,7 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,11 +42,13 @@ INSTALLED_APPS = (
     'clones',
     'library',
     'experiments',
+]
 
+if DEBUG:
     # Must be listed after website, so the lockdown custom template
     # (which is inside the website app) has precedence.
-    'lockdown',
-)
+    INSTALLED_APPS.append('lockdown')
+    INSTALLED_APPS.append('django-debug-toolbar')
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
