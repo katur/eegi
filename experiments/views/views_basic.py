@@ -121,6 +121,9 @@ def experiment_plate(request, pk):
     context = {
         'experiment_plate': experiment_plate,
         'experiment_wells': (experiment_plate.experimentwell_set
+                             .select_related(
+                                 'library_well',
+                                 'library_well__intended_clone')
                              .order_by('well')),
 
         # Default to thumbnail

@@ -1,13 +1,11 @@
 {% load extra_tags %}
 
-{% with experiment_plate=experiment_well.experiment_plate %}
-
 <div class="individual-image">
   <span class="image-topbar">
 
     <span class="image-title">
       Experiment {{ experiment_well.id }},
-      {{ experiment_plate.temperature|celsius }}
+      {{ experiment_well.experiment_plate.temperature|celsius }}
 
       (<a href="{% url 'experiment_well_url' experiment_well %}">more
         info</a>)
@@ -29,11 +27,12 @@
   </div>
 
   <span class="image-caption">
+    {% if display_scores %}
     <span class="image-scores">
       {{ experiment_well|get_manual_score_summary }}
       <br>
       DevStaR: {{ experiment_well|get_devstar_score_summary }}
     </span>
+    {% endif %}
+  </span>
 </div>
-
-{% endwith %}
