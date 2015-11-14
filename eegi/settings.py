@@ -47,8 +47,8 @@ INSTALLED_APPS = [
 if DEBUG:
     # Must be listed after website, so the lockdown custom template
     # (which is inside the website app) has precedence.
+    INSTALLED_APPS.append('debug_toolbar')
     INSTALLED_APPS.append('lockdown')
-    INSTALLED_APPS.append('django-debug-toolbar')
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
