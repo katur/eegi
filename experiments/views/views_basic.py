@@ -5,12 +5,34 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
 
 from eegi.settings import MATERIALS_DIR
-from experiments.models import ExperimentPlate, ExperimentWell
+from experiments.models import Experiment, ExperimentPlate
 from experiments.forms import ExperimentPlateFilterForm
 from library.models import LibraryWell, LibraryPlate
 from utils.well_tile_conversion import tile_to_well
 from utils.http import http_response_ok
 from worms.models import WormStrain
+
+
+def experiment(request, pk):
+    """Render the page to see a particular experiment well."""
+    experiment = get_object_or_404(Experiment, pk=pk)
+
+    devstar_url = experiment.get_image_url(mode='devstar')
+    devstar_available = http_response_ok(devstar_url)
+
+    context = {
+        'experiment': experiment,
+        'experiment_plate': experiment.plate,
+        'library_well': experiment.library_well,
+        'intended_clone': experiment.library_well.intended_clone,
+        'worm_strain': experiment.worm_strain,
+        'devstar_available': devstar_available,
+
+        # Default to full-size images
+        'mode': request.GET.get('mode', 'big')
+    }
+
+    return render(request, 'experiment.html', context)
 
 
 def experiment_plate(request, pk):
@@ -19,39 +41,17 @@ def experiment_plate(request, pk):
 
     context = {
         'experiment_plate': experiment_plate,
-        'experiment_wells': (experiment_plate.experimentwell_set
-                             .select_related(
-                                 'library_well',
-                                 'library_well__intended_clone')
-                             .order_by('well')),
+        'experiments': (experiment_plate.experiment_set
+                        .select_related(
+                            'library_well',
+                            'library_well__intended_clone')
+                        .order_by('well')),
 
         # Default to thumbnail
         'mode': request.GET.get('mode', 'thumbnail'),
     }
 
     return render(request, 'experiment_plate.html', context)
-
-
-def experiment_well(request, pk):
-    """Render the page to see a particular experiment well."""
-    experiment_well = get_object_or_404(ExperimentWell, pk=pk)
-
-    devstar_url = experiment_well.get_image_url(mode='devstar')
-    devstar_available = http_response_ok(devstar_url)
-
-    context = {
-        'experiment_well': experiment_well,
-        'experiment_plate': experiment_well.plate,
-        'library_well': experiment_well.library_well,
-        'intended_clone': experiment_well.library_well.intended_clone,
-        'worm_strain': experiment_well.worm_strain,
-        'devstar_available': devstar_available,
-
-        # Default to full-size images
-        'mode': request.GET.get('mode', 'big')
-    }
-
-    return render(request, 'experiment_well.html', context)
 
 
 EXPERIMENTS_PER_PAGE = 100

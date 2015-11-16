@@ -43,11 +43,11 @@ at {{ temperature|celsius }}
 
         <tr>
           <td>
-            {% include 'carousel.html' with experiment_wells=e.mutant_rnai %}
+            {% include 'carousel.html' with experiments=e.mutant_rnai %}
           </td>
 
           <td>
-            {% include 'carousel.html' with experiment_wells=e.mutant_l4440 %}
+            {% include 'carousel.html' with experiments=e.mutant_l4440 %}
           </td>
         </tr>
 
@@ -58,11 +58,11 @@ at {{ temperature|celsius }}
 
         <tr>
           <td>
-            {% include 'carousel.html' with experiment_wells=e.n2_rnai %}
+            {% include 'carousel.html' with experiments=e.n2_rnai %}
           </td>
 
           <td>
-            {% include 'carousel.html' with experiment_wells=e.n2_l4440 %}
+            {% include 'carousel.html' with experiments=e.n2_l4440 %}
           </td>
         </tr>
       </tbody>

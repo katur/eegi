@@ -4,16 +4,16 @@
   <span class="image-topbar">
 
     <span class="image-title">
-      Experiment {{ experiment_well.id }},
-      {{ experiment_well.plate.temperature|celsius }}
+      Experiment {{ experiment.id }},
+      {{ experiment.plate.temperature|celsius }}
 
-      (<a href="{{ experiment_well.get_absolute_url }}">more info</a>)
+      (<a href="{{ experiment.get_absolute_url }}">more info</a>)
     </span>
 
     <span class="placement">{{ current }} of {{ total }}</span>
   </span>
 
-  <div class="image-frame" data-src="{% get_image_url experiment_well %}">
+  <div class="image-frame" data-src="{% get_image_url experiment %}">
 
     <a href="#" class="image-frame-navigation image-frame-previous">
       <span>&laquo;</span>
@@ -28,9 +28,9 @@
   <span class="image-caption">
     {% if display_scores %}
     <span class="image-scores">
-      {{ experiment_well|get_manual_score_summary }}
+      {{ experiment|get_manual_score_summary }}
       <br>
-      DevStaR: {{ experiment_well|get_devstar_score_summary }}
+      DevStaR: {{ experiment|get_devstar_score_summary }}
     </span>
     {% endif %}
   </span>
