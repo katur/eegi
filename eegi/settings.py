@@ -45,9 +45,12 @@ INSTALLED_APPS = [
 ]
 
 if DEBUG:
+    # INSTALLED_APPS.append('debug_toolbar')
+    pass
+
+else:
     # Must be listed after website, so the lockdown custom template
     # (which is inside the website app) has precedence.
-    INSTALLED_APPS.append('debug_toolbar')
     INSTALLED_APPS.append('lockdown')
 
 MIDDLEWARE_CLASSES = (
