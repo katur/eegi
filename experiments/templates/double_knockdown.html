@@ -19,24 +19,23 @@ at {{ temperature|celsius }}
   {% include 'worm_spans.html' %}
 </div>
 
-{% for clone, tuples in data.items %}
+{% for clone, library_wells in data.items %}
 <div class="knockdown-clone-section">
   <h4>{% include 'clone_spans.html' %}</h4>
 
-  {% for tuple, d in tuples.items %}
-    {% with position=tuple.0 date=tuple.1 %}
+  {% for library_well, dates in library_wells.items %}
+    {% for date, e in dates.items %}
     <table class="knockdown-results grayscale">
       <thead>
         <th colspan="2">
-          {{ clone }} located in
-          plate {{ position.plate }},
-          well {{ position.well }};
+          {{ clone.id }} located in
+          plate {{ library_well.library_plate }},
+          well {{ library_well.well }};
           tested on {{ date }}
         </th>
       </thead>
 
       <tbody>
-
         <tr>
           <th>Mutant ({{ worm.gene }}) + RNAi ({{ clone.id }})</th>
           <th>Mutant ({{ worm.gene }}) + L4440 control</th>
@@ -44,11 +43,11 @@ at {{ temperature|celsius }}
 
         <tr>
           <td>
-            {% include 'carousel.html' with values=d.mutant_rnai %}
+            {% include 'carousel.html' with experiment_wells=e.mutant_rnai %}
           </td>
 
           <td>
-            {% include 'carousel.html' with values=d.mutant_l4440 %}
+            {% include 'carousel.html' with experiment_wells=e.mutant_l4440 %}
           </td>
         </tr>
 
@@ -59,16 +58,16 @@ at {{ temperature|celsius }}
 
         <tr>
           <td>
-            {% include 'carousel.html' with values=d.n2_rnai %}
+            {% include 'carousel.html' with experiment_wells=e.n2_rnai %}
           </td>
 
           <td>
-            {% include 'carousel.html' with values=d.n2_l4440 %}
+            {% include 'carousel.html' with experiment_wells=e.n2_l4440 %}
           </td>
         </tr>
       </tbody>
     </table>
-    {% endwith %}
+    {% endfor %}
   {% endfor %}
 </div>
 {% endfor %}

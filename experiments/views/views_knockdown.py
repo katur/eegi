@@ -3,8 +3,8 @@ from collections import OrderedDict
 from django.shortcuts import render, get_object_or_404
 
 from clones.models import Clone
-from experiments.models import ExperimentPlate, ExperimentWell
-from library.models import LibraryWell, LibraryPlate
+from experiments.models import ExperimentWell
+from library.models import LibraryWell
 from worms.models import WormStrain
 
 
@@ -17,9 +17,10 @@ def rnai_knockdown(request, clones, temperature=None):
     data = OrderedDict()
 
     for clone in clones:
-        experiment_wells = (ExperimentWell.objects
-                            .filter(is_junk=False, worm_strain=n2,
-                                    library_well__intended_clone=clone))
+        experiment_wells = (
+            ExperimentWell.objects
+            .filter(is_junk=False, worm_strain=n2,
+                    library_well__intended_clone=clone))
 
         if temperature:
             experiment_wells = experiment_wells.filter(
@@ -27,8 +28,6 @@ def rnai_knockdown(request, clones, temperature=None):
 
         experiment_wells = (
             experiment_wells
-            .select_related('worm_strain', 'library_well__intended_clone',
-                            'experiment_plate', 'library_well__library_plate')
             .order_by('-library_well__library_plate__screen_stage',
                       'library_well', '-experiment_plate__date', 'id'))
 
@@ -62,7 +61,7 @@ def mutant_knockdown(request, worm, temperature):
         .filter(is_junk=False, worm_strain=worm,
                 library_well__intended_clone=l4440,
                 experiment_plate__temperature=temperature)
-        .prefetch_related('experiment_plate')
+        # .select_related('experiment_plate')
         .order_by('-experiment_plate__date', 'library_well'))
 
     # data = {date: [experiments]}
@@ -89,100 +88,79 @@ def double_knockdown(request, worm, clones, temperature):
     """Render the page showing knockdown by both mutation and RNAi."""
     n2 = get_object_or_404(WormStrain, pk='N2')
     worm = get_object_or_404(WormStrain, pk=worm)
-    l4440_plate = get_object_or_404(LibraryPlate, pk='L4440')
+    l4440 = get_object_or_404(Clone, pk='L4440')
     clones = Clone.objects.filter(pk__in=clones.split(','))
 
-    # data[clone][[(library_well, date)] = {
-    #       'mutant_rnai': [(exp, well), (exp, well), ...],
-    #       'n2_rnai': [(exp, well), (exp, well), ...],
-    #       'mutant_l4440': [(exp, well), (exp, well), ...],
-    #       'n2_l4440': [(exp, well), (exp, well), ...]
-    # })
+    # data = {clone: {
+    #   library_well: {
+    #       date: {
+    #           'mutant_rnai': [exp_well, exp_well, ...],
+    #           'n2_rnai': [exp_well, exp_well, ...],
+    #           'mutant_l4440': [(exp, well), (exp, well), ...],
+    #           'n2_l4440': [(exp, well), (exp, well), ...]}}}}
+
     data = OrderedDict()
 
     for clone in clones:
-        library_wells = (LibraryWell.objects
-                         .filter(intended_clone=clone,
-                                 plate__screen_stage__gt=0)
-                         .order_by('-plate__screen_stage', 'id'))
+        data_per_clone = OrderedDict()
 
-        data_by_well = OrderedDict()
+        library_wells = (LibraryWell.objects
+                         .filter(intended_clone=clone)
+                         .order_by('-library_plate__screen_stage', 'id'))
 
         for library_well in library_wells:
-            dates = (ExperimentPlate.objects
-                     .filter(is_junk=False)
-                     .filter(worm_strain=worm)
-                     .filter(temperature=temperature)
-                     .filter(library_plate=library_well.plate)
-                     .order_by('-date')
-                     .values('date').distinct())
+            data_per_well = OrderedDict()
+
+            dates = (ExperimentWell.objects.filter(
+                     is_junk=False, worm_strain=worm,
+                     experiment_plate__temperature=temperature,
+                     library_well=library_well)
+                     .order_by('-experiment_plate__date')
+                     .values_list('experiment_plate__date', flat=True)
+                     .distinct())
 
             for date in dates:
-                # Create dictionary to hold info for this
-                # library_well+date combo
-                d = {}
+                data_per_date = {}
 
-                # Add mutant + RNAi experiments
-                mutant_rnai_exps = (
-                    ExperimentPlate.objects.filter(
+                # Add double knockdowns
+                data_per_date['mutant_rnai'] = (
+                    ExperimentWell.objects.filter(
                         is_junk=False, worm_strain=worm,
-                        temperature=temperature,
-                        date=date['date'],
-                        library_plate=library_well.plate))
+                        experiment_plate__temperature=temperature,
+                        library_well=library_well,
+                        experiment_plate__date=date)
+                    .order_by('id'))
 
-                d['mutant_rnai'] = (
-                    [(e, library_well) for e in mutant_rnai_exps])
+                # Add mutant + L4440 controls
+                data_per_date['mutant_l4440'] = (
+                    ExperimentWell.objects.filter(
+                        is_junk=False, worm_strain=worm,
+                        experiment_plate__temperature=temperature,
+                        library_well__intended_clone=l4440,
+                        experiment_plate__date=date))
 
-                # Add N2 + RNAi experiments
-                n2_rnai_exps = (
-                    ExperimentPlate.objects.filter(
+                # TODO: N2 controls should be limited to closest temperature
+
+                # Add N2 + RNAi controls
+                data_per_date['n2_rnai'] = (
+                    ExperimentWell.objects.filter(
                         is_junk=False, worm_strain=n2,
-                        date=date['date'],
-                        library_plate=library_well.plate))
+                        library_well=library_well,
+                        experiment_plate__date=date))
 
-                d['n2_rnai'] = [(e, library_well) for e in n2_rnai_exps]
+                # Add N2 + L4440 controls
+                data_per_date['n2_l4440'] = (
+                    ExperimentWell.objects.filter(
+                        is_junk=False, worm_strain=n2,
+                        library_well__intended_clone=l4440,
+                        experiment_plate__date=date))
 
-                # For Primary, use separate L4440 plate
-                if library_well.plate.screen_stage == 1:
-                    mutant_l4440_exps = (
-                        ExperimentPlate.objects.filter(
-                            is_junk=False, worm_strain=worm,
-                            temperature=temperature,
-                            date=date['date'],
-                            library_plate=l4440_plate))
+                data_per_well[date] = data_per_date
 
-                    n2_l4440_exps = (
-                        ExperimentPlate.objects.filter(
-                            is_junk=False, worm_strain=n2,
-                            date=date['date'],
-                            library_plate=l4440_plate))
+            if data_per_well:
+                data_per_clone[library_well] = data_per_well
 
-                # For SUP Secondary, use L4440 wells from same plates as RNAi
-                # TODO: will be different for ENH secondary
-                # TODO: formally decide that these are the applicable controls,
-                #   as opposed to all from the date.
-                else:
-                    mutant_l4440_exps = mutant_rnai_exps
-                    n2_l4440_exps = n2_rnai_exps
-
-                # Add mutant + L4440 experiments
-                d['mutant_l4440'] = []
-                for e in mutant_l4440_exps:
-                    for w in e.library_plate.get_l4440_wells():
-                        d['mutant_l4440'].append((e, w))
-
-                # Add N2 + L4440 experiments
-                d['n2_l4440'] = []
-                for e in n2_l4440_exps:
-                    for w in e.library_plate.get_l4440_wells():
-                        d['n2_l4440'].append((e, w))
-
-                # Add the finished dictionary for this date
-                data_by_well[(library_well, date['date'])] = d
-
-        # Add the finished dictionary for this library well
-        if data_by_well:
-            data[clone] = data_by_well
+        data[clone] = data_per_clone
 
     context = {
         'worm': worm,
