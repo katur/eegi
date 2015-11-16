@@ -1,6 +1,7 @@
 from __future__ import division
 
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import models
 
 from eegi.settings import IMG_PATH, THUMBNAIL_PATH, DEVSTAR_PATH
@@ -29,6 +30,10 @@ class ExperimentPlate(models.Model):
 
     def __unicode__(self):
         return str(self.id)
+
+    def get_absolute_url(self):
+        return reverse('experiments.views.experiment_plate',
+                       args=[self.id])
 
     def get_worm_strains(self):
         worm_pks = (self.experimentwell_set.order_by('worm_strain')
@@ -61,6 +66,10 @@ class ExperimentWell(models.Model):
 
     def __unicode__(self):
         return str(self.id)
+
+    def get_absolute_url(self):
+        return reverse('experiments.views.experiment_well',
+                       args=[self.id])
 
     def has_control_worm(self):
         return self.worm_strain.is_control()

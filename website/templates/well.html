@@ -13,7 +13,7 @@
   </div>
 
   {% if is_experiment %}
-  <a href="{% url 'experiment_well_url' well %}">
+  <a href="{{ well.get_absolute_url }}">
     {% include 'image.html' with experiment_well=well %}
   </a>
   {% endif %}
