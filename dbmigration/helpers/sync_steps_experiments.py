@@ -4,16 +4,16 @@ that involve the experiments app.
 """
 from django.core.management.base import CommandError
 
-from dbmigration.helpers.name_getters import get_experiment_well_name
+from dbmigration.helpers.name_getters import get_experiment_name
 
 from dbmigration.helpers.object_getters import (
-    get_worm_strain, get_library_well, get_experiment_plate,
-    get_experiment_well, get_score_code, get_user)
+    get_experiment, get_experiment_plate,
+    get_worm_strain, get_library_well, get_score_code, get_user)
 
 from dbmigration.helpers.sync_helpers import sync_rows, update_or_save_object
 
-from experiments.models import (ExperimentPlate, ExperimentWell,
-                                DevstarScore, ManualScoreCode, ManualScore)
+from experiments.models import (Experiment, ExperimentPlate, DevstarScore,
+                                ManualScoreCode, ManualScore)
 
 from utils.comparison import compare_floats_for_equality
 from utils.plate_layout import get_well_list
@@ -22,7 +22,7 @@ from utils.well_tile_conversion import tile_to_well
 
 
 def update_Experiment_tables(command, cursor):
-    """Update the ExperimentPlate and ExperimentWell tables according
+    """Update the ExperimentPlate and Experiment tables according
     to legacy table RawData.
 
     Several datatype transforms occur from the old to the new schema:
@@ -40,7 +40,7 @@ def update_Experiment_tables(command, cursor):
 
     """
     recorded_plates = ExperimentPlate.objects.all()
-    recorded_wells = ExperimentWell.objects.all()
+    recorded_wells = Experiment.objects.all()
 
     plate_fields_to_compare = ('screen_stage', 'temperature', 'date',
                                'comment')
@@ -58,7 +58,7 @@ def update_Experiment_tables(command, cursor):
                     'ORDER BY expID')
 
     def sync_experiment_row(legacy_row):
-        exp_plate_id = legacy_row[0]
+        experiment_plate_id = legacy_row[0]
         worm_strain = get_worm_strain(legacy_row[1], legacy_row[2])
         legacy_library_plate_name = legacy_row[3]
         temperature = legacy_row[4]
@@ -68,13 +68,13 @@ def update_Experiment_tables(command, cursor):
 
         all_match = True
 
-        if exp_plate_id < 40000:
+        if experiment_plate_id < 40000:
             screen_stage = 1
         else:
             screen_stage = 2
 
         new_plate = ExperimentPlate(
-            id=exp_plate_id,
+            id=experiment_plate_id,
             screen_stage=screen_stage,
             temperature=temperature,
             date=date,
@@ -83,11 +83,11 @@ def update_Experiment_tables(command, cursor):
         all_match &= update_or_save_object(
             command, new_plate, recorded_plates, plate_fields_to_compare)
 
-        experiment_plate = get_experiment_plate(exp_plate_id)
+        experiment_plate = get_experiment_plate(experiment_plate_id)
 
         for well in get_well_list():
-            new_well = ExperimentWell(
-                id=get_experiment_well_name(exp_plate_id, well),
+            new_well = Experiment(
+                id=get_experiment_name(experiment_plate_id, well),
                 plate=experiment_plate, well=well,
                 worm_strain=worm_strain,
                 library_well=get_library_well(
@@ -163,7 +163,7 @@ def update_DevstarScore_table(command, cursor):
             selected_for_scoring = False
 
         new_score = DevstarScore(
-            experiment_well=get_experiment_well(legacy_row[0], legacy_row[1]),
+            experiment=get_experiment(legacy_row[0], legacy_row[1]),
             area_adult=legacy_row[5],
             area_larva=legacy_row[6],
             area_embryo=legacy_row[7],
@@ -180,7 +180,7 @@ def update_DevstarScore_table(command, cursor):
 
         errors = []
 
-        new_allele = new_score.experiment_well.worm_strain.allele
+        new_allele = new_score.experiment.worm_strain.allele
         if (new_allele != legacy_row[2]):
             # Deal with case of legacy database using zc310 instead of zu310
             if (legacy_row[2] == 'zc310' and
@@ -203,11 +203,10 @@ def update_DevstarScore_table(command, cursor):
         # however it is still worthwhile to perform this check in order
         # to find the mismatches, and to confirm manually that each one
         # makes sense.
-        new_lp = new_score.experiment_well.library_well.library_plate_id
+        new_lp = new_score.experiment.library_well.library_plate_id
         legacy_lp = legacy_row[4]
         if (legacy_lp != new_lp and
-                new_score.experiment_well.plate_id not in (
-                    461, 8345) and
+                new_score.experiment.plate_id not in (461, 8345) and
                 legacy_lp != new_lp.replace('-', '_') and
                 legacy_lp != new_lp.replace('zu310', 'zc310') and
                 ('vidal-' not in new_lp or
@@ -244,7 +243,7 @@ def update_DevstarScore_table(command, cursor):
 
         return update_or_save_object(
             command, new_score, recorded_scores, fields_to_compare,
-            alternate_pk={'experiment_well': new_score.experiment_well})
+            alternate_pk={'experiment': new_score.experiment})
 
     sync_rows(command, cursor, legacy_query, sync_score_row)
 
@@ -370,8 +369,7 @@ def update_ManualScore_table_primary(command, cursor):
             legacy_score_code = -7
 
         # Following raise exceptions if improperly formatted or not found
-        experiment_well = get_experiment_well(
-            legacy_row[0], tile_to_well(legacy_row[1]))
+        experiment = get_experiment(legacy_row[0], tile_to_well(legacy_row[1]))
         score_code = get_score_code(legacy_score_code)
         scorer = get_user(legacy_scorer)
 
@@ -380,17 +378,17 @@ def update_ManualScore_table_primary(command, cursor):
         if not timestamp:
             raise CommandError(
                 'ERROR: score of {} could  not be converted to a proper '
-                'datetime'.format(experiment_well))
+                'datetime'.format(experiment))
 
         new_score = ManualScore(
-            experiment_well=experiment_well,
+            experiment=experiment,
             score_code=score_code,
             scorer=scorer,
             timestamp=timestamp)
 
         return update_or_save_object(
             command, new_score, recorded_scores, fields_to_compare,
-            alternate_pk={'experiment_well': new_score.experiment_well,
+            alternate_pk={'experiment': new_score.experiment,
                           'score_code': new_score.score_code,
                           'scorer': new_score.scorer,
                           'timestamp': new_score.timestamp})
@@ -408,9 +406,7 @@ def update_ManualScore_table_secondary(command, cursor):
     def sync_score_row(legacy_row):
         legacy_score_code = legacy_row[2]
         legacy_scorer = legacy_row[3]
-
-        experiment_well = get_experiment_well(
-            legacy_row[0], tile_to_well(legacy_row[1]))
+        experiment = get_experiment(legacy_row[0], tile_to_well(legacy_row[1]))
         score_code = get_score_code(legacy_score_code)
         scorer = get_user(legacy_scorer)
 
@@ -422,14 +418,14 @@ def update_ManualScore_table_secondary(command, cursor):
                 .format(legacy_row[0], legacy_row[1]))
 
         new_score = ManualScore(
-            experiment_well=experiment_well,
+            experiment=experiment,
             score_code=score_code,
             scorer=scorer,
             timestamp=timestamp)
 
         return update_or_save_object(
             command, new_score, recorded_scores, fields_to_compare,
-            alternate_pk={'experiment_well': new_score.experiment_well,
+            alternate_pk={'experiment': new_score.experiment,
                           'score_code': new_score.score_code,
                           'scorer': new_score.scorer,
                           'timestamp': new_score.timestamp})

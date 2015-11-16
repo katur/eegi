@@ -18,7 +18,7 @@ at {{ temperature|celsius }}
   {% include 'worm_spans.html' %}
   {% include 'clone_spans.html' %}
 
-  {% for date, experiment_wells in data.items %}
+  {% for date, experiments in data.items %}
   <table class="knockdown-results single-column grayscale">
     <thead>
       <th>

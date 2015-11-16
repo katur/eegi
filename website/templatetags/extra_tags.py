@@ -55,15 +55,15 @@ def get_screen_category(worm, temperature):
 
 
 @register.filter
-def is_manually_scored(experiment_well):
-    """Determine whether an experiment well was manually scored."""
-    return experiment_well.is_manually_scored()
+def is_manually_scored(experiment):
+    """Determine whether an experiment was manually scored."""
+    return experiment.is_manually_scored()
 
 
 @register.filter
-def is_devstar_scored(experiment_well):
-    """Determine whether an experiment well was scored by DevStaR."""
-    return experiment_well.is_devstar_scored()
+def is_devstar_scored(experiment):
+    """Determine whether an experiment was scored by DevStaR."""
+    return experiment.is_devstar_scored()
 
 
 @register.filter
@@ -72,14 +72,14 @@ def get_tile(well):
 
 
 @register.filter
-def get_manual_score_summary(experiment_well):
+def get_manual_score_summary(experiment):
     """Get a string summarizing the scores for this experiment.
 
     Groups such that scores by different scorers, and scores made at
     different timepoints, can be distinguished.
 
     """
-    scores = experiment_well.get_manual_scores()
+    scores = experiment.get_manual_scores()
     d = {}
     for score in scores:
         scorer = score.scorer
@@ -103,8 +103,8 @@ def get_manual_score_summary(experiment_well):
 
 
 @register.filter
-def get_devstar_score_summary(experiment_well):
-    scores = experiment_well.get_devstar_scores()
+def get_devstar_score_summary(experiment):
+    scores = experiment.get_devstar_scores()
 
     output = []
 
@@ -130,14 +130,14 @@ def get_worm_url(worm, request):
 
 
 @register.simple_tag
-def get_image_url(experiment_well, mode=None):
-    """Get the url for an image.
+def get_image_url(experiment, mode=None):
+    """Get the url for an experiment's image.
 
     Set mode to 'thumbnail' or 'devstar' for either of those image
     types. Otherwise, returns the normal full-size image.
 
     """
-    return experiment_well.get_image_url(mode=mode)
+    return experiment.get_image_url(mode=mode)
 
 
 @register.filter

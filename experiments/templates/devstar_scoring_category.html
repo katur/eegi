@@ -17,20 +17,20 @@ DevStaR Scoring Category: {{ category }}
 </div>
 
 <table id="devstar-scoring-category">
-  {% for experiment, well, tile in display_tuples %}
+  {% for experiment, tile in display_tuples %}
   <tr>
     <td>
-      {{ experiment.id }}_{{ tile }}
+      {{ experiment.plate_id }}_{{ tile }}
     </td>
 
     <td>
-      <a href="{% url 'experiment_well_url' experiment.id well %}">
+      <a href="{{ experiment.get_absolute_url }}">
         {% include 'image.html' %}
       </a>
     </td>
 
     <td>
-      <a href="{% url 'experiment_well_url' experiment.id well %}?mode=devstar">
+      <a href="{{ experiment.get_absolute_url }}?mode=devstar">
         {% include 'image.html' with mode="devstar" %}
       </a>
     </td>

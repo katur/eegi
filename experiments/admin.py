@@ -1,8 +1,21 @@
 from django.contrib import admin
 
-from experiments.models import (ExperimentPlate, ExperimentWell,
+from experiments.models import (Experiment, ExperimentPlate,
                                 ManualScoreCode, ManualScore, DevstarScore)
 from website.admin import ReadOnlyAdmin
+
+
+class ExperimentAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'worm_strain',
+        'library_well',
+        'is_junk',
+    )
+
+    search_fields = (
+        'id',
+    )
 
 
 class ExperimentPlateAdmin(admin.ModelAdmin):
@@ -18,19 +31,6 @@ class ExperimentPlateAdmin(admin.ModelAdmin):
         'screen_stage',
         'temperature',
         'date',
-    )
-
-    search_fields = (
-        'id',
-    )
-
-
-class ExperimentWellAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'worm_strain',
-        'library_well',
-        'is_junk',
     )
 
     search_fields = (
@@ -54,7 +54,7 @@ class ManualScoreCodeAdmin(admin.ModelAdmin):
 
 class ManualScoreAdmin(admin.ModelAdmin):
     list_display = (
-        'experiment_well',
+        'experiment',
         'scorer',
         'score_code',
     )
@@ -64,13 +64,13 @@ class ManualScoreAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
-        'experiment_well__id',
+        'experiment__id',
     )
 
 
 class DevstarScoreAdmin(ReadOnlyAdmin):
     list_display = (
-        'experiment_well',
+        'experiment',
         'area_adult',
         'area_larva',
         'area_embryo',
@@ -79,12 +79,12 @@ class DevstarScoreAdmin(ReadOnlyAdmin):
     )
 
     search_fields = (
-        'experiment_well__id',
+        'experiment__id',
     )
 
 
+admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(ExperimentPlate, ExperimentPlateAdmin)
-admin.site.register(ExperimentWell, ExperimentWellAdmin)
 admin.site.register(ManualScoreCode, ManualScoreCodeAdmin)
 admin.site.register(ManualScore, ManualScoreAdmin)
 admin.site.register(DevstarScore, DevstarScoreAdmin)

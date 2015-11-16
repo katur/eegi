@@ -36,13 +36,13 @@ class ExperimentPlate(models.Model):
                        args=[self.id])
 
     def get_worm_strains(self):
-        worm_pks = (self.experimentwell_set.order_by('worm_strain')
+        worm_pks = (self.experiment_set.order_by('worm_strain')
                     .values('worm_strain').distinct())
 
         return WormStrain.objects.filter(pk__in=worm_pks)
 
     def get_library_plates(self):
-        library_plate_pks = (self.experimentwell_set
+        library_plate_pks = (self.experiment_set
                              .order_by('library_well__plate')
                              .values('library_well__plate')
                              .distinct())
@@ -50,7 +50,7 @@ class ExperimentPlate(models.Model):
         return LibraryPlate.objects.filter(pk__in=library_plate_pks)
 
 
-class ExperimentWell(models.Model):
+class Experiment(models.Model):
     id = models.CharField(max_length=20, primary_key=True)
     plate = models.ForeignKey(ExperimentPlate)
     well = models.CharField(max_length=3)
@@ -60,7 +60,7 @@ class ExperimentWell(models.Model):
     comment = models.TextField(blank=True)
 
     class Meta:
-        db_table = 'ExperimentWell'
+        db_table = 'Experiment'
         ordering = ['id']
         unique_together = ('plate', 'well')
 
@@ -68,8 +68,7 @@ class ExperimentWell(models.Model):
         return str(self.id)
 
     def get_absolute_url(self):
-        return reverse('experiments.views.experiment_well',
-                       args=[self.id])
+        return reverse('experiments.views.experiment', args=[self.id])
 
     def has_control_worm(self):
         return self.worm_strain.is_control()
@@ -92,7 +91,7 @@ class ExperimentWell(models.Model):
     def intended_clone(self):
         return self.library_well.intended_clone
 
-    # TODO: These three methods are repeated in ExperimentWell and
+    # TODO: These three methods are repeated in Experiment and
     # LibraryWell; consider making a superclass or mixin
     def get_row(self):
         return self.well[0]
@@ -192,7 +191,7 @@ class ManualScoreCode(models.Model):
 
 class ManualScore(models.Model):
     """A score that was assigned to a particular image by a human."""
-    experiment_well = models.ForeignKey(ExperimentWell)
+    experiment = models.ForeignKey(Experiment)
     score_code = models.ForeignKey(ManualScoreCode)
     scorer = models.ForeignKey(User)
     timestamp = models.DateTimeField()
@@ -222,8 +221,7 @@ class ManualScore(models.Model):
 
     def __unicode__(self):
         return ('{} scored {} by {}'
-                .format(self.experiment_well_id, self.score_code,
-                        self.scorer))
+                .format(self.experiment_id, self.score_code, self.scorer))
 
     def get_short_description(self):
         return '{} ({})'.format(self.score_code,
@@ -281,7 +279,7 @@ class DevstarScore(models.Model):
     program.
 
     """
-    experiment_well = models.ForeignKey(ExperimentWell)
+    experiment = models.ForeignKey(Experiment)
 
     # TODO: consider adding db_index=True to some of these
     area_adult = models.IntegerField(null=True, blank=True,
@@ -323,7 +321,7 @@ class DevstarScore(models.Model):
         db_table = 'DevstarScore'
 
     def __unicode__(self):
-        return ('{} DevStaR score'.format(self.experiment_well))
+        return ('{} DevStaR score'.format(self.experiment_id))
 
     def clean(self):
         # Set the fields calculated from the DevStaR fields (resets if already

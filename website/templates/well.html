@@ -14,7 +14,7 @@
 
   {% if is_experiment %}
   <a href="{{ well.get_absolute_url }}">
-    {% include 'image.html' with experiment_well=well %}
+    {% include 'image.html' with experiment=well %}
   </a>
   {% endif %}
 

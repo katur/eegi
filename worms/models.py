@@ -4,7 +4,7 @@ from django.db import models
 
 
 class WormStrain(models.Model):
-    """A worm strain used in this experiment.
+    """A worm strain used in the screen.
 
     Can be either a temperature-sensitive mutant strain, or a control
     strain. Control strains are signified by allele=None.

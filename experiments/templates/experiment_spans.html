@@ -1,6 +1,6 @@
 {% load extra_tags %}
 
-{% with worm=experiment_well.worm_strain temperature=experiment_plate.temperature %}
+{% with worm=experiment.worm_strain temperature=experiment_plate.temperature %}
 {% include 'worm_spans.html' %}
 {% endwith %}
 
@@ -8,14 +8,14 @@
   <b>RNAi library well</b>
   &nbsp;
 
-  {{ experiment_well.library_well_id }}
+  {{ experiment.library_well_id }}
 </span>
 
-{% with clone=experiment_well.library_well.intended_clone %}
+{% with clone=experiment.library_well.intended_clone %}
   {% include 'clone_spans.html' %}
 {% endwith %}
 
-{% if experiment_well.is_junk %}
+{% if experiment.is_junk %}
 <span class="error-message">JUNK</span>
 {% endif %}
 
@@ -23,8 +23,8 @@
   <b>Manual scores</b>
   &nbsp;
 
-  {% if experiment_well|is_manually_scored %}
-  {{ experiment_well|get_manual_score_summary }}
+  {% if experiment|is_manually_scored %}
+  {{ experiment|get_manual_score_summary }}
 
   {% else %}
   Not manually scored
@@ -36,8 +36,8 @@
   <b>DevStaR scores</b>
   &nbsp;
 
-  {% if experiment_well|is_devstar_scored %}
-  {{ experiment_well|get_devstar_score_summary }}
+  {% if experiment|is_devstar_scored %}
+  {{ experiment|get_devstar_score_summary }}
 
   {% else %}
   Not scored by DevStaR

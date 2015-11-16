@@ -1,7 +1,7 @@
 <div class="carousel">
-{% with total=experiment_wells|length %}
+{% with total=experiments|length %}
 
-{% for experiment_well in experiment_wells %}
+{% for experiment in experiments %}
   {% include 'image_wrapper.html' with current=forloop.counter %}
 {% endfor %}
 

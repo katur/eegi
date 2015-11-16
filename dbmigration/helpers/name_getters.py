@@ -34,7 +34,7 @@ def get_library_well_name(legacy_plate_name, well):
     return '{}_{}'.format(plate_name, well)
 
 
-def get_experiment_well_name(experiment_plate_id, well):
+def get_experiment_name(experiment_plate_id, well):
     return '{}_{}'.format(experiment_plate_id, well)
 
 

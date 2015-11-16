@@ -32,7 +32,7 @@ ARG_HELP = '''
         [0: Clone;
         1: LibraryPlate;
         2: LibraryWell (0,1);
-        3: ExperimentWell&ExperimentPlate (WormStrain,1);
+        3: ExperimentWell&Experiment (WormStrain,1);
         4: DevstarScore (3);
         5: ManualScoreCode;
         6: ManualScore primary (3,5);
@@ -59,7 +59,7 @@ class Command(BaseCommand):
         0: Clone;
         1: LibraryPlate;
         2: LibraryWell (0,1);
-        3: ExperimentPlate&ExperimentWell (WormStrain,1);
+        3: ExperimentPlate&Experiment (WormStrain,1);
         4: DevstarScore (3);
         5: ManualScoreCode;
         6: ManualScore primary (3,5);

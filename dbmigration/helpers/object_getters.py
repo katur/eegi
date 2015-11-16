@@ -8,8 +8,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 from clones.models import Clone
-from experiments.models import (ExperimentWell, ExperimentPlate,
-                                ManualScoreCode)
+from experiments.models import Experiment, ExperimentPlate, ManualScoreCode
 from library.models import LibraryPlate, LibraryWell
 from worms.models import WormStrain
 from dbmigration.helpers.name_getters import (get_library_plate_name,
@@ -76,24 +75,25 @@ def get_worm_strain(mutant, mutantAllele):
             'WormStrain', gene=mutant, allele=mutantAllele))
 
 
-def get_experiment_plate(exp_plate_id):
+def get_experiment_plate(experiment_plate_id):
     """Get an experiment plate from its id."""
     try:
-        return ExperimentPlate.objects.get(id=exp_plate_id)
+        return ExperimentPlate.objects.get(id=experiment_plate_id)
 
     except ObjectDoesNotExist:
         raise ObjectDoesNotExist(get_missing_object_message(
-            'ExperimentPlate', id=exp_plate_id))
+            'ExperimentPlate', id=experiment_plate_id))
 
 
-def get_experiment_well(exp_plate_id, well):
+def get_experiment(experiment_plate_id, well):
     try:
-        return ExperimentWell.objects.get(
-            plate_id=exp_plate_id, well=get_three_character_well(well))
+        return Experiment.objects.get(
+            plate_id=experiment_plate_id,
+            well=get_three_character_well(well))
 
     except ObjectDoesNotExist:
         raise ObjectDoesNotExist(get_missing_object_message(
-            'ExperimentWell', plate_id=exp_plate_id, well=well))
+            'Experiment', plate_id=experiment_plate_id, well=well))
 
 
 def get_score_code(score_code_id):

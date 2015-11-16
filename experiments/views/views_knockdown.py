@@ -3,7 +3,7 @@ from collections import OrderedDict
 from django.shortcuts import render, get_object_or_404
 
 from clones.models import Clone
-from experiments.models import ExperimentWell
+from experiments.models import Experiment
 from library.models import LibraryWell
 from worms.models import WormStrain
 
@@ -17,26 +17,23 @@ def rnai_knockdown(request, clones, temperature=None):
     data = OrderedDict()
 
     for clone in clones:
-        experiment_wells = (
-            ExperimentWell.objects
-            .filter(is_junk=False, worm_strain=n2,
-                    library_well__intended_clone=clone))
+        experiments = Experiment.objects.filter(
+            is_junk=False, worm_strain=n2, library_well__intended_clone=clone)
 
         if temperature:
-            experiment_wells = experiment_wells.filter(
-                plate__temperature=temperature)
+            experiments = experiments.filter(plate__temperature=temperature)
 
-        experiment_wells = (
-            experiment_wells
-            .order_by('-library_well__plate__screen_stage', 'library_well',
-                      '-plate__date', 'id'))
+        experiments = experiments.order_by(
+            '-library_well__plate__screen_stage', 'library_well',
+            '-plate__date', 'id')
 
         data_by_well = OrderedDict()
 
-        for e in experiment_wells:
-            if e.library_well not in data_by_well:
-                data_by_well[e.library_well] = []
-            data_by_well[e.library_well].append(e)
+        for experiment in experiments:
+            library_well = experiment.library_well
+            if library_well not in data_by_well:
+                data_by_well[library_well] = []
+            data_by_well[library_well].append(experiment)
 
         if data_by_well:
             data[clone] = data_by_well
@@ -56,8 +53,8 @@ def mutant_knockdown(request, worm, temperature):
     worm = get_object_or_404(WormStrain, pk=worm)
     l4440 = get_object_or_404(Clone, pk='L4440')
 
-    experiment_wells = (
-        ExperimentWell.objects
+    experiments = (
+        Experiment.objects
         .filter(is_junk=False, worm_strain=worm,
                 library_well__intended_clone=l4440,
                 plate__temperature=temperature)
@@ -66,12 +63,11 @@ def mutant_knockdown(request, worm, temperature):
     # data = {date: [experiments]}
     data = OrderedDict()
 
-    for e in experiment_wells:
-        date = e.plate.date
+    for experiment in experiments:
+        date = experiment.plate.date
         if date not in data:
             data[date] = []
-
-        data[date].append(e)
+        data[date].append(experiment)
 
     context = {
         'worm': worm,
@@ -110,20 +106,22 @@ def double_knockdown(request, worm, clones, temperature):
         for library_well in library_wells:
             data_per_well = OrderedDict()
 
-            dates = (ExperimentWell.objects.filter(
-                     is_junk=False, worm_strain=worm,
-                     plate__temperature=temperature,
-                     library_well=library_well)
-                     .order_by('-plate__date')
-                     .values_list('plate__date', flat=True)
-                     .distinct())
+            dates = (
+                Experiment.objects
+                .filter(
+                    is_junk=False, worm_strain=worm,
+                    plate__temperature=temperature,
+                    library_well=library_well)
+                .order_by('-plate__date')
+                .values_list('plate__date', flat=True)
+                .distinct())
 
             for date in dates:
                 data_per_date = {}
 
                 # Add double knockdowns
                 data_per_date['mutant_rnai'] = (
-                    ExperimentWell.objects.filter(
+                    Experiment.objects.filter(
                         is_junk=False, worm_strain=worm,
                         plate__temperature=temperature,
                         library_well=library_well,
@@ -132,7 +130,7 @@ def double_knockdown(request, worm, clones, temperature):
 
                 # Add mutant + L4440 controls
                 data_per_date['mutant_l4440'] = (
-                    ExperimentWell.objects.filter(
+                    Experiment.objects.filter(
                         is_junk=False, worm_strain=worm,
                         plate__temperature=temperature,
                         library_well__intended_clone=l4440,
@@ -142,14 +140,14 @@ def double_knockdown(request, worm, clones, temperature):
 
                 # Add N2 + RNAi controls
                 data_per_date['n2_rnai'] = (
-                    ExperimentWell.objects.filter(
+                    Experiment.objects.filter(
                         is_junk=False, worm_strain=n2,
                         library_well=library_well,
                         plate__date=date))
 
                 # Add N2 + L4440 controls
                 data_per_date['n2_l4440'] = (
-                    ExperimentWell.objects.filter(
+                    Experiment.objects.filter(
                         is_junk=False, worm_strain=n2,
                         library_well__intended_clone=l4440,
                         plate__date=date))
