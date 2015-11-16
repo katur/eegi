@@ -164,7 +164,7 @@ def update_LibraryWell_table(command, cursor):
 
     """
     recorded_wells = LibraryWell.objects.all()
-    fields_to_compare = ('library_plate', 'well', 'parent_library_well',
+    fields_to_compare = ('plate', 'well', 'parent_library_well',
                          'intended_clone')
 
     # 'Source' plates are Ahringer 384 plates and original Orfeome
@@ -193,10 +193,8 @@ def update_LibraryWell_table(command, cursor):
 
         new_well = LibraryWell(
             id=get_library_well_name(plate_name, well_proper),
-            library_plate=get_library_plate(plate_name),
-            well=well_proper,
-            parent_library_well=None,
-            intended_clone=get_clone(clone_name))
+            plate=get_library_plate(plate_name), well=well_proper,
+            parent_library_well=None, intended_clone=get_clone(clone_name))
 
         return update_or_save_object(command, new_well, recorded_wells,
                                      fields_to_compare)
@@ -242,8 +240,7 @@ def update_LibraryWell_table(command, cursor):
 
         new_well = LibraryWell(
             id=get_library_well_name(plate_name, well),
-            library_plate=get_library_plate(plate_name),
-            well=well,
+            plate=get_library_plate(plate_name), well=well,
             parent_library_well=parent_library_well,
             intended_clone=intended_clone)
 
@@ -263,10 +260,8 @@ def update_LibraryWell_table(command, cursor):
 
         new_well = LibraryWell(
             id=get_library_well_name(plate_name, well),
-            library_plate=get_library_plate(plate_name),
-            well=well,
-            parent_library_well=None,
-            intended_clone=get_clone('L4440'))
+            plate=get_library_plate(plate_name), well=well,
+            parent_library_well=None, intended_clone=get_clone('L4440'))
 
         return update_or_save_object(command, new_well, recorded_wells,
                                      fields_to_compare)
@@ -368,8 +363,7 @@ def update_LibraryWell_table(command, cursor):
 
         new_well = LibraryWell(
             id=get_library_well_name(plate_name, well),
-            library_plate=get_library_plate(plate_name),
-            well=well,
+            plate=get_library_plate(plate_name), well=well,
             parent_library_well=parent_library_well,
             intended_clone=intended_clone)
 
@@ -395,8 +389,7 @@ def update_LibraryWell_table(command, cursor):
 
         new_well = LibraryWell(
             id=get_library_well_name(plate_name, well),
-            library_plate=get_library_plate(plate_name),
-            well=well,
+            plate=get_library_plate(plate_name), well=well,
             parent_library_well=parent_library_well,
             intended_clone=intended_clone)
 

@@ -40,8 +40,8 @@ def library_plates(request):
 def library_plate(request, id):
     """Render the page showing the contents of a single library plate."""
     library_plate = get_object_or_404(LibraryPlate, pk=id)
-    library_wells = LibraryWell.objects.filter(
-        library_plate=library_plate).order_by('well')
+    library_wells = (LibraryWell.objects.filter(plate=library_plate)
+                     .order_by('well'))
 
     context = {
         'library_plate': library_plate,

@@ -25,9 +25,7 @@ class LibraryWellAdmin(ReadOnlyAdmin):
         'intended_clone',
     )
 
-    list_filter = ('library_plate',)
-
-    search_fields = ('id', 'library_plate', 'intended_clone',)
+    search_fields = ('id', 'plate', 'intended_clone',)
 
 
 class LibrarySequencingAdmin(ReadOnlyAdmin):

@@ -90,7 +90,7 @@ class LibraryWell(models.Model):
 
     """
     id = models.CharField(max_length=24, primary_key=True)
-    library_plate = models.ForeignKey(LibraryPlate, related_name='wells')
+    plate = models.ForeignKey(LibraryPlate, related_name='wells')
     well = models.CharField(max_length=3)
     parent_library_well = models.ForeignKey('self', null=True, blank=True)
     intended_clone = models.ForeignKey(Clone, null=True, blank=True)
@@ -101,7 +101,7 @@ class LibraryWell(models.Model):
     class Meta:
         db_table = 'LibraryWell'
         ordering = ['id']
-        unique_together = ('library_plate', 'well')
+        unique_together = ('plate', 'well')
 
     def __cmp__(self, other):
         if self.plate == other.plate:

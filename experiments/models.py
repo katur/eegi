@@ -38,8 +38,8 @@ class ExperimentPlate(models.Model):
 
     def get_library_plates(self):
         library_plate_pks = (self.experimentwell_set
-                             .order_by('library_well__library_plate')
-                             .values('library_well__library_plate')
+                             .order_by('library_well__plate')
+                             .values('library_well__plate')
                              .distinct())
 
         return LibraryPlate.objects.filter(pk__in=library_plate_pks)

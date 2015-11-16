@@ -28,8 +28,8 @@ def rnai_knockdown(request, clones, temperature=None):
 
         experiment_wells = (
             experiment_wells
-            .order_by('-library_well__library_plate__screen_stage',
-                      'library_well', '-experiment_plate__date', 'id'))
+            .order_by('-library_well__plate__screen_stage', 'library_well',
+                      '-experiment_plate__date', 'id'))
 
         data_by_well = OrderedDict()
 
@@ -106,7 +106,7 @@ def double_knockdown(request, worm, clones, temperature):
 
         library_wells = (LibraryWell.objects
                          .filter(intended_clone=clone)
-                         .order_by('-library_plate__screen_stage', 'id'))
+                         .order_by('-plate__screen_stage', 'id'))
 
         for library_well in library_wells:
             data_per_well = OrderedDict()

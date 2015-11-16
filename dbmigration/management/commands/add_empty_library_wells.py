@@ -38,16 +38,16 @@ class Command(BaseCommand):
         # wells from these plates that were used to generated our Vidal
         # rearrays.
         library_wells = (LibraryWell.objects
-                         .filter(library_plate__number_of_wells=96)
-                         .exclude(library_plate__id__startswith='GHR-'))
+                         .filter(plate__number_of_wells=96)
+                         .exclude(plate__id__startswith='GHR-'))
 
         plate_wells = {}
 
         for library_well in library_wells:
-            if library_well.library_plate not in plate_wells:
-                plate_wells[library_well.library_plate] = set()
+            if library_well.plate not in plate_wells:
+                plate_wells[library_well.plate] = set()
 
-            plate_wells[library_well.library_plate].add(library_well.well)
+            plate_wells[library_well.plate].add(library_well.well)
 
         for library_plate in plate_wells:
             missing_wells = wells_96 - plate_wells[library_plate]
@@ -55,10 +55,8 @@ class Command(BaseCommand):
             for missing_well in missing_wells:
                 library_well = LibraryWell(
                     id=get_library_well_name(library_plate.id, missing_well),
-                    library_plate=library_plate,
-                    well=missing_well,
-                    parent_library_well=None,
-                    intended_clone=None,
+                    plate=library_plate, well=missing_well,
+                    parent_library_well=None, intended_clone=None,
                 )
 
                 if library_plate.is_ahringer_96_plate():
@@ -83,7 +81,7 @@ def _get_ahringer_384_parent_well(child_well):
     as the child.
 
     """
-    child_plate_parts = child_well.library_plate.id.split('-')
+    child_plate_parts = child_well.plate.id.split('-')
     parent_plate_name = child_plate_parts[0] + '-' + child_plate_parts[1]
     parent_plate = get_library_plate(parent_plate_name)
 
@@ -98,7 +96,7 @@ def _get_ahringer_384_parent_well(child_well):
     except ObjectDoesNotExist:
         parent_well = LibraryWell(
             id=parent_well_pk,
-            library_plate=parent_plate,
+            plate=parent_plate,
             well=parent_position,
             parent_library_well=None,
             intended_clone=child_well.intended_clone,
