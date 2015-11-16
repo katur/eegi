@@ -5,7 +5,7 @@
 
     <span class="image-title">
       Experiment {{ experiment_well.id }},
-      {{ experiment_well.experiment_plate.temperature|celsius }}
+      {{ experiment_well.plate.temperature|celsius }}
 
       (<a href="{{ experiment_well.get_absolute_url }}">more info</a>)
     </span>

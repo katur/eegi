@@ -76,24 +76,24 @@ def get_worm_strain(mutant, mutantAllele):
             'WormStrain', gene=mutant, allele=mutantAllele))
 
 
-def get_experiment_plate(exp_id):
+def get_experiment_plate(exp_plate_id):
     """Get an experiment plate from its id."""
     try:
-        return ExperimentPlate.objects.get(id=exp_id)
+        return ExperimentPlate.objects.get(id=exp_plate_id)
 
     except ObjectDoesNotExist:
         raise ObjectDoesNotExist(get_missing_object_message(
-            'ExperimentPlate', id=exp_id))
+            'ExperimentPlate', id=exp_plate_id))
 
 
-def get_experiment_well(exp_id, well):
+def get_experiment_well(exp_plate_id, well):
     try:
         return ExperimentWell.objects.get(
-            experiment_plate_id=exp_id, well=get_three_character_well(well))
+            plate_id=exp_plate_id, well=get_three_character_well(well))
 
     except ObjectDoesNotExist:
         raise ObjectDoesNotExist(get_missing_object_message(
-            'ExperimentWell', experiment_plate_id=exp_id, well=well))
+            'ExperimentWell', plate_id=exp_plate_id, well=well))
 
 
 def get_score_code(score_code_id):

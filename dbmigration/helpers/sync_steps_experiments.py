@@ -45,7 +45,7 @@ def update_Experiment_tables(command, cursor):
     plate_fields_to_compare = ('screen_stage', 'temperature', 'date',
                                'comment')
 
-    well_fields_to_compare = ('experiment_plate', 'well', 'worm_strain',
+    well_fields_to_compare = ('plate', 'well', 'worm_strain',
                               'library_well', 'is_junk')
 
     legacy_query = ('SELECT expID, mutant, mutantAllele, RNAiPlateID, '
@@ -88,8 +88,7 @@ def update_Experiment_tables(command, cursor):
         for well in get_well_list():
             new_well = ExperimentWell(
                 id=get_experiment_well_name(exp_plate_id, well),
-                experiment_plate=experiment_plate,
-                well=well,
+                plate=experiment_plate, well=well,
                 worm_strain=worm_strain,
                 library_well=get_library_well(
                     legacy_library_plate_name, well),
@@ -207,7 +206,7 @@ def update_DevstarScore_table(command, cursor):
         new_lp = new_score.experiment_well.library_well.library_plate_id
         legacy_lp = legacy_row[4]
         if (legacy_lp != new_lp and
-                new_score.experiment_well.experiment_plate_id not in (
+                new_score.experiment_well.plate_id not in (
                     461, 8345) and
                 legacy_lp != new_lp.replace('-', '_') and
                 legacy_lp != new_lp.replace('zu310', 'zc310') and

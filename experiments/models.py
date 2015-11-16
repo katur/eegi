@@ -52,7 +52,7 @@ class ExperimentPlate(models.Model):
 
 class ExperimentWell(models.Model):
     id = models.CharField(max_length=20, primary_key=True)
-    experiment_plate = models.ForeignKey(ExperimentPlate)
+    plate = models.ForeignKey(ExperimentPlate)
     well = models.CharField(max_length=3)
     worm_strain = models.ForeignKey(WormStrain)
     library_well = models.ForeignKey(LibraryWell)
@@ -62,7 +62,7 @@ class ExperimentWell(models.Model):
     class Meta:
         db_table = 'ExperimentWell'
         ordering = ['id']
-        unique_together = ('experiment_plate', 'well')
+        unique_together = ('plate', 'well')
 
     def __unicode__(self):
         return str(self.id)
@@ -81,13 +81,13 @@ class ExperimentWell(models.Model):
         return self.has_control_worm() or self.has_control_clone()
 
     def date(self):
-        return self.experiment_plate.date
+        return self.plate.date
 
     def screen_stage(self):
-        return self.experiment_plate.screen_stage
+        return self.plate.screen_stage
 
     def temperature(self):
-        return self.experiment_plate.temperature
+        return self.plate.temperature
 
     def intended_clone(self):
         return self.library_well.intended_clone
@@ -112,15 +112,15 @@ class ExperimentWell(models.Model):
         tile = well_to_tile(self.well)
         if mode == 'thumbnail':
             url = '/'.join((THUMBNAIL_PATH,
-                            str(self.experiment_plate_id), tile))
+                            str(self.plate_id), tile))
             url += '.jpg'
         elif mode == 'devstar':
             url = '/'.join((DEVSTAR_PATH,
-                            str(self.experiment_plate_id), tile))
+                            str(self.plate_id), tile))
             url += 'res.png'
         else:
             url = '/'.join((IMG_PATH,
-                            str(self.experiment_plate_id), tile))
+                            str(self.plate_id), tile))
             url += '.bmp'
         return url
 

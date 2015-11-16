@@ -41,7 +41,7 @@ def experiment_well(request, pk):
 
     context = {
         'experiment_well': experiment_well,
-        'experiment_plate': experiment_well.experiment_plate,
+        'experiment_plate': experiment_well.plate,
         'library_well': experiment_well.library_well,
         'intended_clone': experiment_well.library_well.intended_clone,
         'worm_strain': experiment_well.worm_strain,
