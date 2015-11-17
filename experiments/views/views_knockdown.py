@@ -125,12 +125,14 @@ def double_knockdown(request, worm, clones, temperature):
                 # The part common to all queries
                 common = (Experiment.objects
                           .filter(is_junk=False, plate__date=date)
-                          .select_related('plate'))
+                          .select_related('plate')
+                          .prefetch_related('devstarscore_set'))
 
                 # Add double knockdowns
-                data_per_date['mutant_rnai'] = common.filter(
+                data_per_date['mutant_rnai'] = (common.filter(
                     worm_strain=worm, plate__temperature=temperature,
                     library_stock=library_stock)
+                    .prefetch_related('manualscore_set'))
 
                 # Add mutant + L4440 controls
                 data_per_date['mutant_l4440'] = common.filter(

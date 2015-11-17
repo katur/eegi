@@ -292,6 +292,9 @@ table thead th {
       font-size: 14px; }
       .carousel .individual-image .image-caption .image-scores {
         float: left; }
+        .carousel .individual-image .image-caption .image-scores span {
+          float: left;
+          clear: both; }
       .carousel .individual-image .image-caption .devstar-link {
         float: right; }
 
