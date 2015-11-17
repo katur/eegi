@@ -61,7 +61,7 @@ class Experiment(models.Model):
 
     class Meta:
         db_table = 'Experiment'
-        ordering = ['id']
+        ordering = ['plate', 'well']
         unique_together = ('plate', 'well')
 
     def __unicode__(self):
@@ -217,7 +217,7 @@ class ManualScore(models.Model):
 
     class Meta:
         db_table = 'ManualScore'
-        ordering = ['scorer', 'timestamp', 'score_code']
+        ordering = ['experiment', 'scorer', 'timestamp', 'score_code']
 
     def __unicode__(self):
         return ('{} scored {} by {}'
@@ -319,6 +319,7 @@ class DevstarScore(models.Model):
 
     class Meta:
         db_table = 'DevstarScore'
+        ordering = ['experiment']
 
     def __unicode__(self):
         return ('{} DevStaR score'.format(self.experiment_id))

@@ -30,7 +30,7 @@ def rnai_knockdown(request, clones, temperature=None):
             .select_related('library_stock', 'plate')
             .prefetch_related('devstarscore_set')
             .order_by('-library_stock__plate__screen_stage',
-                      'library_stock', '-plate__date', 'id'))
+                      'library_stock', '-plate__date', 'plate__id', 'well'))
 
         data_by_well = OrderedDict()
 
@@ -63,7 +63,7 @@ def mutant_knockdown(request, worm, temperature):
         .filter(is_junk=False, worm_strain=worm,
                 library_stock__intended_clone=l4440,
                 plate__temperature=temperature)
-        .order_by('-plate__date', 'library_stock'))
+        .order_by('-plate__date', 'library_stock', 'plate__id', 'well'))
 
     # data = {date: [experiments]}
     data = OrderedDict()
