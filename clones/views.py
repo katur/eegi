@@ -5,7 +5,7 @@ from clones.forms import CloneSearchForm
 from clones.models import Clone
 
 
-CLONES_PER_PAGE = 100
+CLONES_PER_PAGE = 20
 
 
 def clones(request):

@@ -2,7 +2,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 
-from library.models import LibraryPlate, LibraryStock
+from library.models import LibraryPlate
 
 
 PLATES_PER_PAGE = 100
@@ -40,7 +40,8 @@ def library_plates(request):
 def library_plate(request, id):
     """Render the page showing the contents of a single library plate."""
     library_plate = get_object_or_404(LibraryPlate, pk=id)
-    library_stocks = (LibraryStock.objects.filter(plate=library_plate)
+    library_stocks = (library_plate.librarystock_set.all()
+                      .select_related('intended_clone')
                       .order_by('well'))
 
     context = {

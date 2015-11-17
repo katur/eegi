@@ -90,7 +90,7 @@ class LibraryStock(models.Model):
 
     """
     id = models.CharField(max_length=24, primary_key=True)
-    plate = models.ForeignKey(LibraryPlate, related_name='wells')
+    plate = models.ForeignKey(LibraryPlate)
     well = models.CharField(max_length=3)
     parent_stock = models.ForeignKey('self', null=True, blank=True)
     intended_clone = models.ForeignKey(Clone, null=True, blank=True)
