@@ -38,6 +38,20 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='Experiment',
+            fields=[
+                ('id', models.CharField(max_length=20, serialize=False, primary_key=True)),
+                ('well', models.CharField(max_length=3)),
+                ('is_junk', models.BooleanField(default=False, db_index=True)),
+                ('comment', models.TextField(blank=True)),
+                ('library_stock', models.ForeignKey(to='library.LibraryStock')),
+            ],
+            options={
+                'ordering': ['id'],
+                'db_table': 'Experiment',
+            },
+        ),
+        migrations.CreateModel(
             name='ExperimentPlate',
             fields=[
                 ('id', models.PositiveIntegerField(serialize=False, primary_key=True)),
@@ -52,29 +66,14 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='ExperimentWell',
-            fields=[
-                ('id', models.CharField(max_length=20, serialize=False, primary_key=True)),
-                ('well', models.CharField(max_length=3)),
-                ('is_junk', models.BooleanField(default=False, db_index=True)),
-                ('comment', models.TextField(blank=True)),
-                ('experiment_plate', models.ForeignKey(to='experiments.ExperimentPlate')),
-                ('library_well', models.ForeignKey(to='library.LibraryWell')),
-                ('worm_strain', models.ForeignKey(to='worms.WormStrain')),
-            ],
-            options={
-                'ordering': ['id'],
-                'db_table': 'ExperimentWell',
-            },
-        ),
-        migrations.CreateModel(
             name='ManualScore',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('timestamp', models.DateTimeField()),
-                ('experiment_well', models.ForeignKey(to='experiments.ExperimentWell')),
+                ('experiment', models.ForeignKey(to='experiments.Experiment')),
             ],
             options={
+                'ordering': ['scorer', 'timestamp', 'score_code'],
                 'db_table': 'ManualScore',
             },
         ),
@@ -102,8 +101,22 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
         ),
         migrations.AddField(
+            model_name='experiment',
+            name='plate',
+            field=models.ForeignKey(to='experiments.ExperimentPlate'),
+        ),
+        migrations.AddField(
+            model_name='experiment',
+            name='worm_strain',
+            field=models.ForeignKey(to='worms.WormStrain'),
+        ),
+        migrations.AddField(
             model_name='devstarscore',
-            name='experiment_well',
-            field=models.ForeignKey(to='experiments.ExperimentWell'),
+            name='experiment',
+            field=models.ForeignKey(to='experiments.Experiment'),
+        ),
+        migrations.AlterUniqueTogether(
+            name='experiment',
+            unique_together=set([('plate', 'well')]),
         ),
     ]

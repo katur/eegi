@@ -8,10 +8,10 @@
   <b>RNAi library well</b>
   &nbsp;
 
-  {{ experiment.library_well_id }}
+  {{ experiment.library_stock_id }}
 </span>
 
-{% with clone=experiment.library_well.intended_clone %}
+{% with clone=experiment.library_stock.intended_clone %}
   {% include 'clone_spans.html' %}
 {% endwith %}
 

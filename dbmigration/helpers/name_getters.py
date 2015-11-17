@@ -29,7 +29,7 @@ def get_library_plate_name(legacy_plate_name):
     return plate_name
 
 
-def get_library_well_name(legacy_plate_name, well):
+def get_library_stock_name(legacy_plate_name, well):
     plate_name = get_library_plate_name(legacy_plate_name)
     return '{}_{}'.format(plate_name, well)
 

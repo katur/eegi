@@ -19,10 +19,10 @@ to the redesigned MySQL database (eegi).
 ./manage.py import_mapping_data
 ./manage.py import_functional_descriptions materials/functional_descriptions/c_elegans.PRJNA13758.WS240.functional_descriptions.txt
 
-# Sync LibraryPlate and LibraryWell tables
+# Sync LibraryPlate and LibraryStock tables
 ./manage.py sync_legacy_database 1 2
 
-# Add empty LibraryWells
+# Add empty LibraryStocks
 ./manage.py add_empty_library_wells
 
 # Import seqencing data and Firoz's blat results
@@ -83,22 +83,22 @@ tables).
 
 -----------------------------------------------------------------------------------
 
-## Migrating Empty LibraryWells
+## Migrating Empty LibraryStocks
 
-After using the main script to migrate the LibraryWell table,
+After using the main script to migrate the LibraryStock table,
 another script is used to add rows to representing 'empty' wells in the database:
 ```
-./manage.py add_empty_LibraryWells
+./manage.py add_empty_LibraryStocks
 ```
 
 This is separate from the main script because empty wells were not represented
 in the previous database's library tables.
 
-After running this script, you should re-run the LibraryWell step of the main
+After running this script, you should re-run the LibraryStock step of the main
 script, to resolve empty well parents of rearrayed plates. The legacy
 database did not represent "empty wells" in its library
 tables, but it did not enforce foreign key constraints, and therefore allowed
-some "impossible" parent relationships between LibraryWells (parent wells that
+some "impossible" parent relationships between LibraryStocks (parent wells that
 themselves did not have rows in the database). The main script ignores these
 impossiblilities (by leaving parent null), because the new database does
 enforce FK constraints. However, a handful of these are resolved once
@@ -173,7 +173,7 @@ par-1 allele | zc310 | zu310
 ### `clones` app
 concept | GenomeWideGI | eegi
 ------- | ------------ | ----
-clone names | sjj\_X and mv\_X | sjj\_X and GHR-X\@X. Note: The well within Orfeome clone names is "A1"-style for GHR-10%, but "A01"-style for GHR-11% onward. I'm leaving this as is for consistency with the Orfeome database. But in the fields of `LibraryWell` that refer to the location of these cloens (i.e. `LibraryWell.id` and `LibraryWell.well`), I'll consistently use "A01" style.
+clone names | sjj\_X and mv\_X | sjj\_X and GHR-X\@X. Note: The well within Orfeome clone names is "A1"-style for GHR-10%, but "A01"-style for GHR-11% onward. I'm leaving this as is for consistency with the Orfeome database. But in the fields of `LibraryStock` that refer to the location of these cloens (i.e. `LibraryStock.id` and `LibraryStock.well`), I'll consistently use "A01" style.
 clone mapping info | 1-to-1, scattered over many tables (wherever `clone` is accompanied by `node_primary_name` and/or `gene`) | All mapping isolated to `clones` app, which is connected to rest of database only by FK to `RNAiClone`. Mapping will be 1-to-many.
 
 **Still to do**
@@ -187,7 +187,7 @@ concept | GenomeWideGI | eegi
 ------- | ------------ | ----
 plate-level information about library plates | no table | `LibraryPlate` table
 vidal plate names | integers 1-21 | prefix with "vidal", e.g., "vidal-4"
-plate names in general | mishmash of hyphens (e.g. I-2-B1 and GHR-10010) and underscores (e.g. b1023\_F5 and Eliana\_Rearray\_2) | hyphens only (for more readable `LibraryWell.id`, e.g., b1023-F5\_F05)
+plate names in general | mishmash of hyphens (e.g. I-2-B1 and GHR-10010) and underscores (e.g. b1023\_F5 and Eliana\_Rearray\_2) | hyphens only (for more readable `LibraryStock.id`, e.g., b1023-F5\_F05)
 
 **Still to do**
 - Consider deleting `LibraryPlate.screen_stage` since it's redundant with
@@ -200,10 +200,10 @@ to hyphens.
 ### `library` app: well-level
 concept | GenomeWideGI | eegi
 ------- | ------------ | ----
-well-level clone identities of library plates | `RNAiPlate` (primary plates), `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | Combine all plates in `LibraryWell`. Do not migrate Julie plates.
-well-level parent relationships from primary plates to source plates (i.e., to Ahringer 384 plate or GHR-style Orfeome plates) | can be derived from `RNAiPlate` columns `chromosome`, `384PlateID`, and `384Well` (though confusing because 384PlateID is incomplete without chromosome for Ahringer 384 plates, and because the Orfeome plates are actually 96 wells) | capture with FK from `LibraryWell` to `LibraryWell`
-well-level parent relationships from secondary plates to primary plates | `CherryPickTemplate` (but incomplete; many rows missing) | capture with FK from `LibraryWell` to `LibraryWell`
-PK for `LibraryWell` | two fields: plate and well | single field, in format plate\_well (e.g., I-1-A1\_H05)
+well-level clone identities of library plates | `RNAiPlate` (primary plates), `CherryPickRNAiPlate` (secondary) and `ReArrayRNAiPlate` (Julie and Eliana rearrays) | Combine all plates in `LibraryStock`. Do not migrate Julie plates.
+well-level parent relationships from primary plates to source plates (i.e., to Ahringer 384 plate or GHR-style Orfeome plates) | can be derived from `RNAiPlate` columns `chromosome`, `384PlateID`, and `384Well` (though confusing because 384PlateID is incomplete without chromosome for Ahringer 384 plates, and because the Orfeome plates are actually 96 wells) | capture with FK from `LibraryStock` to `LibraryStock`
+well-level parent relationships from secondary plates to primary plates | `CherryPickTemplate` (but incomplete; many rows missing) | capture with FK from `LibraryStock` to `LibraryStock`
+PK for `LibraryStock` | two fields: plate and well | single field, in format plate\_well (e.g., I-1-A1\_H05)
 Wells with no clone (theoretically) | not included in database | include in database. Due to mistakes in the bacterial library, some wells with no intended clone do grow, and sometimes even have phenotypes. We photograph these wells, and sometimes even score and sequence them. So we should represent them in the database, with `intended_clone_id` null.
 
 **Still to do**
@@ -220,7 +220,7 @@ Genewiz resequencing of same well | forced into one row of `SeqPlate` | allow ma
 Genewiz output corresponding to no known clone (due to supposedly empty wells in the sequencing plates) | skipped in database | include in database (so it is clear what these sequences / ab1 files are from)
 
 **Still to do**
-- After adding empty LibraryWells to the database, fill in the corresponding parent relationships for sequencing wells.
+- After adding empty LibraryStocks to the database, fill in the corresponding parent relationships for sequencing wells.
 - After accounting for empty wells, migrate plates 57-70 using the Google Docs.
 - Add Firoz's resulting clones, once calculated (note that I am not migrating either Hueyling's quality categorization, e.g. BY/GN, or her resulting clone).
 

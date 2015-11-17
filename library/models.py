@@ -67,11 +67,11 @@ class LibraryPlate(models.Model):
         return reverse('library.views.library_plate', args=[self.id])
 
     def get_all_wells(self):
-        return LibraryWell.objects.filter(plate=self)
+        return LibraryStock.objects.filter(plate=self)
 
     def get_l4440_wells(self):
-        return LibraryWell.objects.filter(Q(plate=self),
-                                          Q(intended_clone='L4440'))
+        return LibraryStock.objects.filter(Q(plate=self),
+                                           Q(intended_clone='L4440'))
 
     def is_ahringer_96_plate(self):
         """Determine if a plate name is in the correct format for an
@@ -82,7 +82,7 @@ class LibraryPlate(models.Model):
                         self.id)
 
 
-class LibraryWell(models.Model):
+class LibraryStock(models.Model):
     """A well in a LibraryPlate.
 
     Includes the clone intended on being in this position (according to
@@ -92,14 +92,14 @@ class LibraryWell(models.Model):
     id = models.CharField(max_length=24, primary_key=True)
     plate = models.ForeignKey(LibraryPlate, related_name='wells')
     well = models.CharField(max_length=3)
-    parent_library_well = models.ForeignKey('self', null=True, blank=True)
+    parent_stock = models.ForeignKey('self', null=True, blank=True)
     intended_clone = models.ForeignKey(Clone, null=True, blank=True)
     sequence_verified_clone = models.ForeignKey(Clone, default=None,
                                                 null=True, blank=True,
                                                 related_name='seq_clone')
 
     class Meta:
-        db_table = 'LibraryWell'
+        db_table = 'LibraryStock'
         ordering = ['id']
         unique_together = ('plate', 'well')
 
@@ -127,8 +127,8 @@ class LibraryWell(models.Model):
 
 
 class LibrarySequencing(models.Model):
-    """A Genewiz sequencing result from a particular LibraryWell."""
-    source_library_well = models.ForeignKey(LibraryWell, null=True, blank=True)
+    """A Genewiz sequencing result from a particular LibraryStock."""
+    source_stock = models.ForeignKey(LibraryStock, null=True, blank=True)
     sample_plate_name = models.CharField(max_length=10, blank=True)
     sample_tube_number = models.IntegerField(null=True, blank=True)
 
@@ -154,7 +154,7 @@ class LibrarySequencing(models.Model):
 
     def __unicode__(self):
         return ('Sequence of {}, seq plate {}, seq tube {}'
-                .format(self.source_library_well, self.sample_plate_name,
+                .format(self.source_stock, self.sample_plate_name,
                         self.sample_tube_number))
 
     def is_decent_quality(self):

@@ -39,8 +39,8 @@ def categorize_sequences_by_blat_results(seqs):
     b = get_organized_blat_results()
 
     for seq in seqs:
-        if seq.source_library_well:
-            intended_clone = seq.source_library_well.intended_clone
+        if seq.source_stock:
+            intended_clone = seq.source_stock.intended_clone
         else:
             intended_clone = None
 

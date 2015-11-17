@@ -15,8 +15,8 @@ class Migration(migrations.Migration):
             name='LibraryPlate',
             fields=[
                 ('id', models.CharField(max_length=20, serialize=False, primary_key=True)),
-                ('screen_stage', models.PositiveSmallIntegerField(db_index=True, null=True, blank=True)),
                 ('number_of_wells', models.PositiveSmallIntegerField()),
+                ('screen_stage', models.PositiveSmallIntegerField(db_index=True, null=True, blank=True)),
             ],
             options={
                 'ordering': ['id'],
@@ -62,24 +62,28 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='LibraryWell',
+            name='LibraryStock',
             fields=[
                 ('id', models.CharField(max_length=24, serialize=False, primary_key=True)),
                 ('well', models.CharField(max_length=3)),
                 ('intended_clone', models.ForeignKey(blank=True, to='clones.Clone', null=True)),
-                ('library_plate', models.ForeignKey(related_name='wells', to='library.LibraryPlate')),
-                ('parent_library_well', models.ForeignKey(blank=True, to='library.LibraryWell', null=True)),
+                ('parent_stock', models.ForeignKey(blank=True, to='library.LibraryStock', null=True)),
+                ('plate', models.ForeignKey(related_name='wells', to='library.LibraryPlate')),
                 ('sequence_verified_clone', models.ForeignKey(related_name='seq_clone', default=None, blank=True, to='clones.Clone', null=True)),
             ],
             options={
                 'ordering': ['id'],
-                'db_table': 'LibraryWell',
+                'db_table': 'LibraryStock',
             },
         ),
         migrations.AddField(
             model_name='librarysequencing',
-            name='source_library_well',
-            field=models.ForeignKey(blank=True, to='library.LibraryWell', null=True),
+            name='source_stock',
+            field=models.ForeignKey(blank=True, to='library.LibraryStock', null=True),
+        ),
+        migrations.AlterUniqueTogether(
+            name='librarystock',
+            unique_together=set([('plate', 'well')]),
         ),
         migrations.AlterUniqueTogether(
             name='librarysequencing',

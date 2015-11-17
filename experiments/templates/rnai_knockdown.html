@@ -21,17 +21,17 @@ RNAi Clone{{ clones|pluralize }} {{ clones|join:', ' }}
   {% include 'worm_spans.html' %}
 </div>
 
-{% for clone, library_wells in data.items %}
+{% for clone, library_stocks in data.items %}
 <div class="knockdown-clone-section">
   <h4>{% include "clone_spans.html" %}</h4>
 
-  {% for library_well, experiments in library_wells.items %}
+  {% for library_stock, experiments in library_stocks.items %}
   <table class="knockdown-results single-column grayscale">
     <thead>
       <th>
         {{ clone }} located in
-        plate {{ library_well.plate }},
-        well {{ library_well.well }}
+        plate {{ library_stock.plate }},
+        well {{ library_stock.well }}
       </th>
     </thead>
 

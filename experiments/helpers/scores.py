@@ -4,7 +4,7 @@ from collections import OrderedDict
 from django.db.models import Count
 
 from experiments.models import ManualScore, ExperimentPlate
-from library.helpers.retrieval import get_organized_library_wells
+from library.helpers.retrieval import get_organized_library_stocks
 from worms.models import WormStrain
 
 
@@ -44,13 +44,13 @@ def get_organized_scores_all_worms(screen, screen_stage,
     and screen_stage (1 for primary, 2 for secondary),
     organized as:
 
-        s[worm][library_well][experiment] = [scores]
+        s[worm][library_stock][experiment] = [scores]
 
     Or, if most_relevant_only is set to True:
 
-        s[worm][library_well][experiment] = most_relevant_score
+        s[worm][library_stock][experiment] = most_relevant_score
     """
-    w = get_organized_library_wells(screen_stage=screen_stage)
+    w = get_organized_library_stocks(screen_stage=screen_stage)
 
     worms = WormStrain.objects
     if screen == 'ENH':
@@ -61,23 +61,23 @@ def get_organized_scores_all_worms(screen, screen_stage,
     s = {}
     for worm in worms:
         s[worm] = get_organized_scores_specific_worm(
-            worm, screen, screen_stage, most_relevant_only, library_wells=w)
+            worm, screen, screen_stage, most_relevant_only, library_stocks=w)
 
     return s
 
 
 def get_organized_scores_specific_worm(worm, screen, screen_stage,
                                        most_relevant_only=False,
-                                       library_wells=None):
+                                       library_stocks=None):
     """Fetch all scores for a particular worm, screen ('ENH' or 'SUP'),
     and screen level (1 for primary, 2 for secondary),
     organized as:
 
-        s[library_well][experiment] = [scores]
+        s[library_stock][experiment] = [scores]
 
     Or, if most_relevant_only is set to True:
 
-        s[library_well][experiment] = most_relevant_score
+        s[library_stock][experiment] = most_relevant_score
     """
     scores = ManualScore.objects.filter(
         experiment__screen_stage=screen_stage,
@@ -96,20 +96,21 @@ def get_organized_scores_specific_worm(worm, screen, screen_stage,
               .prefetch_related('experiment__library_plate')
               .order_by('experiment__id', 'well'))
 
-    if not library_wells:
-        library_wells = get_organized_library_wells(screen_stage=screen_stage)
+    if not library_stocks:
+        library_stocks = get_organized_library_stocks(
+            screen_stage=screen_stage)
 
-    return organize_scores(scores, library_wells, most_relevant_only)
+    return organize_scores(scores, library_stocks, most_relevant_only)
 
 
-def organize_scores(scores, library_wells, most_relevant_only=False):
-    """Organize a list of scores, consulting organized library_wells w, into:
+def organize_scores(scores, library_stocks, most_relevant_only=False):
+    """Organize a list of scores, consulting organized library_stocks w, into:
 
-        s[library_well][experiment] = [scores]
+        s[library_stock][experiment] = [scores]
 
     Or, if most_relevant_only is set to True:
 
-        s[library_well][experiment] = most_relevant_score
+        s[library_stock][experiment] = most_relevant_score
     """
     s = {}
 
@@ -117,21 +118,21 @@ def organize_scores(scores, library_wells, most_relevant_only=False):
         experiment = score.experiment
         plate = experiment.library_plate
         well = score.well
-        library_well = library_wells[plate][well]
+        library_stock = library_stocks[plate][well]
 
-        if library_well not in s:
-            s[library_well] = OrderedDict()
+        if library_stock not in s:
+            s[library_stock] = OrderedDict()
 
         if most_relevant_only:
-            if (experiment not in s[library_well] or
-                    s[library_well][experiment].get_relevance_per_replicate() <
+            if (experiment not in s[library_stock] or
+                    s[library_stock][experiment].get_relevance_per_replicate() <
                     score.get_relevance_per_replicate()):
-                s[library_well][experiment] = score
+                s[library_stock][experiment] = score
 
         else:
-            if experiment not in s[library_well]:
-                s[library_well][experiment] = []
-            s[library_well][experiment].append(score)
+            if experiment not in s[library_stock]:
+                s[library_stock][experiment] = []
+            s[library_stock][experiment].append(score)
 
     return s
 
@@ -167,22 +168,22 @@ def get_secondary_candidates(screen, passes_criteria):
 
     singles = get_primary_single_replicate_experiments(screen)
 
-    for worm, library_wells in s.iteritems():
-        for library_well, experiments in library_wells.iteritems():
+    for worm, library_stocks in s.iteritems():
+        for library_stock, experiments in library_stocks.iteritems():
             for experiment, scores in experiments.iteritems():
                 # Replace all scores for this experiment with the most
                 # relevant score only.
                 score = get_most_relevant_score_per_replicate(scores)
-                s[worm][library_well][experiment] = score
+                s[worm][library_stock][experiment] = score
 
             if passes_criteria(experiments.values(), singles):
                 if worm not in candidates_by_worm:
                     candidates_by_worm[worm] = []
-                candidates_by_worm[worm].append(library_well)
+                candidates_by_worm[worm].append(library_stock)
 
-                if library_well not in candidates_by_clone:
-                    candidates_by_clone[library_well] = []
-                candidates_by_clone[library_well].append(worm)
+                if library_stock not in candidates_by_clone:
+                    candidates_by_clone[library_stock] = []
+                candidates_by_clone[library_stock].append(worm)
 
     return (candidates_by_worm, candidates_by_clone)
 
@@ -193,15 +194,15 @@ def get_positives_across_all_worms(screen, screen_stage, passes_criteria):
 
     s = get_organized_scores_all_worms(screen, screen_stage=screen_stage,
                                        most_relevant_only=True)
-    passing_library_wells = set()
+    passing_library_stocks = set()
 
     for worm, wells in s.iteritems():
         for well, expts in wells.iteritems():
             scores = expts.values()
             if passes_criteria(scores):
-                passing_library_wells.add(well)
+                passing_library_stocks.add(well)
 
-    return passing_library_wells
+    return passing_library_stocks
 
 
 def get_positives_specific_worm(worm, screen, screen_stage, passes_criteria):
@@ -211,16 +212,16 @@ def get_positives_specific_worm(worm, screen, screen_stage, passes_criteria):
     s = get_organized_scores_specific_worm(worm, screen,
                                            screen_stage=screen_stage,
                                            most_relevant_only=True)
-    passing_library_wells = set()
+    passing_library_stocks = set()
 
     for well, expts in s.iteritems():
         scores = expts.values()
         if passes_criteria(scores):
             well.scores = scores
             well.avg = get_average_score_weight(scores)
-            passing_library_wells.add(well)
+            passing_library_stocks.add(well)
 
-    return passing_library_wells
+    return passing_library_stocks
 
 
 def get_primary_single_replicate_experiments(screen):

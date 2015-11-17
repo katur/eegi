@@ -8,7 +8,7 @@ from dbmigration.helpers.name_getters import get_experiment_name
 
 from dbmigration.helpers.object_getters import (
     get_experiment, get_experiment_plate,
-    get_worm_strain, get_library_well, get_score_code, get_user)
+    get_worm_strain, get_library_stock, get_score_code, get_user)
 
 from dbmigration.helpers.sync_helpers import sync_rows, update_or_save_object
 
@@ -31,7 +31,7 @@ def update_Experiment_tables(command, cursor):
         - temperature string (suffixed 'C') becomes a decimal
         - plate-level mutant/mutantAllele becomes well-level FK to WormStrain
         - plate-level RNAiPlateID becomes becomes well-level pointers to
-          LibraryWells
+          LibraryStocks
         - plate-level isJunk with three values (-1, 0, 1) becomes a boolean
           (with both 1 and -1 becoming 1), and and becomes well-level
 
@@ -46,7 +46,7 @@ def update_Experiment_tables(command, cursor):
                                'comment')
 
     well_fields_to_compare = ('plate', 'well', 'worm_strain',
-                              'library_well', 'is_junk')
+                              'library_stock', 'is_junk')
 
     legacy_query = ('SELECT expID, mutant, mutantAllele, RNAiPlateID, '
                     'CAST(SUBSTRING_INDEX(temperature, "C", 1) '
@@ -90,7 +90,7 @@ def update_Experiment_tables(command, cursor):
                 id=get_experiment_name(experiment_plate_id, well),
                 plate=experiment_plate, well=well,
                 worm_strain=worm_strain,
-                library_well=get_library_well(
+                library_stock=get_library_stock(
                     legacy_library_plate_name, well),
                 is_junk=is_junk)
 
@@ -203,7 +203,7 @@ def update_DevstarScore_table(command, cursor):
         # however it is still worthwhile to perform this check in order
         # to find the mismatches, and to confirm manually that each one
         # makes sense.
-        new_lp = new_score.experiment.library_well.library_plate_id
+        new_lp = new_score.experiment.library_stock.library_plate_id
         legacy_lp = legacy_row[4]
         if (legacy_lp != new_lp and
                 new_score.experiment.plate_id not in (461, 8345) and

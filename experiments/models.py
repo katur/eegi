@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 
 from eegi.settings import IMG_PATH, THUMBNAIL_PATH, DEVSTAR_PATH
-from library.models import LibraryPlate, LibraryWell
+from library.models import LibraryPlate, LibraryStock
 from utils.well_tile_conversion import well_to_tile
 from worms.models import WormStrain
 
@@ -43,8 +43,8 @@ class ExperimentPlate(models.Model):
 
     def get_library_plates(self):
         library_plate_pks = (self.experiment_set
-                             .order_by('library_well__plate')
-                             .values('library_well__plate')
+                             .order_by('library_stock__plate')
+                             .values('library_stock__plate')
                              .distinct())
 
         return LibraryPlate.objects.filter(pk__in=library_plate_pks)
@@ -55,7 +55,8 @@ class Experiment(models.Model):
     plate = models.ForeignKey(ExperimentPlate)
     well = models.CharField(max_length=3)
     worm_strain = models.ForeignKey(WormStrain)
-    library_well = models.ForeignKey(LibraryWell)
+    library_stock = models.ForeignKey(LibraryStock)
+    # library_stock = models.CharField(max_length=24)
     is_junk = models.BooleanField(default=False, db_index=True)
     comment = models.TextField(blank=True)
 
@@ -74,7 +75,7 @@ class Experiment(models.Model):
         return self.worm_strain.is_control()
 
     def has_control_clone(self):
-        return self.library_well.intended_clone.is_control()
+        return self.library_stock.intended_clone.is_control()
 
     def is_control(self):
         return self.has_control_worm() or self.has_control_clone()
@@ -89,10 +90,10 @@ class Experiment(models.Model):
         return self.plate.temperature
 
     def intended_clone(self):
-        return self.library_well.intended_clone
+        return self.library_stock.intended_clone
 
-    # TODO: These three methods are repeated in Experiment and
-    # LibraryWell; consider making a superclass or mixin
+    # TODO: These three methods are repeated in Experiment and LibraryStock;
+    # consider making a superclass or mixin
     def get_row(self):
         return self.well[0]
 

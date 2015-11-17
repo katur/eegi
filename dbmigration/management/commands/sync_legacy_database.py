@@ -3,7 +3,7 @@ import MySQLdb
 from django.core.management.base import BaseCommand, CommandError
 
 from dbmigration.helpers.sync_steps_library import (
-    update_Clone_table, update_LibraryPlate_table, update_LibraryWell_table)
+    update_Clone_table, update_LibraryPlate_table, update_LibraryStock_table)
 
 from dbmigration.helpers.sync_steps_experiments import (
     update_Experiment_tables, update_DevstarScore_table,
@@ -16,7 +16,7 @@ from utils.scripting import require_db_write_acknowledgement
 STEPS = (
     update_Clone_table,
     update_LibraryPlate_table,
-    update_LibraryWell_table,
+    update_LibraryStock_table,
     update_Experiment_tables,
     update_DevstarScore_table,
     update_ManualScoreCode_table,
@@ -31,7 +31,7 @@ ARG_HELP = '''
     The steps are (dependencies in parentheses):
         [0: Clone;
         1: LibraryPlate;
-        2: LibraryWell (0,1);
+        2: LibraryStock (0,1);
         3: ExperimentWell&Experiment (WormStrain,1);
         4: DevstarScore (3);
         5: ManualScoreCode;
@@ -58,7 +58,7 @@ class Command(BaseCommand):
 
         0: Clone;
         1: LibraryPlate;
-        2: LibraryWell (0,1);
+        2: LibraryStock (0,1);
         3: ExperimentPlate&Experiment (WormStrain,1);
         4: DevstarScore (3);
         5: ManualScoreCode;

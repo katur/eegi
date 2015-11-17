@@ -8,9 +8,9 @@ import xlrd
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 
-from dbmigration.helpers.object_getters import get_library_well
+from dbmigration.helpers.object_getters import get_library_stock
 from eegi.local_settings import LEGACY_DATABASE
-from library.models import LibraryWell, LibrarySequencing
+from library.models import LibraryStock, LibrarySequencing
 from utils.scripting import require_db_write_acknowledgement
 from utils.well_naming import get_well_name
 
@@ -83,7 +83,7 @@ class Command(BaseCommand):
         ######################################
         # SECOND STAGE
         #
-        #   Add source LibraryWell information
+        #   Add source LibraryStock information
         #
         ######################################
 
@@ -107,13 +107,13 @@ class Command(BaseCommand):
 
         for row in legacy_rows:
             try:
-                source_library_well = get_library_well(row[0], row[1])
+                source_stock = get_library_stock(row[0], row[1])
 
             except ObjectDoesNotExist:
-                raise CommandError('LibraryWell not found for {} {}\n'
+                raise CommandError('LibraryStock not found for {} {}\n'
                                    .format(row[0], row[1]))
 
-            self._process_source_information(source_library_well, row[2],
+            self._process_source_information(source_stock, row[2],
                                              row[3], row[4], row[5])
 
         # Process source information for plates 57-66
@@ -126,11 +126,11 @@ class Command(BaseCommand):
 
         for seq_plate_number in full_seq_plates:
             source_plate_id = full_seq_plates[seq_plate_number]
-            library_wells = LibraryWell.objects.filter(plate=source_plate_id)
+            library_stocks = LibraryStock.objects.filter(plate=source_plate_id)
 
-            for library_well in library_wells:
+            for library_stock in library_stocks:
                 self._process_source_information(
-                    library_well, seq_plate_number, library_well.well)
+                    library_stock, seq_plate_number, library_stock.well)
 
         # Process plates 67-on
         #   (these are NOT in legacy database, and only some columns sequenced)
@@ -208,11 +208,11 @@ class Command(BaseCommand):
                 for letter in letters:
                     seq_well = get_well_name(letter, seq_column)
                     source_well = get_well_name(letter, source_column)
-                    source_library_well = get_library_well(source_plate_id,
-                                                           source_well)
+                    source_stock = get_library_stock(
+                        source_plate_id, source_well)
 
                     self._process_source_information(
-                        source_library_well, seq_plate_number, seq_well)
+                        source_stock, seq_plate_number, seq_well)
 
     def _process_tracking_number(self, tracking_number):
         """Process all the rows for a particular Genewiz tracking number.
@@ -322,12 +322,12 @@ class Command(BaseCommand):
 
             new_sequence.save()
 
-    def _process_source_information(self, source_library_well,
+    def _process_source_information(self, source_stock,
                                     seq_plate_number, seq_well,
                                     legacy_clone=None, legacy_tracking=None):
         """Process the source information for a sequencing sample.
 
-        source_library_well is the library position that was sequenced.
+        source_stock is the library stock that was sequenced.
 
         seq_plate_number and seq_well are identifying information re:
         the sequencing plate/tube that was sent off to Genewiz.
@@ -335,12 +335,12 @@ class Command(BaseCommand):
         """
         # Sanity check that clone matches
         if legacy_clone:
-            clone = source_library_well.intended_clone
+            clone = source_stock.intended_clone
             if (not clone or (legacy_clone != clone.id and
                               'GHR' not in clone.id)):
                 self.stderr.write(
                     'ERROR: Clone mismatch for {}: {} {}\n'
-                    .format(source_library_well, clone, legacy_clone))
+                    .format(source_stock, clone, legacy_clone))
 
         seq_plate_name = 'JL' + str(seq_plate_number)
         seq_tube_number = self.seq_well_to_tube[seq_well]
@@ -360,7 +360,7 @@ class Command(BaseCommand):
                 raise CommandError('Tracking number mismatch for sequencing '
                                    'record {}\n'.format(sequence))
 
-            sequence.source_library_well = source_library_well
+            sequence.source_stock = source_stock
             sequence.save()
 
 

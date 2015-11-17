@@ -1,9 +1,9 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 
-from dbmigration.helpers.name_getters import get_library_well_name
+from dbmigration.helpers.name_getters import get_library_stock_name
 from dbmigration.helpers.object_getters import get_library_plate
-from library.models import LibraryWell
+from library.models import LibraryStock
 from utils.plate_layout import get_96_well_set, get_384_position
 from utils.scripting import require_db_write_acknowledgement
 
@@ -37,71 +37,71 @@ class Command(BaseCommand):
         # plates in the lab, we only care about the small fraction of the
         # wells from these plates that were used to generated our Vidal
         # rearrays.
-        library_wells = (LibraryWell.objects
-                         .filter(plate__number_of_wells=96)
-                         .exclude(plate__id__startswith='GHR-'))
+        library_stocks = (LibraryStock.objects
+                          .filter(plate__number_of_wells=96)
+                          .exclude(plate__id__startswith='GHR-'))
 
         plate_wells = {}
 
-        for library_well in library_wells:
-            if library_well.plate not in plate_wells:
-                plate_wells[library_well.plate] = set()
+        for library_stock in library_stocks:
+            if library_stock.plate not in plate_wells:
+                plate_wells[library_stock.plate] = set()
 
-            plate_wells[library_well.plate].add(library_well.well)
+            plate_wells[library_stock.plate].add(library_stock.well)
 
         for library_plate in plate_wells:
             missing_wells = wells_96 - plate_wells[library_plate]
 
             for missing_well in missing_wells:
-                library_well = LibraryWell(
-                    id=get_library_well_name(library_plate.id, missing_well),
+                library_stock = LibraryStock(
+                    id=get_library_stock_name(library_plate.id, missing_well),
                     plate=library_plate, well=missing_well,
-                    parent_library_well=None, intended_clone=None,
+                    parent_stock=None, intended_clone=None,
                 )
 
                 if library_plate.is_ahringer_96_plate():
-                    parent_well = _get_ahringer_384_parent_well(library_well)
+                    parent_stock = _get_ahringer_384_parent(library_stock)
 
-                    if parent_well.intended_clone:
+                    if parent_stock.intended_clone:
                         self.stderr.write(
                             '384 well {} has a non-null intended clone, '
                             'but its 96-well derivative {} is empty\n'
-                            .format(parent_well, library_well))
+                            .format(parent_stock, library_stock))
 
-                    library_well.parent_library_well = parent_well
+                    library_stock.parent_stock = parent_stock
 
-                library_well.save()
+                library_stock.save()
 
 
-def _get_ahringer_384_parent_well(child_well):
-    """Get the 384 format well from which a particular 96 format well is
-    derived, assuming standard Ahringer naming.
+def _get_ahringer_384_parent(child_stock):
+    """Get the 384-format LibraryStock from which a particular 96-format
+    LibraryStock is derived, assuming standard Ahringer naming conventions.
 
     If the parent doesn't exist, creates it, assuming same parent
     as the child.
 
     """
-    child_plate_parts = child_well.plate.id.split('-')
+    child_plate_parts = child_stock.plate.id.split('-')
     parent_plate_name = child_plate_parts[0] + '-' + child_plate_parts[1]
     parent_plate = get_library_plate(parent_plate_name)
 
-    child_position = child_well.well
-    parent_position = get_384_position(child_plate_parts[2], child_position)
+    child_well = child_stock.well
+    parent_well = get_384_position(child_plate_parts[2], child_well)
 
-    parent_well_pk = get_library_well_name(parent_plate_name, parent_position)
+    parent_pk = get_library_stock_name(parent_plate_name, parent_well)
 
     try:
-        parent_well = LibraryWell.objects.get(pk=parent_well_pk)
+        parent_stock = LibraryStock.objects.get(pk=parent_pk)
 
     except ObjectDoesNotExist:
-        parent_well = LibraryWell(
-            id=parent_well_pk,
+        parent_stock = LibraryStock(
+            id=parent_pk,
             plate=parent_plate,
-            well=parent_position,
-            parent_library_well=None,
-            intended_clone=child_well.intended_clone,
+            well=parent_well,
+            parent_stock=None,
+            intended_clone=child_stock.intended_clone,
         )
 
-        parent_well.save()
+        parent_stock.save()
 
-    return parent_well
+    return parent_stock

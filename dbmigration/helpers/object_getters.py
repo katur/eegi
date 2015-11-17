@@ -9,10 +9,10 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from clones.models import Clone
 from experiments.models import Experiment, ExperimentPlate, ManualScoreCode
-from library.models import LibraryPlate, LibraryWell
+from library.models import LibraryStock, LibraryPlate
 from worms.models import WormStrain
 from dbmigration.helpers.name_getters import (get_library_plate_name,
-                                              get_library_well_name)
+                                              get_library_stock_name)
 from utils.well_naming import get_three_character_well
 
 
@@ -43,16 +43,16 @@ def get_library_plate(legacy_plate_name):
             'LibraryPlate', id=legacy_plate_name))
 
 
-def get_library_well(legacy_plate_name, well):
+def get_library_stock(legacy_plate_name, well):
     """Get a library well from its legacy plate name and well."""
-    library_well_name = get_library_well_name(legacy_plate_name, well)
+    library_stock_name = get_library_stock_name(legacy_plate_name, well)
 
     try:
-        return LibraryWell.objects.get(id=library_well_name)
+        return LibraryStock.objects.get(id=library_stock_name)
 
     except ObjectDoesNotExist:
         raise ObjectDoesNotExist(get_missing_object_message(
-            'LibraryWell', id=library_well_name))
+            'LibraryStock', id=library_stock_name))
 
 
 def get_worm_strain(mutant, mutantAllele):

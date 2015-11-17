@@ -8,14 +8,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import CommandError
 
 from dbmigration.helpers.name_getters import (
-    get_ahringer_384_plate_name, get_library_plate_name,
-    get_library_well_name, get_vidal_clone_name)
-from dbmigration.helpers.object_getters import (
-    get_clone, get_library_plate, get_library_well)
+    get_ahringer_384_plate_name, get_vidal_clone_name,
+    get_library_stock_name, get_library_plate_name)
+
+from dbmigration.helpers.object_getters import (get_clone, get_library_stock,
+                                                get_library_plate)
+
 from dbmigration.helpers.sync_helpers import sync_rows, update_or_save_object
 
 from clones.models import Clone
-from library.models import LibraryPlate, LibraryWell
+from library.models import LibraryPlate, LibraryStock
 
 from utils.well_naming import get_three_character_well
 
@@ -152,10 +154,10 @@ def update_LibraryPlate_table(command, cursor):
               sync_library_plate_row, screen_stage=2)
 
 
-def update_LibraryWell_table(command, cursor):
-    """Update the LibraryWell table to reflect the clone layout of all plates:
+def update_LibraryStock_table(command, cursor):
+    """Update the LibraryStock table to reflect the clone layout of all plates:
     source plates (Ahringer 384 and original Orfeome plates e.g. GHR-10001),
-    primary plates, and secondary plates. Also update the parent LibraryWells
+    primary plates, and secondary plates. Also update the parent LibraryStocks
     of primary and secondary plates.
 
     This information comes from a variety of queries of
@@ -163,8 +165,8 @@ def update_LibraryWell_table(command, cursor):
     Detailed comments inline.
 
     """
-    recorded_wells = LibraryWell.objects.all()
-    fields_to_compare = ('plate', 'well', 'parent_library_well',
+    recorded_wells = LibraryStock.objects.all()
+    fields_to_compare = ('plate', 'well', 'parent_stock',
                          'intended_clone')
 
     # 'Source' plates are Ahringer 384 plates and original Orfeome
@@ -191,10 +193,10 @@ def update_LibraryWell_table(command, cursor):
         if re.match('mv', clone_name):
             clone_name = get_vidal_clone_name(plate_name, well_improper)
 
-        new_well = LibraryWell(
-            id=get_library_well_name(plate_name, well_proper),
+        new_well = LibraryStock(
+            id=get_library_stock_name(plate_name, well_proper),
             plate=get_library_plate(plate_name), well=well_proper,
-            parent_library_well=None, intended_clone=get_clone(clone_name))
+            parent_stock=None, intended_clone=get_clone(clone_name))
 
         return update_or_save_object(command, new_well, recorded_wells,
                                      fields_to_compare)
@@ -226,22 +228,22 @@ def update_LibraryWell_table(command, cursor):
         intended_clone = get_clone(clone_name)
 
         if re.match('L4440', clone_name):
-            parent_library_well = None
+            parent_stock = None
 
         else:
             parent_well_proper = get_three_character_well(parent_well_improper)
-            parent_library_well = get_library_well(parent_plate_name,
-                                                   parent_well_proper)
+            parent_stock = get_library_stock(parent_plate_name,
+                                             parent_well_proper)
 
             # Confirm that this intended clone matches parent's clone
-            if parent_library_well.intended_clone != intended_clone:
+            if parent_stock.intended_clone != intended_clone:
                 raise CommandError('Clone {} does not match parent\n'
                                    .format(clone_name))
 
-        new_well = LibraryWell(
-            id=get_library_well_name(plate_name, well),
+        new_well = LibraryStock(
+            id=get_library_stock_name(plate_name, well),
             plate=get_library_plate(plate_name), well=well,
-            parent_library_well=parent_library_well,
+            parent_stock=parent_stock,
             intended_clone=intended_clone)
 
         return update_or_save_object(command, new_well, recorded_wells,
@@ -258,10 +260,10 @@ def update_LibraryWell_table(command, cursor):
         plate_name = legacy_row[0]
         well = get_three_character_well(legacy_row[1])
 
-        new_well = LibraryWell(
-            id=get_library_well_name(plate_name, well),
+        new_well = LibraryStock(
+            id=get_library_stock_name(plate_name, well),
             plate=get_library_plate(plate_name), well=well,
-            parent_library_well=None, intended_clone=get_clone('L4440'))
+            parent_stock=None, intended_clone=get_clone('L4440'))
 
         return update_or_save_object(command, new_well, recorded_wells,
                                      fields_to_compare)
@@ -322,26 +324,26 @@ def update_LibraryWell_table(command, cursor):
 
         try:
             if definite_parent_plate_name and definite_parent_well:
-                parent_library_well = get_library_well(
-                    definite_parent_plate_name, definite_parent_well)
+                parent_stock = get_library_stock(definite_parent_plate_name,
+                                                 definite_parent_well)
 
             else:
-                parent_library_well = get_library_well(
-                    likely_parent_plate_name, likely_parent_well)
+                parent_stock = get_library_stock(likely_parent_plate_name,
+                                                 likely_parent_well)
 
-            intended_clone = parent_library_well.intended_clone
+            intended_clone = parent_stock.intended_clone
 
         except ObjectDoesNotExist:
             command.stderr.write(
-                'WARNING for LibraryWell {} {}: parent not '
-                'found in LibraryWell\n'.format(plate_name, well))
+                'WARNING for LibraryStock {} {}: parent not '
+                'found in LibraryStock\n'.format(plate_name, well))
 
-            parent_library_well = None
+            parent_stock = None
             intended_clone = None
 
         if clone_name and (clone_name != likely_parent_clone_name):
             command.stderr.write(
-                'WARNING for LibraryWell {} {}: clone recorded '
+                'WARNING for LibraryStock {} {}: clone recorded '
                 'in CherryPickRNAiPlate is inconsistent with '
                 'CherryPickTemplate source/destination records\n'
                 .format(plate_name, well))
@@ -351,20 +353,20 @@ def update_LibraryWell_table(command, cursor):
                 recorded_clone = get_clone(clone_name)
                 if recorded_clone != intended_clone:
                     command.stderr.write(
-                        'WARNING for LibraryWell {} {}: clone recorded '
+                        'WARNING for LibraryStock {} {}: clone recorded '
                         'in CherryPickRNAiPlate does not match its '
                         'parent\'s clone\n'.format(plate_name, well))
 
             except ObjectDoesNotExist:
                 command.stderr.write(
-                    'WARNING for LibraryWell {} {}: clone recorded in '
+                    'WARNING for LibraryStock {} {}: clone recorded in '
                     'CherryPickRNAiPlate not found at all in RNAiPlate\n'
                     .format(plate_name, well))
 
-        new_well = LibraryWell(
-            id=get_library_well_name(plate_name, well),
+        new_well = LibraryStock(
+            id=get_library_stock_name(plate_name, well),
             plate=get_library_plate(plate_name), well=well,
-            parent_library_well=parent_library_well,
+            parent_stock=parent_stock,
             intended_clone=intended_clone)
 
         return update_or_save_object(command, new_well, recorded_wells,
@@ -379,18 +381,17 @@ def update_LibraryWell_table(command, cursor):
         well = get_three_character_well(legacy_row[1])
 
         if legacy_row[2]:
-            parent_library_well = get_library_well(legacy_row[2],
-                                                   legacy_row[3])
-            intended_clone = parent_library_well.intended_clone
+            parent_stock = get_library_stock(legacy_row[2], legacy_row[3])
+            intended_clone = parent_stock.intended_clone
 
         else:
-            parent_library_well = None
+            parent_stock = None
             intended_clone = None
 
-        new_well = LibraryWell(
-            id=get_library_well_name(plate_name, well),
+        new_well = LibraryStock(
+            id=get_library_stock_name(plate_name, well),
             plate=get_library_plate(plate_name), well=well,
-            parent_library_well=parent_library_well,
+            parent_stock=parent_stock,
             intended_clone=intended_clone)
 
         return update_or_save_object(command, new_well, recorded_wells,

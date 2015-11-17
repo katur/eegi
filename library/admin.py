@@ -2,8 +2,18 @@
 # from django.db import models
 from django.contrib import admin
 
-from library.models import LibraryPlate, LibraryWell, LibrarySequencing
+from library.models import LibraryStock, LibraryPlate, LibrarySequencing
 from website.admin import ReadOnlyAdmin
+
+
+class LibraryStockAdmin(ReadOnlyAdmin):
+    list_display = (
+        'id',
+        'parent_stock',
+        'intended_clone',
+    )
+
+    search_fields = ('id', 'plate', 'intended_clone',)
 
 
 class LibraryPlateAdmin(ReadOnlyAdmin):
@@ -18,19 +28,9 @@ class LibraryPlateAdmin(ReadOnlyAdmin):
     search_fields = ('id',)
 
 
-class LibraryWellAdmin(ReadOnlyAdmin):
-    list_display = (
-        'id',
-        'parent_library_well',
-        'intended_clone',
-    )
-
-    search_fields = ('id', 'plate', 'intended_clone',)
-
-
 class LibrarySequencingAdmin(ReadOnlyAdmin):
     list_display = (
-        'source_library_well',
+        'source_stock',
         'sample_plate_name',
         'sample_tube_number',
         'genewiz_tracking_number',
@@ -39,7 +39,7 @@ class LibrarySequencingAdmin(ReadOnlyAdmin):
 
     list_filter = ('sample_plate_name', 'genewiz_tracking_number',)
 
-    search_fields = ('source_library_well',)
+    search_fields = ('source_stock',)
 
     '''
     formfield_overrides = {
@@ -50,6 +50,6 @@ class LibrarySequencingAdmin(ReadOnlyAdmin):
     '''
 
 
+admin.site.register(LibraryStock, LibraryStockAdmin)
 admin.site.register(LibraryPlate, LibraryPlateAdmin)
-admin.site.register(LibraryWell, LibraryWellAdmin)
 admin.site.register(LibrarySequencing, LibrarySequencingAdmin)

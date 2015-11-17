@@ -32,13 +32,13 @@ class Command(BaseCommand):
         # Get and categorize the sequences corresponding to high confidence
         # positives
         seqs = (LibrarySequencing.objects
-                .select_related('source_library_well',
-                                'source_library_well__intended_clone'))
+                .select_related('source_stock',
+                                'source_stock__intended_clone'))
         seqs_blat = categorize_sequences_by_blat_results(seqs)
 
         # Get set of "verified" wells (for now, just those for which the top
         # BLAT hit is an amplicon for the intended clone)
-        verified = set(x.source_library_well for x in seqs_blat[1])
+        verified = set(x.source_stock for x in seqs_blat[1])
 
         # Get all SUP worm strains
         worms = WormStrain.objects.exclude(

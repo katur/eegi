@@ -9,7 +9,7 @@ class ExperimentAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'worm_strain',
-        'library_well',
+         # 'library_stock',
         'is_junk',
     )
 

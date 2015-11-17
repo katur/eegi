@@ -24,9 +24,9 @@ class Command(BaseCommand):
             'SUP', 2, passes_sup_positive_percentage_criteria)
 
         seqs = (LibrarySequencing.objects
-                .filter(source_library_well__in=positives)
-                .select_related('source_library_well',
-                                'source_library_well__intended_clone'))
+                .filter(source_stock__in=positives)
+                .select_related('source_stock',
+                                'source_stock__intended_clone'))
 
         seqs_blat = categorize_sequences_by_blat_results(seqs)
 
@@ -62,6 +62,6 @@ def _get_wells_to_resequence(s):
         if ((isinstance(key, int) and key > 1) or
                 key == NO_BLAT or key == NO_MATCH):
             wells_to_resequence.extend(
-                [x.source_library_well for x in s[key]])
+                [x.source_stock for x in s[key]])
 
     return sorted(wells_to_resequence)

@@ -50,8 +50,8 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         seq_starter = (LibrarySequencing.objects
-                       .select_related('source_library_well',
-                                       'source_library_well__intended_clone'))
+                       .select_related('source_stock',
+                                       'source_stock__intended_clone'))
 
         # Categorize all sequences by blat results and intended clone
         seqs = seq_starter.all()
@@ -61,7 +61,7 @@ class Command(BaseCommand):
         # Categorize sequences for SUP positives
         positives = get_positives_across_all_worms(
             'SUP', 2, passes_sup_positive_percentage_criteria)
-        seqs_pos = seq_starter.filter(source_library_well__in=positives)
+        seqs_pos = seq_starter.filter(source_stock__in=positives)
         seqs_pos_blat = categorize_sequences_by_blat_results(seqs_pos)
         self.print_categories('SEQUENCES CORRESPONDING TO POSITIVES ONLY',
                               seqs_pos_blat)
@@ -69,7 +69,7 @@ class Command(BaseCommand):
         # Categorize sequences for SUP high confidence positives
         high_conf = get_positives_across_all_worms(
             'SUP', 2, passes_sup_stringent_criteria)
-        seqs_high = seq_starter.filter(source_library_well__in=high_conf)
+        seqs_high = seq_starter.filter(source_stock__in=high_conf)
         seqs_high_blat = categorize_sequences_by_blat_results(seqs_high)
         self.print_categories('SEQUENCES CORRESPONDING TO HIGH CONFIDENCE '
                               'POSITIVES ONLY', seqs_high_blat)

@@ -2,7 +2,7 @@ import argparse
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
-from library.models import LibraryPlate, LibraryWell
+from library.models import LibraryPlate, LibraryStock
 from worms.models import WormStrain
 from utils.well_tile_conversion import well_to_tile
 
@@ -98,8 +98,8 @@ class Command(BaseCommand):
 
             try:
                 source_plate = LibraryPlate.objects.get(id=source_plate_name)
-                source_library_well = LibraryWell.objects.get(
-                    plate=source_plate, well=source_well)
+                source_stock = LibraryStock.objects.get(plate=source_plate,
+                                                        well=source_well)
             except ObjectDoesNotExist:
                 raise CommandError('{} at {} not found'
                                    .format(source_plate, source_well))
@@ -124,8 +124,8 @@ class Command(BaseCommand):
                 destination_plate_chars[1] = 'c'
                 destination_plate_name = ''.join(destination_plate_chars)
 
-            if source_library_well.intended_clone:
-                new_clone_name = source_library_well.intended_clone.id
+            if source_stock.intended_clone:
+                new_clone_name = source_stock.intended_clone.id
                 old_clone_name = new_to_old[new_clone_name]['old_clone_name']
                 node_primary_name = (
                     new_to_old[new_clone_name]['node_primary_name'])

@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404
 
 from clones.models import Clone
 from experiments.models import Experiment
-from library.models import LibraryWell
+from library.models import LibraryStock
 from worms.models import WormStrain
 
 
@@ -13,27 +13,27 @@ def rnai_knockdown(request, clones, temperature=None):
     n2 = get_object_or_404(WormStrain, pk='N2')
     clones = Clone.objects.filter(pk__in=clones.split(','))
 
-    # data = {clone: {library_well: [experiments]}}
+    # data = {clone: {library_stock: [experiments]}}
     data = OrderedDict()
 
     for clone in clones:
         experiments = Experiment.objects.filter(
-            is_junk=False, worm_strain=n2, library_well__intended_clone=clone)
+            is_junk=False, worm_strain=n2, library_stock__intended_clone=clone)
 
         if temperature:
             experiments = experiments.filter(plate__temperature=temperature)
 
         experiments = experiments.order_by(
-            '-library_well__plate__screen_stage', 'library_well',
+            '-library_stock__plate__screen_stage', 'library_stock',
             '-plate__date', 'id')
 
         data_by_well = OrderedDict()
 
         for experiment in experiments:
-            library_well = experiment.library_well
-            if library_well not in data_by_well:
-                data_by_well[library_well] = []
-            data_by_well[library_well].append(experiment)
+            library_stock = experiment.library_stock
+            if library_stock not in data_by_well:
+                data_by_well[library_stock] = []
+            data_by_well[library_stock].append(experiment)
 
         if data_by_well:
             data[clone] = data_by_well
@@ -56,9 +56,9 @@ def mutant_knockdown(request, worm, temperature):
     experiments = (
         Experiment.objects
         .filter(is_junk=False, worm_strain=worm,
-                library_well__intended_clone=l4440,
+                library_stock__intended_clone=l4440,
                 plate__temperature=temperature)
-        .order_by('-plate__date', 'library_well'))
+        .order_by('-plate__date', 'library_stock'))
 
     # data = {date: [experiments]}
     data = OrderedDict()
@@ -87,7 +87,7 @@ def double_knockdown(request, worm, clones, temperature):
     clones = Clone.objects.filter(pk__in=clones.split(','))
 
     # data = {clone: {
-    #   library_well: {
+    #   library_stock: {
     #       date: {
     #           'mutant_rnai': [exp_well, exp_well, ...],
     #           'n2_rnai': [exp_well, exp_well, ...],
@@ -99,19 +99,17 @@ def double_knockdown(request, worm, clones, temperature):
     for clone in clones:
         data_per_clone = OrderedDict()
 
-        library_wells = (LibraryWell.objects
-                         .filter(intended_clone=clone)
-                         .order_by('-plate__screen_stage', 'id'))
+        library_stocks = (LibraryStock.objects.filter(intended_clone=clone)
+                          .order_by('-plate__screen_stage', 'id'))
 
-        for library_well in library_wells:
+        for library_stock in library_stocks:
             data_per_well = OrderedDict()
 
             dates = (
                 Experiment.objects
-                .filter(
-                    is_junk=False, worm_strain=worm,
-                    plate__temperature=temperature,
-                    library_well=library_well)
+                .filter(is_junk=False, worm_strain=worm,
+                        plate__temperature=temperature,
+                        library_stock=library_stock)
                 .order_by('-plate__date')
                 .values_list('plate__date', flat=True)
                 .distinct())
@@ -121,41 +119,41 @@ def double_knockdown(request, worm, clones, temperature):
 
                 # Add double knockdowns
                 data_per_date['mutant_rnai'] = (
-                    Experiment.objects.filter(
-                        is_junk=False, worm_strain=worm,
-                        plate__temperature=temperature,
-                        library_well=library_well,
-                        plate__date=date)
+                    Experiment.objects
+                    .filter(is_junk=False, worm_strain=worm,
+                            plate__temperature=temperature,
+                            library_stock=library_stock,
+                            plate__date=date)
                     .order_by('id'))
 
                 # Add mutant + L4440 controls
                 data_per_date['mutant_l4440'] = (
-                    Experiment.objects.filter(
-                        is_junk=False, worm_strain=worm,
-                        plate__temperature=temperature,
-                        library_well__intended_clone=l4440,
-                        plate__date=date))
+                    Experiment.objects
+                    .filter(is_junk=False, worm_strain=worm,
+                            plate__temperature=temperature,
+                            library_stock__intended_clone=l4440,
+                            plate__date=date))
 
                 # TODO: N2 controls should be limited to closest temperature
 
                 # Add N2 + RNAi controls
                 data_per_date['n2_rnai'] = (
-                    Experiment.objects.filter(
-                        is_junk=False, worm_strain=n2,
-                        library_well=library_well,
-                        plate__date=date))
+                    Experiment.objects
+                    .filter(is_junk=False, worm_strain=n2,
+                            library_stock=library_stock,
+                            plate__date=date))
 
                 # Add N2 + L4440 controls
                 data_per_date['n2_l4440'] = (
-                    Experiment.objects.filter(
-                        is_junk=False, worm_strain=n2,
-                        library_well__intended_clone=l4440,
-                        plate__date=date))
+                    Experiment.objects
+                    .filter(is_junk=False, worm_strain=n2,
+                            library_stock__intended_clone=l4440,
+                            plate__date=date))
 
                 data_per_well[date] = data_per_date
 
             if data_per_well:
-                data_per_clone[library_well] = data_per_well
+                data_per_clone[library_stock] = data_per_well
 
         data[clone] = data_per_clone
 
