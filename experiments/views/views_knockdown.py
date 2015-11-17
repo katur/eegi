@@ -18,14 +18,19 @@ def rnai_knockdown(request, clones, temperature=None):
 
     for clone in clones:
         experiments = Experiment.objects.filter(
-            is_junk=False, worm_strain=n2, library_stock__intended_clone=clone)
+            is_junk=False, worm_strain=n2,
+            library_stock__intended_clone=clone)
 
         if temperature:
             experiments = experiments.filter(plate__temperature=temperature)
 
-        experiments = experiments.order_by(
-            '-library_stock__plate__screen_stage', 'library_stock',
-            '-plate__date', 'id')
+        # No need to prefetch manual scores, since N2 not manually scored
+        experiments = (
+            experiments
+            .select_related('library_stock', 'plate')
+            .prefetch_related('devstarscore_set')
+            .order_by('-library_stock__plate__screen_stage',
+                      'library_stock', '-plate__date', 'id'))
 
         data_by_well = OrderedDict()
 

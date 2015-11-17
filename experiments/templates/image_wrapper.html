@@ -26,12 +26,18 @@
   </div>
 
   <span class="image-caption">
-    {% if display_scores %}
     <span class="image-scores">
-      {{ experiment|get_manual_score_summary }}
-      <br>
-      DevStaR: {{ experiment|get_devstar_score_summary }}
+      {% if display_devstar %}
+      <span>
+        DevStaR: {{ experiment|get_devstar_score_summary }}
+      </span>
+      {% endif %}
+
+      {% if display_manual %}
+      <span>
+        Manual: {{ experiment|get_manual_score_summary }}
+      </span>
+      {% endif %}
     </span>
-    {% endif %}
   </span>
 </div>
