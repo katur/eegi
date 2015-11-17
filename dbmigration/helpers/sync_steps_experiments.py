@@ -143,7 +143,6 @@ def update_DevstarScore_table(command, cursor):
                     'GIscoreLarvaePerWorm, GIscoreSurvival '
                     'FROM RawDataWithScore '
                     'WHERE (expID < 40000 OR expID >= 50000) '
-                    'AND expID >= 460 '
                     'AND RNAiPlateID NOT LIKE "Julie%" '
                     'ORDER BY expID, 96well')
 
@@ -203,7 +202,7 @@ def update_DevstarScore_table(command, cursor):
         # however it is still worthwhile to perform this check in order
         # to find the mismatches, and to confirm manually that each one
         # makes sense.
-        new_lp = new_score.experiment.library_stock.library_plate_id
+        new_lp = new_score.experiment.library_stock.plate_id
         legacy_lp = legacy_row[4]
         if (legacy_lp != new_lp and
                 new_score.experiment.plate_id not in (461, 8345) and

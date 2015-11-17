@@ -381,8 +381,12 @@ def update_LibraryStock_table(command, cursor):
         well = get_three_character_well(legacy_row[1])
 
         if legacy_row[2]:
-            parent_stock = get_library_stock(legacy_row[2], legacy_row[3])
-            intended_clone = parent_stock.intended_clone
+            try:
+                parent_stock = get_library_stock(legacy_row[2], legacy_row[3])
+                intended_clone = parent_stock.intended_clone
+            except ObjectDoesNotExist:
+                parent_stock = None
+                intended_clone = None
 
         else:
             parent_stock = None

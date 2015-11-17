@@ -25,16 +25,18 @@ to the redesigned MySQL database (eegi).
 # Add empty LibraryStocks
 ./manage.py add_empty_library_wells
 
+# Due to rare case of some ElianaRearray wells pointing at empties
+./manage.py sync_legacy_database 1 2
+
 # Import seqencing data and Firoz's blat results
 ./manage.py import_genewiz_data materials/sequencing/genewiz/tracking_numbers.csv materials/sequencing/genewiz/genewiz_data
 ./manage.py import_blat_results materials/sequencing/blat_results_from_firoz/joined
 
 # Import WormStrain rows from materials/worm_strains/worm_strains.csv
+# Import auth_user rows from materials/users/users.csv
 
 # Import ExperimentWell and ExperimentPlate
-./manage.py sync_legacy_database 3 3
-
-# Import auth_user rows from materials/users/users.csv
+./manage.py sync_legacy_database 3 3 2> stderr.out
 
 # Import scores
 ./manage.py sync_legacy_database 4
