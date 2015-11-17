@@ -69,11 +69,11 @@ def _get_organized_blat_results():
 
     """
     blats = (LibrarySequencingBlatResult.objects.all()
-             .select_related('library_sequencing', 'clone_hit'))
+             .select_related('sequencing', 'clone_hit'))
 
     b = {}
     for blat in blats:
-        seq = blat.library_sequencing
+        seq = blat.sequencing
         if seq not in b:
             b[seq] = []
         b[seq].append(blat)

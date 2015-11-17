@@ -86,7 +86,7 @@ class Command(BaseCommand):
                                    .format(hit_rank))
 
             result = LibrarySequencingBlatResult(
-                library_sequencing=sequencing,
+                sequencing=sequencing,
                 clone_hit=clone,
                 e_value=e_value,
                 bit_score=bit_score,

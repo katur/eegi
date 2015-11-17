@@ -163,7 +163,7 @@ class LibrarySequencing(models.Model):
 
 class LibrarySequencingBlatResult(models.Model):
     """A BLAT result from a particular LibrarySequencing result."""
-    library_sequencing = models.ForeignKey(LibrarySequencing)
+    sequencing = models.ForeignKey(LibrarySequencing)
     clone_hit = models.ForeignKey(Clone)
     e_value = models.FloatField()
     bit_score = models.IntegerField()
@@ -171,8 +171,8 @@ class LibrarySequencingBlatResult(models.Model):
 
     class Meta:
         db_table = 'LibrarySequencingBlatResult'
-        ordering = ['library_sequencing', 'hit_rank']
+        ordering = ['sequencing', 'hit_rank']
 
     def __unicode__(self):
         return ('BLAT result for sequencing result <{}>, hitting clone <{}>'
-                .format(self.library_sequencing, self.clone_hit))
+                .format(self.sequencing, self.clone_hit))
