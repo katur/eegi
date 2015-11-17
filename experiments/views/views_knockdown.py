@@ -122,38 +122,30 @@ def double_knockdown(request, worm, clones, temperature):
             for date in dates:
                 data_per_date = {}
 
+                # The part common to all queries
+                common = (Experiment.objects
+                          .filter(is_junk=False, plate__date=date)
+                          .select_related('plate'))
+
                 # Add double knockdowns
-                data_per_date['mutant_rnai'] = (
-                    Experiment.objects
-                    .filter(is_junk=False, worm_strain=worm,
-                            plate__temperature=temperature,
-                            library_stock=library_stock,
-                            plate__date=date)
-                    .order_by('id'))
+                data_per_date['mutant_rnai'] = common.filter(
+                    worm_strain=worm, plate__temperature=temperature,
+                    library_stock=library_stock)
 
                 # Add mutant + L4440 controls
-                data_per_date['mutant_l4440'] = (
-                    Experiment.objects
-                    .filter(is_junk=False, worm_strain=worm,
-                            plate__temperature=temperature,
-                            library_stock__intended_clone=l4440,
-                            plate__date=date))
+                data_per_date['mutant_l4440'] = common.filter(
+                    worm_strain=worm, plate__temperature=temperature,
+                    library_stock__intended_clone=l4440)
 
                 # TODO: N2 controls should be limited to closest temperature
 
                 # Add N2 + RNAi controls
-                data_per_date['n2_rnai'] = (
-                    Experiment.objects
-                    .filter(is_junk=False, worm_strain=n2,
-                            library_stock=library_stock,
-                            plate__date=date))
+                data_per_date['n2_rnai'] = common.filter(
+                    worm_strain=n2, library_stock=library_stock)
 
                 # Add N2 + L4440 controls
-                data_per_date['n2_l4440'] = (
-                    Experiment.objects
-                    .filter(is_junk=False, worm_strain=n2,
-                            library_stock__intended_clone=l4440,
-                            plate__date=date))
+                data_per_date['n2_l4440'] = common.filter(
+                    worm_strain=n2, library_stock__intended_clone=l4440)
 
                 data_per_well[date] = data_per_date
 
