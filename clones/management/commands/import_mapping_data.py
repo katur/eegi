@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from clones.models import Clone, Gene, CloneTarget
 from eegi.local_settings import MAPPING_DATABASE
-from utils.db import get_field_dictionary
+from utils.sql import get_field_dictionary
 from utils.scripting import require_db_write_acknowledgement
 
 
