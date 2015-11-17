@@ -1,4 +1,4 @@
-"""Utility module to help with designing plates (e.g. library plates).
+"""Utility module to help with designing new plates (e.g. library plates).
 
 This module includes functions to:
 

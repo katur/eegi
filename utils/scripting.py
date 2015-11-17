@@ -1,4 +1,4 @@
-"""Utility module with functionality to help with common scripting needs."""
+"""Utility module to help with common scripting needs."""
 
 import sys
 

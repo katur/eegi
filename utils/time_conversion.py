@@ -1,4 +1,4 @@
-"""Utility module with functionality to help work with timestamps.
+"""Utility module with helpers for working with timestamps.
 
 These functions are mainly useful for migrating data from the legacy
 database, which did not use proper mysql date and time fields,

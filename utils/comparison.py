@@ -1,3 +1,6 @@
+"""Utility module with float comparison helpers."""
+
+
 def compare_floats_for_equality(x, y, error_margin=0.001):
     """Compare two floats for equality.
 
@@ -8,10 +11,8 @@ def compare_floats_for_equality(x, y, error_margin=0.001):
         return True
     elif x is None or y is None:
         return False
-    elif abs(x - y) < error_margin:
-        return True
     else:
-        return False
+        return abs(x - y) < error_margin
 
 
 def compare_values_for_equality(x, y):

@@ -1,3 +1,6 @@
+"""Utility module with SQL database querying helpers."""
+
+
 def get_field_dictionary(cursor, table, fieldnames):
     """Get a dictionary capturing fields of a table.
 

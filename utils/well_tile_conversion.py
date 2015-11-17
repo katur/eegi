@@ -1,4 +1,4 @@
-"""Utility module for helping converting between well and tile.
+"""Utility module for help converting between well and tile.
 
     - Well, e.g. 'A01', is the canonical way of referring to a position in a
       plate. This is what is used throughout the database.

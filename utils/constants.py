@@ -1,4 +1,4 @@
-"""Utility module containing constants needed across apps."""
+"""Utility module with constants needed across apps."""
 
 ROWS_96 = 'ABCDEFGH'
 NUM_ROWS_96 = len(ROWS_96)

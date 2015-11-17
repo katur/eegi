@@ -1,3 +1,5 @@
+"""Utility module with Django form helpers."""
+
 from django import forms
 
 
