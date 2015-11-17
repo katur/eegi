@@ -177,6 +177,10 @@ def update_DevstarScore_table(command, cursor):
         # Clean the object to populate the fields derived from other fields
         new_score.clean()
 
+        ###############
+        # SANITY CHECKS
+        ###############
+
         errors = []
 
         new_allele = new_score.experiment.worm_strain.allele
@@ -203,14 +207,12 @@ def update_DevstarScore_table(command, cursor):
         # to find the mismatches, and to confirm manually that each one
         # makes sense.
         new_lp = new_score.experiment.library_stock.plate_id
-        legacy_lp = legacy_row[4]
+        legacy_lp = legacy_row[4].replace('_', '-').replace('zc310', 'zu310')
         if (legacy_lp != new_lp and
                 new_score.experiment.plate_id not in (461, 8345) and
-                legacy_lp != new_lp.replace('-', '_') and
-                legacy_lp != new_lp.replace('zu310', 'zc310') and
                 ('vidal-' not in new_lp or
                     legacy_lp != new_lp.split('vidal-')[1])):
-            errors.append('RNAi plate mismatch')
+            errors.append('RNAi plate mismatch: {} {}')
 
         if new_score.count_embryo != legacy_row[10]:
             errors.append('embryo count mismatch')
