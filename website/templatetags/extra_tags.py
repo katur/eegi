@@ -147,4 +147,4 @@ def list_targets(clone):
     if displays:
         return ', '.join(displays)
     else:
-        return "No targets (according to Firoz's database)"
+        return "None (according to Firoz's database)"

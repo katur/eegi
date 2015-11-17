@@ -23,7 +23,7 @@ RNAi Clone{{ clones|pluralize }} {{ clones|join:', ' }}
 
 {% for clone, library_stocks in data.items %}
 <div class="knockdown-clone-section">
-  <h4>{% include "clone_spans.html" %}</h4>
+  <h4>{% include 'clone_spans.html' %}</h4>
 
   {% for library_stock, experiments in library_stocks.items %}
   <table class="knockdown-results single-column grayscale">

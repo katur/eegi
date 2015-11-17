@@ -6,8 +6,8 @@
   &nbsp;
 
   {% if clone %}
-  <a href="{{ clone.get_absolute_url }}">{{ clone.id }}</a>,
-  targets [{{ clone|list_targets }}]
+  <a href="{{ clone.get_absolute_url }}">{{ clone.id }}</a>
+  (targets {{ clone|list_targets }})
 
   {% else %}
   {{ clone }}

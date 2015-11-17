@@ -7,10 +7,14 @@
     {{ worm.get_display_string }}</a>
 </span>
 
-{% if temperature and worm|get_screen_category:temperature %}
+{% if temperature %}
 <span>
-  <b>Screen for</b>
+  <b>Temperature</b>
   &nbsp;
-  {{ worm|get_screen_category:temperature }}
+  {{ temperature|celsius }}
+
+  {% if worm|get_screen_category:temperature %}
+  ({{ worm|get_screen_category:temperature }} screen temperature)
+  {% endif %}
 </span>
 {% endif %}

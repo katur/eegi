@@ -15,6 +15,23 @@ Experiment Plate {{ experiment_plate.id }}
   {% include 'experiment_plate_spans.html' %}
 
   <span>
+    <b>Worm strain{{ worms|pluralize }}</b>
+    &nbsp;
+
+    {% for worm in worms %}
+    <a href="{% get_worm_url worm request %}">
+      {{ worm.get_display_string }}</a>
+    {% if not forloop.last %},{% endif %}
+    {% endfor %}
+  </span>
+
+  <span>
+    <b>Temperature</b>
+    &nbsp;
+    {{ experiment_plate.temperature|celsius }}
+  </span>
+
+  <span>
     <a href="{% url 'experiment_plates_vertical_url' experiment_plate.id %}">
       See vertical view: thumbnails</a>
 

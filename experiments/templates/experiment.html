@@ -6,7 +6,8 @@
 
 
 {% block page_title %}
-Experiment Plate {{ experiment_plate }},
+Experiment Plate
+<a href="{{ experiment_plate.get_absolute_url }}">{{ experiment_plate }}</a>,
 Well {{ experiment.well }}
 {% endblock %}
 
@@ -15,30 +16,42 @@ Well {{ experiment.well }}
 
 
 <div class="cleared-spaced-spans">
-  {% include 'experiment_spans.html' %}
   {% include 'experiment_plate_spans.html' %}
+
+  {% include 'worm_spans.html' %}
+
+  <span>
+    <b>RNAi stock</b>
+    &nbsp;
+    {{ library_stock.id }}
+  </span>
+
+  {% include 'clone_spans.html' with clone=intended_clone %}
+
+  {% if experiment.is_junk %}
+  <span class="error-message">JUNK</span>
+  {% endif %}
+
+  {% include 'score_spans.html' %}
 
   <span>
     {% if devstar_available %}
       {% if mode != 'devstar' %}
       <a href="?mode=devstar">
-        See DevStaR-labelled image</a>
+        Toggle DevStaR-labelled image</a>
 
       {% else %}
       <a href="?{% url_replace request 'mode' 'big' %}">
-        See unlabelled image</a>
+        Toggle unlabelled image</a>
 
       {% endif %}
       <br>
     {% endif %}
 
-    <a href="{{ experiment_plate.get_absolute_url }}">
-      See full experiment plate</a>
-
     {% if not experiment.is_control %}
     <br>
 
-    <a href="{% url 'double_knockdown_url' worm_strain.id intended_clone.id experiment_plate.temperature %}">
+    <a href="{% url 'double_knockdown_url' worm.id intended_clone.id temperature %}">
       See all replicates and controls</a>
     {% endif %}
   </span>

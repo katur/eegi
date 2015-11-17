@@ -13,6 +13,9 @@ from utils.http import http_response_ok
 from worms.models import WormStrain
 
 
+EXPERIMENTS_PER_PAGE = 100
+
+
 def experiment(request, pk):
     """Render the page to see a particular experiment well."""
     experiment = get_object_or_404(Experiment, pk=pk)
@@ -23,9 +26,10 @@ def experiment(request, pk):
     context = {
         'experiment': experiment,
         'experiment_plate': experiment.plate,
+        'temperature': experiment.plate.temperature,
         'library_stock': experiment.library_stock,
         'intended_clone': experiment.library_stock.intended_clone,
-        'worm_strain': experiment.worm_strain,
+        'worm': experiment.worm_strain,
         'devstar_available': devstar_available,
 
         # Default to full-size images
@@ -41,20 +45,18 @@ def experiment_plate(request, pk):
 
     context = {
         'experiment_plate': experiment_plate,
+        'worms': experiment_plate.get_worm_strains(),
         'experiments': (experiment_plate.experiment_set
                         .select_related(
                             'library_stock',
                             'library_stock__intended_clone')
                         .order_by('well')),
 
-        # Default to thumbnail
+        # Default to thumbnail images
         'mode': request.GET.get('mode', 'thumbnail'),
     }
 
     return render(request, 'experiment_plate.html', context)
-
-
-EXPERIMENTS_PER_PAGE = 100
 
 
 def experiment_plates(request, context=None):
