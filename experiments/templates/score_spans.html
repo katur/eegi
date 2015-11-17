@@ -1,0 +1,25 @@
+{% load extra_tags %}
+
+<span>
+  <b>Manual scores</b>
+  &nbsp;
+  {% if experiment|is_manually_scored %}
+  {{ experiment|get_manual_score_summary }}
+
+  {% else %}
+  Not manually scored
+
+  {% endif %}
+</span>
+
+<span>
+  <b>DevStaR scores</b>
+  &nbsp;
+  {% if experiment|is_devstar_scored %}
+  {{ experiment|get_devstar_score_summary }}
+
+  {% else %}
+  Not scored by DevStaR
+
+  {% endif %}
+</span>
