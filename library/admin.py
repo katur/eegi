@@ -41,14 +41,6 @@ class LibrarySequencingAdmin(ReadOnlyAdmin):
 
     search_fields = ('source_stock',)
 
-    '''
-    formfield_overrides = {
-        models.TextField: {'widget': Textarea(attrs={
-            'rows': 4, 'cols': 40, 'size': 20
-            })},
-    }
-    '''
-
 
 admin.site.register(LibraryStock, LibraryStockAdmin)
 admin.site.register(LibraryPlate, LibraryPlateAdmin)

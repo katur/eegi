@@ -6,22 +6,24 @@ def get_organized_library_stocks(screen_stage=None):
 
         l[plate][well] = library_stock
 
-    Optionally provide a screen_stage, to limit to the Primary or Secondary
-    screen.
+    Optionally provide integer screen_stage, to limit to that screen.
+
     """
     wells = LibraryStock.objects.select_related('plate')
+
     if screen_stage:
         wells = wells.filter(plate__screen_stage=screen_stage)
     else:
         wells = wells.all()
 
-    return organize_library_stocks(wells)
+    return _organize_library_stocks(wells)
 
 
-def organize_library_stocks(library_stocks):
+def _organize_library_stocks(library_stocks):
     """Organize library_stocks into the format:
 
         l[plate][well] = library_stock
+
     """
     l = {}
     for library_stock in library_stocks:

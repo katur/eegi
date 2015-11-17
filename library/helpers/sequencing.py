@@ -8,25 +8,12 @@ NO_CLONE_BLAT = 'no intended clone with BLAT results (bad)'
 NO_CLONE_NO_BLAT = 'no intended clone, no BLAT results (good)'
 
 
-def get_organized_blat_results():
-    """Fetch all blat results from the database, organized as:
-
-        b[sequencing_result] = blats
-    """
-    blats = (LibrarySequencingBlatResult.objects.all()
-             .select_related('library_sequencing', 'clone_hit'))
-
-    b = {}
-    for blat in blats:
-        seq = blat.library_sequencing
-        if seq not in b:
-            b[seq] = []
-        b[seq].append(blat)
-
-    return b
-
-
 def categorize_sequences_by_blat_results(seqs):
+    """Put seqs into high-level categories.
+
+    This is to get a general sense of the quality of our sequencing.
+
+    """
     s = {
         L4440_NO_BLAT: [],
         NO_CLONE_NO_BLAT: [],
@@ -36,7 +23,7 @@ def categorize_sequences_by_blat_results(seqs):
         NO_CLONE_BLAT: [],
     }
 
-    b = get_organized_blat_results()
+    b = _get_organized_blat_results()
 
     for seq in seqs:
         if seq.source_stock:
@@ -63,7 +50,7 @@ def categorize_sequences_by_blat_results(seqs):
             if seq not in b:
                 s[NO_BLAT].append(seq)
             else:
-                match = get_match(b[seq], intended_clone)
+                match = _get_match(b[seq], intended_clone)
                 if not match:
                     s[NO_MATCH].append(seq)
                 else:
@@ -75,14 +62,33 @@ def categorize_sequences_by_blat_results(seqs):
     return s
 
 
-def get_match(blat_results, intended_clone):
+def _get_organized_blat_results():
+    """Fetch all blat results from the database, organized as:
+
+        b[sequencing_result] = blats
+
+    """
+    blats = (LibrarySequencingBlatResult.objects.all()
+             .select_related('library_sequencing', 'clone_hit'))
+
+    b = {}
+    for blat in blats:
+        seq = blat.library_sequencing
+        if seq not in b:
+            b[seq] = []
+        b[seq].append(blat)
+
+    return b
+
+
+def _get_match(blat_results, intended_clone):
     for x in blat_results:
         if x.clone_hit == intended_clone:
             return x
     return None
 
 
-def avg(l):
+def _avg(l):
     if l:
         return sum(l) / len(l)
     else:
@@ -90,11 +96,11 @@ def avg(l):
 
 
 def get_avg_crl(seqs):
-    return avg([x.crl for x in seqs])
+    return _avg([x.crl for x in seqs])
 
 
 def get_avg_qs(seqs):
-    return avg([x.quality_score for x in seqs])
+    return _avg([x.quality_score for x in seqs])
 
 
 def get_number_decent_quality(seqs):
