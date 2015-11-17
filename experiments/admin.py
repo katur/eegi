@@ -9,7 +9,12 @@ class ExperimentAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'worm_strain',
-         # 'library_stock',
+        'library_stock',
+        'is_junk',
+    )
+
+    list_filter = (
+        'worm_strain',
         'is_junk',
     )
 
@@ -24,7 +29,6 @@ class ExperimentPlateAdmin(admin.ModelAdmin):
         'screen_stage',
         'temperature',
         'date',
-        'comment',
     )
 
     list_filter = (
@@ -42,6 +46,7 @@ class ManualScoreCodeAdmin(admin.ModelAdmin):
     list_display = (
         'id',
         'short_description',
+        'description',
         'legacy_description',
     )
 
@@ -61,6 +66,7 @@ class ManualScoreAdmin(admin.ModelAdmin):
 
     list_filter = (
         'scorer',
+        'score_code',
     )
 
     search_fields = (

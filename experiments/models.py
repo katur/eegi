@@ -56,7 +56,6 @@ class Experiment(models.Model):
     well = models.CharField(max_length=3)
     worm_strain = models.ForeignKey(WormStrain)
     library_stock = models.ForeignKey(LibraryStock)
-    # library_stock = models.CharField(max_length=24)
     is_junk = models.BooleanField(default=False, db_index=True)
     comment = models.TextField(blank=True)
 
