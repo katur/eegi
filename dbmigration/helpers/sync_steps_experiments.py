@@ -335,7 +335,8 @@ def update_ManualScore_table_primary(command, cursor):
                     'LEFT JOIN RawData '
                     'ON ManualScore.expID = RawData.expID '
                     'WHERE score != -8 AND score != -1 AND score != 4 '
-                    'AND score != 5 AND score != 6')
+                    'AND score != 5 AND score != 6 '
+                    'ORDER BY ManualScore.expID, ImgName')
 
     def sync_score_row(legacy_row):
         legacy_score_code = legacy_row[2]
@@ -402,7 +403,8 @@ def update_ManualScore_table_secondary(command, cursor):
     fields_to_compare = None
     legacy_query = ('SELECT expID, ImgName, score, '
                     'scoreBy, scoreYMD, ScoreTime '
-                    'FROM ScoreResultsManual')
+                    'FROM ScoreResultsManual '
+                    'ORDER BY expID, ImgName')
 
     def sync_score_row(legacy_row):
         legacy_score_code = legacy_row[2]
