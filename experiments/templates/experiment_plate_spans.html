@@ -12,6 +12,32 @@
   {{ experiment_plate.date|date:'SHORT_DATE_FORMAT' }}
 </span>
 
+<span>
+  {% with worms=experiment_plate.get_worm_strains %}
+  <b>Worm strain{{ worms|pluralize }}</b>
+  &nbsp;
+  {{ worms|get_comma_separated_strings:True|safe }}
+  {% endwith %}
+</span>
+
+<span>
+  <b>Temperature</b>
+  &nbsp;
+  {{ experiment_plate.temperature|celsius }}
+</span>
+
+<span>
+  {% with lplates=experiment_plate.get_library_plates %}
+  <b>RNAi plate{{ lplates|pluralize }}</b>
+  &nbsp;
+  {{ lplates|get_comma_separated_strings:True|safe }}
+  {% endwith %}
+</span>
+
+{% if experiment_plate.has_junk %}
+<span class="error-message">HAS JUNK</span>
+{% endif %}
+
 {% if experiment_plate.comment %}
 <span>
   <b>Plate comment</b>

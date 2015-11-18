@@ -7,7 +7,7 @@ from django.shortcuts import render, get_object_or_404
 from eegi.settings import MATERIALS_DIR
 from experiments.models import Experiment, ExperimentPlate
 from experiments.forms import ExperimentPlateFilterForm
-from library.models import LibraryStock, LibraryPlate
+from library.models import LibraryPlate
 from utils.well_tile_conversion import tile_to_well
 from utils.http import http_response_ok
 from worms.models import WormStrain
@@ -86,6 +86,22 @@ def experiment_plates(request, context=None):
     return render(request, 'experiment_plates.html', context)
 
 
+def experiment_plates_vertical(request, ids):
+    """Render the page to view experiment plate images vertically."""
+    # NOTE: To preserve order, do not use .filter(id__in=ids)
+    ids = ids.split(',')
+    plates = [get_object_or_404(ExperimentPlate, pk=id) for id in ids]
+
+    context = {
+        'experiment_plates': plates,
+
+        # Default to thumbnail
+        'mode': request.GET.get('mode', 'thumbnail')
+    }
+
+    return render(request, 'experiment_plates_vertical.html', context)
+
+
 def experiment_plates_grid(request, screen_stage):
     """Render the page showing all experiments as a grid."""
     worms = WormStrain.objects.all()
@@ -131,26 +147,6 @@ def experiment_plates_grid(request, screen_stage):
     }
 
     return render(request, 'experiment_plates_grid.html', context)
-
-
-def experiment_plates_vertical(request, ids):
-    """Render the page to view vertical images of one or more experiments."""
-    ids = ids.split(',')
-    experiments = []
-    for id in ids:
-        experiment = get_object_or_404(ExperimentPlate, pk=id)
-        experiment.library_stocks = LibraryStock.objects.filter(
-            plate=experiment.library_plate).order_by('well')
-        experiments.append(experiment)
-
-    context = {
-        'experiments': experiments,
-
-        # Default to thumbnail
-        'mode': request.GET.get('mode', 'thumbnail')
-    }
-
-    return render(request, 'experiment_plates_vertical.html', context)
 
 
 DEVSTAR_SCORING_CATEGORIES_DIR = MATERIALS_DIR + '/devstar_scoring/categories'

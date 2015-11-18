@@ -12,34 +12,11 @@ Experiment {{ experiment|get_id_with_plate_link|safe }}
 
 {% block content %}
 
-{% with experiment_plate=experiment.plate %}
-{% with temperature=experiment_plate.temperature %}
-{% with library_stock=experiment.library_stock %}
-{% with intended_clone=library_stock.intended_clone %}
-{% with worm=experiment.worm_strain %}
-
 <div class="cleared-spaced-spans">
-  {% include 'experiment_plate_spans.html' %}
+  {% include 'experiment_spans.html' %}
 
-  {% include 'worm_spans.html' %}
-
+  {% if devstar_available %}
   <span>
-    <b>RNAi stock</b>
-    &nbsp;
-
-    {{ library_stock|get_id_with_plate_link|safe }}
-  </span>
-
-  {% include 'clone_spans.html' with clone=intended_clone %}
-
-  {% if experiment.is_junk %}
-  <span class="error-message">IS JUNK</span>
-  {% endif %}
-
-  {% include 'score_spans.html' with show_devstar=True show_manual=True %}
-
-  <span>
-    {% if devstar_available %}
       {% if mode != 'devstar' %}
       <a href="?mode=devstar">
         Toggle DevStaR-labelled image</a>
@@ -49,25 +26,10 @@ Experiment {{ experiment|get_id_with_plate_link|safe }}
         Toggle unlabelled image</a>
 
       {% endif %}
-      <br>
-    {% endif %}
-
-    {% if not experiment.is_control %}
-    <br>
-
-    <a href="{% url 'double_knockdown_url' worm.id intended_clone.id temperature %}">
-      See with controls and replicates</a>
-    {% endif %}
   </span>
-
+  {% endif %}
 </div>
 
 {% include 'image.html' %}
-
-{% endwith %}
-{% endwith %}
-{% endwith %}
-{% endwith %}
-{% endwith %}
 
 {% endblock %}

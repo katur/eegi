@@ -381,11 +381,13 @@ table thead th {
   #experiment-grid th {
     font-weight: bold; }
 
-#experiment-plates-vertical .plate-info span {
-  float: left;
-  clear: both;
-  width: 100%;
-  text-align: center; }
+#experiment-plates-vertical .plate-info {
+  font-size: 14px;
+  font-weight: normal; }
+  #experiment-plates-vertical .plate-info span, #experiment-plates-vertical .plate-info h4 {
+    float: left;
+    clear: both;
+    max-width: 250px; }
 
 #experiment .image-frame {
   clear: both;

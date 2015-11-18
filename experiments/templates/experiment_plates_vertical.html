@@ -15,49 +15,34 @@ Vertical Tile View of Experiments:
 <!-- Outer table is in case there are multiple experiments -->
 <table>
 <tr>
-{% for experiment in experiments %}
+{% for experiment_plate in experiment_plates %}
 <td>
 
-  <!-- Inner table is per-experiment -->
-  <table class="grayscale plate-96 vertical-tiles
-      mode-{{ mode }}">
-    <thead>
-      <tr>
-        <th class="plate-info">
-          <span>
-            <a href="{% url 'experiment_plate_url' experiment.id %}">
-              {{ experiment.id }}</a>
-          </span>
+<!-- Inner table is per-experiment -->
+<table class="grayscale plate-96 vertical-tiles
+    mode-{{ mode }}">
+  <thead>
+    <tr>
+      <th class="plate-info">
+        <h4>
+          <a href="{{ experiment_plate.get_absolute_url }}">
+            {{ experiment_plate.id }}</a>
+        </h4>
 
-          <span>
-            {{ experiment.worm_strain.get_display_string }}
-          </span>
+        {% include 'experiment_plate_spans.html' %}
+      </th>
+    </tr>
+  </thead>
 
-          <span>{{ experiment.library_plate }}</span>
+  <tbody>
+    {% for well in experiment_plate.experiment_set.all %}
+    <tr>
+      {% include 'well.html' with is_experiment=True %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
-          <span>{{ experiment.temperature|celsius }}</span>
-
-          <span>{{ experiment.date|date:'SHORT_DATE_FORMAT' }}</span>
-
-          <span
-          {% if experiment.is_junk %}
-            class="error-message">JUNK
-          {% else %}
-            >not junk
-          {% endif %}
-          </span>
-        </th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {% for library_stock in experiment.library_stocks %}
-      <tr>
-        {% include 'well.html' %}
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
 </td>
 {% endfor %}
 </tr>

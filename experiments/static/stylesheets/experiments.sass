@@ -8,7 +8,7 @@
 
 
 #experiment-grid
-  font-size: 12px
+  font-size: $base-font-size - 4
   table-layout: fixed
   width: 100%
 
@@ -22,11 +22,13 @@
 
 #experiment-plates-vertical
   .plate-info
-    span
+    font-size: $base-font-size - 2
+    font-weight: normal
+
+    span, h4
       float: left
       clear: both
-      width: 100%
-      text-align: center
+      max-width: 250px
 
 
 #experiment
