@@ -25,11 +25,6 @@ def experiment(request, pk):
 
     context = {
         'experiment': experiment,
-        'experiment_plate': experiment.plate,
-        'temperature': experiment.plate.temperature,
-        'library_stock': experiment.library_stock,
-        'intended_clone': experiment.library_stock.intended_clone,
-        'worm': experiment.worm_strain,
         'devstar_available': devstar_available,
 
         # Default to full-size images

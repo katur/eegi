@@ -35,7 +35,7 @@ at {{ temperature|celsius }}
         </th>
       </thead>
 
-      {% with display_devstar=True %}
+      {% with show_devstar=True %}
       <tbody>
         <tr>
           <th>Mutant ({{ worm.gene }}) + RNAi ({{ clone.id }})</th>
@@ -44,7 +44,7 @@ at {{ temperature|celsius }}
 
         <tr>
           <td>
-            {% with display_manual=True %}
+            {% with show_manual=True %}
             {% include 'carousel.html' with experiments=e.mutant_rnai %}
             {% endwith %}
           </td>

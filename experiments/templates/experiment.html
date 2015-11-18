@@ -2,7 +2,7 @@
 {% load extra_tags %}
 
 
-{% block body_id %}experiment-well{% endblock %}
+{% block body_id %}experiment{% endblock %}
 
 
 {% block page_title %}
@@ -12,6 +12,11 @@ Experiment {{ experiment|get_id_with_plate_link|safe }}
 
 {% block content %}
 
+{% with experiment_plate=experiment.plate %}
+{% with temperature=experiment_plate.temperature %}
+{% with library_stock=experiment.library_stock %}
+{% with intended_clone=library_stock.intended_clone %}
+{% with worm=experiment.worm_strain %}
 
 <div class="cleared-spaced-spans">
   {% include 'experiment_plate_spans.html' %}
@@ -31,9 +36,7 @@ Experiment {{ experiment|get_id_with_plate_link|safe }}
   <span class="error-message">IS JUNK</span>
   {% endif %}
 
-  {% with display_devstar=True display_manual=True %}
-  {% include 'score_spans.html' %}
-  {% endwith %}
+  {% include 'score_spans.html' with show_devstar=True show_manual=True %}
 
   <span>
     {% if devstar_available %}
@@ -60,5 +63,11 @@ Experiment {{ experiment|get_id_with_plate_link|safe }}
 </div>
 
 {% include 'image.html' %}
+
+{% endwith %}
+{% endwith %}
+{% endwith %}
+{% endwith %}
+{% endwith %}
 
 {% endblock %}
