@@ -49,6 +49,10 @@ class ExperimentPlate(models.Model):
 
         return LibraryPlate.objects.filter(pk__in=library_plate_pks)
 
+    def has_junk(self):
+        junk = self.experiment_set.values_list('is_junk', flat=True)
+        return True in junk
+
 
 class Experiment(models.Model):
     id = models.CharField(max_length=20, primary_key=True)

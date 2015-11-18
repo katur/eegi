@@ -2,7 +2,7 @@ from django import forms
 from django.core.validators import MinLengthValidator
 
 from clones.forms import RNAiKnockdownField
-from experiments.models import ExperimentPlate
+from experiments.models import Experiment, ExperimentPlate
 from utils.forms import BlankNullBooleanSelect
 from worms.forms import (MutantKnockdownField, ScreenChoiceField,
                          clean_mutant_query_and_screen)
@@ -10,63 +10,52 @@ from worms.forms import (MutantKnockdownField, ScreenChoiceField,
 
 class ExperimentPlateFilterForm(forms.Form):
     """Form for filtering ExperimentPlate instances."""
-    id = forms.IntegerField(required=False,
-                            label='Exact id',
-                            help_text='e.g. 32412')
+    plate__id = forms.IntegerField(
+        required=False, label='Exact id', help_text='e.g. 32412')
 
-    id__gte = forms.IntegerField(required=False,
-                                 label='Min id',
-                                 help_text='inclusive')
+    plate__id__gte = forms.IntegerField(
+        required=False, label='Min id', help_text='inclusive')
 
-    id__lte = forms.IntegerField(required=False,
-                                 label='Max id',
-                                 help_text='inclusive')
+    plate__id__lte = forms.IntegerField(
+        required=False, label='Max id', help_text='inclusive')
 
-    worm_strain = forms.CharField(required=False,
-                                  help_text='e.g. TH48')
+    plate__date = forms.DateField(
+        required=False, label='Exact date', help_text='YYYY-MM-DD')
 
-    worm_strain__gene = forms.CharField(required=False,
-                                        label='Worm gene',
-                                        help_text='e.g. mbk-2')
+    plate__date__gte = forms.DateField(
+        required=False, label='Min date', help_text='inclusive')
 
-    worm_strain__allele = forms.CharField(required=False,
-                                          label='Worm allele',
-                                          help_text='e.g. dd5')
+    plate__date__lte = forms.DateField(
+        required=False, label='Max date', help_text='inclusive')
 
-    temperature = forms.DecimalField(required=False,
-                                     label='Exact temp',
-                                     help_text='number only')
+    plate__temperature = forms.DecimalField(
+        required=False, label='Exact temp', help_text='number only')
 
-    temperature__gte = forms.DecimalField(required=False,
-                                          label='Min temp',
-                                          help_text='inclusive')
+    plate__temperature__gte = forms.DecimalField(
+        required=False, label='Min temp', help_text='inclusive')
 
-    temperature__lte = forms.DecimalField(required=False,
-                                          label='Max temp',
-                                          help_text='inclusive')
+    plate__temperature__lte = forms.DecimalField(
+        required=False, label='Max temp', help_text='inclusive')
 
-    library_plate = forms.CharField(required=False,
-                                    help_text='e.g. II-3-B2')
+    plate__screen_stage = forms.ChoiceField(
+        required=False, label='Screen stage',
+        choices=[('', '')] + list(ExperimentPlate.SCREEN_STAGE_CHOICES))
 
-    date = forms.DateField(required=False,
-                           label='Date',
-                           help_text='YYYY-MM-DD')
+    worm_strain = forms.CharField(
+        required=False, label='Worm strain', help_text='e.g. TH48')
 
-    date__gte = forms.DateField(required=False,
-                                label='Min date',
-                                help_text='inclusive')
+    worm_strain__gene = forms.CharField(
+        required=False, label='Worm gene', help_text='e.g. mbk-2')
 
-    date__lte = forms.DateField(required=False,
-                                label='Max date',
-                                help_text='inclusive')
+    worm_strain__allele = forms.CharField(
+        required=False, label='Worm allele', help_text='e.g. dd5')
 
-    has_junk = forms.NullBooleanField(required=False,
-                                      initial=False,
-                                      widget=BlankNullBooleanSelect)
+    library_stock__plate = forms.CharField(
+        required=False, label='Library plate', help_text='e.g. II-3-B2')
 
-    screen_stage = forms.ChoiceField(
-        choices=[('', '')] + list(ExperimentPlate.SCREEN_STAGE_CHOICES),
-        required=False)
+    is_junk = forms.NullBooleanField(
+        required=False, label="Has junk",
+        widget=BlankNullBooleanSelect)
 
     def clean(self):
         cleaned_data = super(ExperimentPlateFilterForm, self).clean()
@@ -80,8 +69,11 @@ class ExperimentPlateFilterForm(forms.Form):
             if not v:
                 del cleaned_data[k]
 
-        cleaned_data['experiments'] = (
-            ExperimentPlate.objects.filter(**cleaned_data))
+        plate_pks = (Experiment.objects.filter(**cleaned_data)
+                     .order_by('plate').values_list('id', flat=True))
+
+        cleaned_data['experiment_plates'] = (ExperimentPlate.objects
+                                             .filter(pk__in=plate_pks))
 
         return cleaned_data
 

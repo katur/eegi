@@ -13,7 +13,7 @@ from utils.http import http_response_ok
 from worms.models import WormStrain
 
 
-EXPERIMENTS_PER_PAGE = 100
+EXPERIMENT_PLATES_PER_PAGE = 100
 
 
 def experiment(request, pk):
@@ -61,30 +61,32 @@ def experiment_plate(request, pk):
 
 def experiment_plates(request, context=None):
     """Render the page to search for experiment plates."""
-    experiments = None
-    display_experiments = None
+    experiment_plates = None
+    display_plates = None
 
     if request.GET:
         form = ExperimentPlateFilterForm(request.GET)
         if form.is_valid():
-            experiments = form.cleaned_data['experiments']
+            experiment_plates = form.cleaned_data['experiment_plates']
 
-            paginator = Paginator(experiments, EXPERIMENTS_PER_PAGE)
+            paginator = Paginator(experiment_plates,
+                                  EXPERIMENT_PLATES_PER_PAGE)
             page = request.GET.get('page')
+
             try:
-                display_experiments = paginator.page(page)
+                display_plates = paginator.page(page)
             except PageNotAnInteger:
-                display_experiments = paginator.page(1)
+                display_plates = paginator.page(1)
             except EmptyPage:
-                display_experiments = paginator.page(paginator.num_pages)
+                display_plates = paginator.page(paginator.num_pages)
 
     else:
         form = ExperimentPlateFilterForm()
 
     context = {
         'form': form,
-        'experiments': experiments,
-        'display_experiments': display_experiments,
+        'experiment_plates': experiment_plates,
+        'display_plates': display_plates,
     }
 
     return render(request, 'experiment_plates.html', context)
