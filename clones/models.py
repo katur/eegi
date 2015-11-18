@@ -51,6 +51,9 @@ class Gene(models.Model):
         else:
             return id
 
+    def get_url(self):
+        return self.get_wormbase_url()
+
     def get_wormbase_url(self):
         return 'http://www.wormbase.org/species/c_elegans/gene/' + self.id
 

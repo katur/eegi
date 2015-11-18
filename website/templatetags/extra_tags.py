@@ -89,9 +89,27 @@ def get_comma_separated_targets(clone):
     """
     genes = [x.gene for x in clone.get_targets()]
     if genes:
-        return get_comma_separated_strings(genes)
+        return get_comma_separated_strings(genes, add_links=True)
     else:
         return "None (according to Firoz's database)"
+
+
+@register.filter
+def get_id_with_plate_link(item):
+    """Get a string of item.id, with an HTML link around the plate.
+
+    Works if item.id is in format 'plate_well', item has attribute plate,
+    and that plate in turn has the function get_absolute_url().
+
+    If any of the above conditions do not hold, returns str(item).
+
+    """
+    try:
+        plate, well = item.id.split('_')
+        url = item.plate.get_absolute_url()
+        return '<a href="{}">{}</a>_{}'.format(url, plate, well)
+    except Exception:
+        return str(item)
 
 
 @register.filter

@@ -6,11 +6,7 @@
 
 
 {% block page_title %}
-Experiment Plate
-<a href="{{ experiment_plate.get_absolute_url }}">
-  {{ experiment_plate }}</a>,
-
-Well {{ experiment.well }}
+Experiment {{ experiment|get_id_with_plate_link|safe }}
 {% endblock %}
 
 
@@ -26,16 +22,7 @@ Well {{ experiment.well }}
     <b>RNAi stock</b>
     &nbsp;
 
-    {% if library_stock.plate and library_stock.well %}
-    Plate
-    <a href="{{ library_stock.plate.get_absolute_url}}">
-      {{ library_stock.plate.id }}</a>,
-
-    well {{ library_stock.well }}
-
-    {% else %}
-    {{ library_stock.id }}
-    {% endif %}
+    {{ library_stock|get_id_with_plate_link|safe }}
   </span>
 
   {% include 'clone_spans.html' with clone=intended_clone %}

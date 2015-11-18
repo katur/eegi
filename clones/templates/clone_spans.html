@@ -8,7 +8,7 @@
   {% if clone %}
   <a href="{{ clone.get_absolute_url }}">{{ clone.id }}</a>
   &nbsp;
-  (targets {{ clone|get_comma_separated_targets }})
+  (targets {{ clone|get_comma_separated_targets|safe }})
 
   {% else %}
   {{ clone }}

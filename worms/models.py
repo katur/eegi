@@ -37,23 +37,23 @@ class WormStrain(models.Model):
     def __unicode__(self):
         return self.id
 
-    def get_short_genotype(self):
-        return self.genotype.split()[0]
-
     def get_display_string(self):
         if self.genotype:
             return '{}: {}'.format(self.id, self.get_short_genotype())
         else:
             return self.id
 
-    def get_lab_website_url(self):
-        return 'http://gunsaluspiano.bio.nyu.edu/strain/' + self.id
+    def get_short_genotype(self):
+        return self.genotype.split()[0]
+
+    def get_url(self):
+        return self.get_wormbase_url()
 
     def get_wormbase_url(self):
         return 'http://www.wormbase.org/species/c_elegans/strain/' + self.id
 
-    def get_url(self):
-        return self.get_wormbase_url()
+    def get_lab_website_url(self):
+        return 'http://gunsaluspiano.bio.nyu.edu/strain/' + self.id
 
     def is_control(self):
         return not self.allele
