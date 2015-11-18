@@ -126,18 +126,6 @@ def get_tile(well):
 
 
 @register.filter
-def is_manually_scored(experiment):
-    """Determine whether an experiment was manually scored."""
-    return experiment.is_manually_scored()
-
-
-@register.filter
-def is_devstar_scored(experiment):
-    """Determine whether an experiment was scored by DevStaR."""
-    return experiment.is_devstar_scored()
-
-
-@register.filter
 def get_manual_score_summary(experiment):
     """Get a string summarizing the scores for this experiment.
 

@@ -44,7 +44,9 @@ Well {{ experiment.well }}
   <span class="error-message">IS JUNK</span>
   {% endif %}
 
+  {% with display_devstar=True display_manual=True %}
   {% include 'score_spans.html' %}
+  {% endwith %}
 
   <span>
     {% if devstar_available %}

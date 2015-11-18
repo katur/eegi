@@ -27,17 +27,7 @@
 
   <span class="image-caption">
     <span class="image-scores">
-      {% if display_devstar %}
-      <span>
-        DevStaR: {{ experiment|get_devstar_score_summary }}
-      </span>
-      {% endif %}
-
-      {% if display_manual %}
-      <span>
-        Manual: {{ experiment|get_manual_score_summary }}
-      </span>
-      {% endif %}
+      {% include 'score_spans.html' %}
     </span>
   </span>
 </div>
