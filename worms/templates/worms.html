@@ -18,8 +18,7 @@
   <tbody>
     {% for worm in worms %}
     <tr>
-      <td><a href="{% get_worm_url worm request %}">
-        {{ worm }}</a></td>
+      <td><a href="{{ worm.get_url }}">{{ worm.id }}</a></td>
       <td>{{ worm.genotype }}</td>
       <td>{{ worm.permissive_temperature|celsius }}</td>
       <td>{{ worm.restrictive_temperature|celsius }}</td>

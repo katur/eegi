@@ -72,9 +72,11 @@ Experiments
           </ol>
 
           {% if experiments %}
+            {% with c=experiments|get_comma_separated_ids %}
             <a href="
-              {% url 'experiment_plates_vertical_url' experiments|concatenate_ids_with_commas %}">
+              {% url 'experiment_plates_vertical_url' c %}">
               all</a>
+            {% endwith %}
           {% endif %}
         </td>
         {% endfor %}

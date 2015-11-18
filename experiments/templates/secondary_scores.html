@@ -59,7 +59,7 @@ criteria C (count-based):
           {{ well.intended_clone.id }}</a></td>
       <td>
         {% if well.intended_clone %}
-        {{ well.intended_clone|list_targets }}
+        {{ well.intended_clone|get_comma_separated_targets }}
         {% endif %}
       </td>
 

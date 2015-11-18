@@ -7,7 +7,9 @@
 
 {% block page_title %}
 Experiment Plate
-<a href="{{ experiment_plate.get_absolute_url }}">{{ experiment_plate }}</a>,
+<a href="{{ experiment_plate.get_absolute_url }}">
+  {{ experiment_plate }}</a>,
+
 Well {{ experiment.well }}
 {% endblock %}
 
@@ -23,7 +25,17 @@ Well {{ experiment.well }}
   <span>
     <b>RNAi stock</b>
     &nbsp;
+
+    {% if library_stock.plate and library_stock.well %}
+    Plate
+    <a href="{{ library_stock.plate.get_absolute_url}}">
+      {{ library_stock.plate.id }}</a>,
+
+    well {{ library_stock.well }}
+
+    {% else %}
     {{ library_stock.id }}
+    {% endif %}
   </span>
 
   {% include 'clone_spans.html' with clone=intended_clone %}
@@ -41,7 +53,7 @@ Well {{ experiment.well }}
         Toggle DevStaR-labelled image</a>
 
       {% else %}
-      <a href="?{% url_replace request 'mode' 'big' %}">
+      <a href="?mode=big">
         Toggle unlabelled image</a>
 
       {% endif %}

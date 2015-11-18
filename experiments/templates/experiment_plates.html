@@ -53,7 +53,10 @@
     </span>
 
     {% if experiment_plates %}
-    {% url 'experiment_plates_vertical_url' experiment_plates|concatenate_ids_with_commas as vertical_url %}
+
+    {% with c=experiment_plates|get_comma_separated_ids %}
+    {% url 'experiment_plates_vertical_url' c as vertical_url %}
+
     <span class="vertical-links">
       <a href="{{ vertical_url }}"
           {% if experiment_plates|length > 500 %}class="inactive-link"{% endif %}>
@@ -70,6 +73,7 @@
 
     {% include 'pagination_status.html' with paginated=experiment_plates %}
 
+    {% endwith %}
     {% endif %}
   </div>
   {% endifnotequal %}
@@ -98,13 +102,15 @@
       </td>
 
       <td>
-        {% for worm in experiment_plate.get_worm_strains %}
-        {{ worm.get_display_string }}{% if not forloop.last %},{% endif %}
-        {% endfor %}
+        {% with worms=experiment_plate.get_worm_strains %}
+        {{ worms|get_comma_separated_strings:True|safe }}
+        {% endwith %}
       </td>
 
       <td>
-        {{ experiment_plate.get_library_plates|join:', ' }}
+        {% with lplates=experiment_plate.get_library_plates %}
+        {{ lplates|get_comma_separated_strings:True|safe }}
+        {% endwith %}
       </td>
 
       <td>{{ experiment_plate.temperature|celsius }}</td>

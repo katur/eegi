@@ -3,8 +3,7 @@
 <span>
   <b>Worm strain</b>
   &nbsp;
-  <a href="{% get_worm_url worm request %}">
-    {{ worm.get_display_string }}</a>
+  <a href="{{ worm.get_url }}">{{ worm.get_display_string }}</a>
 </span>
 
 {% if temperature %}

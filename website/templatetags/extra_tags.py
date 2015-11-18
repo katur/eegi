@@ -22,22 +22,76 @@ def url_replace(request, field, value):
 
 
 @register.filter(is_safe=True)
-def concatenate_ids_with_commas(l):
-    """Get a string that is elements of l, separated by commas.
-
-    Does not add spaces before or after the commas.
-
-    """
-    return ','.join([str(item.id) for item in l])
-
-
-@register.filter(is_safe=True)
 def celsius(temperature):
     """Return temperature in format 22.5C, including degree sign."""
     if temperature:
         return unicode(temperature) + u'\N{DEGREE SIGN}' + 'C'
     else:
         return None
+
+
+@register.filter(is_safe=True)
+def get_comma_separated_ids(l):
+    """Get a comma-separated string of the IDs of the elements of l.
+
+    Does not add spaces before or after the commas. This is because this
+    is typically meant for non-pretty contexts (e.g. creating URLs).
+
+    """
+    return ','.join([str(item.id) for item in l])
+
+
+@register.filter(is_safe=True)
+def get_comma_separated_strings(l, add_url=False):
+    """Get a comma-separated string of the items of l.
+
+    For each item, favor get_display_string() if defined.
+    Otherwise, uses the str() method.
+
+    Optionally pass add_url=True to have each string be a link.
+    URLs favor get_absolute_url() if defined. Otherwise, tries get_url().
+    Otherwise, does '#'.
+
+    Adds a space after the commas. This is because this function is meant
+    for "pretty" contexts.
+
+    """
+    def get_string(item):
+        try:
+            return item.get_display_string()
+        except AttributeError:
+            return str(item)
+
+    def get_url(item):
+        try:
+            return item.get_absolute_url()
+        except AttributeError:
+            return item.get_url()
+        except AttributeError:
+            return '#'
+
+    if add_url:
+        strings = ['<a href="{}">{}</a>'.format(
+                   get_url(item), get_string(item)) for item in l]
+
+    else:
+        strings = [get_string(item) for item in l]
+
+    return ', '.join(strings)
+
+
+@register.filter
+def get_comma_separated_targets(clone):
+    """Get a comma-separated string of clone's targets.
+
+    Adds a space after the commas.
+
+    """
+    genes = [x.gene for x in clone.get_targets()]
+    if genes:
+        return get_comma_separated_strings(genes)
+    else:
+        return "None (according to Firoz's database)"
 
 
 @register.filter
@@ -54,6 +108,23 @@ def get_screen_category(worm, temperature):
         return ''
 
 
+@register.simple_tag
+def get_image_url(experiment, mode=None):
+    """Get the url for an experiment's image.
+
+    Set mode to 'thumbnail' or 'devstar' for either of those image
+    types. Otherwise, returns the normal full-size image.
+
+    """
+    return experiment.get_image_url(mode=mode)
+
+
+@register.filter
+def get_tile(well):
+    """Get the tile, e.g. Tile000094, corresponding to well."""
+    return well_to_tile(well)
+
+
 @register.filter
 def is_manually_scored(experiment):
     """Determine whether an experiment was manually scored."""
@@ -64,11 +135,6 @@ def is_manually_scored(experiment):
 def is_devstar_scored(experiment):
     """Determine whether an experiment was scored by DevStaR."""
     return experiment.is_devstar_scored()
-
-
-@register.filter
-def get_tile(well):
-    return well_to_tile(well)
 
 
 @register.filter
@@ -104,6 +170,7 @@ def get_manual_score_summary(experiment):
 
 @register.filter
 def get_devstar_score_summary(experiment):
+    """Get a string summarizing the DevStaR score for this experiment."""
     scores = experiment.get_devstar_scores()
 
     output = []
@@ -122,29 +189,3 @@ def get_devstar_score_summary(experiment):
         output.append(o)
 
     return '; '.join(str(item) for item in output)
-
-
-@register.simple_tag
-def get_worm_url(worm, request):
-    return worm.get_url(request)
-
-
-@register.simple_tag
-def get_image_url(experiment, mode=None):
-    """Get the url for an experiment's image.
-
-    Set mode to 'thumbnail' or 'devstar' for either of those image
-    types. Otherwise, returns the normal full-size image.
-
-    """
-    return experiment.get_image_url(mode=mode)
-
-
-@register.filter
-def list_targets(clone):
-    targets = clone.get_targets()
-    displays = [x.gene.get_display_string() for x in targets]
-    if displays:
-        return ', '.join(displays)
-    else:
-        return "None (according to Firoz's database)"

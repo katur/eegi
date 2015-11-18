@@ -6,10 +6,8 @@
 
 
 {% block page_title %}
-  Vertical Tile View of Experiments:
-  {% for experiment in experiments %}
-    {{ experiment.id }}{% if not forloop.last %},{% endif %}
-  {% endfor %}
+Vertical Tile View of Experiments:
+{{ experiments|get_comma_separated_ids }}
 {% endblock %}
 
 

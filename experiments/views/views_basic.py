@@ -45,7 +45,6 @@ def experiment_plate(request, pk):
 
     context = {
         'experiment_plate': experiment_plate,
-        'worms': experiment_plate.get_worm_strains(),
         'experiments': (experiment_plate.experiment_set
                         .select_related(
                             'library_stock',
