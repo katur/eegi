@@ -20,8 +20,7 @@ Experiment Plate {{ experiment_plate.id }}
 
     {% for worm in worms %}
     <a href="{% get_worm_url worm request %}">
-      {{ worm.get_display_string }}</a>
-    {% if not forloop.last %},{% endif %}
+      {{ worm.get_display_string }}</a>{% if not forloop.last %},{% endif %}
     {% endfor %}
   </span>
 

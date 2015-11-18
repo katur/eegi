@@ -29,7 +29,7 @@ Well {{ experiment.well }}
   {% include 'clone_spans.html' with clone=intended_clone %}
 
   {% if experiment.is_junk %}
-  <span class="error-message">JUNK</span>
+  <span class="error-message">IS JUNK</span>
   {% endif %}
 
   {% include 'score_spans.html' %}
