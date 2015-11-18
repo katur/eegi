@@ -13,6 +13,7 @@
   {{ temperature|celsius }}
 
   {% if worm|get_screen_category:temperature %}
+  &nbsp;
   ({{ worm|get_screen_category:temperature }} screen temperature)
   {% endif %}
 </span>

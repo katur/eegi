@@ -37,10 +37,6 @@ class ExperimentPlateFilterForm(forms.Form):
     plate__temperature__lte = forms.DecimalField(
         required=False, label='Max temp', help_text='inclusive')
 
-    plate__screen_stage = forms.ChoiceField(
-        required=False, label='Screen stage',
-        choices=[('', '')] + list(ExperimentPlate.SCREEN_STAGE_CHOICES))
-
     worm_strain = forms.CharField(
         required=False, label='Worm strain', help_text='e.g. TH48')
 
@@ -52,6 +48,10 @@ class ExperimentPlateFilterForm(forms.Form):
 
     library_stock__plate = forms.CharField(
         required=False, label='Library plate', help_text='e.g. II-3-B2')
+
+    plate__screen_stage = forms.ChoiceField(
+        required=False, label='Screen stage',
+        choices=[('', '')] + list(ExperimentPlate.SCREEN_STAGE_CHOICES))
 
     is_junk = forms.NullBooleanField(
         required=False, label="Has junk",
