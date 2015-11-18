@@ -24,13 +24,20 @@ from well_tile_conversion import well_to_tile
 from well_naming import get_well_name, is_proper_well_name
 
 
-def get_well_list(vertical=False, is_384=False):
+def get_well_list(is_384=False, vertical=False):
     """Get a list of all wells.
 
-    vertical param determines whether to list first by column or by row.
-
     is_384 param determines if the well list should be for 384-format plates,
-    or 96-format plates.
+    or 96-format plates. Defaults to 96-format plates.
+
+    vertical param determines whether to list first by column or by row:
+        - with vertical=False (the default), the order is:
+            ['A01', 'A02', ..., 'A12', 'B01', 'B02', ..., 'B12', ...,
+             'H01', 'H02', ..., 'H12']
+
+        - with vertical=True, the order is:
+            ['A01', 'B01', ..., 'H01', 'A02', 'B02', ..., 'H02', ...,
+             'A12', 'B12', ..., 'H12']
 
     """
     if is_384:
@@ -41,19 +48,13 @@ def get_well_list(vertical=False, is_384=False):
         cols = COLS_96
 
     if vertical:
-        return get_well_list_vertical(rows, cols)
+        return _get_well_list_vertical(rows, cols)
     else:
-        return get_well_list_horizontal(rows, cols)
+        return _get_well_list_horizontal(rows, cols)
 
 
-def get_well_list_vertical(rows, columns):
-    """Get a list of all wells derived from the provided rows and columns,
-    listed in 'vertical' order:
-
-        ['A01', 'B01', ..., 'H01', 'A02', 'B02', ..., 'H02', ...,
-         'A12', 'B12', ..., 'H12']
-
-    """
+def _get_well_list_vertical(rows, columns):
+    """Helper to get wells in 'vertical' order."""
     wells = []
     for column in columns:
         for row in rows:
@@ -61,14 +62,8 @@ def get_well_list_vertical(rows, columns):
     return wells
 
 
-def get_well_list_horizontal(rows, columns):
-    """Get a list of all wells derived from the provided rows and columns,
-    listed in 'horizontal' order:
-
-        ['A01', 'A02', ..., 'A12', 'B01', 'B02', ..., 'B12', ...,
-         'H01', 'H02', ..., 'H12']
-
-    """
+def _get_well_list_horizontal(rows, columns):
+    """Helper to get wells in 'horizontal' order."""
     wells = []
     for row in rows:
         for column in columns:
@@ -76,49 +71,47 @@ def get_well_list_horizontal(rows, columns):
     return wells
 
 
-def get_96_well_set():
-    """Get a set of all standard 96-plate well names: 'A01', ..., 'H12'"""
-    return get_well_set(ROWS_96, COLS_96)
+def get_well_set(is_384=False):
+    """Get a set of all wells.
 
-
-def get_384_well_set():
-    """Get a set of all standard 384-plate well names: 'A01', ..., 'P24'"""
-    return get_well_set(ROWS_384, COLS_384)
-
-
-def get_well_set(rows, columns):
-    """Get a set of all well names made from combining the provided rows
-    and columns.
-
-    Expects each column to be an integer with no more than 2 digits.
+    is_384 param determines if the well list should be for 384-format plates,
+    or 96-format plates. Defaults to 96-format plates.
 
     """
-    wells = set()
-    for row in rows:
-        for column in columns:
-            wells.add(get_well_name(row, column))
-    return wells
+    return set(get_well_list(is_384=is_384))
 
 
-def get_96_grid():
-    """Get a 2D array representing a 96-well plate (8 rows, 12 columns).
+def get_well_grid(is_384=False):
+    """Get a 2D array representing the wells in one plate.
+
+    is_384 param determines if the well list should be for 384-format plates,
+    or 96-format plates. Defaults to 96-format plates (i.e., 8 rows and 12
+    columns).
 
     Each element in the 2D array is a dictionary with 'well' and 'tile' keys
     mapping to the well name and tile name.
 
     """
+    if is_384:
+        rows = ROWS_384
+        cols = COLS_384
+    else:
+        rows = ROWS_96
+        cols = COLS_96
+
     plate = []
-    for row_index in range(NUM_ROWS_96):
-        plate.append([])
-        for column_index in range(NUM_COLS_96):
-            row_name = ROWS_96[row_index]
-            column_name = column_index + 1
-            well = get_well_name(row_name, column_name)
+    for row in rows:
+        this_row = []
+        for column in cols:
+            well = get_well_name(row, column)
+
             position_info = {
                 'well': well,
                 'tile': well_to_tile(well),
             }
-            plate[row_index].append(position_info)
+
+            this_row.append(position_info)
+        plate.append(this_row)
 
     return plate
 

@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from dbmigration.helpers.name_getters import get_library_stock_name
 from dbmigration.helpers.object_getters import get_library_plate
 from library.models import LibraryStock
-from utils.plate_layout import get_96_well_set, get_384_position
+from utils.plate_layout import get_well_set, get_384_position
 from utils.scripting import require_db_write_acknowledgement
 
 
@@ -26,7 +26,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         require_db_write_acknowledgement()
 
-        wells_96 = get_96_well_set()
+        all_wells = get_well_set()
 
         # Get all wells, to determine which wells are missing.
         #
@@ -50,7 +50,7 @@ class Command(BaseCommand):
             plate_wells[library_stock.plate].add(library_stock.well)
 
         for library_plate in plate_wells:
-            missing_wells = wells_96 - plate_wells[library_plate]
+            missing_wells = all_wells - plate_wells[library_plate]
 
             for missing_well in missing_wells:
                 library_stock = LibraryStock(
