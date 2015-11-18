@@ -86,11 +86,11 @@ def experiment_plates(request, context=None):
     return render(request, 'experiment_plates.html', context)
 
 
-def experiment_plates_vertical(request, ids):
+def experiment_plates_vertical(request, pks):
     """Render the page to view experiment plate images vertically."""
     # NOTE: To preserve order, do not use .filter(id__in=ids)
-    ids = ids.split(',')
-    plates = [get_object_or_404(ExperimentPlate, pk=id) for id in ids]
+    pks = pks.split(',')
+    plates = [get_object_or_404(ExperimentPlate, pk=pk) for pk in pks]
 
     context = {
         'experiment_plates': plates,
@@ -105,14 +105,18 @@ def experiment_plates_vertical(request, ids):
 def experiment_plates_grid(request, screen_stage):
     """Render the page showing all experiments as a grid."""
     worms = WormStrain.objects.all()
-    experiments = (ExperimentPlate.objects
-                   .filter(screen_stage=screen_stage, is_junk=False)
-                   .select_related('library_plate', 'worm_strain'))
 
-    plate_pks = (experiments.order_by('library_plate')
-                 .values_list('library_plate', flat=True)
-                 .distinct())
-    plates = LibraryPlate.objects.filter(pk__in=plate_pks)
+    common = Experiment.objects.filter(is_junk=False,
+                                       plate__screen_stage=screen_stage)
+
+    lplate_pks = (common.order_by('library_stock__plate')
+                  .values_list('library_stock__plate', flat=True)
+                  .distinct())
+
+    lplates = LibraryPlate.objects.filter(pk__in=lplate_pks)
+
+    experiments = common.select_related('plate', 'worm_strain',
+                                        'library_stock')
 
     header = []
     for worm in worms:
@@ -121,29 +125,33 @@ def experiment_plates_grid(request, screen_stage):
         if worm.restrictive_temperature:
             header.append((worm, worm.restrictive_temperature))
 
-    e = OrderedDict()
-    for plate in plates:
-        e[plate] = OrderedDict()
+    # data = {library_plate: {worm: {temperature: [experiments]}}}
+    data = OrderedDict()
+    for lplate in lplates:
+        data[lplate] = OrderedDict()
+
         for worm in worms:
-            if worm not in e[plate]:
-                e[plate][worm] = OrderedDict()
+            if worm not in data[lplate]:
+                data[lplate][worm] = OrderedDict()
             if worm.permissive_temperature:
-                e[plate][worm][worm.permissive_temperature] = []
+                data[lplate][worm][worm.permissive_temperature] = []
             if worm.restrictive_temperature:
-                e[plate][worm][worm.restrictive_temperature] = []
+                data[lplate][worm][worm.restrictive_temperature] = []
 
     for experiment in experiments:
-        plate = experiment.library_plate
+        eplate = experiment.plate
+        lplate = experiment.library_stock.plate
+        temp = eplate.temperature
         worm = experiment.worm_strain
-        temp = experiment.temperature
 
-        if temp in e[plate][worm]:
-            e[plate][worm][temp].append(experiment)
+        if (temp in data[lplate][worm] and
+                eplate not in data[lplate][worm][temp]):
+            data[lplate][worm][temp].append(eplate)
 
     context = {
         'screen_stage': screen_stage,
         'header': header,
-        'e': e,
+        'e': data,
     }
 
     return render(request, 'experiment_plates_grid.html', context)
