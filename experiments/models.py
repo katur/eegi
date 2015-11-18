@@ -74,14 +74,14 @@ class Experiment(models.Model):
     def get_absolute_url(self):
         return reverse('experiments.views.experiment', args=[self.id])
 
+    def is_control(self):
+        return self.has_control_worm() or self.has_control_clone()
+
     def has_control_worm(self):
         return self.worm_strain.is_control()
 
     def has_control_clone(self):
         return self.library_stock.intended_clone.is_control()
-
-    def is_control(self):
-        return self.has_control_worm() or self.has_control_clone()
 
     def date(self):
         return self.plate.date
@@ -131,16 +131,16 @@ class Experiment(models.Model):
         """Get all manual scores for this experiment well."""
         return self.manualscore_set.all()
 
+    def get_devstar_scores(self):
+        """Get all DevStaR scores for this experiment."""
+        return self.devstarscore_set.all()
+
     def is_manually_scored(self):
         """Check if an experiment was manually scored."""
         if self.get_manual_scores():
             return True
         else:
             return False
-
-    def get_devstar_scores(self):
-        """Get all DevStaR scores for this experiment."""
-        return self.devstarscore_set.all()
 
     def is_devstar_scored(self):
         """Check if an experiment was scored by DevStaR."""

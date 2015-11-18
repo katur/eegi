@@ -2,7 +2,6 @@ import re
 
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models import Q
 
 from clones.models import Clone
 from utils.well_tile_conversion import well_to_tile
@@ -67,11 +66,10 @@ class LibraryPlate(models.Model):
         return reverse('library.views.library_plate', args=[self.id])
 
     def get_all_wells(self):
-        return LibraryStock.objects.filter(plate=self)
+        return self.librarystock_set.all()
 
     def get_l4440_wells(self):
-        return LibraryStock.objects.filter(Q(plate=self),
-                                           Q(intended_clone='L4440'))
+        return self.librarystock_set.filter(intended_clone='L4440')
 
     def is_ahringer_96_plate(self):
         """Determine if a plate name is in the correct format for an
@@ -113,6 +111,9 @@ class LibraryStock(models.Model):
         return '{} (intended clone: {})'.format(self.id,
                                                 self.intended_clone)
 
+    def is_control(self):
+        return self.intended_clone.is_control()
+
     def get_row(self):
         return self.well[0]
 
@@ -121,9 +122,6 @@ class LibraryStock(models.Model):
 
     def get_tile(self):
         return well_to_tile(self.well)
-
-    def is_control(self):
-        return self.intended_clone.is_control()
 
 
 class LibrarySequencing(models.Model):
