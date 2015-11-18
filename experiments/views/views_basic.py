@@ -1,5 +1,4 @@
 import os
-from collections import OrderedDict
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
@@ -7,10 +6,8 @@ from django.shortcuts import render, get_object_or_404
 from eegi.settings import MATERIALS_DIR
 from experiments.models import Experiment, ExperimentPlate
 from experiments.forms import ExperimentPlateFilterForm
-from library.models import LibraryPlate
 from utils.well_tile_conversion import tile_to_well
 from utils.http import http_response_ok
-from worms.models import WormStrain
 
 
 EXPERIMENT_PLATES_PER_PAGE = 100
@@ -100,61 +97,6 @@ def experiment_plates_vertical(request, pks):
     }
 
     return render(request, 'experiment_plates_vertical.html', context)
-
-
-def experiment_plates_grid(request, screen_stage):
-    """Render the page showing all experiments as a grid."""
-    worms = WormStrain.objects.all()
-
-    common = Experiment.objects.filter(is_junk=False,
-                                       plate__screen_stage=screen_stage)
-
-    lplate_pks = (common.order_by('library_stock__plate')
-                  .values_list('library_stock__plate', flat=True)
-                  .distinct())
-
-    lplates = LibraryPlate.objects.filter(pk__in=lplate_pks)
-
-    experiments = common.select_related('plate', 'worm_strain',
-                                        'library_stock')
-
-    header = []
-    for worm in worms:
-        if worm.permissive_temperature:
-            header.append((worm, worm.permissive_temperature))
-        if worm.restrictive_temperature:
-            header.append((worm, worm.restrictive_temperature))
-
-    # data = {library_plate: {worm: {temperature: [experiments]}}}
-    data = OrderedDict()
-    for lplate in lplates:
-        data[lplate] = OrderedDict()
-
-        for worm in worms:
-            if worm not in data[lplate]:
-                data[lplate][worm] = OrderedDict()
-            if worm.permissive_temperature:
-                data[lplate][worm][worm.permissive_temperature] = []
-            if worm.restrictive_temperature:
-                data[lplate][worm][worm.restrictive_temperature] = []
-
-    for experiment in experiments:
-        eplate = experiment.plate
-        lplate = experiment.library_stock.plate
-        temp = eplate.temperature
-        worm = experiment.worm_strain
-
-        if (temp in data[lplate][worm] and
-                eplate not in data[lplate][worm][temp]):
-            data[lplate][worm][temp].append(eplate)
-
-    context = {
-        'screen_stage': screen_stage,
-        'header': header,
-        'e': data,
-    }
-
-    return render(request, 'experiment_plates_grid.html', context)
 
 
 DEVSTAR_SCORING_CATEGORIES_DIR = MATERIALS_DIR + '/devstar_scoring/categories'

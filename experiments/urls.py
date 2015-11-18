@@ -7,12 +7,10 @@ urlpatterns = patterns(
         name='experiment_plate_url'),
     url(r'^experiment/(\d+_[A-H]\d\d)$', 'experiment',
         name='experiment_url'),
-
     url(r'^experiment-plates$', 'experiment_plates',
         name='experiment_plates_url'),
-    url(r'^experiment-plates-grid/(\d)$', 'experiment_plates_grid',
-        name='experiment_plates_grid_url'),
-    url(r'^experiment-plates-vertical/([\d,]+)$', 'experiment_plates_vertical',
+    url(r'^experiment-plates-vertical/([\d,]+)$',
+        'experiment_plates_vertical',
         name='experiment_plates_vertical_url'),
 
     url(r'^single-knockdown$', 'single_knockdown_search',

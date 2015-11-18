@@ -5,31 +5,12 @@
 {% block body_id %}experiment-plates{% endblock %}
 
 
-{% block page_title %}Experiment Plates{% endblock %}
+{% block page_title %}Find Experiment Plates{% endblock %}
 
 
 {% block content %}
 
 <div class="page-section">
-  <h4>Browse all experiment plates in grid format</h4>
-
-  <a href="{% url 'experiment_plates_grid_url' 1 %}">
-    Primary screen (non-junk, official temps only)</a>
-
-  <br>
-  <br>
-
-  <a href="{% url 'experiment_plates_grid_url' 2 %}">
-    Secondary screen (non-junk, official temps only)</a>
-</div>
-
-<div class="page-section">
-  <hr>
-</div>
-
-<div class="page-section">
-  <h4>Find experiment plates</h4>
-
   {% if form.errors %}
   <span class="error-message">
     Please correct the error{{ form.errors|pluralize }} below.
