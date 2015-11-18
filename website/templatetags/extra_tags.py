@@ -42,13 +42,13 @@ def get_comma_separated_ids(l):
 
 
 @register.filter(is_safe=True)
-def get_comma_separated_strings(l, add_url=False):
+def get_comma_separated_strings(l, add_links=False):
     """Get a comma-separated string of the items of l.
 
     For each item, favor get_display_string() if defined.
     Otherwise, uses the str() method.
 
-    Optionally pass add_url=True to have each string be a link.
+    Optionally pass add_links=True to have each string be a link.
     URLs favor get_absolute_url() if defined. Otherwise, tries get_url().
     Otherwise, does '#'.
 
@@ -70,7 +70,7 @@ def get_comma_separated_strings(l, add_url=False):
         except AttributeError:
             return '#'
 
-    if add_url:
+    if add_links:
         strings = ['<a href="{}">{}</a>'.format(
                    get_url(item), get_string(item)) for item in l]
 
