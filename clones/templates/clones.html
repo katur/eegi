@@ -37,7 +37,7 @@
       </td>
 
       <td>
-        {{ clone|get_comma_separated_targets }}
+        {{ clone|get_comma_separated_targets|safe }}
       </td>
     </tr>
     {% endfor %}
