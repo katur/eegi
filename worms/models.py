@@ -2,9 +2,6 @@ from decimal import Decimal
 
 from django.db import models
 
-from experiments.models import ManualScore
-from experiments.helpers.scores import organize_manual_scores
-
 
 class WormStrain(models.Model):
     """A worm strain used in the screen.
@@ -101,6 +98,8 @@ class WormStrain(models.Model):
             data[library_stock][experiment] = most_relevant_score
 
         """
+        # Keep this import here, to avoid creating a circular dependency
+        from experiments.models import ManualScore
         scores = ManualScore.objects.filter(
             experiment__worm_strain=self,
             experiment__is_junk=False,
@@ -128,6 +127,7 @@ class WormStrain(models.Model):
                 'clonetarget_set__gene')
             .order_by('experiment'))
 
+        from experiments.helpers.scores import organize_manual_scores
         return organize_manual_scores(scores, most_relevant_only)
 
     def get_positives(self, screen_for, screen_stage, criteria):
