@@ -8,7 +8,12 @@ from worms.models import WormStrain
 
 
 def get_average_score_weight(scores):
-    """Get the average weight of scores."""
+    """Get the average weight of scores.
+
+    scores should contain the one most relevant score per
+    experiment replicate.
+
+    """
     num_countable = 0
     total_weight = 0
     for score in scores:

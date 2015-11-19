@@ -215,6 +215,7 @@ class ManualScore(models.Model):
         OTHER: 0,
     }
 
+    # Both start with least relevant, end with most relevant
     RELEVANCE_PER_REPLICATE = (OTHER, NEGATIVE, WEAK, MEDIUM, STRONG)
     RELEVANCE_ACROSS_REPLICATES = (NEGATIVE, OTHER, UNSCORED, WEAK, MEDIUM,
                                    STRONG)
