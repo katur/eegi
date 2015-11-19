@@ -32,25 +32,25 @@ ORDER BY gene, date, library_stock_id, experiment_id;
 
 ```
 SELECT gene, date,
-  CONCAT(gene, '_', library_plate_id, '_', DevstarScore.well) AS library_well,
-  CONCAT(experiment_id, '_', DevstarScore.well) AS experiment_well,
+  CONCAT(gene, '_', library_stock_id, '_') AS library_well,
+  experiment_id,
   count_adult, count_larva, count_embryo
 FROM DevstarScore
   LEFT JOIN Experiment ON DevstarScore.experiment_id = Experiment.id
+  LEFT JOIN ExperimentPlate ON Experiment.plate_id = ExperimentPlate.id
   LEFT JOIN WormStrain ON Experiment.worm_strain_id = WormStrain.id
-  LEFT JOIN LibraryWell ON (
-    LibraryWell.plate_id = Experiment.library_plate_id
-    AND DevstarScore.well = LibraryWell.well)
+  LEFT JOIN LibraryStock ON Experiment.library_stock_id = LibraryStock.id
 WHERE screen_stage = 2  # Secondary experiments only
   AND is_junk = 0  # Skip junk
   AND WormStrain.id != "N2"  # Skip N2 controls
   AND intended_clone_id != "L4440"  # Skip L4440 controls
-  AND Experiment.temperature = WormStrain.restrictive_temperature  # Restrictive temp only
+  AND temperature = WormStrain.restrictive_temperature  # Restrictive temp only
   AND intended_clone_id IS NOT NULL  # Skip empty wells
-ORDER BY gene, date, library_plate_id, DevstarScore.well, experiment_id;
+ORDER BY gene, date, library_stock_id, experiment_id;
 ```
 
 
+# BELOW THIS LINE NOT REFACTORED
 ## Queries re: clones represented repeatedly in secondary plates
 
 ```
