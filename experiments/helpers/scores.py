@@ -134,16 +134,16 @@ def get_organized_scores_specific_worm(worm, screen_for, screen_stage,
         if lstock not in data:
             data[lstock] = OrderedDict()
 
-        if most_relevant_only:
-            if (experiment not in data[lstock] or
-                    score.get_relevance_per_replicate() >
-                    data[lstock][experiment].get_relevance_per_replicate()):
-                data[lstock][experiment] = score
+        if experiment not in data[lstock]:
+            data[lstock][experiment] = []
 
-        else:
-            if experiment not in data[lstock]:
-                data[lstock][experiment] = []
-            data[lstock][experiment].append(score)
+        data[lstock][experiment].append(score)
+
+    if most_relevant_only:
+        for lstock, experiments in data.iteritems():
+            for experiment, scores in experiments.iteritems():
+                score = get_most_relevant_score_per_replicate(scores)
+                data[lstock][experiment] = score
 
     return data
 
