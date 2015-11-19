@@ -25,15 +25,13 @@ def secondary_scores(request, worm, temperature):
     worm = get_object_or_404(WormStrain, pk=worm)
     screen = worm.get_screen_category(temperature)
 
-    # TODO: Try to speed this up with a single query between Experiment
-    # (plate-level), ManualScore (well-level), and LibraryWell (well-level).
-    data = get_organized_scores_specific_worm(worm, screen, screen_stage=2,
-                                              most_relevant_only=True)
-
     num_passes_stringent = 0
     num_passes_percentage = 0
     num_passes_count = 0
     num_experiment_columns = 0
+
+    data = get_organized_scores_specific_worm(worm, screen, screen_stage=2,
+                                              most_relevant_only=True)
 
     for well, expts in data.iteritems():
         scores = expts.values()
