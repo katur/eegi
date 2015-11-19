@@ -255,6 +255,11 @@ class ManualScore(models.Model):
         return self.score_code.is_other()
 
     def get_category(self):
+        """Get this score's more general score category.
+
+        TODO: Optionally consider adding this as a field to the database.
+
+        """
         if self.is_strong():
             return ManualScore.STRONG
         elif self.is_medium():
@@ -279,10 +284,25 @@ class ManualScore(models.Model):
         return ManualScore.WEIGHTS[self.get_category()]
 
     def get_relevance_per_replicate(self):
+        """Get this score's relevance within an experiment replicate.
+
+        This ranking can be used to boil down the multiple scores for
+        an experiment to a single most important score.
+
+        """
         return ManualScore.RELEVANCE_PER_REPLICATE.index(
             self.get_category())
 
     def get_relevance_across_replicates(self):
+        """Get this score's relevance across experiment replicates.
+
+        This ranking can be used to decide the most important
+        replicates. For example, we generally had two primary replicates,
+        but in some cases we had more. If a positive definition is
+        required to look at two scores, this ranking can help
+        determine the two most relevant replicates.
+
+        """
         return ManualScore.RELEVANCE_ACROSS_REPLICATES.index(
             self.get_category())
 
@@ -294,7 +314,6 @@ class DevstarScore(models.Model):
     """
     experiment = models.ForeignKey(Experiment)
 
-    # TODO: consider adding db_index=True to some of these
     area_adult = models.IntegerField(null=True, blank=True,
                                      help_text='DevStaR program output')
     area_larva = models.IntegerField(null=True, blank=True,
@@ -314,6 +333,7 @@ class DevstarScore(models.Model):
     embryo_per_adult = models.FloatField(
         null=True, blank=True, default=None,
         help_text='count_embryo / count_adult')
+
     survival = models.FloatField(
         null=True, blank=True, default=None,
         help_text='count_larva / (count_larva + count_embryo)')
@@ -338,10 +358,13 @@ class DevstarScore(models.Model):
         return ('{} DevStaR score'.format(self.experiment_id))
 
     def clean(self):
-        # Set the fields calculated from the DevStaR fields (resets if already
-        # set).
+        """Clean up to run when saving a DevstarScore instance.
 
-        # Floor division for egg count
+        This sets the fields that are dericed from the DevStaR raw
+        output.
+
+        """
+        # Use floor division for egg count
         if self.area_embryo is not None:
             self.count_embryo = self.area_embryo // 70
 
