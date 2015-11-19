@@ -95,7 +95,7 @@ class Experiment(models.Model):
     def intended_clone(self):
         return self.library_stock.intended_clone
 
-    # TODO: These three methods are repeated in Experiment and LibraryStock;
+    # TODO: These three are repeated in Experiment and LibraryStock;
     # consider making a superclass or mixin
     def get_row(self):
         return self.well[0]
@@ -148,6 +148,13 @@ class Experiment(models.Model):
             return True
         else:
             return False
+
+    def get_most_relevant_manual_score(self):
+        """Get the most relevant manual score for this experiment."""
+        scores = self.get_manual_scores()
+        scores.sort(key=lambda x: x.get_relevance_per_replicate(),
+                    reverse=True)
+        return scores[0]
 
 
 class ManualScoreCode(models.Model):
@@ -272,7 +279,8 @@ class ManualScore(models.Model):
         return ManualScore.WEIGHTS[self.get_category()]
 
     def get_relevance_per_replicate(self):
-        return ManualScore.RELEVANCE_PER_REPLICATE.index(self.get_category())
+        return ManualScore.RELEVANCE_PER_REPLICATE.index(
+            self.get_category())
 
     def get_relevance_across_replicates(self):
         return ManualScore.RELEVANCE_ACROSS_REPLICATES.index(
