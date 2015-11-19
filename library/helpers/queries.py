@@ -9,14 +9,14 @@ def get_organized_library_stocks(screen_stage=None):
     Optionally provide integer screen_stage, to limit to that screen.
 
     """
-    wells = LibraryStock.objects.select_related('plate')
+    stocks = LibraryStock.objects.select_related('plate')
 
     if screen_stage:
-        wells = wells.filter(plate__screen_stage=screen_stage)
+        stocks = stocks.filter(plate__screen_stage=screen_stage)
     else:
-        wells = wells.all()
+        stocks = stocks.all()
 
-    return _organize_library_stocks(wells)
+    return _organize_library_stocks(stocks)
 
 
 def _organize_library_stocks(library_stocks):
