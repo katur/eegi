@@ -4,18 +4,23 @@ from collections import OrderedDict
 from django.shortcuts import render, redirect, get_object_or_404
 
 from experiments.forms import SecondaryScoresForm
+
 from experiments.helpers.criteria import (
     passes_sup_positive_percentage_criteria,
     passes_sup_positive_count_criteria,
     passes_sup_stringent_criteria)
+
 from experiments.helpers.scores import (get_average_score_weight,
                                         get_organized_scores_specific_worm)
+
 from worms.models import WormStrain
 
 
 def secondary_scores(request, worm, temperature):
-    """Render the page displaying the secondary scores for a particular worm,
-    sorted with positives on top.
+    """Render the page to display secondary scores for a mutant/screen.
+
+    Results show strongest positives on top.
+
     """
     worm = get_object_or_404(WormStrain, pk=worm)
     screen = worm.get_screen_category(temperature)
@@ -75,8 +80,7 @@ def secondary_scores(request, worm, temperature):
 
 
 def secondary_scores_search(request):
-    """Render the page to search for secondar scores for a mutant/screen combo.
-    """
+    """Render the page to find secondary scores for a mutant/screen."""
     if request.method == 'POST':
         form = SecondaryScoresForm(request.POST)
 

@@ -5,8 +5,9 @@ def passes_sup_positive_percentage_criteria(scores):
     """Determine if a set of suppressor secondary scores passes the
     percentage-based criteria for a positive suppressor.
 
-    The scores should be for the same worm + library well combination, and
-    should include just the most relevant score per replicate.
+    scores should include the single most relevant score per replicate,
+    and include all replicates for a particular worm / library_stock combo.
+
     """
     total = 0
     yes = 0
@@ -38,8 +39,9 @@ def passes_sup_positive_count_criteria(scores):
     """Determine if a set of suppressor secondary scores passes the
     count-based criteria for a positive suppressor.
 
-    The scores should be for the same worm + library well combination, and
-    should include just the most relevant score per replicate.
+    scores should include the single most relevant score per replicate,
+    and include all replicates for a particular worm / library_stock combo.
+
     """
     yes = 0
     maybe = 0
@@ -58,8 +60,9 @@ def passes_sup_stringent_criteria(scores):
     """Determine if a set of suppressor secondary scores passes the
     stringent criteria for a positive suppressor.
 
-    The scores should be for the same worm + library well combination, and
-    should include just the most relevant score per replicate.
+    scores should include the single most relevant score per replicate,
+    and include all replicates for a particular worm / library_stock combo.
+
     """
     total = len(scores)
     yes = 0
@@ -74,8 +77,9 @@ def passes_enh_secondary_criteria(scores, singles=[]):
     """Determine if a set of enhancer primary scores passes the criteria
     to make it into the enhancer secondary screen.
 
-    The scores should be for the same worm + library well combination, and
-    should include just the most relevant score per replicate.
+    scores should include the single most relevant score per replicate,
+    and include all replicates for a particular worm / library_stock combo.
+
     """
     is_positive = False
     num_weaks = 0
