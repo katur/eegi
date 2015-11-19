@@ -167,11 +167,11 @@ def get_positives_across_all_worms(screen, screen_stage, passes_criteria):
                                        most_relevant_only=True)
     passing_library_stocks = set()
 
-    for worm, wells in s.iteritems():
-        for well, expts in wells.iteritems():
+    for worm, stocks in s.iteritems():
+        for stock, expts in stocks.iteritems():
             scores = expts.values()
             if passes_criteria(scores):
-                passing_library_stocks.add(well)
+                passing_library_stocks.add(stock)
 
     return passing_library_stocks
 
@@ -185,12 +185,12 @@ def get_positives_specific_worm(worm, screen, screen_stage, passes_criteria):
                                            most_relevant_only=True)
     passing_library_stocks = set()
 
-    for well, expts in s.iteritems():
+    for stock, expts in s.iteritems():
         scores = expts.values()
         if passes_criteria(scores):
-            well.scores = scores
-            well.avg = get_average_score_weight(scores)
-            passing_library_stocks.add(well)
+            stock.scores = scores
+            stock.avg = get_average_score_weight(scores)
+            passing_library_stocks.add(stock)
 
     return passing_library_stocks
 
