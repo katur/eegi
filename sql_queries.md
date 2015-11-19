@@ -8,7 +8,7 @@ Here are some queries for performing on the MySQL database directly
 
 ```
 SELECT gene, date,
-  CONCAT(gene, '_', library_stock_id) AS gene_plus_library_stock_id,
+  CONCAT(gene, '_', library_stock_id) AS gene_plus_library_stock,
   experiment_id, score_code_id
 FROM (
   SELECT gene, date, library_stock_id, experiment_id, score_code_id
@@ -17,11 +17,11 @@ FROM (
     LEFT JOIN ExperimentPlate ON Experiment.plate_id = ExperimentPlate.id
     LEFT JOIN WormStrain ON Experiment.worm_strain_id = WormStrain.id
     LEFT JOIN LibraryStock ON Experiment.library_stock_id = LibraryStock.id
-  WHERE screen_stage = 2  # Secondary experiments only
-    AND scorer_id = 14  # Noah scores only
-    AND is_junk = 0  # Skip junk
+  WHERE is_junk = 0  # Skip junk
+    AND screen_stage = 2  # Secondary experiments only
     AND intended_clone_id IS NOT NULL  # Skip empty wells
     AND score_code_id >= 0  AND score_code_id <= 3  # Suppression scores only
+    AND scorer_id = 14  # Noah scores only
   ORDER BY score_code_id DESC) x  # Choose the most optimistic if > 1 score
 GROUP BY experiment_id
 ORDER BY gene, date, library_stock_id, experiment_id;
@@ -32,20 +32,19 @@ ORDER BY gene, date, library_stock_id, experiment_id;
 
 ```
 SELECT gene, date,
-  CONCAT(gene, '_', library_stock_id, '_') AS library_well,
-  experiment_id,
-  count_adult, count_larva, count_embryo
+  CONCAT(gene, '_', library_stock_id) AS gene_plus_library_stock,
+  experiment_id, count_adult, count_larva, count_embryo
 FROM DevstarScore
   LEFT JOIN Experiment ON DevstarScore.experiment_id = Experiment.id
   LEFT JOIN ExperimentPlate ON Experiment.plate_id = ExperimentPlate.id
   LEFT JOIN WormStrain ON Experiment.worm_strain_id = WormStrain.id
   LEFT JOIN LibraryStock ON Experiment.library_stock_id = LibraryStock.id
-WHERE screen_stage = 2  # Secondary experiments only
-  AND is_junk = 0  # Skip junk
-  AND WormStrain.id != "N2"  # Skip N2 controls
+WHERE is_junk = 0  # Skip junk
+  AND screen_stage = 2  # Secondary experiments only
+  AND intended_clone_id IS NOT NULL  # Skip empty wells
   AND intended_clone_id != "L4440"  # Skip L4440 controls
   AND temperature = WormStrain.restrictive_temperature  # Restrictive temp only
-  AND intended_clone_id IS NOT NULL  # Skip empty wells
+  AND WormStrain.id != "N2"  # Skip N2 controls
 ORDER BY gene, date, library_stock_id, experiment_id;
 ```
 
