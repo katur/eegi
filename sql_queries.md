@@ -1,8 +1,10 @@
+# MySQL queries
+
 Here are some queries for performing on the MySQL database directly
 (i.e., not through Django query abstraction).
 
 
-## Queries for Michelle to compare Noah vs DevStaR SUP Secondary scores
+## To compare Noah vs DevStaR SUP secondary scores (for Michelle)
 
 ### To generate noah.csv
 
@@ -50,7 +52,7 @@ ORDER BY gene, date, library_stock_id, experiment_id;
 
 
 # BELOW THIS LINE NOT REFACTORED
-## Queries re: clones represented repeatedly in secondary plates
+## To find clones represented repeatedly in secondary plates
 
 ```
 SELECT LibraryWell.id, intended_clone_id, COUNT(*) FROM LibraryWell
@@ -80,7 +82,7 @@ WHERE A.id != B.id
 ```
 
 
-## ENH secondary estimates
+## To make ENH secondary size estimates
 
 These queries are both just a way to get a very general sense of the size of
 the enhancer secondary. The number is not exact, for several reasons:
