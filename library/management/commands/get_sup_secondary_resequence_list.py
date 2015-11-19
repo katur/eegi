@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import (
     passes_sup_positive_percentage_criteria)
-from experiments.helpers.scores import get_positives_all_worms
+from experiments.helpers.scores import get_positives_any_worm
 from library.helpers.sequencing import (categorize_sequences_by_blat_results,
                                         NO_BLAT, NO_MATCH)
 from library.models import LibrarySequencing
@@ -20,7 +20,7 @@ class Command(BaseCommand):
     help = 'Get list of SUP Secondary wells to resequence.'
 
     def handle(self, **options):
-        positives = get_positives_all_worms(
+        positives = get_positives_any_worm(
             'SUP', 2, passes_sup_positive_percentage_criteria)
 
         seqs = (LibrarySequencing.objects

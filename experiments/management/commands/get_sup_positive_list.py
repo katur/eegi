@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import passes_sup_stringent_criteria
-from experiments.helpers.scores import get_positives_specific_worm
 from library.helpers.sequencing import categorize_sequences_by_blat_results
 from library.models import LibrarySequencing
 from worms.models import WormStrain
@@ -52,8 +51,8 @@ class Command(BaseCommand):
         # and add to the list of interactions
         w = {}
         for worm in worms:
-            positives = get_positives_specific_worm(
-                worm, 'SUP', 2, passes_sup_stringent_criteria)
+            positives = worm.get_positives('SUP', 2,
+                                           passes_sup_stringent_criteria)
             pos_verified = positives.intersection(verified)
 
             verified_doublecheck.update(pos_verified)

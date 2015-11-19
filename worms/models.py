@@ -2,6 +2,9 @@ from decimal import Decimal
 
 from django.db import models
 
+from experiments.models import ManualScore
+from experiments.helpers.scores import organize_manual_scores
+
 
 class WormStrain(models.Model):
     """A worm strain used in the screen.
@@ -65,7 +68,7 @@ class WormStrain(models.Model):
         return self.restrictive_temperature == Decimal(temperature)
 
     def get_screen_category(self, temperature):
-        """Determine if temperature is a screen temperature for this strain.
+        """Determine if temperature is a screen temperature for this worm.
 
         Returns 'ENH' if temperature is this strain's permissive
         screening temperature.
@@ -83,3 +86,63 @@ class WormStrain(models.Model):
             return 'SUP'
         else:
             return None
+
+    def get_organized_scores(self, screen_for, screen_stage,
+                             most_relevant_only=False):
+        """Get all scores for this worm for a particular screen.
+
+        A screen is defined by both screen_for ('ENH' or 'SUP')
+        and screen_stage (1 for primary, 2 for secondary).
+
+        The data returned is organized as:
+            data[library_stock][experiment] = [scores]
+
+        Or, if most_relevant_only is set to True:
+            data[library_stock][experiment] = most_relevant_score
+
+        """
+        scores = ManualScore.objects.filter(
+            experiment__worm_strain=self,
+            experiment__is_junk=False,
+            experiment__plate__screen_stage=screen_stage)
+
+        if screen_for == 'ENH':
+            scores = scores.filter(
+                experiment__plate__temperature=self.permissive_temperature)
+
+        elif screen_for == 'SUP':
+            scores = scores.filter(
+                experiment__plate__temperature=self.restrictive_temperature)
+
+        scores = (
+            scores
+            .select_related(
+                'score_code', 'scorer',
+                'experiment', 'experiment__plate',
+                'experiment__library_stock',
+                'experiment__library_stock__intended_clone')
+            .prefetch_related(
+                'experiment__library_stock__intended_clone__'
+                'clonetarget_set',
+                'experiment__library_stock__intended_clone__'
+                'clonetarget_set__gene')
+            .order_by('experiment'))
+
+        return organize_manual_scores(scores, most_relevant_only)
+
+    def get_positives(self, screen_for, screen_stage, criteria):
+        """Get the library stocks that are positive for this worm,
+        screen, and criteria.
+
+        """
+        s = self.get_organized_scores(screen_for, screen_stage,
+                                      most_relevant_only=True)
+
+        positives = set()
+
+        for library_stock, experiments in s.iteritems():
+            scores = experiments.values()
+            if criteria(scores):
+                positives.add(library_stock)
+
+        return positives

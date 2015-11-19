@@ -43,3 +43,19 @@ def get_worm_and_temperature_from_search_term(search_term, screen):
         temperature = worm.restrictive_temperature
 
     return (worm, temperature)
+
+
+def get_worms_for_screen_type(screen_for):
+    """Get the worm strains relevant to a particular screen type.
+
+    screen_for must be 'ENH' or 'SUP'.
+
+    """
+    worms = WormStrain.objects
+
+    if screen_for == 'ENH':
+        return worms.exclude(permissive_temperature__isnull=True)
+    elif screen_for == 'SUP':
+        return worms.exclude(restrictive_temperature__isnull=True)
+    else:
+        raise ValueError("screen_for must be 'ENH' or 'SUP'")

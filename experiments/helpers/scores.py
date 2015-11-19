@@ -3,27 +3,8 @@ from collections import OrderedDict
 
 from django.db.models import Count
 
-from experiments.models import ManualScore, ExperimentPlate
-from worms.models import WormStrain
-
-
-def get_average_score_weight(scores):
-    """Get the average weight of scores.
-
-    scores should contain the one most relevant score per
-    experiment replicate.
-
-    """
-    num_countable = 0
-    total_weight = 0
-    for score in scores:
-        if not score.is_other():
-            num_countable += 1
-            total_weight += score.get_weight()
-    if num_countable:
-        return total_weight / num_countable
-    else:
-        return 0
+from experiments.models import ExperimentPlate
+from worms.helpers.queries import get_worms_for_screen_type
 
 
 def get_most_relevant_score_per_replicate(scores):
@@ -42,7 +23,9 @@ def get_most_relevant_score_per_replicate(scores):
 def sort_scores_by_relevance_across_replicates(scores):
     """Sort scores across experiment replicates by relevance.
 
-    scores should contain the one most relevant score per
+    Returns a list where most relevant is first.
+
+    scores should contain the single most relevant score per
     experiment replicate.
 
     """
@@ -51,80 +34,35 @@ def sort_scores_by_relevance_across_replicates(scores):
                   reverse=True)
 
 
-def get_organized_scores_all_worms(screen_for, screen_stage,
-                                   most_relevant_only=False):
-    """Get all scores for all worms in a screen, in an organized way.
+def get_average_score_weight(scores):
+    """Get the average weight of scores.
 
-    A screen is defined by both screen_for ('ENH' or 'SUP')
-    and screen_stage (1 for primary, 2 for secondary).
-
-    The data returned is organized as:
-
-        s[worm][library_stock][experiment] = [scores]
-
-    Or, if called with most_relevant_only=True:
-
-        s[worm][library_stock][experiment] = most_relevant_score
+    scores should contain the single most relevant score per
+    experiment replicate.
 
     """
-    worms = WormStrain.objects
-    if screen_for == 'ENH':
-        worms = worms.exclude(permissive_temperature__isnull=True)
-    elif screen_for == 'SUP':
-        worms = worms.exclude(restrictive_temperature__isnull=True)
-
-    s = {}
-    for worm in worms:
-        s[worm] = get_organized_scores_specific_worm(
-            worm, screen_for, screen_stage, most_relevant_only)
-
-    return s
+    num_countable = 0
+    total_weight = 0
+    for score in scores:
+        if not score.is_other():
+            num_countable += 1
+            total_weight += score.get_weight()
+    if num_countable:
+        return total_weight / num_countable
+    else:
+        return 0
 
 
-def get_organized_scores_specific_worm(worm, screen_for, screen_stage,
-                                       most_relevant_only=False):
-    """Get all scores for one worm in a screen, in an organized way.
-
-    A screen is defined by both screen_for ('ENH' or 'SUP')
-    and screen_stage (1 for primary, 2 for secondary).
+def organize_manual_scores(scores, most_relevant_only=False):
+    """Organize scores into a structured dictionary.
 
     The data returned is organized as:
-
         s[library_stock][experiment] = [scores]
 
     Or, if most_relevant_only is set to True:
-
         s[library_stock][experiment] = most_relevant_score
 
     """
-    scores = ManualScore.objects.filter(
-        experiment__is_junk=False,
-        experiment__worm_strain=worm,
-        experiment__plate__screen_stage=screen_stage)
-
-    if screen_for == 'ENH':
-        scores = scores.filter(
-            experiment__plate__temperature=worm.permissive_temperature)
-
-    elif screen_for == 'SUP':
-        scores = scores.filter(
-            experiment__plate__temperature=worm.restrictive_temperature)
-
-    else:
-        raise ValueError('screen_for muxt be ENH or SUP')
-
-    scores = (
-        scores
-        .select_related(
-            'score_code', 'scorer',
-            'experiment', 'experiment__plate',
-            'experiment__library_stock',
-            'experiment__library_stock__intended_clone')
-        .prefetch_related(
-            'experiment__library_stock__intended_clone__clonetarget_set',
-            'experiment__library_stock__intended_clone__clonetarget_set__gene')
-        .order_by('experiment'))
-
     data = {}
 
     for score in scores:
@@ -148,83 +86,94 @@ def get_organized_scores_specific_worm(worm, screen_for, screen_stage,
     return data
 
 
-def get_positives_all_worms(screen, screen_stage, passes_criteria):
-    if screen != 'SUP' and screen != 'ENH':
-        raise Exception('screen must be SUP or ENH')
+def get_organized_scores_all_worms(screen_for, screen_stage,
+                                   most_relevant_only=False):
+    """Get all scores for all worms for a particular screen.
 
-    s = get_organized_scores_all_worms(screen, screen_stage=screen_stage,
-                                       most_relevant_only=True)
-    passing_library_stocks = set()
+    A screen is defined by both screen_for ('ENH' or 'SUP')
+    and screen_stage (1 for primary, 2 for secondary).
 
-    for worm, stocks in s.iteritems():
-        for stock, expts in stocks.iteritems():
-            scores = expts.values()
-            if passes_criteria(scores):
-                passing_library_stocks.add(stock)
+    The data returned is organized as:
+        s[worm][library_stock][experiment] = [scores]
 
-    return passing_library_stocks
+    Or, if called with most_relevant_only=True:
+        s[worm][library_stock][experiment] = most_relevant_score
 
+    """
+    worms = get_worms_for_screen_type(screen_for)
 
-def get_positives_specific_worm(worm, screen, screen_stage, passes_criteria):
-    if screen != 'SUP' and screen != 'ENH':
-        raise Exception('screen must be SUP or ENH')
+    s = {}
+    for worm in worms:
+        s[worm] = worm.get_organized_scores(
+            screen_for, screen_stage, most_relevant_only)
 
-    s = get_organized_scores_specific_worm(worm, screen,
-                                           screen_stage=screen_stage,
-                                           most_relevant_only=True)
-    passing_library_stocks = set()
-
-    for stock, expts in s.iteritems():
-        scores = expts.values()
-        if passes_criteria(scores):
-            stock.scores = scores
-            stock.avg = get_average_score_weight(scores)
-            passing_library_stocks.add(stock)
-
-    return passing_library_stocks
+    return s
 
 
-def get_secondary_candidates(screen, passes_criteria):
-    """Get the list of library stocks to include in the secondary.
+def get_positives_any_worm(screen_for, screen_stage, criteria):
+    """Get the set of library stocks that are positive for ANY
+    worm in a particular screen.
 
-    TODO: this has not yet been implemented for SUP screen. The
-    secondary candidate selection for the SUP screen predated this
-    codebase.
+    A screen is defined by both screen_for ('ENH' or 'SUP')
+    and screen_stage (1 for primary, 2 for secondary).
+
+    """
+    worms = get_worms_for_screen_type(screen_for)
+
+    all_positives = set()
+    for worm in worms:
+        positives = worm.get_positives(screen_for, screen_stage, criteria)
+        all_positives.union(positives)
+
+    return all_positives
+
+
+def get_secondary_candidates(screen_for, criteria):
+    """Get the positives for the secondary cherry-pick list.
+
+    TODO:
+        - this function should be modified to use the
+          worm.get_positives() method to get the secondary
+          candidates. The reason it is does not is twofold:
+
+          1) It does futher organizational steps to help with making
+             universal plates
+          2) The "criteria" for primary involves a special case of
+             single replicates
 
     Returns:
         A 2-tuple of:
             1) a dictionary of the clones organized by worm
             2) a dictionary of the clones organized by clone
-        These two dictionaries can then be used to organize the clones into
+
+        These two dictionaries can then be used to organize clones into
         plates, including any universal plates.
 
     Args:
-        screen: Either 'ENH' or 'SUP'.
+        screen_for: Either 'ENH' or 'SUP'.
 
-        criteria: A function that determines the criteria for a library well
-            making it into the secondary. This function takes a list of
-            scores, where each score should be the most relevant score
-            for a particular replicate. It should return True if the list
-            of countable scores passes the criteria, or False otherwise.
+        criteria: A function that determines the criteria for a library
+            stock to make it into the secondary. This function takes a
+            list of scores, where each score should be the most relevant
+            score for a particular replicate. It should return True if
+            the list of countable scores passes the criteria, or
+            False otherwise.
 
     """
-    # Get all primary scores for the particular screen
-    s = get_organized_scores_all_worms(screen, 1)
+    worms = get_worms_for_screen_type(screen_for)
+
+    # To handle special case for stocks that have only a single replicate
+    singles = _get_primary_single_replicate_experiments(screen_for)
 
     candidates_by_worm = {}
     candidates_by_clone = {}
 
-    singles = _get_primary_single_replicate_experiments(screen)
+    for worm in worms:
+        s = worm.get_organized_scores(screen_for, 1,
+                                      most_relevant_only=True)
 
-    for worm, library_stocks in s.iteritems():
-        for library_stock, experiments in library_stocks.iteritems():
-            for experiment, scores in experiments.iteritems():
-                # Replace all scores for this experiment with the most
-                # relevant score only.
-                score = get_most_relevant_score_per_replicate(scores)
-                s[worm][library_stock][experiment] = score
-
-            if passes_criteria(experiments.values(), singles):
+        for library_stock, experiments in s.iteritems():
+            if criteria(experiments.values(), singles):
                 if worm not in candidates_by_worm:
                     candidates_by_worm[worm] = []
                 candidates_by_worm[worm].append(library_stock)
@@ -238,12 +187,7 @@ def get_secondary_candidates(screen, passes_criteria):
 
 def _get_primary_single_replicate_experiments(screen):
     """Get primary experiments that have only a single replicate."""
-    if screen == 'SUP':
-        worms = WormStrain.objects.filter(
-            restrictive_temperature__isnull=False)
-    else:
-        worms = WormStrain.objects.filter(
-            permissive_temperature__isnull=False)
+    worms = get_worms_for_screen_type(screen)
 
     singles = set()
 
