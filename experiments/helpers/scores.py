@@ -214,7 +214,7 @@ def get_secondary_candidates(screen, passes_criteria):
     candidates_by_worm = {}
     candidates_by_clone = {}
 
-    singles = get_primary_single_replicate_experiments(screen)
+    singles = _get_primary_single_replicate_experiments(screen)
 
     for worm, library_stocks in s.iteritems():
         for library_stock, experiments in library_stocks.iteritems():
@@ -236,7 +236,7 @@ def get_secondary_candidates(screen, passes_criteria):
     return (candidates_by_worm, candidates_by_clone)
 
 
-def get_primary_single_replicate_experiments(screen):
+def _get_primary_single_replicate_experiments(screen):
     """Get primary experiments that have only a single replicate."""
     if screen == 'SUP':
         worms = WormStrain.objects.filter(
