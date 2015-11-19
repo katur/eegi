@@ -148,7 +148,7 @@ def get_organized_scores_specific_worm(worm, screen_for, screen_stage,
     return data
 
 
-def get_positives_across_all_worms(screen, screen_stage, passes_criteria):
+def get_positives_all_worms(screen, screen_stage, passes_criteria):
     if screen != 'SUP' and screen != 'ENH':
         raise Exception('screen must be SUP or ENH')
 
