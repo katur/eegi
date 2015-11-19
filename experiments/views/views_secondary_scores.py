@@ -10,8 +10,7 @@ from experiments.helpers.criteria import (
     passes_sup_positive_count_criteria,
     passes_sup_stringent_criteria)
 
-from experiments.helpers.scores import (get_average_score_weight,
-                                        get_organized_scores_per_worm)
+from experiments.helpers.scores import get_average_score_weight
 
 from worms.models import WormStrain
 
@@ -30,8 +29,8 @@ def secondary_scores(request, worm, temperature):
     num_passes_count = 0
     num_experiment_columns = 0
 
-    data = get_organized_scores_per_worm(worm, screen, screen_stage=2,
-                                         most_relevant_only=True)
+    data = worm.get_organized_scores(screen, screen_stage=2,
+                                     most_relevant_only=True)
 
     for well, expts in data.iteritems():
         scores = expts.values()
