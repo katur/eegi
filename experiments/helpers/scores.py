@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 from django.db.models import Count
 
-from experiments.models import ExperimentPlate
+from experiments.models import Experiment
 from worms.helpers.queries import get_worms_for_screen_type
 
 
@@ -187,30 +187,45 @@ def get_secondary_candidates(screen_for, criteria):
 
 def _get_primary_single_replicate_experiments(screen):
     """Get primary experiments that have only a single replicate."""
+
+    """
+
+    TODO : This is not really refactored yet.
+
+    Accounting for singles still expects to work on a plate-level,
+    not well-level.
+
+
+    """
     worms = get_worms_for_screen_type(screen)
 
     singles = set()
 
     for worm in worms:
         if screen == 'SUP':
-            experiments = (ExperimentPlate.objects
-                           .filter(is_junk=False, screen_stage=1,
-                                   worm_strain=worm,
-                                   temperature=worm.restrictive_temperature)
-                           .order_by('library_plate'))
+            experiments = (
+                Experiment.objects
+                .filter(is_junk=False,
+                        plate__screen_stage=1,
+                        worm_strain=worm,
+                        plate__temperature=worm.restrictive_temperature)
+                .order_by('library_stock'))
+
         else:
-            experiments = (ExperimentPlate.objects
-                           .filter(is_junk=False, screen_stage=1,
-                                   worm_strain=worm,
-                                   temperature=worm.permissive_temperature)
-                           .order_by('library_plate'))
+            experiments = (
+                Experiment.objects
+                .filter(is_junk=False,
+                        plate__screen_stage=1,
+                        worm_strain=worm,
+                        plate__temperature=worm.permissive_temperature)
+                .order_by('library_stock'))
 
-        annotated = experiments.values('library_plate').annotate(Count('id'))
+        annotated = experiments.values('library_stock').annotate(Count('id'))
 
-        single_plates = [x['library_plate'] for x in annotated
+        single_stocks = [x['library_stock'] for x in annotated
                          if x['id__count'] == 1]
 
-        for plate in single_plates:
-            singles.add(experiments.get(library_plate=plate))
+        for stock in single_stocks:
+            singles.add(experiments.get(library_stock=stock))
 
     return singles
