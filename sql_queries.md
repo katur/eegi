@@ -1,6 +1,4 @@
-# Some miscellaneous, sometimes useful database queries.
-
-These queries are to be performed on the MySQL database directly
+Here are some queries for performing on the MySQL database directly
 (i.e., not through Django query abstraction).
 
 
@@ -10,25 +8,23 @@ These queries are to be performed on the MySQL database directly
 
 ```
 SELECT gene, date,
-  CONCAT(gene, '_', library_plate_id, '_', well) AS library_well,
-  CONCAT(experiment_id, '_', well) AS experiment_well,
-  score_code_id
+  CONCAT(gene, '_', library_stock_id) AS gene_plus_library_stock_id,
+  experiment_id, score_code_id
 FROM (
-  SELECT gene, date, experiment_id, library_plate_id, ManualScore.well, score_code_id
+  SELECT gene, date, library_stock_id, experiment_id, score_code_id
   FROM ManualScore
     LEFT JOIN Experiment ON ManualScore.experiment_id = Experiment.id
+    LEFT JOIN ExperimentPlate ON Experiment.plate_id = ExperimentPlate.id
     LEFT JOIN WormStrain ON Experiment.worm_strain_id = WormStrain.id
-    LEFT JOIN LibraryWell ON (
-      LibraryWell.plate_id = Experiment.library_plate_id
-      AND ManualScore.well = LibraryWell.well)
-    WHERE screen_stage = 2  # Secondary experiments only
-      AND scorer_id = 14  # Noah scores only
-      AND is_junk = 0  # Skip junk
-      AND intended_clone_id IS NOT NULL  # Skip empty wells
-      AND score_code_id >= 0  AND score_code_id <= 3  # Suppression scores only
-    ORDER BY score_code_id DESC) x  # Choose the most optimistic if > 1 score
-GROUP BY CONCAT(experiment_id, well)
-ORDER BY gene, date, library_plate_id, well, experiment_id;
+    LEFT JOIN LibraryStock ON Experiment.library_stock_id = LibraryStock.id
+  WHERE screen_stage = 2  # Secondary experiments only
+    AND scorer_id = 14  # Noah scores only
+    AND is_junk = 0  # Skip junk
+    AND intended_clone_id IS NOT NULL  # Skip empty wells
+    AND score_code_id >= 0  AND score_code_id <= 3  # Suppression scores only
+  ORDER BY score_code_id DESC) x  # Choose the most optimistic if > 1 score
+GROUP BY experiment_id
+ORDER BY gene, date, library_stock_id, experiment_id;
 ```
 
 
