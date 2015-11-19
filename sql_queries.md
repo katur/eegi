@@ -51,12 +51,12 @@ ORDER BY gene, date, library_stock_id, experiment_id;
 ```
 
 
-# BELOW THIS LINE NOT REFACTORED
-## To find clones represented repeatedly in secondary plates
+## To find clones present repeatedly in secondary plates
 
 ```
-SELECT LibraryWell.id, intended_clone_id, COUNT(*) FROM LibraryWell
-  LEFT JOIN LibraryPlate ON LibraryPlate.id = LibraryWell.plate_id
+SELECT LibraryStock.id, intended_clone_id, COUNT(*)
+FROM LibraryStock
+  LEFT JOIN LibraryPlate ON LibraryStock.plate_id = LibraryPlate.id
 WHERE screen_stage=2
   AND intended_clone_id IS NOT NULL
   AND intended_clone_id != "L4440"
@@ -67,7 +67,7 @@ ORDER BY COUNT(*) DESC;
 
 ```
 SELECT A.id, B.id, A.intended_clone_id
-FROM LibraryWell AS A, LibraryWell AS B,
+FROM LibraryStock AS A, LibraryStock AS B,
   LibraryPlate AS C, LibraryPlate AS D
 WHERE A.id != B.id
   AND C.id != D.id
@@ -82,10 +82,10 @@ WHERE A.id != B.id
 ```
 
 
-## To make ENH secondary size estimates
+## To estimate size of ENH secondary
 
-These queries are both just a way to get a very general sense of the size of
-the enhancer secondary. The number is not exact, for several reasons:
+These queries get a very general sense of the size of the enhancer secondary.
+The numbers are inexact, for several reasons:
 
 - The sum may be inflated due to overlap between the two queries (some images
   may be scored as both weak and medium, or weak and strong)
@@ -95,18 +95,17 @@ the enhancer secondary. The number is not exact, for several reasons:
   with unscored (it assumes two scored copies)
 
 
-### Get pairwise weak enhancer counts by mutant:
+### Get pairwise weak enhancer counts by mutant
 
 ```
-SELECT E1.worm_strain_id, COUNT(DISTINCT E1.worm_strain_id, E1.id, S1.well, E2.id, S2.well)
+SELECT E1.worm_strain_id, COUNT(DISTINCT E1.worm_strain_id, E1.id, E2.id)
 FROM ManualScore AS S1, ManualScore AS S2, Experiment AS E1, Experiment AS E2
-WHERE E1.library_plate_id = E2.library_plate_id
-  AND E1.id < E2.id AND S1.experiment_id = E1.id AND S2.experiment_id = E2.id
-  AND S1.well = S2.well
+WHERE E1.library_stock_id = E2.library_stock_id
   AND E1.worm_strain_id = E2.worm_strain_id
   AND E1.is_junk = 0 AND E2.is_junk = 0
-  AND (
-    (S1.score_code_id=12 AND S2.score_code_id=12)
+  AND E1.id < E2.id
+  AND S1.experiment_id = E1.id AND S2.experiment_id = E2.id
+  AND ((S1.score_code_id=12 AND S2.score_code_id=12)
     OR (S1.score_code_id=16 AND S2.score_code_id=16)
     OR (S1.score_code_id=12 AND S2.score_code_id=16)
     OR (S1.score_code_id=16 AND S2.score_code_id=12)
@@ -115,20 +114,21 @@ GROUP BY E1.worm_strain_id;
 ```
 
 
-### Get strong or medium enhancer counts by mutant:
+### Get strong or medium enhancer counts by mutant
 
 ```
-SELECT E1.worm_strain_id, COUNT(DISTINCT E1.worm_strain_id, E1.id, S1.well, E2.id, S2.well)
-FROM ManualScore AS S1, ManualScore AS S2, Experiment AS E1, Experiment AS E2
-WHERE E1.library_plate_id = E2.library_plate_id
+SELECT E1.worm_strain_id, COUNT(DISTINCT E1.worm_strain_id, E1.id, E2.id)
+FROM Experiment AS E1, Experiment AS E2,
+  ExperimentPlate AS P1, ExperimentPlate AS P2,
+  ManualScore AS S1, ManualScore AS S2
+WHERE E1.plate_id = P1.id AND E2.plate_id = P2.id
+  AND S1.experiment_id = E1.id AND S2.experiment_id = E2.id
+  AND P1.temperature = P2.temperature
+  AND E1.library_stock_id = E2.library_stock_id
   AND E1.worm_strain_id = E2.worm_strain_id
-  AND E1.temperature = E2.temperature
   AND E1.is_junk = 0 AND E2.is_junk = 0
   AND E1.id < E2.id
-  AND S1.experiment_id = E1.id AND S2.experiment_id = E2.id
-  AND S1.well = S2.well
-  AND (
-    S1.score_code_id=13 OR S2.score_code_id=13
+  AND (S1.score_code_id=13 OR S2.score_code_id=13
     OR S1.score_code_id=14 OR S2.score_code_id=14
     OR S1.score_code_id=17 OR S2.score_code_id=17
     OR S1.score_code_id=18 OR S2.score_code_id=18
