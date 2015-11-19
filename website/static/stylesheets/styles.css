@@ -155,6 +155,9 @@ body {
     float: left;
     margin-top: 160px; }
 
+ul.bulleted {
+  list-style: disc inside; }
+
 hr {
   height: 1px;
   border: none;
@@ -279,6 +282,9 @@ table thead th {
   .knockdown-results.single-column .carousel {
     margin: 0 auto;
     max-width: 1300px; }
+
+#secondary-scores table td.experiment_score, #secondary-scores table th.experiment_score {
+  font-size: 14px; }
 
 #devstar-scoring-category td {
   padding: 20px;

@@ -4,7 +4,6 @@ from collections import OrderedDict
 from django.db.models import Count
 
 from experiments.models import ManualScore, ExperimentPlate
-from library.helpers.queries import get_organized_library_stocks
 from worms.models import WormStrain
 
 
@@ -63,8 +62,6 @@ def get_organized_scores_all_worms(screen_for, screen_stage,
         s[worm][library_stock][experiment] = most_relevant_score
 
     """
-    w = get_organized_library_stocks(screen_stage=screen_stage)
-
     worms = WormStrain.objects
     if screen_for == 'ENH':
         worms = worms.exclude(permissive_temperature__isnull=True)
@@ -74,15 +71,13 @@ def get_organized_scores_all_worms(screen_for, screen_stage,
     s = {}
     for worm in worms:
         s[worm] = get_organized_scores_specific_worm(
-            worm, screen_for, screen_stage, most_relevant_only,
-            library_stocks=w)
+            worm, screen_for, screen_stage, most_relevant_only)
 
     return s
 
 
 def get_organized_scores_specific_worm(worm, screen_for, screen_stage,
-                                       most_relevant_only=False,
-                                       library_stocks=None):
+                                       most_relevant_only=False):
     """Get all scores for one worm in a screen, in an organized way.
 
     A screen is defined by both screen_for ('ENH' or 'SUP')
@@ -98,65 +93,54 @@ def get_organized_scores_specific_worm(worm, screen_for, screen_stage,
 
     """
     scores = ManualScore.objects.filter(
-        experiment__screen_stage=screen_stage,
         experiment__is_junk=False,
-        experiment__worm_strain=worm)
+        experiment__worm_strain=worm,
+        experiment__plate__screen_stage=screen_stage)
 
     if screen_for == 'ENH':
         scores = scores.filter(
-            experiment__temperature=worm.permissive_temperature)
+            experiment__plate__temperature=worm.permissive_temperature)
 
     elif screen_for == 'SUP':
         scores = scores.filter(
-            experiment__temperature=worm.restrictive_temperature)
+            experiment__plate__temperature=worm.restrictive_temperature)
 
-    scores = (scores
-              .select_related('score_code')
-              .prefetch_related('experiment__library_plate')
-              .order_by('experiment__id', 'well'))
+    else:
+        raise ValueError('screen_for muxt be ENH or SUP')
 
-    if not library_stocks:
-        library_stocks = get_organized_library_stocks(
-            screen_stage=screen_stage)
+    scores = (
+        scores
+        .select_related(
+            'score_code', 'scorer',
+            'experiment', 'experiment__plate',
+            'experiment__library_stock',
+            'experiment__library_stock__intended_clone')
+        .prefetch_related(
+            'experiment__library_stock__intended_clone__clonetarget_set',
+            'experiment__library_stock__intended_clone__clonetarget_set__gene')
+        .order_by('experiment'))
 
-    return _organize_scores(scores, library_stocks, most_relevant_only)
-
-
-def _organize_scores(scores, library_stocks, most_relevant_only=False):
-    """Organize scores according to library_stocks.
-
-    The data returned is in format:
-
-        s[library_stock][experiment] = [scores]
-
-    Or, if most_relevant_only is set to True:
-
-        s[library_stock][experiment] = most_relevant_score
-
-    """
-    s = {}
+    data = {}
 
     for score in scores:
         experiment = score.experiment
-        plate = experiment.library_plate
-        well = score.well
-        library_stock = library_stocks[plate][well]
+        lstock = experiment.library_stock
 
-        if library_stock not in s:
-            s[library_stock] = OrderedDict()
+        if lstock not in data:
+            data[lstock] = OrderedDict()
 
         if most_relevant_only:
-            if (experiment not in s[library_stock] or
-                    s[library_stock][experiment].get_relevance_per_replicate()
-                    < score.get_relevance_per_replicate()):
-                s[library_stock][experiment] = score
+            if (experiment not in data[lstock] or
+                    score.get_relevance_per_replicate() >
+                    data[lstock][experiment].get_relevance_per_replicate()):
+                data[lstock][experiment] = score
 
         else:
-            if experiment not in s[library_stock]:
-                s[library_stock][experiment] = []
-            s[library_stock][experiment].append(score)
+            if experiment not in data[lstock]:
+                data[lstock][experiment] = []
+            data[lstock][experiment].append(score)
 
-    return s
+    return data
 
 
 def get_positives_across_all_worms(screen, screen_stage, passes_criteria):

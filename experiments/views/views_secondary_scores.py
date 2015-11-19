@@ -27,15 +27,15 @@ def secondary_scores(request, worm, temperature):
 
     # TODO: Try to speed this up with a single query between Experiment
     # (plate-level), ManualScore (well-level), and LibraryWell (well-level).
-    s = get_organized_scores_specific_worm(worm, screen, screen_stage=2,
-                                           most_relevant_only=True)
+    data = get_organized_scores_specific_worm(worm, screen, screen_stage=2,
+                                              most_relevant_only=True)
 
     num_passes_stringent = 0
     num_passes_percentage = 0
     num_passes_count = 0
     num_experiment_columns = 0
 
-    for well, expts in s.iteritems():
+    for well, expts in data.iteritems():
         scores = expts.values()
         well.avg = get_average_score_weight(scores)
 
@@ -56,20 +56,20 @@ def secondary_scores(request, worm, temperature):
         if len(expts) > num_experiment_columns:
             num_experiment_columns = len(expts)
 
-    s = OrderedDict(sorted(s.iteritems(),
-                           key=lambda x: (
-                               x[0].passes_stringent,
-                               x[0].passes_percentage,
-                               x[0].passes_count,
-                               x[0].avg),
-                           reverse=True))
+    data = OrderedDict(sorted(
+        data.iteritems(),
+        key=lambda x: (x[0].passes_stringent,
+                       x[0].passes_percentage,
+                       x[0].passes_count,
+                       x[0].avg),
+        reverse=True))
 
     context = {
         'worm': worm,
-        'temp': temperature,
         'screen': screen,
-        's': s,
-        'num_wells': len(s),
+        'temperature': temperature,
+        'data': data,
+        'num_wells': len(data),
         'num_passes_percentage': num_passes_percentage,
         'num_passes_count': num_passes_count,
         'num_passes_stringent': num_passes_stringent,

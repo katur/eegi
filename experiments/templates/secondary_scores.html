@@ -6,112 +6,133 @@
 
 
 {% block page_title %}
-  Secondary Scores for {{ worm.id }} ({{ screen }} screen)
+Browse {{ screen }} Secondary Scores for
+<a href="{{ worm.get_url }}">
+  {{ worm.get_display_string }}</a>
 {% endblock %}
 
 
 {% block content %}
 
-{{ s|length }} total library well{{ s|length|pluralize}}
+<div class="page-section">
+  {{ data|length }} RNAi stocks scored
 
-<br>
+  <ul class="bulleted">
+    <li>
+      {{ num_passes_stringent }}
+      pass{{ num_passes_stringent|pluralize:'es,' }}
+      criteria A (stringent)
+      [0.375 m/s]
+    </li>
 
-{{ num_passes_stringent }} pass{{ num_passes_stringent|pluralize:'es,' }}
-criteria A (stringent):
-0.375 m/s
+    <li>
+      {{ num_passes_percentage }}
+      pass{{ num_passes_percentage|pluralize:'es,' }}
+      criteria B (percent-based)
+      [(0.375 m/s) OR (0.5 w/m/s AND 0.125 m/s) OR (0.625 w/m/s);
+        if &lt; 8 scorable replicates, becomes count-based]
+    </li>
 
-<br>
+    <li>
+      {{ num_passes_count }}
+      pass{{ num_passes_count|pluralize:'es,' }}
+      criteria C (count-based)
+      [(3 m/s) OR (4 w/m/s AND 1 m/s) OR (5 w/m/s)]
+    </li>
+  </ul>
+</div>
 
-{{ num_passes_percentage }} pass{{ num_passes_percentage|pluralize:'es,' }}
-criteria B (percentage-based):
-(0.375 m/s) OR (0.5 w/m/s AND 0.125 m/s) OR (0.625 w/m/s).
-NOTE: if < 8 scorable replicates, becomes count-based.
-
-<br>
-
-{{ num_passes_count }} pass{{ num_passes_count|pluralize:'es,' }}
-criteria C (count-based):
-(3 m/s) OR (4 w/m/s AND 1 m/s) OR (5 w/m/s)
-
+<div class="page-section">
 <table class="grayscale striped nice-padding">
   <thead>
     <tr>
-      <th>Worm strain</th>
-      <th>Library Position</th>
+      <th>RNAi Stock</th>
       <th>Intended Clone</th>
-      <th>Target gene(s)</th>
-      <th>Double Knockdown</th>
-      <th>Passes Criteria A?</th>
-      <th>Passes Criteria B?</th>
-      <th>Passes Criteria C?</th>
+      <th>Target Gene(s)</th>
+      <th>Controls/ Replicates</th>
+      <th>Passes A?</th>
+      <th>Passes B?</th>
+      <th>Passes C?</th>
       <th>Average Score</th>
       <th colspan="{{ num_experiment_columns }}">Scores</th>
     </tr>
   </thead>
 
   <tbody>
-    {% for well, experiments in s.items %}
+    {% for library_stock, experiments in data.items %}
+
+    {% with intended_clone=library_stock.intended_clone %}
     <tr>
-      <td>{{ worm.get_display_string }}</td>
-      <td>{{ well.plate_id }}@{{ well.well }}</td>
       <td>
-        <a href="{{ well.intended_clone.get_absolute_url }}">
-          {{ well.intended_clone.id }}</a></td>
+        {{ library_stock|get_id_with_plate_link|safe }}
+      </td>
+
       <td>
-        {% if well.intended_clone %}
-        {{ well.intended_clone|get_comma_separated_targets }}
+        <a href="{{ intended_clone.get_absolute_url }}">
+          {{ intended_clone.id }}</a></td>
+
+      <td>
+        {% if intended_clone %}
+        {{ intended_clone|get_comma_separated_targets|safe }}
+
+        {% else %}
+        n/a
         {% endif %}
       </td>
 
       <td>
-      {% if well.intended_clone_id %}
-        {% url 'double_knockdown_url' worm.id well.intended_clone_id temp as x %}
-        <a href="{{ x }}">click</a>
-      {% else %}
-        No intended clone
-      {% endif %}
+        {% if intended_clone %}
+        <a href="{% url 'double_knockdown_url' worm.id intended_clone.id temperature %}">
+          click</a>
+
+        {% else %}
+        n/a
+        {% endif %}
       </td>
 
       <td class="
-        {% if well.passes_stringent %}
+        {% if library_stock.passes_stringent %}
           success-message
         {% else %}
           error-message
-        {% endif %}"
-        >{{ well.passes_stringent }}
+        {% endif %}">
+        {{ library_stock.passes_stringent }}
       </td>
 
       <td class="
-        {% if well.passes_percentage %}
+        {% if library_stock.passes_percentage %}
           success-message
         {% else %}
           error-message
-        {% endif %}"
-        >{{ well.passes_percentage }}
+        {% endif %}">
+        {{ library_stock.passes_percentage }}
       </td>
 
       <td class="
-        {% if well.passes_count %}
+        {% if library_stock.passes_count %}
           success-message
         {% else %}
           error-message
-        {% endif %}"
-        >{{ well.passes_count }}
+        {% endif %}">
+        {{ library_stock.passes_count }}
       </td>
 
-      <td>{{ well.avg|floatformat }}</td>
+      <td>{{ library_stock.avg|floatformat }}</td>
 
       {% for experiment, score in experiments.items %}
-      <td>
-        <a href="{% url 'experiment_well_url' experiment.id well.well %}">
-          {{ experiment.id }}@{{ well.well }}</a>
-        <br>
-        {{ score.score_code }} by {{ score.scorer }}
+      <td class="experiment_score">
+        <a href="{{ experiment.get_absolute_url }}">
+          {{ experiment.id }}</a>
+        {{ score.score_code }}
       </td>
       {% endfor %}
+
     </tr>
+    {% endwith %}
+
     {% endfor %}
   </tbody>
 </table>
+</div>
 
 {% endblock %}
