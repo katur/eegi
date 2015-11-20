@@ -1,7 +1,24 @@
 from __future__ import division
 
 
-def passes_sup_positive_percentage_criteria(scores):
+def passes_sup_secondary_stringent(scores):
+    """Determine if a set of suppressor secondary scores passes the
+    stringent criteria for a positive suppressor.
+
+    scores should include the single most relevant score per replicate,
+    and include all replicates for a particular worm / library_stock combo.
+
+    """
+    total = len(scores)
+    yes = 0
+    for score in scores:
+        if score.is_strong() or score.is_medium():
+            yes += 1
+
+    return (yes / total) >= .375
+
+
+def passes_sup_secondary_percent(scores):
     """Determine if a set of suppressor secondary scores passes the
     percentage-based criteria for a positive suppressor.
 
@@ -25,7 +42,7 @@ def passes_sup_positive_percentage_criteria(scores):
         return False
 
     if total < 8:
-        return passes_sup_positive_count_criteria(scores)
+        return passes_sup_secondary_count(scores)
 
     yes = yes / total
     maybe = maybe / total
@@ -35,7 +52,7 @@ def passes_sup_positive_percentage_criteria(scores):
             yes + maybe >= .625)
 
 
-def passes_sup_positive_count_criteria(scores):
+def passes_sup_secondary_count(scores):
     """Determine if a set of suppressor secondary scores passes the
     count-based criteria for a positive suppressor.
 
@@ -56,29 +73,19 @@ def passes_sup_positive_count_criteria(scores):
             yes + maybe >= 5)
 
 
-def passes_sup_stringent_criteria(scores):
-    """Determine if a set of suppressor secondary scores passes the
-    stringent criteria for a positive suppressor.
-
-    scores should include the single most relevant score per replicate,
-    and include all replicates for a particular worm / library_stock combo.
-
-    """
-    total = len(scores)
-    yes = 0
-    for score in scores:
-        if score.is_strong() or score.is_medium():
-            yes += 1
-
-    return (yes / total) >= .375
-
-
-def passes_enh_secondary_criteria(scores, singles=[]):
+def passes_enh_primary(scores, singles=[]):
     """Determine if a set of enhancer primary scores passes the criteria
     to make it into the enhancer secondary screen.
 
     scores should include the single most relevant score per replicate,
     and include all replicates for a particular worm / library_stock combo.
+
+    singles is an optional list of experiments that only had a single copy
+    tested. This is different than having a single copy scored. When there
+    were two copies tested but one copy scored, it is presumed that the
+    unscored copy is not a positive, because DevStaR did not select it
+    for scoring. However, in the rare case that we only tested one copy
+    to begin with, we cannot presume anything about the other copy.
 
     """
     is_positive = False

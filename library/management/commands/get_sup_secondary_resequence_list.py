@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from experiments.helpers.criteria import (
-    passes_sup_positive_percentage_criteria)
+from experiments.helpers.criteria import passes_sup_secondary_percent
 from experiments.helpers.scores import get_positives_any_worm
 from library.helpers.sequencing import (categorize_sequences_by_blat_results,
                                         NO_BLAT, NO_MATCH)
@@ -21,7 +20,7 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         positives = get_positives_any_worm(
-            'SUP', 2, passes_sup_positive_percentage_criteria)
+            'SUP', 2, passes_sup_secondary_percent)
 
         seqs = (LibrarySequencing.objects
                 .filter(source_stock__in=positives)

@@ -26,8 +26,8 @@ Browse {{ screen }} Secondary Scores for
     </li>
 
     <li>
-      {{ num_passes_percentage }}
-      pass{{ num_passes_percentage|pluralize:'es,' }}
+      {{ num_passes_percent }}
+      pass{{ num_passes_percent|pluralize:'es,' }}
       criteria B (percent-based)
       [(0.375 m/s) OR (0.5 w/m/s AND 0.125 m/s) OR (0.625 w/m/s);
         if &lt; 8 scorable replicates, becomes count-based]
@@ -100,12 +100,12 @@ Browse {{ screen }} Secondary Scores for
       </td>
 
       <td class="
-        {% if library_stock.passes_percentage %}
+        {% if library_stock.passes_percent %}
           success-message
         {% else %}
           error-message
         {% endif %}">
-        {{ library_stock.passes_percentage }}
+        {{ library_stock.passes_percent }}
       </td>
 
       <td class="

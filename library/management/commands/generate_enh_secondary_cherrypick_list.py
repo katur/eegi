@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from experiments.helpers.criteria import passes_enh_secondary_criteria
+from experiments.helpers.criteria import passes_enh_primary
 from experiments.helpers.scores import get_secondary_candidates
 from utils.plate_design import assign_to_plates, get_plate_assignment_rows
 from utils.plate_layout import is_symmetric
@@ -31,7 +31,7 @@ class Command(BaseCommand):
 
         # Get all enhancery secondary candidates, organized by worm and clone
         candidates_by_worm, candidates_by_clone = get_secondary_candidates(
-            'ENH', passes_enh_secondary_criteria)
+            'ENH', passes_enh_primary)
 
         if summary_mode:
             self.stdout.write('Total clones to cherry pick: {}'

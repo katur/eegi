@@ -6,9 +6,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from experiments.forms import SecondaryScoresForm
 
 from experiments.helpers.criteria import (
-    passes_sup_positive_percentage_criteria,
-    passes_sup_positive_count_criteria,
-    passes_sup_stringent_criteria)
+    passes_sup_secondary_percent,
+    passes_sup_secondary_count,
+    passes_sup_secondary_stringent)
 
 from experiments.helpers.scores import get_average_score_weight
 
@@ -25,7 +25,7 @@ def secondary_scores(request, worm, temperature):
     screen = worm.get_screen_category(temperature)
 
     num_passes_stringent = 0
-    num_passes_percentage = 0
+    num_passes_percent = 0
     num_passes_count = 0
     num_experiment_columns = 0
 
@@ -36,16 +36,16 @@ def secondary_scores(request, worm, temperature):
         scores = expts.values()
         well.avg = get_average_score_weight(scores)
 
-        well.passes_stringent = passes_sup_stringent_criteria(scores)
-        well.passes_percentage = passes_sup_positive_percentage_criteria(
+        well.passes_stringent = passes_sup_secondary_stringent(scores)
+        well.passes_percent = passes_sup_secondary_percent(
             scores)
-        well.passes_count = passes_sup_positive_count_criteria(scores)
+        well.passes_count = passes_sup_secondary_count(scores)
 
         if well.passes_stringent:
             num_passes_stringent += 1
 
-        if well.passes_percentage:
-            num_passes_percentage += 1
+        if well.passes_percent:
+            num_passes_percent += 1
 
         if well.passes_count:
             num_passes_count += 1
@@ -56,7 +56,7 @@ def secondary_scores(request, worm, temperature):
     data = OrderedDict(sorted(
         data.iteritems(),
         key=lambda x: (x[0].passes_stringent,
-                       x[0].passes_percentage,
+                       x[0].passes_percent,
                        x[0].passes_count,
                        x[0].avg),
         reverse=True))
@@ -67,7 +67,7 @@ def secondary_scores(request, worm, temperature):
         'temperature': temperature,
         'data': data,
         'num_wells': len(data),
-        'num_passes_percentage': num_passes_percentage,
+        'num_passes_percent': num_passes_percent,
         'num_passes_count': num_passes_count,
         'num_passes_stringent': num_passes_stringent,
         'num_experiment_columns': num_experiment_columns,
