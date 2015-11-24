@@ -1,64 +1,7 @@
-"""Utility module to help with designing new plates (e.g. library plates).
+"""Utility module to help with designing new plates."""
 
-This module includes functions to:
-
-    - Select random wells. This is useful when designing new frozen
-      bacteria plates, when we want some empty wells to create
-      a recognizable pattern whenever the bacteria is replicated.
-
-    - Assign items to plate positions. This is useful e.g. for
-      rearraying positives from the Primary screen into Secondary
-      plates, and rearraying clones that need to be resequenced into
-      PCR plates.
-
-"""
-
-import random
-
-from constants import (ROWS_96, COLS_96, NUM_WELLS_96,
-                       ROWS_384, COLS_384, NUM_WELLS_384)
-from plate_layout import get_well_list, is_symmetric
-from well_naming import get_well_name
-
-
-def get_random_well(is_384=False):
-    """Get a random well."""
-    if is_384:
-        rows = ROWS_384
-        cols = COLS_384
-    else:
-        rows = ROWS_96
-        cols = COLS_96
-
-    row = random.choice(rows)
-    col = random.choice(cols)
-    return get_well_name(row, col)
-
-
-def get_random_wells(count, is_384=False):
-    """Get unique, random wells (number determined by count parameter).
-
-    count must be between 0 and number of wells in a plate, inclusive.
-
-    """
-    if is_384:
-        upper = NUM_WELLS_384
-    else:
-        upper = NUM_WELLS_96
-
-    if count < 0 or count > upper:
-        raise ValueError('count must be between 0 and {}, inclusive'
-                         .format(upper))
-
-    wells = set()
-    for i in range(count):
-        found = False
-        while not found:
-            well = get_random_well(is_384=is_384)
-            if well not in wells:
-                found = True
-                wells.add(well)
-    return wells
+from constants import NUM_WELLS_96
+from plate_layout import get_well_list, is_symmetric, get_random_wells
 
 
 def assign_to_plates(l, vertical=False,

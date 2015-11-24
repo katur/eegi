@@ -16,12 +16,25 @@ This module includes functions to:
       for designing plates without symmetric patterns, and for fixing
       issues with plates that were accidentally flipped 180 degrees.
 
+    - Get random wells. This could be useful for adding random wells to
+      a new library plate, or for scoring random wells in a plate.
+
 """
 
-from constants import (ROWS_96, COLS_96, NUM_ROWS_96, NUM_COLS_96,
-                       ROWS_384, COLS_384)
+import random
+
+from constants import (ROWS_96, COLS_96, ROWS_384, COLS_384,
+                       NUM_ROWS_96, NUM_COLS_96,
+                       NUM_WELLS_96, NUM_WELLS_384)
 from well_tile_conversion import well_to_tile
 from well_naming import get_well_name, is_proper_well_name
+
+
+def _get_rows_and_cols(is_384=False):
+    if is_384:
+        return (ROWS_384, COLS_384)
+    else:
+        return (ROWS_96, COLS_96)
 
 
 def get_well_list(is_384=False, vertical=False):
@@ -40,12 +53,7 @@ def get_well_list(is_384=False, vertical=False):
              'A12', 'B12', ..., 'H12']
 
     """
-    if is_384:
-        rows = ROWS_384
-        cols = COLS_384
-    else:
-        rows = ROWS_96
-        cols = COLS_96
+    rows, cols = _get_rows_and_cols(is_384)
 
     if vertical:
         return _get_well_list_vertical(rows, cols)
@@ -92,12 +100,7 @@ def get_well_grid(is_384=False):
     mapping to the well name and tile name.
 
     """
-    if is_384:
-        rows = ROWS_384
-        cols = COLS_384
-    else:
-        rows = ROWS_96
-        cols = COLS_96
+    rows, cols = _get_rows_and_cols(is_384)
 
     plate = []
     for row in rows:
@@ -177,6 +180,40 @@ def is_symmetric(wells):
             return False
 
     return True
+
+
+def get_random_well(is_384=False):
+    """Get a random well."""
+    rows, cols = _get_rows_and_cols(is_384)
+    row = random.choice(rows)
+    col = random.choice(cols)
+    return get_well_name(row, col)
+
+
+def get_random_wells(count, is_384=False):
+    """Get unique, random wells (number determined by count parameter).
+
+    count must be between 0 and number of wells in a plate, inclusive.
+
+    """
+    if is_384:
+        upper = NUM_WELLS_384
+    else:
+        upper = NUM_WELLS_96
+
+    if count < 0 or count > upper:
+        raise ValueError('count must be between 0 and {}, inclusive'
+                         .format(upper))
+
+    wells = set()
+    for i in range(count):
+        found = False
+        while not found:
+            well = get_random_well(is_384=is_384)
+            if well not in wells:
+                found = True
+                wells.add(well)
+    return wells
 
 
 if __name__ == '__main__':
