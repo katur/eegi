@@ -12,7 +12,7 @@ from dbmigration.helpers.object_getters import get_library_stock
 from eegi.local_settings import LEGACY_DATABASE
 from library.models import LibraryStock, LibrarySequencing
 from utils.scripting import require_db_write_acknowledgement
-from utils.well_naming import get_well_name
+from utils.wells import get_well_name
 
 
 class Command(BaseCommand):

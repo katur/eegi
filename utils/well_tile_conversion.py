@@ -19,7 +19,7 @@
 import re
 
 from constants import ROWS_96, NUM_COLS_96
-from well_naming import get_well_name
+from wells import get_well_name
 
 BACKWARDS_ROWS = 'BDFH'
 

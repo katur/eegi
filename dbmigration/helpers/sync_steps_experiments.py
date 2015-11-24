@@ -16,7 +16,7 @@ from experiments.models import (Experiment, ExperimentPlate, DevstarScore,
                                 ManualScoreCode, ManualScore)
 
 from utils.comparison import compare_floats_for_equality
-from utils.plate_layout import get_well_list
+from utils.plates import get_well_list
 from utils.time_conversion import get_timestamp, get_timestamp_from_ymd
 from utils.well_tile_conversion import tile_to_well
 
