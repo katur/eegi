@@ -6,7 +6,7 @@
 
 
 {% block page_title %}
-{{ worm.id }} Worms
+{{ mutant.id }} Worms
 &times;
 RNAi Clone{{ clones|pluralize }} {{ clones|join:', ' }}
 at {{ temperature|celsius }}
@@ -16,7 +16,7 @@ at {{ temperature|celsius }}
 {% block content %}
 
 <div class="cleared-spaced-spans">
-  {% include 'worm_spans.html' %}
+  {% include 'worm_spans.html' with worm=mutant %}
 </div>
 
 {% for clone, library_stocks in data.items %}
@@ -38,8 +38,8 @@ at {{ temperature|celsius }}
       {% with show_devstar=True %}
       <tbody>
         <tr>
-          <th>Mutant ({{ worm.gene }}) + RNAi ({{ clone.id }})</th>
-          <th>Mutant ({{ worm.gene }}) + L4440 control</th>
+          <th>Mutant ({{ mutant.gene }}) + RNAi ({{ clone.id }})</th>
+          <th>Mutant ({{ mutant.gene }}) + L4440 control</th>
         </tr>
 
         <tr>

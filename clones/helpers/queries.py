@@ -4,6 +4,11 @@ from django.db.models import Q
 from clones.models import Clone, CloneTarget, Gene
 
 
+def get_l4440():
+    """Get the L4440 control RNAi clone."""
+    return Clone.objects.get(pk='L4440')
+
+
 def get_clones_from_search_term(search_term):
     """Get list of clones matching a search term.
 

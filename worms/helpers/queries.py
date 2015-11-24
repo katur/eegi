@@ -3,6 +3,11 @@ from django.db.models import Q
 from worms.models import WormStrain
 
 
+def get_n2():
+    """Get the N2 control worm strain."""
+    return WormStrain.objects.get(pk='N2')
+
+
 def get_worm_and_temperature_from_search_term(search_term, screen):
     """Get a tuple of (worm, temperature) matching search_term and screen.
 

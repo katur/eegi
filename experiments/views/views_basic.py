@@ -11,6 +11,8 @@ from utils.http import http_response_ok
 
 
 EXPERIMENT_PLATES_PER_PAGE = 100
+DEVSTAR_SCORING_CATEGORIES_DIR = MATERIALS_DIR + '/devstar_scoring/categories'
+DEVSTAR_SCORING_IMAGES_PER_PAGE = 10
 
 
 def experiment(request, pk):
@@ -85,8 +87,9 @@ def experiment_plates(request, context=None):
 
 def experiment_plates_vertical(request, pks):
     """Render the page to view experiment plate images vertically."""
-    # NOTE: To preserve order, do not use .filter(id__in=ids)
     pks = pks.split(',')
+
+    # NOTE: To preserve order, do not do .filter(id__in=ids)
     plates = [get_object_or_404(ExperimentPlate, pk=pk) for pk in pks]
 
     context = {
@@ -97,10 +100,6 @@ def experiment_plates_vertical(request, pks):
     }
 
     return render(request, 'experiment_plates_vertical.html', context)
-
-
-DEVSTAR_SCORING_CATEGORIES_DIR = MATERIALS_DIR + '/devstar_scoring/categories'
-DEVSTAR_SCORING_IMAGES_PER_PAGE = 10
 
 
 def devstar_scoring_categories(request):
@@ -122,7 +121,7 @@ def devstar_scoring_category(request, category):
 
     for row in rows:
         experiment_plate_id, tile = row.split('_')
-        tile = tile.split('.bmp')[0]
+        tile = tile.split('.')[0]
         well = tile_to_well(tile)
         experiment = get_object_or_404(Experiment,
                                        plate=experiment_plate_id,

@@ -6,7 +6,7 @@
 
 
 {% block page_title %}
-{{ worm.id }} Worms
+{{ mutant.id }} Mutant Worms
 &times;
 Control L4440 Clone
 at {{ temperature|celsius }}
@@ -15,8 +15,8 @@ at {{ temperature|celsius }}
 
 {% block content %}
 <div class="cleared-spaced-spans">
-  {% include 'worm_spans.html' %}
-  {% include 'clone_spans.html' %}
+  {% include 'worm_spans.html' with worm=mutant %}
+  {% include 'clone_spans.html' with clone=l4440 %}
 </div>
 
 {% for date, experiments in data.items %}

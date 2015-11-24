@@ -7,10 +7,13 @@ from experiments.models import Experiment
 from library.models import LibraryStock
 from worms.models import WormStrain
 
+from clones.helpers.queries import get_l4440
+from worms.helpers.queries import get_n2
+
 
 def rnai_knockdown(request, clones, temperature=None):
     """Render the page showing knockdown by RNAi only."""
-    n2 = get_object_or_404(WormStrain, pk='N2')
+    n2 = get_n2()
     clones = Clone.objects.filter(pk__in=clones.split(','))
 
     # data = {clone: {library_stock: [experiments]}}
@@ -44,7 +47,7 @@ def rnai_knockdown(request, clones, temperature=None):
             data[clone] = data_by_well
 
     context = {
-        'worm': n2,
+        'n2': n2,
         'clones': clones,
         'temperature': temperature,
         'data': data,
@@ -53,14 +56,14 @@ def rnai_knockdown(request, clones, temperature=None):
     return render(request, 'rnai_knockdown.html', context)
 
 
-def mutant_knockdown(request, worm, temperature):
+def mutant_knockdown(request, mutant, temperature):
     """Render the page showing knockdown by mutation only."""
-    worm = get_object_or_404(WormStrain, pk=worm)
-    l4440 = get_object_or_404(Clone, pk='L4440')
+    l4440 = get_l4440()
+    mutant = get_object_or_404(WormStrain, pk=mutant)
 
     experiments = (
         Experiment.objects
-        .filter(is_junk=False, worm_strain=worm,
+        .filter(is_junk=False, worm_strain=mutant,
                 library_stock__intended_clone=l4440,
                 plate__temperature=temperature)
         .order_by('-plate__date', 'library_stock', 'plate__id', 'well'))
@@ -75,8 +78,8 @@ def mutant_knockdown(request, worm, temperature):
         data[date].append(experiment)
 
     context = {
-        'worm': worm,
-        'clone': l4440,
+        'mutant': mutant,
+        'l4440': l4440,
         'temperature': temperature,
         'data': data,
     }
@@ -84,20 +87,19 @@ def mutant_knockdown(request, worm, temperature):
     return render(request, 'mutant_knockdown.html', context)
 
 
-def double_knockdown(request, worm, clones, temperature):
+def double_knockdown(request, mutant, clones, temperature):
     """Render the page showing knockdown by both mutation and RNAi."""
-    n2 = get_object_or_404(WormStrain, pk='N2')
-    worm = get_object_or_404(WormStrain, pk=worm)
-    l4440 = get_object_or_404(Clone, pk='L4440')
+    n2 = get_n2()
+    l4440 = get_l4440()
+
+    mutant = get_object_or_404(WormStrain, pk=mutant)
     clones = Clone.objects.filter(pk__in=clones.split(','))
 
-    # data = {clone: {
-    #   library_stock: {
-    #       date: {
-    #           'mutant_rnai': [exp_well, exp_well, ...],
-    #           'n2_rnai': [exp_well, exp_well, ...],
-    #           'mutant_l4440': [(exp, well), (exp, well), ...],
-    #           'n2_l4440': [(exp, well), (exp, well), ...]}}}}
+    # data = {clone: {library_stock: {date: {
+    #   'mutant_rnai': [exp_well, exp_well, ...],
+    #   'n2_rnai': [exp_well, exp_well, ...],
+    #   'mutant_l4440': [(exp, well), (exp, well), ...],
+    #   'n2_l4440': [(exp, well), (exp, well), ...]}}}}
 
     data = OrderedDict()
 
@@ -112,7 +114,7 @@ def double_knockdown(request, worm, clones, temperature):
 
             dates = (
                 Experiment.objects
-                .filter(is_junk=False, worm_strain=worm,
+                .filter(is_junk=False, worm_strain=mutant,
                         plate__temperature=temperature,
                         library_stock=library_stock)
                 .order_by('-plate__date')
@@ -130,16 +132,16 @@ def double_knockdown(request, worm, clones, temperature):
 
                 # Add double knockdowns
                 data_per_date['mutant_rnai'] = (common.filter(
-                    worm_strain=worm, plate__temperature=temperature,
+                    worm_strain=mutant, plate__temperature=temperature,
                     library_stock=library_stock)
                     .prefetch_related('manualscore_set'))
 
                 # Add mutant + L4440 controls
                 data_per_date['mutant_l4440'] = common.filter(
-                    worm_strain=worm, plate__temperature=temperature,
+                    worm_strain=mutant, plate__temperature=temperature,
                     library_stock__intended_clone=l4440)
 
-                # TODO: N2 controls should be limited to closest temperature
+                # TODO: Limit N2 controls to closest temperature
 
                 # Add N2 + RNAi controls
                 data_per_date['n2_rnai'] = common.filter(
@@ -157,7 +159,7 @@ def double_knockdown(request, worm, clones, temperature):
         data[clone] = data_per_clone
 
     context = {
-        'worm': worm,
+        'mutant': mutant,
         'clones': clones,
         'temperature': temperature,
         'data': data,
