@@ -11,9 +11,10 @@ from clones.models import Clone
 from experiments.models import Experiment, ExperimentPlate, ManualScoreCode
 from library.models import LibraryStock, LibraryPlate
 from worms.models import WormStrain
+
 from dbmigration.helpers.name_getters import (get_library_plate_name,
                                               get_library_stock_name)
-from utils.well_naming import get_three_character_well
+from utils.wells import get_three_character_well
 
 
 def get_missing_object_message(klass, **kwargs):

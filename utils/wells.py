@@ -1,4 +1,5 @@
-"""Utility module for help with well names.
+"""Utility module to help work with wells (e.g. library wells and experiment
+wells).
 
 These functions are mainly useful for migrating data from the legacy
 database, which did not use consistent well names (it sometimes

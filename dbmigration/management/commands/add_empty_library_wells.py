@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from dbmigration.helpers.name_getters import get_library_stock_name
 from dbmigration.helpers.object_getters import get_library_plate
 from library.models import LibraryStock
-from utils.plate_layout import get_well_set, get_384_position
+from utils.plates import get_well_set, get_384_parent_well
 from utils.scripting import require_db_write_acknowledgement
 
 
@@ -86,7 +86,7 @@ def _get_ahringer_384_parent(child_stock):
     parent_plate = get_library_plate(parent_plate_name)
 
     child_well = child_stock.well
-    parent_well = get_384_position(child_plate_parts[2], child_well)
+    parent_well = get_384_parent_well(child_plate_parts[2], child_well)
 
     parent_pk = get_library_stock_name(parent_plate_name, parent_well)
 

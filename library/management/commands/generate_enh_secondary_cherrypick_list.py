@@ -2,8 +2,8 @@ from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import passes_enh_primary
 from experiments.helpers.scores import get_secondary_candidates
-from utils.plate_design import assign_to_plates, get_plate_assignment_rows
-from utils.plate_layout import is_symmetric
+from utils.plates import (assign_to_plates, get_plate_assignment_rows,
+                          is_symmetric)
 
 UNIVERSAL_THRESHOLD = 4
 

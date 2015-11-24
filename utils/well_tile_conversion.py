@@ -4,24 +4,26 @@
       plate. This is what is used throughout the database.
 
     - Tile, e.g. 'Tile000001', is the prefix with which the microscope
-      software saves our images (as Tile000001.bmp), and the convention that
-      DevStaR uses for the corresponding output (Tile000001res.png and
-      Tile000001cnt.txt).
+      software Surveyor saves our images (as Tile000001.bmp). The same
+      prefix has conventionally been used for the corresponding DevStaR
+      output (Tile000001res.png and Tile000001cnt.txt), as well as lower
+      resolution copies of the images.
 
-  While the legacy database was inconsistent in using 'well' in some
-  tables and 'tile' in other tables, the new database uses 'well'
-  consistenly. However, translating to tiles is still needed, to
-  access the image and DevStaR filenames, and to sync the legacy
-  database to this database.
+While the legacy database was inconsistent in using 'well' in some
+tables and 'tile' in other tables, the new database uses 'well'
+consistently. However, translating to tiles is still needed, to
+access the image and DevStaR filenames, and to sync the legacy
+database to this database.
 
 """
 
 import re
 
-from constants import ROWS_96, NUM_COLS_96
-from well_naming import get_well_name
+from constants import ROWS_96, COLS_96
+from wells import get_well_name
 
 BACKWARDS_ROWS = 'BDFH'
+NUM_COLS_96 = len(COLS_96)
 
 
 def well_to_tile(well):
