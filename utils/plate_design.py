@@ -22,7 +22,7 @@ from well_naming import get_well_name
 
 
 def get_random_well(is_384=False):
-    """Get a random 96-format well."""
+    """Get a random well."""
     if is_384:
         rows = ROWS_384
         cols = COLS_384
@@ -120,7 +120,7 @@ def assign_to_plates(l, vertical=False,
 
         plates[-1].append(item)
 
-    while len(plates[-1]) < 96:
+    while len(plates[-1]) < NUM_WELLS_96:
         plates[-1].append(None)
 
     zipped = []
