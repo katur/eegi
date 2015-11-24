@@ -16,7 +16,8 @@ from utils.well_naming import get_well_name
 
 
 class Command(BaseCommand):
-    """Command to sync SUP Secondary sequencing data from Genewiz output files.
+    """Command to sync SUP Secondary sequencing data from legacy database and
+    Genewiz output files.
 
     This script requires that LEGACY_DATABASE be defined in local_settings.py,
     to connect to the GenomeWideGI legacy database.
