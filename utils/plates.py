@@ -22,7 +22,6 @@ import random
 
 from constants import get_rows_and_cols, ROWS_96, ROWS_384
 from wells import get_well_name, is_proper_well_name
-from well_tile_conversion import well_to_tile
 
 
 def get_well_list(is_384=False, vertical=False):
@@ -80,12 +79,8 @@ def get_well_set(is_384=False):
 def get_well_grid(is_384=False):
     """Get a 2D array representing the wells in one plate.
 
-    is_384 param determines if the well list should be for 384-format plates,
-    or 96-format plates. Defaults to 96-format plates (i.e., 8 rows and 12
-    columns).
-
-    Each element in the 2D array is a dictionary with 'well' and 'tile' keys
-    mapping to the well name and tile name.
+    is_384 param determines if the well list should be for 384-format
+    plates, or 96-format plates. Defaults to 96-format.
 
     """
     rows, cols = get_rows_and_cols(is_384)
@@ -95,13 +90,8 @@ def get_well_grid(is_384=False):
         this_row = []
         for column in cols:
             well = get_well_name(row, column)
+            this_row.append(well)
 
-            position_info = {
-                'well': well,
-                'tile': well_to_tile(well),
-            }
-
-            this_row.append(position_info)
         plate.append(this_row)
 
     return plate

@@ -1,6 +1,8 @@
 from django.test import TestCase
 
-from utils.plates import get_well_list, get_384_parent_well
+from utils.plates import (
+    get_well_list, get_well_set, get_well_grid, get_symmetric_well,
+    get_384_parent_well)
 
 
 class GetWellListTestCase(TestCase):
@@ -37,6 +39,91 @@ class GetWellListTestCase(TestCase):
 
     def test_last_wells_vertical_384(self):
         self.assertEqual(self.vertical_384[-3:], ['N24', 'O24', 'P24'])
+
+
+class GetWellSetTestCase(TestCase):
+    def setUp(self):
+        self.set_96 = get_well_set(is_384=False)
+        self.set_384 = get_well_set(is_384=True)
+
+    def test_size(self):
+        self.assertEqual(len(self.set_96), 96)
+        self.assertEqual(len(self.set_384), 384)
+
+    def test_upper_left(self):
+        for i in ['A01', 'A02', 'B02']:
+            self.assertIn(i, self.set_96)
+            self.assertIn(i, self.set_384)
+
+    def test_lower_right_96(self):
+        for i in ['G12', 'H11', 'H12']:
+            self.assertIn(i, self.set_96)
+
+    def test_lower_right_384(self):
+        lasts = ['O24', 'P23', 'P24']
+        for i in lasts:
+            self.assertIn(i, self.set_384)
+
+    def test_out_of_bounds_96(self):
+        for i in ['A00', 'A13', 'I01']:
+            self.assertNotIn(i, self.set_96)
+
+    def test_out_of_bounds_384(self):
+        for i in ['A00', 'A25', 'Q01']:
+            self.assertNotIn(i, self.set_384)
+
+
+class GetWellGridTestCase(TestCase):
+    def setUp(self):
+        self.grid_96 = get_well_grid(is_384=False)
+        self.grid_384 = get_well_grid(is_384=True)
+
+    def test_dimensions_96(self):
+        num_rows = len(self.grid_96)
+        num_cols = len(self.grid_96[0])
+        self.assertEqual(num_rows, 8)
+        self.assertEqual(num_cols, 12)
+
+    def test_dimensions_384(self):
+        num_rows = len(self.grid_384)
+        num_cols = len(self.grid_384[0])
+        self.assertEqual(num_rows, 16)
+        self.assertEqual(num_cols, 24)
+
+    def test_corners(self):
+        self.assertEqual(self.grid_96[0][0], 'A01')
+        self.assertEqual(self.grid_384[0][0], 'A01')
+        self.assertEqual(self.grid_96[7][11], 'H12')
+        self.assertEqual(self.grid_384[15][23], 'P24')
+
+
+class GetSymmetricWellTestCase(TestCase):
+    def setUp(self):
+        self.symmetric_96 = (
+            ('A01', 'H12'),
+            ('A12', 'H01'),
+            ('G01', 'B12'),
+            ('F06', 'C07'),
+            ('D09', 'E07'),
+        )
+
+        self.symmetric_384 = (
+            ('A01', 'P24'),
+            ('A24', 'P01'),
+            ('O01', 'B24'),
+            ('J12', 'G13'),
+            ('H20', 'I05'),
+        )
+
+        def test_pairs_96(self):
+            for a, b in self.symmetric_96:
+                self.assertEqual(get_symmetric_well(a), b)
+                self.assertEqual(get_symmetric_well(b), a)
+
+        def test_pairs_384(self):
+            for a, b in self.symmetric_384:
+                self.assertEqual(get_symmetric_well(a), b)
+                self.assertEqual(get_symmetric_well(b), a)
 
 
 class Get384ParentWellTestCase(TestCase):
