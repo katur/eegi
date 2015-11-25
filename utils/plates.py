@@ -107,38 +107,6 @@ def get_well_grid(is_384=False):
     return plate
 
 
-def get_384_parent_well(child_quadrant, child_position):
-    """Get the 384-format position corresponding to a 96-format child position.
-
-    Uses the child's quadrant (A1, A2, B1, or B2) and the child's position
-    to calculate this.
-
-    """
-    if child_quadrant[0] == 'A':
-        odd_row = True
-    else:
-        odd_row = False
-
-    if child_quadrant[1] == '1':
-        odd_column = True
-    else:
-        odd_column = False
-
-    child_row = child_position[0]
-    child_row_index = ROWS_96.index(child_row)
-    parent_row_index = child_row_index * 2
-    if not odd_row:
-        parent_row_index += 1
-    parent_row = ROWS_384[parent_row_index]
-
-    child_column = int(child_position[1:])
-    parent_column = child_column * 2
-    if odd_column:
-        parent_column -= 1
-
-    return get_well_name(parent_row, parent_column)
-
-
 def get_symmetric_well(well, is_384=False):
     """Get the well that is symmetric to the provided well.
 
@@ -309,8 +277,34 @@ def get_empties_from_list_of_lists(l):
     return e
 
 
-if __name__ == '__main__':
-    print 'A1 H12 to 384: ' + get_384_parent_well('A1', 'H12')
-    print 'B1 H12 to 384: ' + get_384_parent_well('B1', 'H12')
-    print 'A2 H12 to 384: ' + get_384_parent_well('A2', 'H12')
-    print 'B2 H12 to 384: ' + get_384_parent_well('B2', 'H12')
+def get_384_parent_well(child_quadrant, child_position):
+    """Get the 384-format position corresponding to a 96-format child
+    position.
+
+    Uses the child's quadrant (A1, A2, B1, or B2) and the child's position
+    to calculate this.
+
+    """
+    if child_quadrant[0] == 'A':
+        odd_row = True
+    else:
+        odd_row = False
+
+    if child_quadrant[1] == '1':
+        odd_column = True
+    else:
+        odd_column = False
+
+    child_row = child_position[0]
+    child_row_index = ROWS_96.index(child_row)
+    parent_row_index = child_row_index * 2
+    if not odd_row:
+        parent_row_index += 1
+    parent_row = ROWS_384[parent_row_index]
+
+    child_column = int(child_position[1:])
+    parent_column = child_column * 2
+    if odd_column:
+        parent_column -= 1
+
+    return get_well_name(parent_row, parent_column)
