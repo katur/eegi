@@ -70,7 +70,7 @@ class ExperimentPlateFilterForm(forms.Form):
                 del cleaned_data[k]
 
         plate_pks = (Experiment.objects.filter(**cleaned_data)
-                     .order_by('plate').values_list('id', flat=True))
+                     .order_by('plate').values_list('plate', flat=True))
 
         cleaned_data['experiment_plates'] = (ExperimentPlate.objects
                                              .filter(pk__in=plate_pks))
