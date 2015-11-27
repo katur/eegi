@@ -5,11 +5,6 @@ from utils.well_tile_conversion import well_to_tile
 register = template.Library()
 
 
-@register.filter
-def get_range(value):
-    return range(value)
-
-
 @register.simple_tag
 def url_replace(request, field, value):
     """Set GET[field] to value in the url.
@@ -96,10 +91,11 @@ def get_comma_separated_targets(clone):
 
 @register.filter
 def get_id_with_plate_link(item):
-    """Get a string of item.id, with an HTML link around the plate.
+    """Get HTML where text is item.id, and the plate portion of the id
+    links to item.plate.get_absolute_url.
 
-    Works if item.id is in format 'plate_well', item has attribute plate,
-    and that plate in turn has the function get_absolute_url().
+    Requires that item.id is in format 'plate_well', that item has attribute
+    'plate', and that plate in turn has the function get_absolute_url().
 
     If any of the above conditions do not hold, returns str(item).
 
