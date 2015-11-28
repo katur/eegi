@@ -20,20 +20,6 @@ def get_most_relevant_score_per_experiment(scores):
     return scores[0]
 
 
-def sort_scores_by_relevance_across_replicates(scores):
-    """Sort scores across experiment replicates by relevance.
-
-    Returns a list where most relevant is first.
-
-    scores should contain the single most relevant score per
-    experiment replicate.
-
-    """
-    return sorted(scores,
-                  key=lambda x: x.get_relevance_across_replicates(),
-                  reverse=True)
-
-
 def get_average_score_weight(scores):
     """Get the average weight of scores.
 
