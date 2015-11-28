@@ -2,27 +2,32 @@ import argparse
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
+
+from eegi.local_settings import LEGACY_DATABASE
 from library.models import LibraryPlate, LibraryStock
-from worms.models import WormStrain
 from utils.well_tile_conversion import well_to_tile
+from worms.models import WormStrain
 
 
 class Command(BaseCommand):
-    """Command to format a cherry-pick list for importing into legacy database
-    GenomeWideGI (table CherryPickRNAiPlate).
+    """Command to format a cherry-pick list for importing into legacy
+    database table (GenomeWideGI.CherryPickRNAiPlate).
+
+    This script requires that LEGACY_DATABASE be defined in
+    local_settings.py.
 
     Arguments
 
     - cherrypick_list should be a comma-separated file, including header
       row, where each row is in format:
 
-        source_plate,source_well,destination_plate,destination_well
+          source_plate,source_well,destination_plate,destination_well
 
     - legacy_clones should be a comma-separated dump, without header row,
       of the following legacy database query:
 
-        SELECT clone, node_primary_name, 384PlateID, 384Well
-        FROM RNAiPlate WHERE RNAiPlateID != "L4440"
+          SELECT clone, node_primary_name, 384PlateID, 384Well
+          FROM RNAiPlate WHERE RNAiPlateID != "L4440"
 
     """
     help = 'Format a cherry-pick list for legacy database.'

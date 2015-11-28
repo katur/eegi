@@ -16,29 +16,32 @@ from utils.wells import get_well_name
 
 
 class Command(BaseCommand):
-    """Command to sync SUP Secondary sequencing data from legacy database and
-    Genewiz output files.
+    """Command to import SUP Secondary sequencing data from legacy
+    database GenomeWideGI and Genewiz output files.
 
-    This script requires that LEGACY_DATABASE be defined in local_settings.py,
-    to connect to the GenomeWideGI legacy database.
+    This script requires that LEGACY_DATABASE be defined in
+    local_settings.py.
 
-    tracking_numbers should be a csv dump of the Google Doc in which we
-    kept track of our Genewiz tracking numbers, necessary so that this
-    command skips Genewiz data unrelated to the GI screen. This file
-    currently lives at:
+    Arguments
 
-       materials/sequencing/genewiz/tracking_numbers.csv
+    - tracking_numbers is a csv dump of the Google Doc in which we
+      kept track of our Genewiz tracking numbers, necessary so that this
+      command skips Genewiz data unrelated to the GI screen. This file
+      currently lives at:
 
-    genewiz_root should be the root of the directory where Genewiz dumps our
-    sequencing data. Inside that directory are several Perl scripts that
-    Huey-Ling used to make the Genewiz output more convenient to parse. The
-    only one of these Perl scripts that is required to have been run before
-    using this command is rmDateFromSeqAB1.pl, which removes the date from
-    certain filenames. Otherwise, this script is flexible about dealing with
-    Genewiz's Excel format, or Huey-Ling's text file format.
-    This directory currently lives at:
+          materials/sequencing/genewiz/tracking_numbers.csv
 
-        materials/sequencing/genewiz/genewiz_data
+    - genewiz_root is the root directory where Genewiz dumps our
+      sequencing data. Inside this directory are several Perl
+      scripts that Huey-Ling used to make the Genewiz output more
+      convenient to parse. The only one of these Perl scripts that is
+      required to have been run before using this command is
+      rmDateFromSeqAB1.pl, which removes the date from certain
+      filenames. Otherwise, this script is flexible about dealing with
+      Genewiz's Excel format, or Huey-Ling's text file format.
+      This directory currently lives at:
+
+          materials/sequencing/genewiz/genewiz_data
 
     """
     help = 'Import sequencing data from Genewiz output files'
