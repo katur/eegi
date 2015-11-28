@@ -10,8 +10,8 @@ from worms.models import WormStrain
 
 
 class Command(BaseCommand):
-    """Command to format a cherry-pick list for importing into legacy
-    database table (GenomeWideGI.CherryPickRNAiPlate).
+    """Command to format cherrypick_list to import into legacy
+    database (GenomeWideGI.CherryPickRNAiPlate).
 
     This script requires that LEGACY_DATABASE be defined in
     local_settings.py.
@@ -23,12 +23,6 @@ class Command(BaseCommand):
 
           source_plate,source_well,destination_plate,destination_well
 
-    - legacy_clones should be a comma-separated dump, without header row,
-      of the following legacy database query:
-
-          SELECT clone, node_primary_name, 384PlateID, 384Well
-          FROM RNAiPlate WHERE RNAiPlateID != "L4440"
-
     """
     help = 'Format a cherry-pick list for legacy database.'
 
@@ -38,20 +32,28 @@ class Command(BaseCommand):
                                  "See this command's docstring "
                                  "for more details.")
 
-        parser.add_argument('legacy_clones', type=argparse.FileType('r'),
-                            help="CSV of legacy database clone info. "
-                                 "See this command's docstring "
-                                 "for more details.")
-
     def handle(self, **options):
-        # Create a dictionary to translate from new canonical clones names
-        # to the various fields which need to be entered into the legacy
-        # database.
+        ######################################################
+        # FIRST STAGE
+        #
+        #   Connect to legacy database and create a dictionary to
+        #   translate from new canonical clones names to legacy
+        #   clone information.
+        #
+        ######################################################
+        legacy_db = MySQLdb.connect(host=LEGACY_DATABASE['HOST'],
+                                    user=LEGACY_DATABASE['USER'],
+                                    passwd=LEGACY_DATABASE['PASSWORD'],
+                                    db=LEGACY_DATABASE['NAME'])
+        cursor = legacy_db.cursor()
+
+        cursor.execute('SELECT clone, node_primary_name, 384PlateID, '
+                       '384Well FROM RNAiPlate '
+                       'WHERE RNAiPlateID != "L4440"')
 
         new_to_old = {}
 
-        for line in options['legacy_clones']:
-            row = line.split(',')
+        for row in cursor.fetchall():
             old_clone_name = row[0].strip()
             node_primary_name = row[1].strip()
             plate_384 = row[2].strip()
@@ -67,23 +69,26 @@ class Command(BaseCommand):
                 'node_primary_name': node_primary_name,
             }
 
+        ######################################################
+        # SECOND STAGE
+        #
+        #   For each row in cherrypick_list, create a corresponding
+        #   row for the legacy database, with fields:
+        #   ('mutant', 'mutantAllele', 'RNAiPlateID', '96well',
+        #    'ImgName', 'clone', 'node_primary_name',
+        #    'seq_node_primary_name')
+        #
+        ######################################################
         cherrypick_list = options['cherrypick_list']
 
-        # skip header row
+        # Skip header row
         next(cherrypick_list)
 
-        # Iterate over the cherry pick list, translating each row
-        # to the correct format for importing into the CherryPickRNAi
-        # table in the legacy database. The fields in CherryPickRNAi
-        # are: ('mutant', 'mutantAllele', 'RNAiPlateID', '96well', 'ImgName',
-        # 'clone', 'node_primary_name', 'seq_node_primary_name']
         '''
-        # Don't print legacy fieldnames (easier to import with phpmyadmin
-        # without)
-
-        legacy_fields = ('mutant', 'mutantAllele', 'RNAiPlateID', '96well',
-                         'ImgName', 'clone', 'node_primary_name',
-                         'seq_node_primary_name')
+        # Uncomment this to add header row with fieldnames
+        legacy_fields = ('mutant', 'mutantAllele', 'RNAiPlateID',
+                         '96well', 'ImgName', 'clone',
+                         'node_primary_name', 'seq_node_primary_name')
 
         self.stdout.write(','.join(legacy_fields))
         '''
@@ -92,8 +97,7 @@ class Command(BaseCommand):
             row = line.split(',')
             source_plate_name = row[0].strip()
 
-            # Skip "None", since legacy database did not represent
-            # empty wells
+            # Since legacy database did not represent empty wells
             if not source_plate_name or source_plate_name == "None":
                 continue
 
@@ -103,9 +107,11 @@ class Command(BaseCommand):
             destination_tile = well_to_tile(destination_well) + '.bmp'
 
             try:
-                source_plate = LibraryPlate.objects.get(id=source_plate_name)
-                source_stock = LibraryStock.objects.get(plate=source_plate,
-                                                        well=source_well)
+                source_plate = LibraryPlate.objects.get(
+                    id=source_plate_name)
+                source_stock = LibraryStock.objects.get(
+                    plate=source_plate, well=source_well)
+
             except ObjectDoesNotExist:
                 raise CommandError('{} at {} not found'
                                    .format(source_plate_name, source_well))
