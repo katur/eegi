@@ -17,7 +17,7 @@ just prior to the official migration to the new database.
 
 The script lives in `dbmigration/management/commands`, and can be run with:
 ```
-./manage.py migrate_legacy_database
+./manage.py import_legacy_database
 ```
 
 Please see the script's documentation for more information

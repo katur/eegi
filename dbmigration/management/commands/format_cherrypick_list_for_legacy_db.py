@@ -32,6 +32,7 @@ class Command(BaseCommand):
                             help="CSV of cherry-pick list. "
                                  "See this command's docstring "
                                  "for more details.")
+
         parser.add_argument('legacy_clones', type=argparse.FileType('r'),
                             help="CSV of legacy database clone info. "
                                  "See this command's docstring "
@@ -102,7 +103,7 @@ class Command(BaseCommand):
                                                         well=source_well)
             except ObjectDoesNotExist:
                 raise CommandError('{} at {} not found'
-                                   .format(source_plate, source_well))
+                                   .format(source_plate_name, source_well))
 
             allele = destination_plate_name.split('_')[0]
 
