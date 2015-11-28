@@ -28,8 +28,7 @@ class Command(BaseCommand):
         else:
             summary_mode = False
 
-        # Get and categorize the sequences corresponding to high confidence
-        # positives
+        # Categorize sequences corresponding to high confidence positives
         seqs = (LibrarySequencing.objects
                 .select_related('source_stock',
                                 'source_stock__intended_clone'))

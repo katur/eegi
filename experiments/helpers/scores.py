@@ -7,7 +7,7 @@ from experiments.models import Experiment
 from worms.helpers.queries import get_worms_for_screen_type
 
 
-def get_most_relevant_score_per_replicate(scores):
+def get_most_relevant_score_per_experiment(scores):
     """Get the most relevant score for a single experiment replicate.
 
     scores should contain all the scores for a single experiment
@@ -80,7 +80,7 @@ def organize_manual_scores(scores, most_relevant_only=False):
     if most_relevant_only:
         for lstock, experiments in data.iteritems():
             for experiment, scores in experiments.iteritems():
-                score = get_most_relevant_score_per_replicate(scores)
+                score = get_most_relevant_score_per_experiment(scores)
                 data[lstock][experiment] = score
 
     return data

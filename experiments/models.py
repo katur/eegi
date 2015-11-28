@@ -5,6 +5,8 @@ from django.core.urlresolvers import reverse
 from django.db import models
 
 from eegi.settings import IMG_PATH, THUMBNAIL_PATH, DEVSTAR_PATH
+from experiments.helpers.scores import (
+    get_most_relevant_score_per_experiment)
 from library.models import LibraryPlate, LibraryStock
 from utils.well_tile_conversion import well_to_tile
 from worms.models import WormStrain
@@ -152,9 +154,7 @@ class Experiment(models.Model):
     def get_most_relevant_manual_score(self):
         """Get the most relevant manual score for this experiment."""
         scores = self.get_manual_scores()
-        scores.sort(key=lambda x: x.get_relevance_per_replicate(),
-                    reverse=True)
-        return scores[0]
+        return get_most_relevant_score_per_experiment(scores)
 
 
 class ManualScoreCode(models.Model):
