@@ -51,6 +51,7 @@ class Command(BaseCommand):
                             help="CSV of Genewiz tracking numbers. "
                                  "See this command's docstring "
                                  "for more details.")
+
         parser.add_argument('genewiz_root',
                             help="Root Genewiz output directory. "
                                  "See this command's docstring "
@@ -94,7 +95,7 @@ class Command(BaseCommand):
         self.sequences = LibrarySequencing.objects.all()
 
         # Create a dictionary to translate from sequencing well to tube number
-        #   (choose SeqPlateID=1 because it happens to have all 96 wells)
+        #   (use SeqPlateID=1 because it happens to have all 96 wells)
         cursor.execute('SELECT tubeNum, Seq96well FROM SeqPlate '
                        'WHERE SeqPlateID=1')
 
