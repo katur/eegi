@@ -46,8 +46,8 @@ class Command(BaseCommand):
                                    .format(gene))
             info = descriptions[gene.id]
 
-            # Sanity check: Does WormBase molecular_name align with Firoz's
-            # database?
+            # Sanity check: Does WormBase molecular_name match the
+            # cosmid_id in Firoz's database?
             wb_molecular = info['molecular_name']
             firoz_cosmid = gene.cosmid_id
             if (not wb_molecular.startswith(firoz_cosmid)):
@@ -56,8 +56,8 @@ class Command(BaseCommand):
                                   'WormBase says {}, Firoz says {}'
                                   .format(gene, wb_molecular, firoz_cosmid))
 
-            # Sanity check: Does WormBase public_name align with Firoz's
-            # database?
+            # Sanity check: Does WormBase public_name match the
+            # locus in Firoz's database?
             wb_public = info['public_name']
             firoz_locus = gene.locus
             if (wb_public != firoz_locus and
