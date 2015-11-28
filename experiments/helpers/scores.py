@@ -3,7 +3,6 @@ from collections import OrderedDict
 
 from django.db.models import Count
 
-from experiments.models import Experiment
 from worms.helpers.queries import get_worms_for_screen_type
 
 
@@ -183,6 +182,7 @@ def _get_primary_single_replicate_experiments(screen):
 
 
     """
+    from experiments.models import Experiment
     worms = get_worms_for_screen_type(screen)
 
     singles = set()

@@ -32,22 +32,22 @@ def secondary_scores(request, worm, temperature):
     data = worm.get_organized_scores(screen, screen_stage=2,
                                      most_relevant_only=True)
 
-    for well, expts in data.iteritems():
+    for stock, expts in data.iteritems():
         scores = expts.values()
-        well.avg = get_average_score_weight(scores)
+        stock.avg = get_average_score_weight(scores)
 
-        well.passes_stringent = passes_sup_secondary_stringent(scores)
-        well.passes_percent = passes_sup_secondary_percent(
+        stock.passes_stringent = passes_sup_secondary_stringent(scores)
+        stock.passes_percent = passes_sup_secondary_percent(
             scores)
-        well.passes_count = passes_sup_secondary_count(scores)
+        stock.passes_count = passes_sup_secondary_count(scores)
 
-        if well.passes_stringent:
+        if stock.passes_stringent:
             num_passes_stringent += 1
 
-        if well.passes_percent:
+        if stock.passes_percent:
             num_passes_percent += 1
 
-        if well.passes_count:
+        if stock.passes_count:
             num_passes_count += 1
 
         if len(expts) > num_experiment_columns:
@@ -66,7 +66,6 @@ def secondary_scores(request, worm, temperature):
         'screen': screen,
         'temperature': temperature,
         'data': data,
-        'num_wells': len(data),
         'num_passes_percent': num_passes_percent,
         'num_passes_count': num_passes_count,
         'num_passes_stringent': num_passes_stringent,
