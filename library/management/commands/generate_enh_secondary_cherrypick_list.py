@@ -98,8 +98,8 @@ class Command(BaseCommand):
                            int(x[3][1:]), x[3][0]))
 
         # Print the list
-        self.stdout.write('source_plate, source_well, '
-                          'destination_plate, destination_well')
+        self.stdout.write('source_plate,source_well,'
+                          'destination_plate,destination_well')
         for row in cherrypick_list:
             self.stdout.write(','.join([str(x) for x in row]))
 
@@ -122,7 +122,7 @@ class Command(BaseCommand):
                                   .format(plate, wells))
 
             if wells in seen:
-                self.stdout.write('TRASH THIS. {}:{} pattern already seen!'
+                self.stdout.write('TRASH THIS. {}:{} pattern redundant!'
                                   .format(plate, wells))
 
             seen.add(wells)
