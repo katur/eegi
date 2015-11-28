@@ -14,8 +14,7 @@ def get_most_relevant_score_per_experiment(scores):
 
     """
     scores.sort(
-        key=lambda x: x.get_relevance_per_replicate(),
-        reverse=True)
+        key=lambda x: x.get_relevance_per_replicate(), reverse=True)
     return scores[0]
 
 
@@ -69,30 +68,6 @@ def organize_manual_scores(scores, most_relevant_only=False):
                 data[lstock][experiment] = score
 
     return data
-
-
-def get_organized_scores_all_worms(screen_for, screen_stage,
-                                   most_relevant_only=False):
-    """Get all scores for all worms for a particular screen.
-
-    A screen is defined by both screen_for ('ENH' or 'SUP')
-    and screen_stage (1 for primary, 2 for secondary).
-
-    The data returned is organized as:
-        s[worm][library_stock][experiment] = [scores]
-
-    Or, if called with most_relevant_only=True:
-        s[worm][library_stock][experiment] = most_relevant_score
-
-    """
-    worms = get_worms_for_screen_type(screen_for)
-
-    s = {}
-    for worm in worms:
-        s[worm] = worm.get_organized_scores(
-            screen_for, screen_stage, most_relevant_only)
-
-    return s
 
 
 def get_positives_any_worm(screen_for, screen_stage, criteria):
