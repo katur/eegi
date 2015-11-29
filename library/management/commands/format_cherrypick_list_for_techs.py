@@ -4,8 +4,8 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    """Command to format a cherry-pick list so that it is easier for techs
-    to cherry-pick from.
+    """Command to format a cherrypick list so that it is easier for techs
+    to cherrypick from.
 
     Simply adds blank lines at the points where the techs would need to
     change the plates in front of them.
@@ -18,11 +18,11 @@ class Command(BaseCommand):
         source_plate,source_well,destination_plate,destination_well
 
     """
-    help = 'Format a cherry-pick list for techs.'
+    help = 'Format a cherrypick list for techs.'
 
     def add_arguments(self, parser):
         parser.add_argument('file', type=argparse.FileType('r'),
-                            help="CSV of cherry-pick list. "
+                            help="CSV of cherrypick list. "
                                  "See this command's docstring "
                                  "for more details.")
 
@@ -33,7 +33,7 @@ class Command(BaseCommand):
         self.stdout.write(f.readline())
 
         # Keep track of source/destination plate combos in order
-        # to partition results by this (helps techs to cherry pick)
+        # to partition results by change in combo
         num_combos = 0
         previous_combo = (None, None)
 

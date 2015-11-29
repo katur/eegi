@@ -80,12 +80,13 @@ def passes_enh_primary(scores, singles=[]):
     scores should include the single most relevant score per replicate,
     and include all replicates for a particular worm / library_stock combo.
 
-    singles is an optional list of experiments that only had a single copy
-    tested. This is different than having a single copy scored. When there
-    were two copies tested but one copy scored, it is presumed that the
-    unscored copy is not a positive, because DevStaR did not select it
-    for scoring. However, in the rare case that we only tested one copy
-    to begin with, we cannot presume anything about the other copy.
+    singles is an optional list of library_stocks that only had a single
+    copy tested for this worm. Note that this is different from having a
+    single copy scored. When there are two copies tested but one copy
+    scored, it is presumed that the unscored copy is a negative (because
+    DevStaR did not select it for scoring). However, in the rare case
+    that we only tested one copy to begin with, we cannot presume
+    anything about the other copy.
 
     """
     is_positive = False
@@ -100,7 +101,7 @@ def passes_enh_primary(scores, singles=[]):
     if num_weaks >= 2:
         is_positive = True
 
-    if num_weaks == 1 and scores[0].experiment in singles:
+    if num_weaks == 1 and scores[0].experiment.library_stock in singles:
         is_positive = True
 
     return is_positive

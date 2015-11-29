@@ -9,14 +9,14 @@ from utils.plates import assign_to_plates, get_plate_assignment_rows
 
 
 class Command(BaseCommand):
-    """Command to get list of SUP Secondary wells to resequence.
+    """Command to get list of SUP secondary stocks to resequence.
 
-    We are resequencing all wells for which the sequencing result corresponds
-    to a positive, and for which the top hit of the sequencing result does
-    not agree with the intended clone.
+    We are resequencing all wells for which the sequencing result
+    corresponds to a positive, and for which the top hit of the
+    sequencing result does not agree with the intended clone.
 
     """
-    help = 'Get list of SUP Secondary wells to resequence.'
+    help = 'Get list of SUP secondary stocks to resequence.'
 
     def handle(self, **options):
         positives = get_positives_any_worm(
@@ -35,8 +35,8 @@ class Command(BaseCommand):
 
         rows = get_plate_assignment_rows(assigned)
 
-        self.stdout.write('source_plate, source_well, '
-                          'destination_plate, destination_well')
+        self.stdout.write('source_plate,source_well,'
+                          'destination_plate,destination_well')
         for row in rows:
             source = row[2]
 

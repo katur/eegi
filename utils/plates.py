@@ -257,7 +257,7 @@ def get_plate_assignment_rows(plates):
 def get_empties_from_list_of_lists(l):
     """List the positions in which a list of lists is 'None'.
 
-    This is useful for cherry picking, to list empty wells separately.
+    This is useful for cherrypicking, to list empty wells separately.
 
     """
     e = []

@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.db import models
+from django.db.models import Count
 
 
 class WormStrain(models.Model):
@@ -130,7 +131,7 @@ class WormStrain(models.Model):
         from experiments.helpers.scores import organize_manual_scores
         return organize_manual_scores(scores, most_relevant_only)
 
-    def get_positives(self, screen_for, screen_stage, criteria):
+    def get_positives(self, screen_for, screen_stage, criteria, **kwargs):
         """Get the library stocks that are positive for this worm,
         screen, and criteria.
 
@@ -142,7 +143,35 @@ class WormStrain(models.Model):
 
         for library_stock, experiments in s.iteritems():
             scores = experiments.values()
-            if criteria(scores):
+            if criteria(scores, **kwargs):
                 positives.add(library_stock)
 
         return positives
+
+    def get_experiments_by_screen(self, screen_for, screen_stage):
+        """Get all experiments for this worm and screen."""
+        from experiments.models import Experiment
+        prefix = Experiment.objects.filter(
+            is_junk=False, worm_strain=self,
+            plate__screen_stage=screen_stage)
+
+        if screen_for == 'SUP':
+            return prefix.filter(
+                plate__temperature=self.restrictive_temperature)
+        else:
+            return prefix.filter(
+                plate__temperature=self.permissive_temperature)
+
+    def get_stocks_tested_by_number_of_replicates(
+            self, screen_for, screen_stage, number_of_replicates):
+        """Get the library stocks tested exactly number_of_replicates
+        times for this worm and screen."""
+        annotated = (self
+            .get_experiments_by_screen(screen_for, screen_stage)
+            .order_by('library_stock')
+            .values('library_stock').annotate(Count('id')))
+
+        singles = [x['library_stock'] for x in annotated
+                   if x['id__count'] == number_of_replicates]
+
+        return set(singles)

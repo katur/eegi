@@ -52,6 +52,7 @@ class Command(BaseCommand):
         for worm in worms:
             positives = worm.get_positives('SUP', 2,
                                            passes_sup_secondary_stringent)
+
             pos_verified = positives.intersection(verified)
 
             verified_doublecheck.update(pos_verified)
