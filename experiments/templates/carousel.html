@@ -2,7 +2,7 @@
 {% with total=experiments|length %}
 
 {% for experiment in experiments %}
-  {% include 'image_wrapper.html' with current=forloop.counter %}
+  {% include 'carousel_image_wrapper.html' with current=forloop.counter %}
 {% endfor %}
 
 {% endwith %}

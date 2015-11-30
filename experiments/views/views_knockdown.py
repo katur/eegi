@@ -1,5 +1,5 @@
 from collections import OrderedDict
-
+from copy import copy
 from django.shortcuts import render, get_object_or_404
 
 from clones.models import Clone
@@ -9,27 +9,30 @@ from worms.models import WormStrain
 
 from clones.helpers.queries import get_l4440
 from worms.helpers.queries import get_n2
+from utils.http import build_url
 
 
 def rnai_knockdown(request, clones, temperature=None):
     """Render the page showing knockdown by RNAi only."""
+    # data = {clone: {library_stock: [exp, exp, ...]}}
+    data = OrderedDict()
+
     n2 = get_n2()
     clones = Clone.objects.filter(pk__in=clones.split(','))
 
-    # data = {clone: {library_stock: [experiments]}}
-    data = OrderedDict()
-
     for clone in clones:
-        experiments = Experiment.objects.filter(
-            is_junk=False, worm_strain=n2,
-            library_stock__intended_clone=clone)
+        filters = {
+            'is_junk': False,
+            'worm_strain': n2,
+            'library_stock__intended_clone': clone,
+        }
 
         if temperature:
-            experiments = experiments.filter(plate__temperature=temperature)
+            filters['plate__temperature'] = temperature
 
-        # No need to prefetch manual scores, since N2 not manually scored
+        # Do not join manual scores, since N2 not manually scored
         experiments = (
-            experiments
+            Experiment.objects.filter(**filters)
             .select_related('library_stock', 'plate')
             .prefetch_related('devstarscore_set')
             .order_by('-library_stock__plate__screen_stage',
@@ -58,24 +61,40 @@ def rnai_knockdown(request, clones, temperature=None):
 
 def mutant_knockdown(request, mutant, temperature):
     """Render the page showing knockdown by mutation only."""
+    # data = {date: {
+    #   'link_to_all': url,
+    #   'experiments': [experiments]}}
+    data = OrderedDict()
+
     l4440 = get_l4440()
     mutant = get_object_or_404(WormStrain, pk=mutant)
 
-    experiments = (
-        Experiment.objects
-        .filter(is_junk=False, worm_strain=mutant,
-                library_stock__intended_clone=l4440,
-                plate__temperature=temperature)
-        .order_by('-plate__date', 'library_stock', 'plate__id', 'well'))
+    filters = {
+        'is_junk': False,
+        'worm_strain': mutant,
+        'library_stock__intended_clone': l4440,
+        'plate__temperature': temperature,
+    }
 
-    # data = {date: [experiments]}
-    data = OrderedDict()
+    # Do not join manual scores, since L4440 not manually scored
+    experiments = (
+        Experiment.objects.filter(**filters)
+        .select_related('library_stock', 'plate')
+        .prefetch_related('devstarscore_set')
+        .order_by('-plate__date', 'library_stock', 'plate__id', 'well'))
 
     for experiment in experiments:
         date = experiment.plate.date
         if date not in data:
-            data[date] = []
-        data[date].append(experiment)
+            data[date] = {'experiments': []}
+        data[date]['experiments'].append(experiment)
+
+        inner_filters = copy(filters)
+        inner_filters['plate__date'] = date
+
+        data[date]['link_to_all'] = build_url(
+            'experiments.views.experiments',
+            get=inner_filters)
 
     context = {
         'mutant': mutant,
@@ -89,19 +108,26 @@ def mutant_knockdown(request, mutant, temperature):
 
 def double_knockdown(request, mutant, clones, temperature):
     """Render the page showing knockdown by both mutation and RNAi."""
-    n2 = get_n2()
-    l4440 = get_l4440()
-
-    mutant = get_object_or_404(WormStrain, pk=mutant)
-    clones = Clone.objects.filter(pk__in=clones.split(','))
-
     # data = {clone: {library_stock: {date: {
-    #   'mutant_rnai': [exp_well, exp_well, ...],
-    #   'n2_rnai': [exp_well, exp_well, ...],
-    #   'mutant_l4440': [(exp, well), (exp, well), ...],
-    #   'n2_l4440': [(exp, well), (exp, well), ...]}}}}
+    #   'mutant_rnai': {
+    #       'link_to_all': url,
+    #       'experiments': [exp, exp, ...]},
+    #   'n2_rnai': {
+    #       'link_to_all': url,
+    #       'experiments': [exp, exp, ...]},
+    #   'mutant_l4440': {
+    #       'link_to_all': url,
+    #       'experiments': [exp, exp, ...]},
+    #   'n2_l4440': {
+    #       'link_to_all': url,
+    #       'experiments': [exp, exp, ...]}}}}}
 
     data = OrderedDict()
+
+    n2 = get_n2()
+    l4440 = get_l4440()
+    mutant = get_object_or_404(WormStrain, pk=mutant)
+    clones = Clone.objects.filter(pk__in=clones.split(','))
 
     for clone in clones:
         data_per_clone = OrderedDict()
@@ -122,36 +148,52 @@ def double_knockdown(request, mutant, clones, temperature):
                 .distinct())
 
             for date in dates:
-                data_per_date = {}
-
-                # The part common to all queries
-                common = (Experiment.objects
-                          .filter(is_junk=False, plate__date=date)
-                          .select_related('plate')
-                          .prefetch_related('devstarscore_set'))
-
                 # Add double knockdowns
-                data_per_date['mutant_rnai'] = (common.filter(
-                    worm_strain=mutant, plate__temperature=temperature,
-                    library_stock=library_stock)
-                    .prefetch_related('manualscore_set'))
+                filters = {
+                    'is_junk': False,
+                    'plate__date': date,
+                    'worm_strain': mutant,
+                    'plate__temperature': temperature,
+                    'library_stock': library_stock,
+                }
+                mutant_rnai = _create_inner_dictionary(
+                    filters, join_manual=True)
 
                 # Add mutant + L4440 controls
-                data_per_date['mutant_l4440'] = common.filter(
-                    worm_strain=mutant, plate__temperature=temperature,
-                    library_stock__intended_clone=l4440)
+                filters = {
+                    'is_junk': False,
+                    'plate__date': date,
+                    'worm_strain': mutant,
+                    'plate__temperature': temperature,
+                    'library_stock__intended_clone': l4440,
+                }
+                mutant_l4440 = _create_inner_dictionary(filters)
 
                 # TODO: Limit N2 controls to closest temperature
-
                 # Add N2 + RNAi controls
-                data_per_date['n2_rnai'] = common.filter(
-                    worm_strain=n2, library_stock=library_stock)
+                filters = {
+                    'is_junk': False,
+                    'plate__date': date,
+                    'worm_strain': n2,
+                    'library_stock': library_stock,
+                }
+                n2_rnai = _create_inner_dictionary(filters)
 
                 # Add N2 + L4440 controls
-                data_per_date['n2_l4440'] = common.filter(
-                    worm_strain=n2, library_stock__intended_clone=l4440)
+                filters = {
+                    'is_junk': False,
+                    'plate__date': date,
+                    'worm_strain': n2,
+                    'library_stock__intended_clone': l4440,
+                }
+                n2_l4440 = _create_inner_dictionary(filters)
 
-                data_per_well[date] = data_per_date
+                data_per_well[date] = {
+                    'mutant_rnai': mutant_rnai,
+                    'mutant_l4440': mutant_l4440,
+                    'n2_rnai': n2_rnai,
+                    'n2_l4440': n2_l4440,
+                }
 
             if data_per_well:
                 data_per_clone[library_stock] = data_per_well
@@ -166,3 +208,18 @@ def double_knockdown(request, mutant, clones, temperature):
     }
 
     return render(request, 'double_knockdown.html', context)
+
+
+def _create_inner_dictionary(filters, join_devstar=True, join_manual=False,
+                             order_by=None, limit=None):
+    experiments = Experiment.objects.filter(**filters).select_related('plate')
+    if join_devstar:
+        experiments = experiments.prefetch_related('devstarscore_set')
+
+    if join_manual:
+        experiments = experiments.prefetch_related('manualscore_set')
+
+    d = {}
+    d['experiments'] = experiments
+    d['link_to_all'] = build_url('experiments.views.experiments', get=filters)
+    return d

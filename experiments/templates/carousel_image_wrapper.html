@@ -10,7 +10,13 @@
       (<a href="{{ experiment.get_absolute_url }}">more info</a>)
     </span>
 
-    <span class="placement">{{ current }} of {{ total }}</span>
+    <span class="placement">
+      {{ current }} of {{ total }}
+
+      {% if link_to_all %}
+        (<a href="{{ link_to_all }}">click for all {{ true_total }}</a>)
+      {% endif %}
+    </span>
   </span>
 
   <div class="image-frame" data-src="{% get_image_url experiment %}">
