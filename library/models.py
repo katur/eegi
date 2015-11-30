@@ -65,10 +65,12 @@ class LibraryPlate(models.Model):
     def get_absolute_url(self):
         return reverse('library.views.library_plate', args=[self.id])
 
-    def get_all_wells(self):
-        return self.librarystock_set.all()
+    def get_all_stocks(self):
+        return (self.librarystock_set.all()
+                .select_related('intended_clone')
+                .order_by('well'))
 
-    def get_l4440_wells(self):
+    def get_l4440_stocks(self):
         return self.librarystock_set.filter(intended_clone='L4440')
 
     def is_ahringer_96_plate(self):
