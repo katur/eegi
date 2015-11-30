@@ -15,20 +15,20 @@ Browse {{ screen }} Secondary Scores for
 {% block content %}
 
 <div class="page-section">
-  {{ data|length }} RNAi stocks scored
+  {{ data|length }} RNAi stocks scored in the secondary screen
 
   <ul class="bulleted">
     <li>
       {{ num_passes_stringent }}
       pass{{ num_passes_stringent|pluralize:'es,' }}
-      criteria A (stringent)
+      criteria A: stringent
       [0.375 m/s]
     </li>
 
     <li>
       {{ num_passes_percent }}
       pass{{ num_passes_percent|pluralize:'es,' }}
-      criteria B (percent-based)
+      criteria B: percent-based
       [(0.375 m/s) OR (0.5 w/m/s AND 0.125 m/s) OR (0.625 w/m/s);
         if &lt; 8 scorable replicates, becomes count-based]
     </li>
@@ -36,7 +36,7 @@ Browse {{ screen }} Secondary Scores for
     <li>
       {{ num_passes_count }}
       pass{{ num_passes_count|pluralize:'es,' }}
-      criteria C (count-based)
+      criteria C: count-based
       [(3 m/s) OR (4 w/m/s AND 1 m/s) OR (5 w/m/s)]
     </li>
   </ul>
