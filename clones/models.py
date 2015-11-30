@@ -25,7 +25,7 @@ class Clone(models.Model):
         return self.id == 'L4440'
 
     def get_targets(self):
-        return self.clonetarget_set.all()
+        return self.clonetarget_set.all().select_related('gene')
 
 
 class Gene(models.Model):
