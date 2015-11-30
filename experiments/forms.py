@@ -4,8 +4,8 @@ from django.core.validators import MinLengthValidator
 from clones.forms import RNAiKnockdownField
 from experiments.models import Experiment, ExperimentPlate
 from utils.forms import BlankNullBooleanSelect
-from worms.forms import (MutantKnockdownField, ScreenChoiceField,
-                         clean_mutant_query_and_screen)
+from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
+                         clean_mutant_query_and_screen_type)
 
 
 class ExperimentFormBase(forms.Form):
@@ -122,11 +122,11 @@ class RNAiKnockdownForm(forms.Form):
 class MutantKnockdownForm(forms.Form):
     """Form for finding a mutant worm with the control bacteria."""
     mutant_query = MutantKnockdownField()
-    screen = ScreenChoiceField()
+    screen_type = ScreenTypeChoiceField()
 
     def clean(self):
         cleaned_data = super(MutantKnockdownForm, self).clean()
-        cleaned_data = clean_mutant_query_and_screen(self, cleaned_data)
+        cleaned_data = clean_mutant_query_and_screen_type(self, cleaned_data)
         return cleaned_data
 
 
@@ -136,20 +136,20 @@ class DoubleKnockdownForm(forms.Form):
     rnai_query = RNAiKnockdownField(
         label='RNAi query',
         validators=[MinLengthValidator(1, message='No clone matches')])
-    screen = ScreenChoiceField()
+    screen_type = ScreenTypeChoiceField()
 
     def clean(self):
         cleaned_data = super(DoubleKnockdownForm, self).clean()
-        cleaned_data = clean_mutant_query_and_screen(self, cleaned_data)
+        cleaned_data = clean_mutant_query_and_screen_type(self, cleaned_data)
         return cleaned_data
 
 
 class SecondaryScoresForm(forms.Form):
     """Form for getting all secondary scores for a worm/screen combo."""
     mutant_query = MutantKnockdownField()
-    screen = ScreenChoiceField()
+    screen_type = ScreenTypeChoiceField()
 
     def clean(self):
         cleaned_data = super(SecondaryScoresForm, self).clean()
-        cleaned_data = clean_mutant_query_and_screen(self, cleaned_data)
+        cleaned_data = clean_mutant_query_and_screen_type(self, cleaned_data)
         return cleaned_data

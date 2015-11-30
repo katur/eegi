@@ -22,14 +22,14 @@ def secondary_scores(request, worm, temperature):
 
     """
     worm = get_object_or_404(WormStrain, pk=worm)
-    screen = worm.get_screen_category(temperature)
+    screen_type = worm.get_screen_type(temperature)
 
     num_passes_stringent = 0
     num_passes_percent = 0
     num_passes_count = 0
     num_experiment_columns = 0
 
-    data = worm.get_organized_scores(screen, screen_stage=2,
+    data = worm.get_organized_scores(screen_type, screen_stage=2,
                                      most_relevant_only=True)
 
     for stock, expts in data.iteritems():
@@ -63,7 +63,7 @@ def secondary_scores(request, worm, temperature):
 
     context = {
         'worm': worm,
-        'screen': screen,
+        'screen_type': screen_type,
         'temperature': temperature,
         'data': data,
         'num_passes_percent': num_passes_percent,
@@ -87,7 +87,7 @@ def secondary_scores_search(request):
             return redirect(secondary_scores, worm, temperature)
 
     else:
-        form = SecondaryScoresForm(initial={'screen': 'SUP'})
+        form = SecondaryScoresForm(initial={'screen_type': 'SUP'})
 
     context = {
         'form': form,

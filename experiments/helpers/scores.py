@@ -68,19 +68,19 @@ def organize_manual_scores(scores, most_relevant_only=False):
     return data
 
 
-def get_positives_any_worm(screen_for, screen_stage, criteria, **kwargs):
+def get_positives_any_worm(screen_type, screen_stage, criteria, **kwargs):
     """Get the set of library stocks that are positive for ANY
     worm in a particular screen.
 
-    A screen is defined by both screen_for ('ENH' or 'SUP')
+    A screen is defined by both screen_type ('ENH' or 'SUP')
     and screen_stage (1 for primary, 2 for secondary).
 
     """
-    worms = get_worms_for_screen_type(screen_for)
+    worms = get_worms_for_screen_type(screen_type)
 
     all_positives = set()
     for worm in worms:
-        positives = worm.get_positives(screen_for, screen_stage, criteria,
+        positives = worm.get_positives(screen_type, screen_stage, criteria,
                                        **kwargs)
         all_positives = all_positives.union(positives)
 

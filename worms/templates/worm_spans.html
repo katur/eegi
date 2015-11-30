@@ -12,9 +12,9 @@
   &nbsp;
   {{ temperature|celsius }}
 
-  {% if worm|get_screen_category:temperature %}
+  {% if worm|get_screen_type:temperature %}
   &nbsp;
-  ({{ worm|get_screen_category:temperature }} screen temperature)
+  ({{ worm|get_screen_type:temperature }} screen temperature)
   {% endif %}
 </span>
 {% endif %}

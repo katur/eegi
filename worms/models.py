@@ -65,8 +65,8 @@ class WormStrain(models.Model):
     def is_restrictive_temperature(self, temperature):
         return self.restrictive_temperature == Decimal(temperature)
 
-    def get_screen_category(self, temperature):
-        """Determine if temperature is a screen temperature for this worm.
+    def get_screen_type(self, temperature):
+        """Determine if temperature is a screening temperature for this worm.
 
         Returns 'ENH' if temperature is this strain's permissive
         screening temperature.
@@ -85,11 +85,11 @@ class WormStrain(models.Model):
         else:
             return None
 
-    def get_organized_scores(self, screen_for, screen_stage,
+    def get_organized_scores(self, screen_type, screen_stage,
                              most_relevant_only=False):
         """Get all scores for this worm for a particular screen.
 
-        A screen is defined by both screen_for ('ENH' or 'SUP')
+        A screen is defined by both screen_type ('ENH' or 'SUP')
         and screen_stage (1 for primary, 2 for secondary).
 
         The data returned is organized as:
@@ -106,11 +106,11 @@ class WormStrain(models.Model):
             experiment__is_junk=False,
             experiment__plate__screen_stage=screen_stage)
 
-        if screen_for == 'ENH':
+        if screen_type == 'ENH':
             scores = scores.filter(
                 experiment__plate__temperature=self.permissive_temperature)
 
-        elif screen_for == 'SUP':
+        elif screen_type == 'SUP':
             scores = scores.filter(
                 experiment__plate__temperature=self.restrictive_temperature)
 
@@ -131,12 +131,12 @@ class WormStrain(models.Model):
         from experiments.helpers.scores import organize_manual_scores
         return organize_manual_scores(scores, most_relevant_only)
 
-    def get_positives(self, screen_for, screen_stage, criteria, **kwargs):
+    def get_positives(self, screen_type, screen_stage, criteria, **kwargs):
         """Get the library stocks that are positive for this worm,
         screen, and criteria.
 
         """
-        s = self.get_organized_scores(screen_for, screen_stage,
+        s = self.get_organized_scores(screen_type, screen_stage,
                                       most_relevant_only=True)
 
         positives = set()
@@ -148,14 +148,14 @@ class WormStrain(models.Model):
 
         return positives
 
-    def get_experiments_by_screen(self, screen_for, screen_stage):
+    def get_experiments_by_screen(self, screen_type, screen_stage):
         """Get all experiments for this worm and screen."""
         from experiments.models import Experiment
         prefix = Experiment.objects.filter(
             is_junk=False, worm_strain=self,
             plate__screen_stage=screen_stage)
 
-        if screen_for == 'SUP':
+        if screen_type == 'SUP':
             return prefix.filter(
                 plate__temperature=self.restrictive_temperature)
         else:
@@ -163,11 +163,11 @@ class WormStrain(models.Model):
                 plate__temperature=self.permissive_temperature)
 
     def get_stocks_tested_by_number_of_replicates(
-            self, screen_for, screen_stage, number_of_replicates):
+            self, screen_type, screen_stage, number_of_replicates):
         """Get the library stocks tested exactly number_of_replicates
         times for this worm and screen."""
         annotated = (self
-            .get_experiments_by_screen(screen_for, screen_stage)
+            .get_experiments_by_screen(screen_type, screen_stage)
             .order_by('library_stock')
             .values('library_stock').annotate(Count('id')))
 

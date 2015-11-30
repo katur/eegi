@@ -65,18 +65,18 @@ class WormModelsTestCase(WormTestCase):
         self.assertTrue(emb8.is_restrictive_temperature(25))
         self.assertFalse(emb8.is_restrictive_temperature(15))
 
-    def test_get_screen_category(self):
+    def test_get_screen_type(self):
         n2, dnc1, glp1, emb8 = self.get_worms()
 
-        self.assertIsNone(n2.get_screen_category(15))
+        self.assertIsNone(n2.get_screen_type(15))
 
-        self.assertEquals(dnc1.get_screen_category(22.5), 'ENH')
-        self.assertIsNone(dnc1.get_screen_category(25))
+        self.assertEquals(dnc1.get_screen_type(22.5), 'ENH')
+        self.assertIsNone(dnc1.get_screen_type(25))
 
-        self.assertEquals(glp1.get_screen_category(22.5), 'SUP')
-        self.assertIsNone(glp1.get_screen_category(15))
+        self.assertEquals(glp1.get_screen_type(22.5), 'SUP')
+        self.assertIsNone(glp1.get_screen_type(15))
 
-        self.assertEquals(emb8.get_screen_category(17.5), 'ENH')
-        self.assertEquals(emb8.get_screen_category(25), 'SUP')
-        self.assertIsNone(emb8.get_screen_category(15))
-        self.assertIsNone(emb8.get_screen_category(26))
+        self.assertEquals(emb8.get_screen_type(17.5), 'ENH')
+        self.assertEquals(emb8.get_screen_type(25), 'SUP')
+        self.assertIsNone(emb8.get_screen_type(15))
+        self.assertIsNone(emb8.get_screen_type(26))

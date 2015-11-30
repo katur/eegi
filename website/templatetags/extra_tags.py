@@ -109,7 +109,7 @@ def get_id_with_plate_link(item):
 
 
 @register.filter
-def get_screen_category(worm, temperature):
+def get_screen_type(worm, temperature):
     """Get a string describing if temperature is an official screening
     temperature for worm strain.
 

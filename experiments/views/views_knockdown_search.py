@@ -19,7 +19,7 @@ def double_knockdown_search(request):
             return redirect(double_knockdown, worm, clones, temperature)
 
     else:
-        form = DoubleKnockdownForm(initial={'screen': 'SUP'})
+        form = DoubleKnockdownForm(initial={'screen_type': 'SUP'})
 
     context = {
         'form': form,
@@ -32,7 +32,7 @@ def single_knockdown_search(request):
     """Render the page to search for a single knockdown."""
     empty_rnai_form = RNAiKnockdownForm(prefix='rnai')
     empty_mutant_form = MutantKnockdownForm(prefix='mutant',
-                                            initial={'screen': 'SUP'})
+                                            initial={'screen_type': 'SUP'})
 
     if request.method == 'POST' and 'rnai' in request.POST:
         rnai_form = RNAiKnockdownForm(request.POST, prefix='rnai')

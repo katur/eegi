@@ -9,7 +9,8 @@ class MutantKnockdownField(forms.CharField):
     Finds the worm strain based on worm strain name, gene,
     or allele. Since some genes have different worm strains
     for the suppressor and enhancer screens, this field
-    only makes sense to use in concert with a ScreenChoiceField.
+    only makes sense to use in concert with a
+    ScreenTypeChoiceField.
 
     Since this is meant for finding knockdowns,
     N2 (the control worm with no mutation) is not allowed.
@@ -19,7 +20,7 @@ class MutantKnockdownField(forms.CharField):
 
     Otherwise, the value is simply returned. It is not coerced
     to a WormStrain object, since that requires also looking
-    at the ScreenChoiceField. The clean_mutant_query_and_screen
+    at the ScreenTypeChoiceField. The clean_mutant_query_and_screen_type
     function is meant for help transforming both fields
     into a particular worm strain and temperature.
 
@@ -36,7 +37,7 @@ class MutantKnockdownField(forms.CharField):
         return value
 
 
-class ScreenChoiceField(forms.ChoiceField):
+class ScreenTypeChoiceField(forms.ChoiceField):
     """Field defining a screen as SUP or ENH."""
     def __init__(self, **kwargs):
         if 'widget' not in kwargs:
@@ -44,20 +45,20 @@ class ScreenChoiceField(forms.ChoiceField):
 
         if 'choices' not in kwargs:
             kwargs['choices'] = [('SUP', 'suppressor'), ('ENH', 'enhancer')]
-        super(ScreenChoiceField, self).__init__(**kwargs)
+        super(ScreenTypeChoiceField, self).__init__(**kwargs)
 
 
-def clean_mutant_query_and_screen(form, cleaned_data):
-    """Helper method to transform a mutant query and a screen
+def clean_mutant_query_and_screen_type(form, cleaned_data):
+    """Helper method to transform a mutant_query and a screen_type
     choice into a worm strain and temperature.
 
     """
     mutant_query = cleaned_data.get('mutant_query')
-    screen = cleaned_data.get('screen')
+    screen_type = cleaned_data.get('screen_type')
 
-    if mutant_query and screen:
+    if mutant_query and screen_type:
         worm_and_temp = get_worm_and_temperature_from_search_term(
-            mutant_query, screen)
+            mutant_query, screen_type)
         if worm_and_temp:
             cleaned_data['worm'] = worm_and_temp[0]
             cleaned_data['temperature'] = worm_and_temp[1]
