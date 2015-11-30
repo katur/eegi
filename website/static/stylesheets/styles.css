@@ -340,6 +340,19 @@ table thead th {
     .image-frame .image-frame-next span {
       right: 5%; }
 
+table#experiments {
+  width: 100%;
+  float: left; }
+  table#experiments .image-topbar {
+    width: 96%;
+    float: left;
+    background: black;
+    color: #e0e0e0;
+    padding: 2%; }
+  table#experiments .image-frame {
+    width: 100%;
+    float: left; }
+
 .carousel {
   width: 94%;
   padding: 3%;

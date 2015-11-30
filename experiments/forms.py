@@ -8,8 +8,7 @@ from worms.forms import (MutantKnockdownField, ScreenChoiceField,
                          clean_mutant_query_and_screen)
 
 
-class ExperimentPlateFilterForm(forms.Form):
-    """Form for filtering ExperimentPlate instances."""
+class ExperimentFormBase(forms.Form):
     plate__id = forms.IntegerField(
         required=False, label='Exact id', help_text='e.g. 32412')
 
@@ -46,12 +45,41 @@ class ExperimentPlateFilterForm(forms.Form):
     worm_strain__allele = forms.CharField(
         required=False, label='Worm allele', help_text='e.g. dd5')
 
-    library_stock__plate = forms.CharField(
-        required=False, label='Library plate', help_text='e.g. II-3-B2')
-
     plate__screen_stage = forms.ChoiceField(
         required=False, label='Screen stage',
         choices=[('', '')] + list(ExperimentPlate.SCREEN_STAGE_CHOICES))
+
+
+class ExperimentFilterForm(ExperimentFormBase):
+    """Form for filtering Experiment intstances."""
+    library_stock = forms.CharField(
+        required=False, help_text='e.g. II-3-B2_A01')
+
+    is_junk = forms.NullBooleanField(
+        required=False, widget=BlankNullBooleanSelect)
+
+    def clean(self):
+        cleaned_data = super(ExperimentFilterForm, self).clean()
+
+        for k, v in cleaned_data.items():
+            # Retain 'False' as a legitimate filter
+            if v is False:
+                continue
+
+            # Ditch empty strings and None as filters
+            if not v:
+                del cleaned_data[k]
+
+        experiments = (Experiment.objects.filter(**cleaned_data))
+        cleaned_data['experiments'] = experiments
+        return cleaned_data
+
+
+
+class ExperimentPlateFilterForm(ExperimentFormBase):
+    """Form for filtering ExperimentPlate instances."""
+    library_stock__plate = forms.CharField(
+        required=False, label='Library plate', help_text='e.g. II-3-B2')
 
     is_junk = forms.NullBooleanField(
         required=False, label="Has junk",

@@ -5,12 +5,13 @@ from django.shortcuts import render, get_object_or_404
 
 from eegi.settings import MATERIALS_DIR
 from experiments.models import Experiment, ExperimentPlate
-from experiments.forms import ExperimentPlateFilterForm
+from experiments.forms import ExperimentFilterForm, ExperimentPlateFilterForm
 from utils.well_tile_conversion import tile_to_well
 from utils.http import http_response_ok
 
 
 EXPERIMENT_PLATES_PER_PAGE = 100
+EXPERIMENTS_PER_PAGE = 10
 DEVSTAR_SCORING_CATEGORIES_DIR = MATERIALS_DIR + '/devstar_scoring/categories'
 DEVSTAR_SCORING_IMAGES_PER_PAGE = 10
 
@@ -52,6 +53,23 @@ def experiment_plate(request, pk):
     return render(request, 'experiment_plate.html', context)
 
 
+def experiment_plates_vertical(request, pks):
+    """Render the page to view experiment plate images vertically."""
+    pks = pks.split(',')
+
+    # NOTE: To preserve order, do not do .filter(id__in=ids)
+    plates = [get_object_or_404(ExperimentPlate, pk=pk) for pk in pks]
+
+    context = {
+        'experiment_plates': plates,
+
+        # Default to thumbnail
+        'mode': request.GET.get('mode', 'thumbnail')
+    }
+
+    return render(request, 'experiment_plates_vertical.html', context)
+
+
 def experiment_plates(request, context=None):
     """Render the page to search for experiment plates."""
     experiment_plates = None
@@ -85,23 +103,28 @@ def experiment_plates(request, context=None):
     return render(request, 'experiment_plates.html', context)
 
 
-def experiment_plates_vertical(request, pks):
-    """Render the page to view experiment plate images vertically."""
-    pks = pks.split(',')
+def experiments(request):
+    """Render the page showing experiments based on filters."""
+    form = ExperimentFilterForm(request.GET)
+    if form.is_valid():
+        experiments = form.cleaned_data['experiments']
 
-    # NOTE: To preserve order, do not do .filter(id__in=ids)
-    plates = [get_object_or_404(ExperimentPlate, pk=pk) for pk in pks]
+    paginator = Paginator(experiments, EXPERIMENTS_PER_PAGE)
+    page = request.GET.get('page')
+
+    try:
+        display_expts = paginator.page(page)
+    except PageNotAnInteger:
+        display_expts = paginator.page(1)
+    except EmptyPage:
+        display_expts = paginator.page(paginator.num_pages)
 
     context = {
-        'experiment_plates': plates,
-
-        # Default to thumbnail
-        'mode': request.GET.get('mode', 'thumbnail')
+        'experiments': experiments,
+        'display_experiments': display_expts,
     }
 
-    return render(request, 'experiment_plates_vertical.html', context)
-
-
+    return render(request, 'experiments.html', context)
 def devstar_scoring_categories(request):
     categories = os.listdir(DEVSTAR_SCORING_CATEGORIES_DIR)
 
