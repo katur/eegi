@@ -41,15 +41,15 @@
     <span class="vertical-links">
       <a href="{{ vertical_url }}"
           {% if experiment_plates|length > 500 %}class="inactive-link"{% endif %}>
-        See all thumbnails (max 500 expts)</a>
+        See all thumbnails</a>
 
       <a href="{{ vertical_url }}?mode=big"
           {% if experiment_plates|length > 50 %}class="inactive-link"{% endif %}>
-        See all full-size (max 50)</a>
+        See all full-size</a>
 
       <a href="{{ vertical_url }}?mode=devstar"
           {% if experiment_plates|length > 50 %}class="inactive-link"{% endif %}>
-        See all DevStaR (max 50)</a>
+        See all DevStaR</a>
     </span>
 
     {% include 'pagination_status.html' with paginated=experiment_plates %}
