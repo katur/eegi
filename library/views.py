@@ -1,8 +1,8 @@
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 
 from library.models import LibraryPlate
+from utils.pagination import get_paginated
 
 
 PLATES_PER_PAGE = 100
@@ -19,15 +19,7 @@ def library_plates(request):
 
     library_plates = sorted(library_plates)
 
-    paginator = Paginator(library_plates, PLATES_PER_PAGE)
-    page = request.GET.get('page')
-
-    try:
-        display_plates = paginator.page(page)
-    except PageNotAnInteger:
-        display_plates = paginator.page(1)
-    except EmptyPage:
-        display_plates = paginator.page(paginator.num_pages)
+    display_plates = get_paginated(request, library_plates, PLATES_PER_PAGE)
 
     context = {
         'library_plates': library_plates,

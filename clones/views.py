@@ -1,8 +1,8 @@
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
 
 from clones.forms import CloneSearchForm
 from clones.models import Clone
+from utils.pagination import get_paginated
 
 
 CLONES_PER_PAGE = 20
@@ -23,15 +23,7 @@ def clones(request):
         form = CloneSearchForm()
         clones = Clone.objects.all()
 
-    paginator = Paginator(clones, CLONES_PER_PAGE)
-    page = request.GET.get('page')
-
-    try:
-        display_clones = paginator.page(page)
-    except PageNotAnInteger:
-        display_clones = paginator.page(1)
-    except EmptyPage:
-        display_clones = paginator.page(paginator.num_pages)
+    display_clones = get_paginated(request, clones, CLONES_PER_PAGE)
 
     context = {
         'clones': clones,

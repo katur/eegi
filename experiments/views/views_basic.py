@@ -1,6 +1,6 @@
 import os
 
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 
 from eegi.settings import MATERIALS_DIR
@@ -8,6 +8,7 @@ from experiments.models import Experiment, ExperimentPlate
 from experiments.forms import ExperimentFilterForm, ExperimentPlateFilterForm
 from utils.well_tile_conversion import tile_to_well
 from utils.http import http_response_ok
+from utils.pagination import get_paginated
 
 
 EXPERIMENT_PLATES_PER_PAGE = 100
@@ -68,27 +69,18 @@ def experiment_plates_vertical(request, pks):
 
 def experiment_plates(request, context=None):
     """Render the page to search for experiment plates."""
-    experiment_plates = None
-    display_plates = None
-
     if request.GET:
         form = ExperimentPlateFilterForm(request.GET)
-        if form.is_valid():
-            experiment_plates = form.cleaned_data['experiment_plates']
+        if not form.is_valid():
+            raise Http404
 
-            paginator = Paginator(experiment_plates,
-                                  EXPERIMENT_PLATES_PER_PAGE)
-            page = request.GET.get('page')
-
-            try:
-                display_plates = paginator.page(page)
-            except PageNotAnInteger:
-                display_plates = paginator.page(1)
-            except EmptyPage:
-                display_plates = paginator.page(paginator.num_pages)
-
+        experiment_plates = form.cleaned_data['experiment_plates']
+        display_plates = get_paginated(request, experiment_plates,
+                                       EXPERIMENT_PLATES_PER_PAGE)
     else:
         form = ExperimentPlateFilterForm()
+        experiment_plates = None
+        display_plates = None
 
     context = {
         'form': form,
@@ -102,25 +94,21 @@ def experiment_plates(request, context=None):
 def experiments(request):
     """Render the page showing experiments based on filters."""
     form = ExperimentFilterForm(request.GET)
-    if form.is_valid():
-        experiments = form.cleaned_data['experiments']
+    if not form.is_valid():
+        raise Http404
 
-    paginator = Paginator(experiments, EXPERIMENTS_PER_PAGE)
-    page = request.GET.get('page')
-
-    try:
-        display_expts = paginator.page(page)
-    except PageNotAnInteger:
-        display_expts = paginator.page(1)
-    except EmptyPage:
-        display_expts = paginator.page(paginator.num_pages)
+    experiments = form.cleaned_data['experiments']
+    display_experiments = get_paginated(request, experiments,
+                                        EXPERIMENTS_PER_PAGE)
 
     context = {
         'experiments': experiments,
-        'display_experiments': display_expts,
+        'display_experiments': display_experiments,
     }
 
     return render(request, 'experiments.html', context)
+
+
 def devstar_scoring_categories(request):
     categories = os.listdir(DEVSTAR_SCORING_CATEGORIES_DIR)
 
@@ -149,15 +137,8 @@ def devstar_scoring_category(request, category):
 
     f.close()
 
-    paginator = Paginator(tuples, DEVSTAR_SCORING_IMAGES_PER_PAGE)
-    page = request.GET.get('page')
-
-    try:
-        display_tuples = paginator.page(page)
-    except PageNotAnInteger:
-        display_tuples = paginator.page(1)
-    except EmptyPage:
-        display_tuples = paginator.page(paginator.num_pages)
+    display_tuples = get_paginated(request, tuples,
+                                   DEVSTAR_SCORING_IMAGES_PER_PAGE)
 
     context = {
         'category': category,
