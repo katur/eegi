@@ -25,3 +25,23 @@ def compare_values_for_equality(x, y):
         return compare_floats_for_equality(x, y)
     else:
         return x == y
+
+
+def get_closest_candidate(goal, candidates):
+    """Get the value in candidates that numerically closest to goal.
+
+    Each element of candidates, as well as goal, must be convertible
+    to a float.
+
+    """
+    best_candidate = None
+    best_difference = None
+
+    for candidate in candidates:
+        difference = abs(float(goal) - float(candidate))
+
+        if best_candidate is None or difference < best_difference:
+            best_candidate = candidate
+            best_difference = difference
+
+    return best_candidate

@@ -9,6 +9,7 @@ from worms.models import WormStrain
 
 from clones.helpers.queries import get_l4440
 from worms.helpers.queries import get_n2
+from experiments.helpers.queries import get_closest_temperature
 from utils.http import build_url
 
 
@@ -169,7 +170,6 @@ def double_knockdown(request, mutant, clones, temperature):
                 }
                 mutant_l4440 = _create_inner_dictionary(filters)
 
-                # TODO: Limit N2 controls to closest temperature
                 # Add N2 + RNAi controls
                 filters = {
                     'is_junk': False,
@@ -177,6 +177,10 @@ def double_knockdown(request, mutant, clones, temperature):
                     'worm_strain': n2,
                     'library_stock': library_stock,
                 }
+
+                filters['plate__temperature'] = get_closest_temperature(
+                    temperature, filters)
+
                 n2_rnai = _create_inner_dictionary(filters)
 
                 # Add N2 + L4440 controls
@@ -186,6 +190,10 @@ def double_knockdown(request, mutant, clones, temperature):
                     'worm_strain': n2,
                     'library_stock__intended_clone': l4440,
                 }
+
+                filters['plate__temperature'] = get_closest_temperature(
+                    temperature, filters)
+
                 n2_l4440 = _create_inner_dictionary(filters)
 
                 data_per_well[date] = {
