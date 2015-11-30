@@ -40,11 +40,7 @@ def experiment_plate(request, pk):
 
     context = {
         'experiment_plate': experiment_plate,
-        'experiments': (experiment_plate.experiment_set
-                        .select_related(
-                            'library_stock',
-                            'library_stock__intended_clone')
-                        .order_by('well')),
+        'experiments': experiment_plate.get_experiments(),
 
         # Default to thumbnail images
         'mode': request.GET.get('mode', 'thumbnail'),
