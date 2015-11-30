@@ -9,7 +9,7 @@ from worms.models import WormStrain
 
 from clones.helpers.queries import get_l4440
 from worms.helpers.queries import get_n2
-from experiments.helpers.queries import get_closest_temperature
+from experiments.helpers.queries import get_closest_temperature, get_all_dates
 from utils.http import build_url
 
 
@@ -32,12 +32,11 @@ def rnai_knockdown(request, clones, temperature=None):
             filters['plate__temperature'] = temperature
 
         # Do not join manual scores, since N2 not manually scored
-        experiments = (
-            Experiment.objects.filter(**filters)
-            .select_related('library_stock', 'plate')
-            .prefetch_related('devstarscore_set')
-            .order_by('-library_stock__plate__screen_stage',
-                      'library_stock', '-plate__date', 'id'))
+        experiments = (Experiment.objects.filter(**filters)
+                       .select_related('library_stock', 'plate')
+                       .prefetch_related('devstarscore_set')
+                       .order_by('-library_stock__plate__screen_stage',
+                                 'library_stock', '-plate__date', 'id'))
 
         data_by_well = OrderedDict()
 
@@ -78,11 +77,10 @@ def mutant_knockdown(request, mutant, temperature):
     }
 
     # Do not join manual scores, since L4440 not manually scored
-    experiments = (
-        Experiment.objects.filter(**filters)
-        .select_related('library_stock', 'plate')
-        .prefetch_related('devstarscore_set')
-        .order_by('-plate__date', 'id'))
+    experiments = (Experiment.objects.filter(**filters)
+                   .select_related('library_stock', 'plate')
+                   .prefetch_related('devstarscore_set')
+                   .order_by('-plate__date', 'id'))
 
     for experiment in experiments:
         date = experiment.plate.date
@@ -94,8 +92,7 @@ def mutant_knockdown(request, mutant, temperature):
         inner_filters['plate__date'] = date
 
         data[date]['link_to_all'] = build_url(
-            'experiments.views.experiments',
-            get=inner_filters)
+            'experiments.views.experiments', get=inner_filters)
 
     context = {
         'mutant': mutant,
@@ -139,14 +136,13 @@ def double_knockdown(request, mutant, clones, temperature):
         for library_stock in library_stocks:
             data_per_well = OrderedDict()
 
-            dates = (
-                Experiment.objects
-                .filter(is_junk=False, worm_strain=mutant,
-                        plate__temperature=temperature,
-                        library_stock=library_stock)
-                .order_by('-plate__date')
-                .values_list('plate__date', flat=True)
-                .distinct())
+            date_filters = {
+                'is_junk': False,
+                'worm_strain': mutant,
+                'library_stock': library_stock,
+                'plate__temperature': temperature,
+            }
+            dates = get_all_dates(date_filters)
 
             for date in dates:
                 # Add double knockdowns
@@ -154,8 +150,8 @@ def double_knockdown(request, mutant, clones, temperature):
                     'is_junk': False,
                     'plate__date': date,
                     'worm_strain': mutant,
-                    'plate__temperature': temperature,
                     'library_stock': library_stock,
+                    'plate__temperature': temperature,
                 }
                 mutant_rnai = _create_inner_dictionary(
                     filters, join_manual=True)
@@ -165,8 +161,8 @@ def double_knockdown(request, mutant, clones, temperature):
                     'is_junk': False,
                     'plate__date': date,
                     'worm_strain': mutant,
-                    'plate__temperature': temperature,
                     'library_stock__intended_clone': l4440,
+                    'plate__temperature': temperature,
                 }
                 mutant_l4440 = _create_inner_dictionary(filters)
 
@@ -229,5 +225,6 @@ def _create_inner_dictionary(filters, join_devstar=True, join_manual=False,
 
     d = {}
     d['experiments'] = experiments
-    d['link_to_all'] = build_url('experiments.views.experiments', get=filters)
+    d['link_to_all'] = build_url('experiments.views.experiments',
+                                 get=filters)
     return d
