@@ -65,7 +65,7 @@ class LibraryPlate(models.Model):
     def get_absolute_url(self):
         return reverse('library.views.library_plate', args=[self.id])
 
-    def get_all_stocks(self):
+    def get_stocks(self):
         return (self.librarystock_set.all()
                 .select_related('intended_clone')
                 .order_by('well'))

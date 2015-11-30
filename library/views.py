@@ -25,7 +25,7 @@ def library_plates(request):
 def library_plate(request, pk):
     """Render the page showing the contents of a single library plate."""
     library_plate = get_object_or_404(LibraryPlate, pk=pk)
-    library_stocks = library_plate.get_all_stocks()
+    library_stocks = library_plate.get_stocks()
 
     context = {
         'library_plate': library_plate,

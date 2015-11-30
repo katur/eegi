@@ -9,7 +9,8 @@ from worms.models import WormStrain
 
 from clones.helpers.queries import get_l4440
 from worms.helpers.queries import get_n2
-from experiments.helpers.queries import get_closest_temperature, get_all_dates
+from experiments.helpers.queries import (get_closest_temperature,
+                                         get_distinct_dates)
 from utils.http import build_url
 
 
@@ -136,13 +137,12 @@ def double_knockdown(request, mutant, clones, temperature):
         for library_stock in library_stocks:
             data_per_well = OrderedDict()
 
-            date_filters = {
+            dates = get_distinct_dates({
                 'is_junk': False,
                 'worm_strain': mutant,
                 'library_stock': library_stock,
                 'plate__temperature': temperature,
-            }
-            dates = get_all_dates(date_filters)
+            })
 
             for date in dates:
                 # Add double knockdowns

@@ -37,7 +37,7 @@ class ExperimentPlate(models.Model):
         return reverse('experiments.views.experiment_plate',
                        args=[self.id])
 
-    def get_all_experiments(self):
+    def get_experiments(self):
         experiments = (self.experiment_set
                        .select_related('library_stock',
                                        'library_stock__intended_clone')
