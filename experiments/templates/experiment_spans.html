@@ -6,49 +6,53 @@
 {% with intended_clone=library_stock.intended_clone %}
 {% with worm=experiment.worm_strain %}
 
-<span>
-  <b>Screen stage</b>
-  &nbsp;
-  {{ experiment_plate.screen_stage }}
-</span>
+<div>
+  <span>
+    <b>Screen stage</b>
+    &nbsp;
+    {{ experiment_plate.screen_stage }}
+  </span>
 
-<span>
-  <b>Date</b>
-  &nbsp;
-  {{ experiment_plate.date|date:'SHORT_DATE_FORMAT' }}
-</span>
+  <span>
+    <b>Date</b>
+    &nbsp;
+    {{ experiment_plate.date|date:'SHORT_DATE_FORMAT' }}
+  </span>
 
-{% include 'worm_spans.html' %}
+  {% include 'worm_spans.html' %}
+</div>
 
-<span>
-  <b>RNAi stock</b>
-  &nbsp;
+<div>
+  <span>
+    <b>RNAi stock</b>
+    &nbsp;
 
-  {{ library_stock|get_id_with_plate_link|safe }}
-</span>
+    {{ library_stock|get_id_with_plate_link|safe }}
+  </span>
 
-{% include 'clone_spans.html' with clone=intended_clone %}
+  {% include 'clone_spans.html' with clone=intended_clone %}
 
-{% if experiment.is_junk %}
-<span class="error-message">IS JUNK</span>
-{% endif %}
+  {% if experiment.is_junk %}
+  <span class="error-message">IS JUNK</span>
+  {% endif %}
 
-{% if experiment_plate.comment %}
-<span>
-  <b>Plate comment</b>
-  &nbsp;
-  {{ experiment_plate.comment }}
-</span>
-{% endif %}
+  {% if experiment_plate.comment %}
+  <span>
+    <b>Plate comment</b>
+    &nbsp;
+    {{ experiment_plate.comment }}
+  </span>
+  {% endif %}
 
-{% include 'score_spans.html' with show_devstar=True show_manual=True %}
+  {% include 'score_spans.html' with show_devstar=True show_manual=True %}
 
-{% if not experiment.is_control %}
-<span>
-  <a href="{% url 'double_knockdown_url' worm.id intended_clone.id temperature %}">
-    See controls and replicates</a>
-</span>
-{% endif %}
+  {% if not experiment.is_control %}
+  <span>
+    <a href="{% url 'double_knockdown_url' worm.id intended_clone.id temperature %}">
+      Link to view controls and replicates</a>
+  </span>
+  {% endif %}
+</div>
 
 {% endwith %}
 {% endwith %}

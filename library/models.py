@@ -110,6 +110,9 @@ class LibraryStock(models.Model):
             return cmp(self.plate, other.plate)
 
     def __unicode__(self):
+        return '{}'.format(self.id)
+
+    def get_display_string(self):
         return '{} (intended clone: {})'.format(self.id,
                                                 self.intended_clone)
 

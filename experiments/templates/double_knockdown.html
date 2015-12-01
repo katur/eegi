@@ -15,79 +15,81 @@ at {{ temperature|celsius }}
 
 {% block content %}
 
-<div class="cleared-spaced-spans">
+<div class="page-section cleared-spaced-spans">
   {% include 'worm_spans.html' with worm=mutant %}
 </div>
 
-{% for clone, library_stocks in data.items %}
-<div class="knockdown-clone-section">
-  <h4>{% include 'clone_spans.html' %}</h4>
+<div class="page-section">
+  {% for clone, library_stocks in data.items %}
+  <div class="knockdown-clone-section">
+    <h4>{% include 'clone_spans.html' %}</h4>
 
-  {% for library_stock, dates in library_stocks.items %}
-    {% for date, e in dates.items %}
-    <table class="knockdown-results grayscale">
-      <thead>
-        <th colspan="2">
-          {{ clone.id }} located in
-          plate {{ library_stock.plate }},
-          well {{ library_stock.well }};
-          tested on {{ date }}
-        </th>
-      </thead>
+    {% for library_stock, dates in library_stocks.items %}
+      {% for date, e in dates.items %}
+      <table class="knockdown-results grayscale">
+        <thead>
+          <th colspan="2">
+            {{ clone.id }} located in
+            plate {{ library_stock.plate }},
+            well {{ library_stock.well }};
+            tested on {{ date }}
+          </th>
+        </thead>
 
-      {% with show_devstar=True %}
-      <tbody>
-        <tr>
-          <th>Mutant ({{ mutant.gene }}) + RNAi ({{ clone.id }})</th>
-          <th>Mutant ({{ mutant.gene }}) + L4440 control</th>
-        </tr>
+        {% with show_devstar=True %}
+        <tbody>
+          <tr>
+            <th>Mutant ({{ mutant.gene }}) + RNAi ({{ clone.id }})</th>
+            <th>Mutant ({{ mutant.gene }}) + L4440 control</th>
+          </tr>
 
-        <tr>
-          <td>
-            {% with experiments=e.mutant_rnai.experiments show_manual=True %}
-            {% include 'carousel.html' %}
-            {% endwith %}
-          </td>
+          <tr>
+            <td>
+              {% with experiments=e.mutant_rnai.experiments show_manual=True %}
+              {% include 'carousel.html' %}
+              {% endwith %}
+            </td>
 
-          <td>
-            {% with experiments=e.mutant_l4440.experiments|slice:':30' %}
-            {% with true_total=e.mutant_l4440.experiments|length %}
-            {% with link_to_all=e.mutant_l4440.link_to_all %}
-            {% include 'carousel.html' %}
-            {% endwith %}
-            {% endwith %}
-            {% endwith %}
-          </td>
-        </tr>
+            <td>
+              {% with experiments=e.mutant_l4440.experiments|slice:':30' %}
+              {% with true_total=e.mutant_l4440.experiments|length %}
+              {% with link_to_all=e.mutant_l4440.link_to_all %}
+              {% include 'carousel.html' %}
+              {% endwith %}
+              {% endwith %}
+              {% endwith %}
+            </td>
+          </tr>
 
-        <tr>
-          <th>N2 control + RNAi ({{ clone.id }})</th>
-          <th>N2 control + L4440 control</th>
-        </tr>
+          <tr>
+            <th>N2 control + RNAi ({{ clone.id }})</th>
+            <th>N2 control + L4440 control</th>
+          </tr>
 
-        <tr>
-          <td>
-            {% with experiments=e.n2_rnai.experiments %}
-            {% include 'carousel.html' %}
-            {% endwith %}
-          </td>
+          <tr>
+            <td>
+              {% with experiments=e.n2_rnai.experiments %}
+              {% include 'carousel.html' %}
+              {% endwith %}
+            </td>
 
-          <td>
-            {% with experiments=e.n2_l4440.experiments|slice:':30' %}
-            {% with true_total=e.n2_l4440.experiments|length %}
-            {% with link_to_all=e.n2_l4440.link_to_all %}
-            {% include 'carousel.html' %}
-            {% endwith %}
-            {% endwith %}
-            {% endwith %}
-          </td>
-        </tr>
-      </tbody>
-      {% endwith %}
-    </table>
+            <td>
+              {% with experiments=e.n2_l4440.experiments|slice:':30' %}
+              {% with true_total=e.n2_l4440.experiments|length %}
+              {% with link_to_all=e.n2_l4440.link_to_all %}
+              {% include 'carousel.html' %}
+              {% endwith %}
+              {% endwith %}
+              {% endwith %}
+            </td>
+          </tr>
+        </tbody>
+        {% endwith %}
+      </table>
+      {% endfor %}
     {% endfor %}
+  </div>
   {% endfor %}
 </div>
-{% endfor %}
 
 {% endblock %}

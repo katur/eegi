@@ -24,9 +24,9 @@
         <span class="image-topbar">
           Experiment {{ experiment.id }}
           <br>
-          Worm {{ experiment.worm_strain }}
+          Worm {{ experiment.worm_strain.get_display_string }}
           <br>
-          Library Stock {{ experiment.library_stock }}
+          Library Stock {{ experiment.library_stock.get_display_string }}
           <br>
           {{ experiment.plate.temperature|celsius }}
           <br>

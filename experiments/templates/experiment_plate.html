@@ -11,25 +11,22 @@ Experiment Plate {{ experiment_plate.id }}
 
 
 {% block content %}
-<div class="cleared-spaced-spans">
+<div class="page-section gray-bubble columns cleared-spaced-spans">
   {% include 'experiment_plate_spans.html' %}
-
-  <span>
-    <a href="{% url 'experiment_plates_vertical_url' experiment_plate.id %}">
-      See vertical view: thumbnails</a>
-
-    <br>
-
-    <a href="{% url 'experiment_plates_vertical_url' experiment_plate.id %}?mode=big">
-      See vertical view: full-size images</a>
-
-    <br>
-
-    <a href="{% url 'experiment_plates_vertical_url' experiment_plate.id %}?mode=devstar">
-      See vertical view: DevStaR images</a>
-  </span>
 </div>
 
-{% include 'plate.html' with wells=experiments is_experiment=True %}
+<div class="page-section">
+  <span class="vertical-links">
+    <a href="{% url 'experiment_plates_vertical_url' experiment_plate.id %}">
+      See vertical thumbnails</a>
+
+    <a href="{% url 'experiment_plates_vertical_url' experiment_plate.id %}?mode=big">
+      See vertical full-size</a>
+
+    <a href="{% url 'experiment_plates_vertical_url' experiment_plate.id %}?mode=devstar">
+      See vertical DevStaR</a>
+  </span>
+  {% include 'plate.html' with wells=experiments is_experiment=True %}
+</div>
 
 {% endblock %}
