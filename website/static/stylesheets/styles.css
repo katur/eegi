@@ -155,6 +155,42 @@ body {
     float: left;
     margin-top: 160px; }
 
+.page-section {
+  margin-bottom: 40px; }
+  .page-section:last-of-type {
+    margin-bottom: 0; }
+  .page-section.cleared-spaced-spans {
+    float: left; }
+
+.cleared-spaced-spans span {
+  float: left;
+  clear: both;
+  margin-bottom: 20px; }
+  .cleared-spaced-spans span:last-of-type {
+    margin-bottom: 0; }
+
+.columns {
+  width: 100%;
+  float: left; }
+  .columns div {
+    width: 50%; }
+    .columns div:first-child {
+      float: left; }
+    .columns div:last-child {
+      float: right; }
+
+.gray-bubble {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background: #f8f8f8;
+  padding: 20px;
+  border-radius: 3px; }
+  .gray-bubble:after {
+    content: "";
+    display: table;
+    clear: both; }
+
 ul.bulleted {
   list-style: disc inside; }
 
@@ -162,18 +198,6 @@ hr {
   height: 1px;
   border: none;
   background: #e0e0e0; }
-
-.cleared-spaced-spans span {
-  float: left;
-  clear: both;
-  margin-bottom: 20px; }
-
-.page-section {
-  margin-bottom: 40px; }
-  .page-section:last-of-type {
-    margin-bottom: 0; }
-  .page-section.cleared-spaced-spans {
-    float: left; }
 
 form table th {
   padding-right: 5px;
@@ -253,6 +277,9 @@ table thead th {
 #clones form {
   margin-bottom: 40px; }
 
+#clone table {
+  width: 100%; }
+
 #library-plates #plate-filters {
   margin-bottom: 40px; }
   #library-plates #plate-filters a {
@@ -268,6 +295,18 @@ table thead th {
   width: 100%;
   max-width: 1300px; }
 
+#experiment-plate .vertical-links {
+  float: left; }
+  #experiment-plate .vertical-links a {
+    margin-right: 40px; }
+
+#experiment-plates form p {
+  float: left;
+  width: 30%;
+  margin-right: 3%;
+  padding-bottom: 8px; }
+  #experiment-plates form p.submit {
+    clear: left; }
 #experiment-plates #experiment-results {
   width: 100%; }
 #experiment-plates .vertical-links a {
@@ -280,6 +319,24 @@ table thead th {
     float: left;
     clear: both;
     max-width: 250px; }
+
+#experiments table {
+  width: 100%;
+  float: left; }
+  #experiments table .image-topbar {
+    width: 96%;
+    float: left;
+    background: black;
+    color: #e0e0e0;
+    padding: 2%; }
+    #experiments table .image-topbar span {
+      float: left;
+      clear: both; }
+  #experiments table .image-frame {
+    width: 100%;
+    float: left; }
+  #experiments table td {
+    padding-bottom: 40px; }
 
 .knockdown-clone-section h4 {
   width: 100%;
@@ -313,7 +370,7 @@ table thead th {
   .knockdown-results.single-column td {
     width: 100%; }
   .knockdown-results.single-column .carousel {
-    margin: 0 auto;
+    margin: 20px auto;
     max-width: 1300px; }
 
 #secondary-scores table td.experiment_score, #secondary-scores table th.experiment_score {
@@ -372,19 +429,6 @@ table thead th {
     right: 0; }
     .image-frame .image-frame-next span {
       right: 5%; }
-
-table#experiments {
-  width: 100%;
-  float: left; }
-  table#experiments .image-topbar {
-    width: 96%;
-    float: left;
-    background: black;
-    color: #e0e0e0;
-    padding: 2%; }
-  table#experiments .image-frame {
-    width: 100%;
-    float: left; }
 
 .carousel {
   width: 94%;

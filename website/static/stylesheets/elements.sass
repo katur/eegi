@@ -1,3 +1,49 @@
+.page-section
+  margin-bottom: $vertical-whitespace
+
+  &:last-of-type
+    margin-bottom: 0
+
+  &.cleared-spaced-spans
+    float: left
+
+
+@mixin cleared-spaced-spans
+  span
+    float: left
+    clear: both
+    margin-bottom: $vertical-whitespace / 2
+
+    &:last-of-type
+      margin-bottom: 0
+
+
+.cleared-spaced-spans
+  @include cleared-spaced-spans
+
+
+.columns
+  width: 100%
+  float: left
+
+  div
+    width: 50%
+
+    &:first-child
+      float: left
+
+    &:last-child
+      float: right
+
+
+.gray-bubble
+  @include box-sizing(border-box)
+  @include clearfix
+  background: $gray-lightest
+  padding: 20px
+  border-radius: 3px
+
+
 ul.bulleted
   list-style: disc inside
 
@@ -7,22 +53,6 @@ hr
   border: none
   background: $gray-light
 
-
-.cleared-spaced-spans
-  span
-    float: left
-    clear: both
-    margin-bottom: $vertical-whitespace / 2
-
-
-.page-section
-  margin-bottom: $vertical-whitespace
-
-  &:last-of-type
-    margin-bottom: 0
-
-  &.cleared-spaced-spans
-    float: left
 
 form table
   th

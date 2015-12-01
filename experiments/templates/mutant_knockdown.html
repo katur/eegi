@@ -15,33 +15,35 @@ at {{ temperature|celsius }}
 
 {% block content %}
 
-<div class="cleared-spaced-spans">
+<div class="page-section cleared-spaced-spans">
   {% include 'worm_spans.html' with worm=mutant %}
   {% include 'clone_spans.html' with clone=l4440 %}
 </div>
 
-{% for date, e in data.items %}
-<table class="knockdown-results single-column grayscale">
-  <thead>
-    <th>
-      {{ date }}
-    </th>
-  </thead>
+<div class="page-section">
+  {% for date, e in data.items %}
+  <table class="knockdown-results single-column grayscale">
+    <thead>
+      <th>
+        {{ date }}
+      </th>
+    </thead>
 
-  <tbody>
-    <tr>
-      <td>
-        {% with experiments=e.experiments|slice:':10' %}
-        {% with true_total=e.experiments|length %}
-        {% with link_to_all=e.link_to_all %}
-        {% include 'carousel.html' with show_devstar=True %}
-        {% endwith %}
-        {% endwith %}
-        {% endwith %}
-      </td>
-    </tr>
-  </tbody>
-</table>
-{% endfor %}
+    <tbody>
+      <tr>
+        <td>
+          {% with experiments=e.experiments|slice:':10' %}
+          {% with true_total=e.experiments|length %}
+          {% with link_to_all=e.link_to_all %}
+          {% include 'carousel.html' with show_devstar=True %}
+          {% endwith %}
+          {% endwith %}
+          {% endwith %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  {% endfor %}
+</div>
 
 {% endblock %}

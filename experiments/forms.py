@@ -52,14 +52,14 @@ class ExperimentFormBase(forms.Form):
 
 class ExperimentFilterForm(ExperimentFormBase):
     """Form for filtering Experiment intstances."""
-    is_junk = forms.NullBooleanField(
-        required=False, widget=BlankNullBooleanSelect)
-
     library_stock = forms.CharField(
         required=False, help_text='e.g. II-3-B2_A01')
 
     library_stock__intended_clone = forms.CharField(
         required=False, help_text='e.g. sjj_AH10.4')
+
+    is_junk = forms.NullBooleanField(
+        required=False, widget=BlankNullBooleanSelect)
 
     def clean(self):
         cleaned_data = super(ExperimentFilterForm, self).clean()
@@ -81,12 +81,12 @@ class ExperimentFilterForm(ExperimentFormBase):
 
 class ExperimentPlateFilterForm(ExperimentFormBase):
     """Form for filtering ExperimentPlate instances."""
+    library_stock__plate = forms.CharField(
+        required=False, label='Library plate', help_text='e.g. II-3-B2')
+
     is_junk = forms.NullBooleanField(
         required=False, label="Has junk",
         widget=BlankNullBooleanSelect)
-
-    library_stock__plate = forms.CharField(
-        required=False, label='Library plate', help_text='e.g. II-3-B2')
 
     def clean(self):
         cleaned_data = super(ExperimentPlateFilterForm, self).clean()

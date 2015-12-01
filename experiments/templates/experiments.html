@@ -17,24 +17,13 @@
 </div>
 
 <div class="page-section">
-  <table id="experiments">
+  <table>
     {% for experiment in display_experiments %}
     <tr>
       <td>
-        <span class="image-topbar">
-          Experiment {{ experiment.id }}
-          <br>
-          Worm {{ experiment.worm_strain }}
-          <br>
-          Library Stock {{ experiment.library_stock }}
-          <br>
-          {{ experiment.plate.temperature|celsius }}
-          <br>
-          {{ experiment.plate.date }}
-          <br>
-          <a href="{{ experiment.get_absolute_url }}">
-            click for more info</a>
-        </span>
+        <div class="image-topbar">
+          {% include 'experiment_spans.html' %}
+        </div>
 
         {% include 'image.html' %}
       </td>

@@ -12,7 +12,7 @@ Experiment {{ experiment|get_id_with_plate_link|safe }}
 
 {% block content %}
 
-<div class="cleared-spaced-spans">
+<div class="page-section gray-bubble columns cleared-spaced-spans">
   {% include 'experiment_spans.html' %}
 
   {% if devstar_available %}
@@ -30,6 +30,8 @@ Experiment {{ experiment|get_id_with_plate_link|safe }}
   {% endif %}
 </div>
 
-{% include 'image.html' %}
+<div class="page-section">
+  {% include 'image.html' %}
+</div>
 
 {% endblock %}
