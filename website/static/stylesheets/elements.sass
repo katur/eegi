@@ -79,3 +79,34 @@ table
 
       &:first-child
         margin-left: 0
+
+
+.hover_tag
+  position: absolute
+  display: none
+  padding: 4px 6px 2px
+  background: white
+  color: black
+  border: 1px solid black
+  font-size: 13px
+  z-index: 800
+  text-shadow: none
+
+  $pointer-size: 12px
+  .tag_pointer, &:after
+    position: absolute
+    left: 50%
+
+  .tag_pointer
+    z-index: 5
+    margin-left: -($pointer-size / 4)
+    bottom: -($pointer-size / 2)
+    @include triangle($pointer-size, white, down)
+
+  $big-pointer-size: $pointer-size + 2
+  &:after
+    content: ''
+    z-index: 3
+    margin-left: -($big-pointer-size / 4)
+    bottom: -($big-pointer-size / 2)
+    @include triangle($big-pointer-size, black, down)

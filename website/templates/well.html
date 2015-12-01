@@ -2,14 +2,13 @@
 
 
 <td
+  data-hover-tag="{{ well.well|get_tile }}"
   {% if not well.intended_clone %}
   class="empty-well"
   {% endif %}>
 
   <div class="well-title">
     {{ well.well }}
-
-    <span class="parenthetical">({{ well.well|get_tile }})</span>
   </div>
 
   {% if is_experiment %}

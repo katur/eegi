@@ -4,7 +4,8 @@
   $(document).ready(function() {
     removePageTitleStyleIfEmpty();
     setResizeHandler();
-    return positionFooter();
+    positionFooter();
+    return hover_tags();
   });
 
   removePageTitleStyleIfEmpty = function() {
@@ -44,6 +45,33 @@
       };
     }
     return footer.css(cssDict);
+  };
+
+  window.hover_tags = function() {
+    $('body').on('mouseover', '[data-hover-tag]', function(e) {
+      var name, old_title, position, tag, target;
+      target = $(this).closest('[data-hover-tag]');
+      old_title = target.attr('title');
+      target.attr('title', '');
+      name = unescape(target.data('hover-tag'));
+      if (name === '') {
+        name = old_title;
+        target.data('hover-tag', old_title);
+      }
+      position = target.offset();
+      if ($('.hover_tag').length === 0) {
+        $('body').append("<div class='hover_tag'> <div class='text'></div> <div class='tag_pointer'></div> </div>");
+      }
+      tag = $('.hover_tag');
+      tag.find('.text').html(name);
+      return tag.css({
+        top: position.top - tag.outerHeight(),
+        left: position.left - tag.outerWidth() / 2 + target.width() / 2
+      }).show();
+    });
+    return $('body').on('mouseout', '[data-hover-tag]', function(e) {
+      return $('.hover_tag').hide();
+    });
   };
 
 }).call(this);

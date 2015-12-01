@@ -214,6 +214,39 @@ table thead th {
     #results-header .pagination-status span:first-child, #results-header .pagination-status a:first-child {
       margin-left: 0; }
 
+.hover_tag {
+  position: absolute;
+  display: none;
+  padding: 4px 6px 2px;
+  background: white;
+  color: black;
+  border: 1px solid black;
+  font-size: 13px;
+  z-index: 800;
+  text-shadow: none; }
+  .hover_tag .tag_pointer, .hover_tag:after {
+    position: absolute;
+    left: 50%; }
+  .hover_tag .tag_pointer {
+    z-index: 5;
+    margin-left: -3px;
+    bottom: -6px;
+    height: 0;
+    width: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid white; }
+  .hover_tag:after {
+    content: "";
+    z-index: 3;
+    margin-left: -3.5px;
+    bottom: -7px;
+    height: 0;
+    width: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 7px solid black; }
+
 #clones #results-header, #clones table {
   width: 100%;
   max-width: 700px; }
@@ -441,3 +474,13 @@ table#experiments {
     font-weight: bold; }
     .plate-96 .well-title .parenthetical {
       font-weight: normal; }
+
+#library-plate .plate-96 td {
+  background: #eee;
+  color: #333; }
+  #library-plate .plate-96 td .well-title,
+  #library-plate .plate-96 td .well-caption {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 3px; }
