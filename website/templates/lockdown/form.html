@@ -2,7 +2,10 @@
 
 {% block content %}
 <div id="lockdown">
-  <p>This is not yet available to the public. Please log in.</p>
+  <p>
+    This is not yet available to the public.
+  </p>
+
   <br>
 
   {% if form %}
@@ -11,7 +14,13 @@
     <div>
       {% for field in form %}
         {{ field.errors }}
-        {{ field.label_tag }} {{ field }}
+        {% if 'password' in field.label_tag %}
+          Site Password:
+        {% else %}
+          {{ field.label_tag }}
+        {% endif %}
+
+        {{ field }}
       {% endfor %}
     </div>
     <br>
