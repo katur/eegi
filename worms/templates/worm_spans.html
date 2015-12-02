@@ -6,15 +6,10 @@
   <a href="{{ worm.get_url }}">{{ worm.get_display_string }}</a>
 </span>
 
-{% if temperature %}
+{% if temperature and worm|get_screen_type:temperature %}
 <span>
-  <b>Temperature</b>
+  <b>Screen Type</b>
   &nbsp;
-  {{ temperature|celsius }}
-
-  {% if worm|get_screen_type:temperature %}
-  &nbsp;
-  ({{ worm|get_screen_type:temperature }} screen temperature)
-  {% endif %}
+  {{ worm|get_screen_type:temperature }}
 </span>
 {% endif %}

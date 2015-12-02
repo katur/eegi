@@ -19,6 +19,12 @@
     {{ experiment_plate.date|date:'SHORT_DATE_FORMAT' }}
   </span>
 
+  <span>
+    <b>Temperature</b>
+    &nbsp;
+    {{ temperature|celsius }}
+  </span>
+
   {% include 'worm_spans.html' %}
 </div>
 
