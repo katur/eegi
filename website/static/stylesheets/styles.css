@@ -174,9 +174,9 @@ body {
   float: left; }
   .columns div {
     width: 50%; }
-    .columns div:first-child {
+    .columns div:first-of-type {
       float: left; }
-    .columns div:last-child {
+    .columns div:last-of-type {
       float: right; }
 
 .gray-bubble {
@@ -290,6 +290,8 @@ table thead th {
   width: 100%;
   max-width: 700px; }
 
+#experiment .links a {
+  margin-right: 40px; }
 #experiment .image-frame {
   clear: both;
   width: 100%;

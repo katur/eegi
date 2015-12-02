@@ -20,7 +20,7 @@ def url_replace(request, field, value):
 def celsius(temperature):
     """Return temperature in format 22.5C, including degree sign."""
     if temperature:
-        return unicode(temperature) + u'\N{DEGREE SIGN}' + 'C'
+        return u'{}{}C'.format(unicode(temperature), u'\N{DEGREE SIGN}')
     else:
         return None
 
@@ -160,11 +160,11 @@ def get_manual_score_summary(experiment):
 
     people = []
     for s in d:
-        output = s.get_short_name() + ': '
+        output = '{}:'.format(s.get_short_name())
         for t in d[s]:
             t_string = t.strftime('%Y-%m-%d %H:%M')
             joined = ', '.join(str(item) for item in d[s][t])
-            output += joined + ' (' + t_string + ')'
+            output += ' {} ({})'.format(joined, t_string)
         people.append(output)
 
     return '; '.join(str(item) for item in people)

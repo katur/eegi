@@ -6,7 +6,10 @@
 
 
 {% block page_title %}
-Experiment {{ experiment|get_id_with_plate_link|safe }}
+Experiment Plate
+<a href="{{ experiment.plate.get_absolute_url }}">
+  {{ experiment.plate.id }}</a>,
+Well {{ experiment.well }}
 {% endblock %}
 
 
@@ -14,19 +17,24 @@ Experiment {{ experiment|get_id_with_plate_link|safe }}
 
 <div class="page-section gray-bubble columns cleared-spaced-spans">
   {% include 'experiment_spans.html' %}
+</div>
+
+<div class="links">
+  {% if not experiment.is_control %}
+  {% url 'double_knockdown_url' experiment.worm_strain.id experiment.library_stock.intended_clone.id experiment.plate.temperature as double_url %}
+  <a href="{{ double_url }}">Link to view controls and replicates</a>
+  {% endif %}
 
   {% if devstar_available %}
-  <span>
-      {% if mode != 'devstar' %}
-      <a href="?mode=devstar">
-        Toggle DevStaR-labelled image</a>
+    {% if mode != 'devstar' %}
+    <a href="?mode=devstar">
+      Toggle DevStaR-labelled image</a>
 
-      {% else %}
-      <a href="?mode=big">
-        Toggle unlabelled image</a>
+    {% else %}
+    <a href="?mode=big">
+      Toggle unlabelled image</a>
 
-      {% endif %}
-  </span>
+    {% endif %}
   {% endif %}
 </div>
 

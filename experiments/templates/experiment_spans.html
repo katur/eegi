@@ -45,13 +45,6 @@
   {% endif %}
 
   {% include 'score_spans.html' with show_devstar=True show_manual=True %}
-
-  {% if not experiment.is_control %}
-  <span>
-    <a href="{% url 'double_knockdown_url' worm.id intended_clone.id temperature %}">
-      Link to view controls and replicates</a>
-  </span>
-  {% endif %}
 </div>
 
 {% endwith %}

@@ -14,14 +14,6 @@
   </span>
 
   <span>
-    <b>Temperature</b>
-    &nbsp;
-    {{ experiment_plate.temperature|celsius }}
-  </span>
-</div>
-
-<div>
-  <span>
     {% with worms=experiment_plate.get_worm_strains %}
     <b>Worm strain{{ worms|pluralize }}</b>
     &nbsp;
@@ -29,6 +21,14 @@
     {% endwith %}
   </span>
 
+  <span>
+    <b>Temperature</b>
+    &nbsp;
+    {{ experiment_plate.temperature|celsius }}
+  </span>
+</div>
+
+<div>
   <span>
     {% with lplates=experiment_plate.get_library_plates %}
     <b>RNAi plate{{ lplates|pluralize }}</b>
