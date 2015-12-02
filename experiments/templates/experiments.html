@@ -17,19 +17,30 @@
 </div>
 
 <div class="page-section">
-  <table>
-    {% for experiment in display_experiments %}
-    <tr>
-      <td>
-        <div class="image-topbar">
-          {% include 'experiment_spans.html' %}
-        </div>
+  {% for experiment in display_experiments %}
+  <table class="grayscale">
+    <thead>
+      <tr>
+        <th class="pretty-th">
+          <h4>
+            <a href="{{ experiment.get_absolute_url }}">
+              {{ experiment.id }}</a>
+          </h4>
 
-        {% include 'image.html' %}
-      </td>
-    </tr>
-  {% endfor %}
+          {% include 'experiment_spans.html' %}
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>
+          {% include 'image.html' %}
+        </td>
+      </tr>
+    </tbody>
   </table>
+  {% endfor %}
 </div>
 
 {% endblock %}

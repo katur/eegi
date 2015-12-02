@@ -314,31 +314,21 @@ table thead th {
 #experiment-plates .vertical-links a {
   margin-left: 40px; }
 
-#experiment-plates-vertical .plate-info {
+.pretty-th {
   font-size: 14px;
-  font-weight: normal; }
-  #experiment-plates-vertical .plate-info span, #experiment-plates-vertical .plate-info h4 {
+  font-weight: normal;
+  padding: 10px; }
+  .pretty-th span, .pretty-th h4 {
     float: left;
-    clear: both;
-    max-width: 250px; }
+    clear: both; }
 
 #experiments table {
   width: 100%;
-  float: left; }
-  #experiments table .image-topbar {
-    width: 96%;
-    float: left;
-    background: black;
-    color: #e0e0e0;
-    padding: 2%; }
-    #experiments table .image-topbar span {
-      float: left;
-      clear: both; }
-  #experiments table .image-frame {
+  float: left;
+  margin-bottom: 40px; }
+  #experiments table td .image-frame {
     width: 100%;
     float: left; }
-  #experiments table td {
-    padding-bottom: 40px; }
 
 .knockdown-clone-section h4 {
   width: 100%;
@@ -477,8 +467,6 @@ table thead th {
     float: left; }
     .plate-96.vertical-tiles.mode-devstar, .plate-96.vertical-tiles.mode-big {
       min-width: 1000px; }
-  .plate-96 th {
-    padding: 10px; }
   .plate-96 td, .plate-96 tr {
     position: relative;
     padding: 20px 0; }
