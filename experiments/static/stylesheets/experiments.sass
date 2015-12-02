@@ -104,11 +104,57 @@
       max-width: $max-image-width
 
 
+$github-green-dark: #1e6823
+$github-green-medium: #44a340
+$github-green-light: #8cc665
+
 #secondary-scores
-  table
+  .Strong
+    background: $github-green-dark
+
+  .Medium
+    background: $github-green-medium
+
+  .Weak
+    background: $github-green-light
+
+  .Negative
+    background: white
+
+  .Other
+    background: black
+
+  #key
+    font-size: $base-font-size - 2
+    float: right
+
+    li
+      display: inline-block
+
+      &.key-color
+        width: 10px
+        height: 10px
+        border: 1px solid $gray-light
+
+  #results
+    float: left
+    width: 100%
+
     td, th
-      &.experiment_score
+      &.experiment-score
         font-size: $base-font-size - 2
+
+    .experiment-score
+      position: relative
+      width: 10px
+      border: 1px solid $gray-light
+
+      a
+        position: absolute
+        top: 0
+        left: 0
+        width: 100%
+        height: 100%
 
 
 #devstar-scoring-category

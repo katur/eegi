@@ -43,7 +43,25 @@ Browse {{ screen_type }} Secondary Scores for
 </div>
 
 <div class="page-section">
-<table class="grayscale striped nice-padding">
+
+<ul id="key">
+  <li class="key-color Strong"></li>
+  <li>Strong</li>
+
+  <li class="key-color Medium"></li>
+  <li>Medium</li>
+
+  <li class="key-color Weak"></li>
+  <li>Weak</li>
+
+  <li class="key-color Negative"></li>
+  <li>Negative</li>
+
+  <li class="key-color Other"></li>
+  <li>Other</li>
+</ul>
+
+<table id="results" class="grayscale striped nice-padding">
   <thead>
     <tr>
       <th>RNAi Stock</th>
@@ -54,7 +72,9 @@ Browse {{ screen_type }} Secondary Scores for
       <th>Passes B?</th>
       <th>Passes C?</th>
       <th>Average Score</th>
-      <th colspan="{{ num_experiment_columns }}">Scores</th>
+      <th colspan="{{ num_experiment_columns }}">
+        Scores
+      </th>
     </tr>
   </thead>
 
@@ -120,10 +140,8 @@ Browse {{ screen_type }} Secondary Scores for
       <td>{{ library_stock.avg|floatformat }}</td>
 
       {% for experiment, score in experiments.items %}
-      <td class="experiment_score">
-        <a href="{{ experiment.get_absolute_url }}">
-          {{ experiment.id }}</a>
-        {{ score.score_code }}
+      <td class="experiment-score {{ score.get_category }}">
+        <a href="{{ experiment.get_absolute_url }}"></a>
       </td>
       {% endfor %}
 
