@@ -1,4 +1,5 @@
 ## Steps to populate an empty database
+
 ```
 # Migrate the schema
 ./manage.py migrate
@@ -10,14 +11,14 @@
 ./manage.py import_mapping_data
 ./manage.py import_functional_descriptions materials/functional_descriptions/c_elegans.PRJNA13758.WS240.functional_descriptions.txt
 
-# Sync LibraryPlate and LibraryStock tables
-./manage.py import_legacy_database 1 2
+# Sync LibraryPlate table
+./manage.py import_legacy_database 1 1
 
-# Add empty LibraryStocks
+# Sync LibraryStock table, add empty wells, and rerun sync (due to rare case
+# of some ElianaRearray wells pointing at empties)
+./manage.py import_legacy_database 2 2
 ./manage.py add_empty_library_wells
-
-# Due to rare case of some ElianaRearray wells pointing at empties
-./manage.py import_legacy_database 1 2
+./manage.py import_legacy_database 2 2
 
 # Import sequencing data (dbmigration app) and blat results (library app)
 ./manage.py import_legacy_genewiz_data materials/sequencing/genewiz/tracking_numbers.csv materials/sequencing/genewiz/genewiz_data

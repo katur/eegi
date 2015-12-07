@@ -70,14 +70,14 @@ backups, etc.
 
 ## Database
 
-[Click here](https://www.lucidchart.com/documents/view/b63066e2-0f57-4d04-a828-65cf62bf1bb0)
-to view the current database schema on Lucidchart
-(or [here](https://www.lucidchart.com/publicSegments/view/85dfbf91-11fd-4afa-9392-84d26330b648/image.pdf)
+[Click here](https://www.lucidchart.com/documents/view/18217c4a-69c6-44f8-bf4f-0acf15e28973)
+to view the database schema on Lucidchart
+(or [here](https://www.lucidchart.com/publicSegments/view/a3361480-4c9a-43ba-8be5-84f798391cef/image.pdf)
 to download a PDF).
 
-[Click here](https://www.lucidchart.com/documents/view/18217c4a-69c6-44f8-bf4f-0acf15e28973)
-to view the refactored database schema on Lucidchart
-(or [here](https://www.lucidchart.com/publicSegments/view/a3361480-4c9a-43ba-8be5-84f798391cef/image.pdf)
+[Click here](https://www.lucidchart.com/documents/view/b63066e2-0f57-4d04-a828-65cf62bf1bb0)
+to view the old, plate-level database schema on Lucidchart
+(or [here](https://www.lucidchart.com/publicSegments/view/85dfbf91-11fd-4afa-9392-84d26330b648/image.pdf)
 to download a PDF).
 
 [Click here](https://www.lucidchart.com/documents/view/aa16dc41-3f3f-4944-bc5b-982697bb8ba9)
