@@ -21,7 +21,7 @@
 ./manage.py import_legacy_database 2 2
 
 # Import sequencing data (dbmigration app) and blat results (library app)
-./manage.py import_legacy_genewiz_data materials/sequencing/genewiz/tracking_numbers.csv materials/sequencing/genewiz/genewiz_data
+./manage.py import_legacy_sequencing_data materials/sequencing/genewiz/tracking_numbers.csv materials/sequencing/genewiz/genewiz_data
 ./manage.py import_blat_results materials/sequencing/blat_results_from_firoz/joined
 
 # Import WormStrain rows from materials/worm_strains/worm_strains.csv

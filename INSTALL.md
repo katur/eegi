@@ -196,7 +196,7 @@ vi /opt/local/eegi/apache2/eegi.conf
 sudo ln -s /opt/local/eegi/apache2/eegi.conf /etc/apache2/sites-enabled/001-eegi.conf
 
 sudo vi /etc/apache2/ports.conf
-# Enable/add line to Listen 8009
+# Enable/add line to Listen 80
 ```
 
 

@@ -1,14 +1,14 @@
 # Database Migration Notes
 
-These notes are about migrating the genome-wide GI project data
-from the legacy MySQL database (primarily pleiades.GenomeWideGI, plus
-Noah's SUP Secondary scores from pleiades.GWGI2.ScoreResultsManual)
-to the redesigned MySQL database (eegi).
+These notes are about migrating the project data from the legacy MySQL
+databases (primarily Huey-Ling's GenomeWideGI MySQL database on pleiades,
+plus Noah's SUP Secondary scores from Kris's GWGI2 MySQL database on pleiades)
+into this project's MySQL database.
 
 -----------------------------------------------------------------------------------
 
 
-## Main Database Migration Script
+## Main Script
 
 A script is used to migrate new or updated records.
 It does not yet account for deleted records,
@@ -26,7 +26,7 @@ optional arguments to run only part of the script,
 the actual queries performed on the legacy database, etc).
 
 In a nutshell, however, the script is broken into about 10 steps,
-each step roughly corresponding to migrating a single table.
+each step roughly corresponding to migrating a single database table.
 These steps are ordered based on dependencies between steps.
 Within each step, the legacy database is queried
 (e.g. to fetch all the records from some legacy table).
@@ -39,7 +39,7 @@ otherwise, the corresponding object is updated to reflect changes
 that have occured since the last migration.
 
 This process of creating a Python object for every single record
-(~4 million records) is very slow. But it only needs to be run
+(~4 million records) is rather slow. But it only needs to be run
 a few times during development of the new database, and then once
 just prior to the official migration to the new database.
 For this reason, the easy validation it offers was favored over a faster
@@ -50,10 +50,10 @@ tables).
 
 -----------------------------------------------------------------------------------
 
-## Migrating Empty LibraryStocks
+## Adding Empty Library Wells
 
-After using the main script to migrate the LibraryStock table,
-another script is used to add rows to representing 'empty' wells in the database:
+After using the main script to migrate the LibraryStock table, a separate
+script adds 'empty' wells to the database:
 ```
 ./manage.py add_empty_LibraryStocks
 ```
@@ -71,46 +71,39 @@ impossiblilities (by leaving parent null), because the new database does
 enforce FK constraints. However, a handful of these are resolved once
 the empty library wells are accounted for.
 
-In addition, the legacy database did not include sequencing results from supposedly
-empty wells. So for the sequencing plates whose parent wells are resolved
-using the legacy database (plates 1-56), the source of empty wells must be resolved
-after this point.
+In addition, the legacy database did not include sequencing results from
+supposedly empty wells. So for the sequencing plates whose parent wells are
+resolved using the legacy database (plates 1-56), the source of empty wells
+must be resolved after this point.
 
 -----------------------------------------------------------------------------------
 
-## Migrating Sequencing Data
+## Importing Sequencing Data
 
 A third script is used to migrate sequencing data. The reason this script is
-separate is that it uses a very different approach than the other database migration
-steps (since the legacy database did not store raw sequencing data, nor is it up to date).
+separate is that it uses a very different approach than the other database
+migration steps (since the legacy database did not store raw sequencing data,
+nor is it up to date).
 
-To migrate the sequencing data, first copy all the genewiz sequencing output to your
-local machine:
-
-```
-scp username@machine:~genewiz/GenomeWideGI/ destination
-```
-
-Note that this genewiz directory includes ALL sequencing done by the lab;
-not just for the GI project.
-
-Run Hueyling's script to remove the date from the Seq and AB1 directories
-(this script is located in the directory just copied):
+To migrate the sequencing data, first copy the Genewiz sequencing output
+directory to your local machine. Note that this directory includes ALL
+sequencing done for the lab -- not just for the GI project. After copying, run
+Huey-Ling's script to remove the date from the Seq and AB1 directories (this
+script is located in the directory just copied):
 ```
 cd destination
 perl rmDateFromSeqAB1.pl
 ```
 
-There is no need to run her other scripts; the new script it written to work with .csv or .xls.
+There is no need to run her other scripts; the new script it written to
+work with .csv or .xls.
 
-Second, copy the GI team Google Doc `tracking_numbers` to your machine, which includes
-genewiz tracking numbers for all GI-specific sequencing plates.
+Second, copy the GI team Google Doc `tracking_numbers` to your machine, which
+includes genewiz tracking numbers for all GI-specific sequencing plates.
 
-Now run the script to migrate the data (see the script for database connection
-requirements):
-
+Now run the script to migrate the data:
 ```
-./manage.py migrate_sequencing_data tracking_numbers genewiz_output_root
+./manage.py import_legacy_sequencing_data tracking_numbers genewiz_output_root
 ```
 -----------------------------------------------------------------------------------
 
@@ -188,7 +181,7 @@ Genewiz output corresponding to no known clone (due to supposedly empty wells in
 
 **Still to do**
 - After adding empty LibraryStocks to the database, fill in the corresponding parent relationships for sequencing wells.
-- After accounting for empty wells, migrate plates 57-70 using the Google Docs.
+- After accounting for empty wells, import plates 57-70 using the Google Docs.
 - Add Firoz's resulting clones, once calculated (note that I am not migrating either Hueyling's quality categorization, e.g. BY/GN, or her resulting clone).
 
 
@@ -196,11 +189,12 @@ Genewiz output corresponding to no known clone (due to supposedly empty wells in
 ### `experiments` app: experiments
 concept | GenomeWideGI | eegi
 ------- | ------------ | ----
-experiments table | `RawData` | `Experiment`
+experiments table | `RawData` | `Experiment` and `ExperimentPlate`
+representation of an experiment | plate-level table only | plate-level and well-level tables
 temperature datatype | string (e.g. "25C") | decimal
 experiment date datatype | string | date
 is\_junk datatype | integer | boolean
-is\_junk values | -1 "definite junk", never to be trusted (e.g. wrong worms, wrong bacteria); 1 "possible junk", not up to standards (e.g. temperature slightly off, too many worms per well, bacterial contamination). However, these definitions weren't used consistently. | No separation of possible vs definite junk. Anything untrustworthy should either be deleted (including pictures), or have a comment in the database explaining why it is junk, in order to discourage future consideration (all "definite junk" to date has such a comment, so it is okay to migrate these experiments as generic junk).
+is\_junk values | -1 "definite junk", never to be trusted (e.g. wrong worms, wrong bacteria); 1 "possible junk", not up to standards (e.g. temperature slightly off, too many worms per well, bacterial contamination). However, these definitions weren't used consistently. | No separation of possible vs definite junk. Anything untrustworthy should either be deleted (including pictures), or have a comment in the database explaining why it is junk, in order to discourage future consideration (all "definite junk" to date has such a comment, so it is okay to import these experiments as generic junk).
 
 
 
@@ -210,21 +204,21 @@ concept | GenomeWideGI | eegi
 manual scores table(s) | `ManualScore` (primary) and `ScoreResultsManual` (secondary) | one table: `ManualScore`
 score time datatype | originally int year, string month, int day, string time; scoreYMD eventually added, but incomplete (since not updated by most of HL's programs to add experiments), and doesn't include timestamp | timezone-aware datetime
 scorer | string of username | FK to `User`
-score category -8: secondary pool | was used temporarily to flag 'uncertain' scores. now has no corresponding scores. | do not migrate this category or scores
-score category -1: not sure | only Julie scores have this value | do not migrate this category or scores
-score category 4: No Larvae | K/S mel-26 scores, for some DevStaR test | do not migrate this category or scores
-score category 5: Larvae Present | K/S mel-26 scores, for some DevStaR test | do not migrate this category or scores
-score category 6: A lot of Larvae | K/S mel-26 scores, for some DevStaR test (on re-examination, no obvious suppressors, since the L4440 control this week had tons of larvae) | do not migrate this category or scores
+score category -8: secondary pool | was used temporarily to flag 'uncertain' scores. now has no corresponding scores. | do not import this category or scores
+score category -1: not sure | only Julie scores have this value | do not import this category or scores
+score category 4: No Larvae | K/S mel-26 scores, for some DevStaR test | do not import this category or scores
+score category 5: Larvae Present | K/S mel-26 scores, for some DevStaR test | do not import this category or scores
+score category 6: A lot of Larvae | K/S mel-26 scores, for some DevStaR test (on re-examination, no obvious suppressors, since the L4440 control this week had tons of larvae) | do not import this category or scores
 score category -6: Poor Image Quality | very old scores only | convert to -7
-score category -5: IA Error (i.e., DevStaR issues that aren't caused by poor image quality) | very old scores only | migrate, but omit from interface for now (possible delete later for simplicity)
+score category -5: IA Error (i.e., DevStaR issues that aren't caused by poor image quality) | very old scores only | import, but omit from interface for now (possible delete later for simplicity)
 scorer expPeople | only one score ("no bacteria") | convert to hueyling
-scorer Julie (MySQL default for scoredBy) | All her scores have an improper date, and were probably not added via the traditional scoring interface. All scores are either spn-4 scores from junk experiments (perhaps Julie gave Hueyling at Excel sheet of scores, which might be why Hueyling made "Julie" the default scoredBy), or "no bacteria" scores (which we believe Hueyling and Amelia entered, perhaps using Katherine's growth history data) | convert "no bacteria" scores to hueyling; do not migrate spn-4 scores (these experiments are useless, due to using a reverting spn-4 line)
-scorer alejandro | only ENH scores | do not migrate any alejandro scores (not well trained, and did not score much)
-scorer katy | only pre-consensus div-1 ENH scores | do not migrate any katy scores (scored before ENH criteria finalized)
-scorer lara | some pre-consensus ENH scores | do not migrate lara's ENH scores (scored before ENH criteria finalized)
-scorer eliana | some pre-consensus ENH scores | do not migrate eliana's ENH scores (scored before ENH criteria finalized)
-scorer kelly | some pre-consensus ENH scores | probably do not migrate kelly's ENH scores (scored before ENH criteria finalized, plus some training issues), but try to confirm that they were not used in amelia's cutoff analysis
-scorers sherly, giselle | some pre-consensus ENH scores | pending decision about whether to migrate their ENH scores. The danger in keeping these is that they are inconsistent with our eventual scoring criteria (and they are redundant, since everything was eventually scored by the "official" scorers noah, koji, and mirza). But we need to investigate 1) were these scores used in amelia's cutoff analysis? and 2) were all Mediums and Strongs captured by the official scorers?
+scorer Julie (MySQL default for scoredBy) | All her scores have an improper date, and were probably not added via the traditional scoring interface. All scores are either spn-4 scores from junk experiments (perhaps Julie gave Hueyling at Excel sheet of scores, which might be why Hueyling made "Julie" the default scoredBy), or "no bacteria" scores (which we believe Hueyling and Amelia entered, perhaps using Katherine's growth history data) | convert "no bacteria" scores to hueyling; do not import spn-4 scores (these experiments are useless, due to using a reverting spn-4 line)
+scorer alejandro | only ENH scores | do not import any alejandro scores (not well trained, and did not score much)
+scorer katy | only pre-consensus div-1 ENH scores | do not import any katy scores (scored before ENH criteria finalized)
+scorer lara | some pre-consensus ENH scores | do not import lara's ENH scores (scored before ENH criteria finalized)
+scorer eliana | some pre-consensus ENH scores | do not import eliana's ENH scores (scored before ENH criteria finalized)
+scorer kelly | some pre-consensus ENH scores | probably do not import kelly's ENH scores (scored before ENH criteria finalized, plus some training issues), but try to confirm that they were not used in amelia's cutoff analysis
+scorers sherly, giselle | some pre-consensus ENH scores | pending decision about whether to import their ENH scores. The danger in keeping these is that they are inconsistent with our eventual scoring criteria (and they are redundant, since everything was eventually scored by the "official" scorers noah, koji, and mirza). But we need to investigate 1) were these scores used in amelia's cutoff analysis? and 2) were all Mediums and Strongs captured by the official scorers?
 
 
 
@@ -252,50 +246,3 @@ adult (or larva) count if area is 0 | -1 | null
 - ScoreResultsDevStaR (but ensure it is just an incomplete copy of RawDataWithScore, made by Kris)
 - PredManualScore and PredManualScoreList (but figure out why these exist!)
 - WellToTile (to be replaced with simple Python functions)
-
-
-
-<!--
------------------------------------------------------------------------------------
-## Drafts of SQL queries that could be used to bypass the script, if time is a concern
-
-### LibraryPlate (did not exist in GenomeWideGI)
-
-First add 384 plates and Eliana Rearray plates by hand.
-
-Then:
-```
-INSERT INTO LibraryPlate (id, screen\_stage, number\_of\_wells)
-SELECT DISTINCT RNAiPlateID, 1, 96 FROM RNAiPlate;
-
-INSERT INTO LibraryPlate (id, screen\_stage, number\_of\_wells)
-SELECT DISTINCT RNAiPlateID, 2, 96 FROM CherryPickRNAiPlate;
-```
-
-
-### Experiment
-
-First correct misspelled allele in eegi.RawData:
-```
-UPDATE RawData SET mutantAllele='zu310' WHERE mutantAllele='zc310';
-```
-
-Temporarily set eegi.WormStrain.gene to 'N2' for N2, in order for join to work
-(the old database had N2 listed as a mutation).
-
-Then:
-```
-INSERT INTO Experiment
-SELECT expID, WormStrain.name, LibraryPlate.name,
-    CAST(SUBSTRING_INDEX(temperature, 'C', 1) AS DECIMAL(3,1)),
-    CAST(recordDate AS DATE), ABS(isJunk), comment
-FROM RawData
-LEFT JOIN WormStrain
-ON RawData.mutant = WormStrain.gene
-AND RawData.mutantAllele = WormStrain.allele
-LEFT JOIN LibraryPlate
-ON RawData.RNAiPlateID = LibraryPlate.name
-WHERE (expID < 40000 OR expID > 49999)
-AND RNAiPlateID NOT LIKE "Julie%";
-```
--->

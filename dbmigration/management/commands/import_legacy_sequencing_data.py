@@ -31,7 +31,7 @@ class Command(BaseCommand):
 
           materials/sequencing/genewiz/tracking_numbers.csv
 
-    - genewiz_root is the root directory where Genewiz dumps our
+    - genewiz_output_root is the root directory where Genewiz dumps our
       sequencing data. Inside this directory are several Perl
       scripts that Huey-Ling used to make the Genewiz output more
       convenient to parse. The only one of these Perl scripts that is
@@ -52,14 +52,14 @@ class Command(BaseCommand):
                                  "See this command's docstring "
                                  "for more details.")
 
-        parser.add_argument('genewiz_root',
+        parser.add_argument('genewiz_output_root',
                             help="Root Genewiz output directory. "
                                  "See this command's docstring "
                                  "for more details.")
 
     def handle(self, **options):
         tracking_numbers = options['tracking_numbers']
-        self.genewiz_root = options['genewiz_root']
+        self.genewiz_root = options['genewiz_output_root']
 
         if not os.path.isdir(self.genewiz_root):
             raise CommandError('genewiz_root directory not found')
