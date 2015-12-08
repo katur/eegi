@@ -28,7 +28,7 @@ def sync_rows(command, cursor, legacy_query, sync_row_function, **kwargs):
     else:
         command.stdout.write(
             'Some objects from legacy query:\n\n\t{}\n\n'
-            'were just added or updated in new database'
+            'were just added or updated in new database '
             '(individual changes and warnings printed to stderr.)\n\n'
             .format(legacy_query))
 
