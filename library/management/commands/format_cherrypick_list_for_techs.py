@@ -4,16 +4,16 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    """Command to format a cherrypick list so that it is easier for techs
-    to cherrypick from.
+    """Command to format a cherrypick list so that it is easier for
+    techs to cherrypick from.
 
     Simply adds blank lines at the points where the techs would need to
     change the plates in front of them.
 
     Arguments
 
-    - file should be a comma-separated file, including header row,
-      where each row is in format:
+    - cherrypick_list should be a comma-separated file, including header
+      row, where each row is in format:
 
         source_plate,source_well,destination_plate,destination_well
 
@@ -21,13 +21,13 @@ class Command(BaseCommand):
     help = 'Format a cherrypick list for techs.'
 
     def add_arguments(self, parser):
-        parser.add_argument('file', type=argparse.FileType('r'),
-                            help="CSV of cherrypick list. "
+        parser.add_argument('cherrypick_list', type=argparse.FileType('r'),
+                            help="CSV file of cherrypick list. "
                                  "See this command's docstring "
                                  "for more details.")
 
     def handle(self, **options):
-        f = options['file']
+        f = options['cherrypick_list']
 
         # Print header
         self.stdout.write(f.readline())
