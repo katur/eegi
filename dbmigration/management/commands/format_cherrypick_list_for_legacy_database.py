@@ -1,4 +1,5 @@
 import argparse
+import MySQLdb
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
@@ -57,7 +58,9 @@ class Command(BaseCommand):
 
         for row in cursor.fetchall():
             old_clone_name = row[0].strip()
-            node_primary_name = row[1].strip()
+            node_primary_name = row[1]
+            if isinstance(node_primary_name, str):
+                node_primary_name = node_primary_name.strip()
             plate_384 = row[2].strip()
             well_384 = row[3].strip()
 
@@ -118,7 +121,7 @@ class Command(BaseCommand):
                 raise CommandError('{} at {} not found'
                                    .format(source_plate_name, source_well))
 
-            allele = destination_plate_name.split('_')[0]
+            allele = destination_plate_name.split('-')[0]
 
             if allele == 'universal':
                 # For universal plates, allele == gene == 'universal'
@@ -130,10 +133,7 @@ class Command(BaseCommand):
 
             # Account for legacy database using mispelled allele 'zc310'
             if allele == 'zu310':
-                allele_chars = list(allele)
-                allele_chars[1] = 'c'
-                allele = ''.join(allele_chars)
-
+                allele = 'zc310'
                 destination_plate_chars = list(destination_plate_name)
                 destination_plate_chars[1] = 'c'
                 destination_plate_name = ''.join(destination_plate_chars)
