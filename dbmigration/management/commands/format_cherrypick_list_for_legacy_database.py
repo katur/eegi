@@ -10,7 +10,7 @@ from worms.models import WormStrain
 
 
 class Command(BaseCommand):
-    """Command to format cherrypick_list to import into legacy
+    """Command to format a cherrypick list to import into legacy
     database (GenomeWideGI.CherryPickRNAiPlate).
 
     This script requires that LEGACY_DATABASE be defined in
@@ -24,11 +24,11 @@ class Command(BaseCommand):
           source_plate,source_well,destination_plate,destination_well
 
     """
-    help = 'Format a cherry-pick list for legacy database.'
+    help = 'Format a cherrypick list for legacy database.'
 
     def add_arguments(self, parser):
         parser.add_argument('cherrypick_list', type=argparse.FileType('r'),
-                            help="CSV of cherry-pick list. "
+                            help="CSV file of cherry-pick list. "
                                  "See this command's docstring "
                                  "for more details.")
 
