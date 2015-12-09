@@ -99,7 +99,7 @@ class Command(BaseCommand):
                     source_plate = None
                     source_well = None
 
-                destination_plate = label + '_E' + str(row[0] + 1)
+                destination_plate = label + '-E' + str(row[0] + 1)
                 destination_well = row[1]
                 cherrypick_list.append((source_plate, source_well,
                                         destination_plate,
@@ -107,7 +107,7 @@ class Command(BaseCommand):
 
         # Sort by (destination_plate, destination_well)
         cherrypick_list.sort(
-            key=lambda x: (x[2].split('_')[0], int(x[2].split('E')[1]),
+            key=lambda x: (x[2].split('-')[0], int(x[2].split('E')[1]),
                            int(x[3][1:]), x[3][0]))
 
         # Print the list
