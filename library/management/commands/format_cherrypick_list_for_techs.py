@@ -10,12 +10,14 @@ class Command(BaseCommand):
     Simply adds blank lines at the points where the techs would need to
     change the plates in front of them.
 
+    Output
+        Prints to stdout
+
     Arguments
+        - cherrypick_list should be a comma-separated file, including
+          header row, where each row is in format:
 
-    - cherrypick_list should be a comma-separated file, including header
-      row, where each row is in format:
-
-        source_plate,source_well,destination_plate,destination_well
+            source_plate,source_well,destination_plate,destination_well
 
     """
     help = 'Format a cherrypick list for techs.'

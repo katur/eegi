@@ -16,12 +16,14 @@ class Command(BaseCommand):
     This script requires that LEGACY_DATABASE be defined in
     local_settings.py.
 
+    Output
+        Prints to stdout
+
     Arguments
+        - cherrypick_list should be a comma-separated file, including
+          header row, where each row is in format:
 
-    - cherrypick_list should be a comma-separated file, including header
-      row, where each row is in format:
-
-          source_plate,source_well,destination_plate,destination_well
+            source_plate,source_well,destination_plate,destination_well
 
     """
     help = 'Format a cherrypick list for legacy database.'
