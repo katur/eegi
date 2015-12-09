@@ -37,8 +37,10 @@ class Command(BaseCommand):
             candidates_by_worm[worm] = []
             singles = worm.get_stocks_tested_by_number_of_replicates(
                 'ENH', 1, 1)
+
             positives = worm.get_positives(
                 'ENH', 1, passes_enh_primary, singles=singles)
+
             for library_stock in positives:
                 candidates_by_worm[worm].append(library_stock)
                 if library_stock not in candidates_by_clone:

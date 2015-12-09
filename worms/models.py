@@ -3,6 +3,8 @@ from decimal import Decimal
 from django.db import models
 from django.db.models import Count
 
+from library.models import LibraryStock
+
 
 class WormStrain(models.Model):
     """A worm strain used in the screen.
@@ -171,7 +173,9 @@ class WormStrain(models.Model):
             .order_by('library_stock')
             .values('library_stock').annotate(Count('id')))
 
-        singles = [x['library_stock'] for x in annotated
-                   if x['id__count'] == number_of_replicates]
+        singles_pks = [x['library_stock'] for x in annotated
+                       if x['id__count'] == number_of_replicates]
+
+        singles = LibraryStock.objects.filter(pk__in=singles_pks)
 
         return set(singles)
