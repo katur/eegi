@@ -9,17 +9,17 @@ Here are some queries for performing on the MySQL database directly
 SELECT Experiment.id, LibraryStock.id, Clone.id, Gene.cosmid_id, Gene.locus 
 FROM Experiment
 LEFT JOIN ExperimentPlate
-ON Experiment.plate_id = ExperimentPlate.id
+  ON Experiment.plate_id = ExperimentPlate.id
 LEFT JOIN LibraryStock
-ON Experiment.library_stock_id = LibraryStock.id
+  ON Experiment.library_stock_id = LibraryStock.id
 LEFT JOIN Clone
-ON LibraryStock.intended_clone_id = Clone.id
+  ON LibraryStock.intended_clone_id = Clone.id
 LEFT JOIN CloneTarget
-ON CloneTarget.clone_id = Clone.id
+  ON CloneTarget.clone_id = Clone.id
 LEFT JOIN Gene
-ON CloneTarget.gene_id = Gene.id
-WHERE ExperimentPlate.screen_stage = 2
-AND is_junk = 0;
+  ON CloneTarget.gene_id = Gene.id
+WHERE is_junk = 0
+  AND ExperimentPlate.screen_stage = 2;
 ```
 
 ## To compare Noah vs DevStaR SUP secondary scores (for Michelle)
