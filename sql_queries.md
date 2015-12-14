@@ -4,7 +4,7 @@ Here are some queries for performing on the MySQL database directly
 (i.e., not through Django query abstraction).
 
 
-# Join to get LibraryStock -> Clone -> Gene
+## Joining LibraryStock -> Clone -> Gene
 ```
 SELECT Experiment.id, LibraryStock.id, Clone.id, Gene.cosmid_id, Gene.locus 
 FROM Experiment
