@@ -6,4 +6,4 @@ if [ $# != 1 ]
     exit 1
 fi
 
-grep -r --exclude=\*.{pyc,swp} $1 clones library experiments worms dbmigration utils website
+grep -r --exclude=\*.{pyc,swp} --exclude=node_modules/* $1 *
