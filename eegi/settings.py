@@ -1,4 +1,5 @@
-"""Django settings for Early Embryo Genetic Interactions project.
+"""
+Django settings for eegi project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/dev/topics/settings/
@@ -6,20 +7,17 @@ https://docs.djangoproject.com/en/dev/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
-from local_settings import (DEBUG, DATABASES, LOCKDOWN_PASSWORDS,
-                            SECRET_KEY, MATERIALS_DIR)
+
+# Local configuration
+from local_settings import (
+    DEBUG, SECRET_KEY, LOCKDOWN_PASSWORDS, DATABASES, MATERIALS_DIR,
+    BASE_URL_IMG, BASE_URL_THUMBNAIL, BASE_URL_DEVSTAR)
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
-TEMPLATE_DEBUG = DEBUG
-
-
-# Allow all hosts
 
 ALLOWED_HOSTS = ['*']
 
@@ -84,7 +82,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
-# TODO: STATIC_ROOT might be better in local settings
 
 STATIC_URL = '/static/'
 
@@ -107,11 +104,3 @@ LOGIN_URL = 'login_url'
 # Site password protection
 
 LOCKDOWN_FORM = 'lockdown.forms.LockdownForm'
-
-
-# Images are stored on another server
-
-IMG_SERVER = 'http://pleiades.bio.nyu.edu'
-IMG_PATH = IMG_SERVER + '/GI_IMG'
-THUMBNAIL_PATH = IMG_SERVER + '/GI_IMG/convertedImg'
-DEVSTAR_PATH = IMG_SERVER + '/GI_IMG/resultimages'
