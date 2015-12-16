@@ -1,9 +1,10 @@
 from django.core.management.base import BaseCommand
 
-from experiments.helpers.criteria import passes_sup_secondary_percent
+from experiments.helpers.criteria import (
+    passes_sup_secondary_percent as criteria)
 from experiments.helpers.scores import get_positives_any_worm
 from library.helpers.sequencing import (categorize_sequences_by_blat_results,
-                                        NO_BLAT, NO_MATCH)
+                                        NO_BLAT, NO_MATCH, NO_CLONE_BLAT)
 from library.models import LibrarySequencing
 from utils.plates import assign_to_plates, get_plate_assignment_rows
 
@@ -19,8 +20,7 @@ class Command(BaseCommand):
     help = 'Get list of SUP secondary stocks to resequence.'
 
     def handle(self, **options):
-        positives = get_positives_any_worm(
-            'SUP', 2, passes_sup_secondary_percent)
+        positives = get_positives_any_worm('SUP', 2, criteria)
 
         seqs = (LibrarySequencing.objects
                 .filter(source_stock__in=positives)
@@ -59,7 +59,7 @@ def _get_wells_to_resequence(s):
 
     for key in s:
         if ((isinstance(key, int) and key > 1) or
-                key == NO_BLAT or key == NO_MATCH):
+                key == NO_BLAT or key == NO_MATCH or key == NO_CLONE_BLAT):
             wells_to_resequence.extend(
                 [x.source_stock for x in s[key]])
 

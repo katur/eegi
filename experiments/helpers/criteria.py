@@ -1,6 +1,14 @@
 from __future__ import division
 
 
+def shows_any_suppression(scores):
+    for score in scores:
+        if score.is_strong() or score.is_medium() or score.is_weak():
+            return True
+
+    return False
+
+
 def passes_sup_secondary_stringent(scores):
     """Determine if a set of suppressor secondary scores passes the
     stringent criteria for a positive suppressor.

@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import (passes_sup_secondary_percent,
-                                          passes_sup_secondary_stringent)
+                                          passes_sup_secondary_stringent,
+                                          shows_any_suppression)
 from experiments.helpers.scores import get_positives_any_worm
 from library.helpers.sequencing import (categorize_sequences_by_blat_results,
                                         get_average_crl, get_average_qs,
@@ -59,7 +60,17 @@ class Command(BaseCommand):
         seqs_blat = categorize_sequences_by_blat_results(seqs)
         self.print_categories('ALL SEQUENCES', seqs_blat)
 
-        # Categorize sequences for SUP positives
+        # Categorize sequences that have any SUP score
+        any_suppression = get_positives_any_worm(
+            'SUP', 2, shows_any_suppression)
+        seqs_any_sup = seq_starter.filter(
+            source_stock__in=any_suppression)
+        seqs_any_sup_blat = categorize_sequences_by_blat_results(
+            seqs_any_sup)
+        self.print_categories('SEQUENCES CORRESPONDING TO ANY SUP '
+                              'SCORES', seqs_any_sup_blat)
+
+        # Categorize sequences for SUP percentage-criteria positives
         positives = get_positives_any_worm(
             'SUP', 2, passes_sup_secondary_percent)
         seqs_pos = seq_starter.filter(source_stock__in=positives)
@@ -68,7 +79,7 @@ class Command(BaseCommand):
                               'PERCENT POSITIVES ONLY',
                               seqs_pos_blat)
 
-        # Categorize sequences for SUP high confidence positives
+        # Categorize sequences for SUP high-confidence positives
         high_conf = get_positives_any_worm(
             'SUP', 2, passes_sup_secondary_stringent)
         seqs_high = seq_starter.filter(source_stock__in=high_conf)
