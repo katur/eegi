@@ -13,9 +13,9 @@ from utils.plates import assign_to_plates, get_plate_assignment_rows
 class Command(BaseCommand):
     """Command to get list of SUP secondary stocks to resequence.
 
-    We are resequencing all wells for which the sequencing result
-    corresponds to a positive, and for which the top hit of the
-    sequencing result does not agree with the intended clone.
+    We are resequencing all SUP secondary stocks for which:
+        1) top BLAT result of sequence does not match intended clone, and
+        2) the stock passes a criteria
 
     """
     help = 'Get list of SUP secondary stocks to resequence.'

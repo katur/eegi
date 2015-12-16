@@ -2,6 +2,7 @@ from __future__ import division
 
 
 def shows_any_suppression(scores):
+    """Check if scores contains at least a single suppression score."""
     for score in scores:
         if score.is_strong() or score.is_medium() or score.is_weak():
             return True
@@ -10,8 +11,8 @@ def shows_any_suppression(scores):
 
 
 def passes_sup_secondary_stringent(scores):
-    """Determine if a set of suppressor secondary scores passes the
-    stringent criteria for a positive suppressor.
+    """Check if scores passes the stringent criteria for a
+    positive suppressor.
 
     scores should include the single most relevant score per replicate,
     and include all replicates for a particular worm / library_stock combo.
@@ -27,8 +28,8 @@ def passes_sup_secondary_stringent(scores):
 
 
 def passes_sup_secondary_percent(scores):
-    """Determine if a set of suppressor secondary scores passes the
-    percentage-based criteria for a positive suppressor.
+    """Check if scores passes the percent-based criteria for a
+    positive suppressor.
 
     scores should include the single most relevant score per replicate,
     and include all replicates for a particular worm / library_stock combo.
@@ -61,8 +62,8 @@ def passes_sup_secondary_percent(scores):
 
 
 def passes_sup_secondary_count(scores):
-    """Determine if a set of suppressor secondary scores passes the
-    count-based criteria for a positive suppressor.
+    """Check if scores passes the count-based criteria for a
+    positive suppressor.
 
     scores should include the single most relevant score per replicate,
     and include all replicates for a particular worm / library_stock combo.
@@ -82,19 +83,18 @@ def passes_sup_secondary_count(scores):
 
 
 def passes_enh_primary(scores, singles=[]):
-    """Determine if a set of enhancer primary scores passes the criteria
-    to make it into the enhancer secondary screen.
+    """Check if scores qualifies for the enhancer secondary screen.
 
     scores should include the single most relevant score per replicate,
     and include all replicates for a particular worm / library_stock combo.
 
     singles is an optional list of library_stocks that only had a single
-    copy tested for this worm. Note that this is different from having a
-    single copy scored. When there are two copies tested but one copy
-    scored, it is presumed that the unscored copy is a negative (because
-    DevStaR did not select it for scoring). However, in the rare case
-    that we only tested one copy to begin with, we cannot presume
-    anything about the other copy.
+    copy tested for this worm. This is different from having a single
+    copy scored. When two copies were tested but only one copy
+    scored, it is presumed that the unscored copy is a negative, since
+    DevStaR did not select it for scoring. However, in the rare case
+    that we only tested one copy, we do not presume anything about the
+    other copy.
 
     """
     is_positive = False
