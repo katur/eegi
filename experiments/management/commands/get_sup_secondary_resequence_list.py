@@ -1,10 +1,11 @@
 from django.core.management.base import BaseCommand
 
 from experiments.helpers.criteria import (
-    passes_sup_secondary_percent as criteria)
+    shows_any_suppression as criteria)
 from experiments.helpers.scores import get_positives_any_worm
-from library.helpers.sequencing import (categorize_sequences_by_blat_results,
-                                        NO_BLAT, NO_MATCH, NO_CLONE_BLAT)
+from library.helpers.sequencing import (
+    categorize_sequences_by_blat_results,
+    NO_BLAT, NO_MATCH, NO_CLONE_BLAT)
 from library.models import LibrarySequencing
 from utils.plates import assign_to_plates, get_plate_assignment_rows
 

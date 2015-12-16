@@ -1,9 +1,0 @@
-#!/bin/sh
-
-if [ $# != 1 ]
-  then
-    echo "Exactly one argument required"
-    exit 1
-fi
-
-grep -r --exclude=\*.{pyc,swp} --exclude=node_modules/* $1 *
