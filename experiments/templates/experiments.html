@@ -63,6 +63,19 @@
     </tbody>
   </table>
   {% endfor %}
+
+  {% ifnotequal experiments None %}
+  <div id="results-header">
+    <span id="total">
+      {{ experiments|length }} matching
+      experiment{{ experiments|pluralize }}
+    </span>
+
+    {% if experiments %}
+    {% include 'pagination_status.html' with paginated=display_experiments %}
+    {% endif %}
+  </div>
+  {% endifnotequal %}
 </div>
 
 {% endblock %}
