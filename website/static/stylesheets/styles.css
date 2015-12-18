@@ -302,16 +302,16 @@ table thead th {
   #experiment-plate .vertical-links a {
     margin-right: 40px; }
 
-#experiment-plates form p {
+#experiment-plates form p, #experiments form p {
   float: left;
   width: 30%;
   margin-right: 3%;
   padding-bottom: 8px; }
-  #experiment-plates form p.submit {
+  #experiment-plates form p.submit, #experiments form p.submit {
     clear: left; }
-#experiment-plates #experiment-results {
+#experiment-plates #experiment-results, #experiments #experiment-results {
   width: 100%; }
-#experiment-plates .vertical-links a {
+#experiment-plates .vertical-links a, #experiments .vertical-links a {
   margin-left: 40px; }
 
 .pretty-th {

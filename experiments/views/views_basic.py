@@ -1,7 +1,7 @@
 import os
 
 from django.http import Http404
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 
 from eegi.settings import MATERIALS_DIR
 from experiments.models import Experiment, ExperimentPlate
@@ -35,6 +35,31 @@ def experiment(request, pk):
     return render(request, 'experiment.html', context)
 
 
+def experiments(request):
+    """Render the page showing experiments based on filters."""
+    if request.GET:
+        form = ExperimentFilterForm(request.GET)
+        if not form.is_valid():
+            raise Http404
+
+        experiments = form.cleaned_data['experiments']
+        display_experiments = get_paginated(request, experiments,
+                                            EXPERIMENTS_PER_PAGE)
+
+    else:
+        form = ExperimentFilterForm()
+        experiments = None
+        display_experiments = None
+
+    context = {
+        'form': form,
+        'experiments': experiments,
+        'display_experiments': display_experiments,
+    }
+
+    return render(request, 'experiments.html', context)
+
+
 def experiment_plate(request, pk):
     """Render the page to see a particular experiment plate."""
     experiment_plate = get_object_or_404(ExperimentPlate, pk=pk)
@@ -48,23 +73,6 @@ def experiment_plate(request, pk):
     }
 
     return render(request, 'experiment_plate.html', context)
-
-
-def experiment_plates_vertical(request, pks):
-    """Render the page to view experiment plate images vertically."""
-    pks = pks.split(',')
-
-    # NOTE: To preserve order, do not do .filter(id__in=ids)
-    plates = [get_object_or_404(ExperimentPlate, pk=pk) for pk in pks]
-
-    context = {
-        'experiment_plates': plates,
-
-        # Default to thumbnail
-        'mode': request.GET.get('mode', 'thumbnail')
-    }
-
-    return render(request, 'experiment_plates_vertical.html', context)
 
 
 def experiment_plates(request, context=None):
@@ -91,22 +99,21 @@ def experiment_plates(request, context=None):
     return render(request, 'experiment_plates.html', context)
 
 
-def experiments(request):
-    """Render the page showing experiments based on filters."""
-    form = ExperimentFilterForm(request.GET)
-    if not form.is_valid():
-        raise Http404
+def experiment_plates_vertical(request, pks):
+    """Render the page to view experiment plate images vertically."""
+    pks = pks.split(',')
 
-    experiments = form.cleaned_data['experiments']
-    display_experiments = get_paginated(request, experiments,
-                                        EXPERIMENTS_PER_PAGE)
+    # NOTE: To preserve order, do not do .filter(id__in=ids)
+    plates = [get_object_or_404(ExperimentPlate, pk=pk) for pk in pks]
 
     context = {
-        'experiments': experiments,
-        'display_experiments': display_experiments,
+        'experiment_plates': plates,
+
+        # Default to thumbnail
+        'mode': request.GET.get('mode', 'thumbnail')
     }
 
-    return render(request, 'experiments.html', context)
+    return render(request, 'experiment_plates_vertical.html', context)
 
 
 def devstar_scoring_categories(request):

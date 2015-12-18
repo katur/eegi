@@ -5,18 +5,40 @@
 {% block body_id %}experiments{% endblock %}
 
 
-{% block content %}
-<div class="page-section">
-  <div id="results-header">
-    <span id="total">
-      {{ experiments|length }} total
-    </span>
+{% block page_title %}Find Experiments{% endblock %}
 
-    {% include 'pagination_status.html' with paginated=display_experiments %}
-  </div>
+
+{% block content %}
+<div class="page-section gray-bubble">
+  {% if form.errors %}
+  <span class="error-message">
+    Please correct the error{{ form.errors|pluralize }} below.
+  </span>
+  {% endif %}
+
+  <form action="" method="get">
+    {{ form.as_p }}
+
+    <p class="submit">
+      <input type="submit" value="Submit">
+    </p>
+  </form>
 </div>
 
 <div class="page-section">
+  {% ifnotequal experiments None %}
+  <div id="results-header">
+    <span id="total">
+      {{ experiments|length }} matching
+      experiment{{ experiments|pluralize }}
+    </span>
+
+    {% if experiments %}
+    {% include 'pagination_status.html' with paginated=display_experiments %}
+    {% endif %}
+  </div>
+  {% endifnotequal %}
+
   {% for experiment in display_experiments %}
   <table class="grayscale">
     <thead>

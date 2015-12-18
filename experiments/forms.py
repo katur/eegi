@@ -54,10 +54,12 @@ class ExperimentFilterForm(ExperimentFormBase):
     """Form for filtering Experiment instances."""
 
     library_stock = forms.CharField(
-        required=False, help_text='e.g. II-3-B2_A01')
+        required=False, help_text='e.g. I-3-B2_A01',
+        widget=forms.TextInput(attrs={'size': '15'}))
 
     library_stock__intended_clone = forms.CharField(
-        required=False, help_text='e.g. sjj_AH10.4')
+        required=False, label='Intended clone', help_text='e.g. sjj_AH10.4',
+        widget=forms.TextInput(attrs={'size': '15'}))
 
     is_junk = forms.NullBooleanField(
         required=False, widget=BlankNullBooleanSelect)
