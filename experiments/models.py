@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
 
-from eegi.settings import IMG_PATH, THUMBNAIL_PATH, DEVSTAR_PATH
+from eegi.settings import BASE_URL_IMG, BASE_URL_DEVSTAR, BASE_URL_THUMBNAIL
 from experiments.helpers.scores import (
     get_most_relevant_score_per_experiment)
 from library.models import LibraryPlate, LibraryStock
@@ -117,22 +117,22 @@ class Experiment(models.Model):
         return well_to_tile(self.well)
 
     def get_image_url(self, mode=None):
-        """Get the image url for this experiment well.
+        """
+        Get the image url for this experiment.
 
         Optionally supply mode='thumbnail' or mode='devstar'.
-
         """
         tile = well_to_tile(self.well)
         if mode == 'thumbnail':
-            url = '/'.join((THUMBNAIL_PATH,
+            url = '/'.join((BASE_URL_THUMBNAIL,
                             str(self.plate_id), tile))
             url += '.jpg'
         elif mode == 'devstar':
-            url = '/'.join((DEVSTAR_PATH,
+            url = '/'.join((BASE_URL_DEVSTAR,
                             str(self.plate_id), tile))
             url += 'res.png'
         else:
-            url = '/'.join((IMG_PATH,
+            url = '/'.join((BASE_URL_IMG,
                             str(self.plate_id), tile))
             url += '.bmp'
         return url

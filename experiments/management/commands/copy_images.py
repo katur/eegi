@@ -8,11 +8,12 @@ import shutil
 from django.core.management.base import BaseCommand, CommandError
 
 from utils.well_tile_conversion import well_to_tile
-from eegi.settings import IMG_PATH
+from eegi.settings import BASE_URL_IMG
 
 
 class Command(BaseCommand):
-    """Command to copy a set of images from the server to a local directory.
+    """
+    Command to copy a set of images from the server to a local directory.
 
     Currently works only for the full-size, original .bmp images.
 
@@ -66,10 +67,10 @@ class Command(BaseCommand):
             else:
                 tile = well_to_tile(well)
 
-            input_image_url = '{}/{}/{}.bmp'.format(IMG_PATH, experiment_id,
-                                                    tile)
-            output_image_path = '{}/{}_{}.bmp'.format(output_dir,
-                                                      experiment_id, tile)
+            input_image_url = '{}/{}/{}.bmp'.format(
+                BASE_URL_IMG, experiment_id, tile)
+            output_image_path = '{}/{}_{}.bmp'.format(
+                output_dir, experiment_id, tile)
             r = requests.get(input_image_url, stream=True)
             if r.status_code != 200:
                 raise CommandError('non-ok GET status for {}'
