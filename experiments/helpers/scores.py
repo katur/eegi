@@ -5,11 +5,11 @@ from worms.helpers.queries import get_worms_for_screen_type
 
 
 def get_most_relevant_score_per_experiment(scores):
-    """Get the most relevant score for a single experiment replicate.
+    """
+    Get the most relevant score for a single experiment replicate.
 
     scores should contain all the scores for a single experiment
     replicate.
-
     """
     scores.sort(
         key=lambda x: x.get_relevance_per_replicate(), reverse=True)
@@ -17,11 +17,11 @@ def get_most_relevant_score_per_experiment(scores):
 
 
 def get_average_score_weight(scores):
-    """Get the average weight of scores.
+    """
+    Get the average weight of scores.
 
     scores should contain the single most relevant score per
     experiment replicate.
-
     """
     num_countable = 0
     total_weight = 0
@@ -36,14 +36,14 @@ def get_average_score_weight(scores):
 
 
 def organize_manual_scores(scores, most_relevant_only=False):
-    """Organize scores into a structured dictionary.
+    """
+    Organize scores into a structured dictionary.
 
     The data returned is organized as:
         s[library_stock][experiment] = [scores]
 
     Or, if most_relevant_only is set to True:
         s[library_stock][experiment] = most_relevant_score
-
     """
     data = {}
 
@@ -69,12 +69,11 @@ def organize_manual_scores(scores, most_relevant_only=False):
 
 
 def get_positives_any_worm(screen_type, screen_stage, criteria, **kwargs):
-    """Get the set of library stocks that are positive for ANY
-    worm in a particular screen.
+    """
+    Get the set of library stocks that are positive for ANY worm.
 
     A screen is defined by both screen_type ('ENH' or 'SUP')
     and screen_stage (1 for primary, 2 for secondary).
-
     """
     worms = get_worms_for_screen_type(screen_type)
 

@@ -7,7 +7,8 @@ from clones.models import Clone
 
 
 class Command(BaseCommand):
-    """Command to compare the Ahringer library as in the database to another.
+    """
+    Command to compare the Ahringer library as in the database to another.
 
     Currently, this is useful for comparing the library as listed in the
     database (currently derived from Huey-Ling's version in GenomeWideGI)
@@ -19,8 +20,8 @@ class Command(BaseCommand):
     The input file (copied/pasted from the above link) is currently at:
 
         materials/ahringer_database/sbs_ahringer_orig.csv
-
     """
+
     help = "Compare this database's Ahringer library to another version"
 
     def add_arguments(self, parser):

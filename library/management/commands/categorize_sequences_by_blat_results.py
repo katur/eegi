@@ -11,14 +11,14 @@ from library.models import LibrarySequencing
 
 
 class Command(BaseCommand):
-    """Command to summarize our sequencing results.
+    """
+    Command to summarize our sequencing results.
 
     Writes to stdout a categorized summary of our sequencing results,
     according to how high up the intended clone appears in the BLAT hits.
 
     The purpose of this script is to get a general sense of the quality
     of the sequencing and BLAT hits.
-
 
     Categories:
 
@@ -39,14 +39,14 @@ class Command(BaseCommand):
             curiosity's sake. E.g., sequences of L4440 wells and
             supposedly empty wells.
 
+    The categorization is done separately for:
 
-    The categorization is done for:
-
-        1) all sequences
-        2) sequences corresponding to positives only
-        3) sequences corresponding to high confidence positives only
-
+        - all sequences
+        - sequences for stocks that have any suppression scores
+        - sequences corresponding to positives only
+        - sequences corresponding to high confidence positives only
     """
+
     help = ('Summarize sequencing results. '
             'See command docstring for more details.')
 

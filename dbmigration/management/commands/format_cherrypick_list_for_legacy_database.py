@@ -11,8 +11,10 @@ from worms.models import WormStrain
 
 
 class Command(BaseCommand):
-    """Command to format a cherrypick list to import into legacy
-    database (GenomeWideGI.CherryPickRNAiPlate).
+    """
+    Command to format a cherrypick list to import into legacy database.
+
+    Import into GenomeWideGI.CherryPickRNAiPlate.
 
     This script requires that LEGACY_DATABASE be defined in
     local_settings.py.
@@ -25,8 +27,8 @@ class Command(BaseCommand):
           header row, where each row is in format:
 
             source_plate,source_well,destination_plate,destination_well
-
     """
+
     help = 'Format a cherrypick list for legacy database.'
 
     def add_arguments(self, parser):

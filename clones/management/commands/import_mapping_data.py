@@ -10,11 +10,12 @@ from utils.scripting import require_db_write_acknowledgement
 
 
 class Command(BaseCommand):
-    """Command to import Firoz's RNAi clone mapping data.
+    """
+    Command to import Firoz's RNAi clone mapping data.
 
     Mapping data is queried directly from Firoz's RNAiCloneMapper database.
-
     """
+
     help = "Import RNAi clone mapping data from Firoz's database."
 
     def handle(self, **options):
@@ -125,14 +126,14 @@ def _get_mapping_alias_to_pk(cursor):
 
 
 def _get_mapping_clones(cursor):
-    """Get dictionary of all clones from the mapping database.
+    """
+    Get dictionary of all clones from the mapping database.
 
     This dictionary is keyed on the clone's pk in the mapping
     database.
 
     The value is a dictionary of fieldname:value pairs in the
     mapping database.
-
     """
     fieldnames = ['id', 'library', 'clone_type', 'forward_primer',
                   'reverse_primer']
@@ -140,27 +141,27 @@ def _get_mapping_clones(cursor):
 
 
 def _get_mapping_genes(cursor):
-    """Get dictionary of all genes from the mapping database.
+    """
+    Get dictionary of all genes from the mapping database.
 
     This dictionary is keyed on the gene's pk in the mapping
     database.
 
     The value is a dictionary of fieldname:value pairs in the
     mapping database.
-
     """
     fieldnames = ['id', 'cosmid_id', 'locus', 'gene_type']
     return get_field_dictionary(cursor, 'Gene', fieldnames)
 
 
 def _get_mapping_targets(cursor):
-    """Get dictionary of all targets from the mapping database.
+    """
+    Get dictionary of all targets from the mapping database.
 
     This dictionary is keyed on the clone's pk in the mapping database.
 
     The value is a list. Each item in this list is a dictionary
     capturing the fieldname:value pairs about one target of this clone.
-
     """
     fieldnames = [
         'clone_id', 'id', 'clone_amplicon_id',

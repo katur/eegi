@@ -7,7 +7,8 @@ register = template.Library()
 
 @register.simple_tag
 def url_replace(request, field, value):
-    """Set GET[field] to value in the url.
+    """
+    Set GET[field] to value in the url.
 
     Keeps other GET key/value pairs intact.
     """
@@ -27,18 +28,19 @@ def celsius(temperature):
 
 @register.filter(is_safe=True)
 def get_comma_separated_ids(l):
-    """Get a comma-separated string of the IDs of the elements of l.
+    """
+    Get a comma-separated string of the IDs of the elements of l.
 
     Does not add spaces before or after the commas. This is because this
     is typically meant for non-pretty contexts (e.g. creating URLs).
-
     """
     return ','.join([str(item.id) for item in l])
 
 
 @register.filter(is_safe=True)
 def get_comma_separated_strings(l, add_links=False):
-    """Get a comma-separated string of the items of l.
+    """
+    Get a comma-separated string of the items of l.
 
     For each item, favor get_display_string() if defined.
     Otherwise, uses the str() method.
@@ -49,7 +51,6 @@ def get_comma_separated_strings(l, add_links=False):
 
     Adds a space after the commas. This is because this function is meant
     for "pretty" contexts.
-
     """
     def get_string(item):
         try:
@@ -77,10 +78,10 @@ def get_comma_separated_strings(l, add_links=False):
 
 @register.filter
 def get_comma_separated_targets(clone):
-    """Get a comma-separated string of clone's targets.
+    """
+    Get a comma-separated string of clone's targets.
 
     Adds a space after the commas.
-
     """
     genes = [x.gene for x in clone.get_targets()]
     if genes:
@@ -91,14 +92,14 @@ def get_comma_separated_targets(clone):
 
 @register.filter
 def get_id_with_plate_link(item):
-    """Get HTML where text is item.id, and the plate portion of the id
+    """
+    Get HTML where text is item.id, and the plate portion of the id
     links to item.plate.get_absolute_url.
 
     Requires that item.id is in format 'plate_well', that item has attribute
     'plate', and that plate in turn has the function get_absolute_url().
 
     If any of the above conditions do not hold, returns str(item).
-
     """
     try:
         plate, well = item.id.split('_')
@@ -110,10 +111,7 @@ def get_id_with_plate_link(item):
 
 @register.filter
 def get_screen_type(worm, temperature):
-    """Get a string describing if temperature is an official screening
-    temperature for worm strain.
-
-    """
+    """Get string of the screen evidenced by this worm and temperature."""
     if worm.is_permissive_temperature(temperature):
         return 'ENH'
     elif worm.is_restrictive_temperature(temperature):
@@ -124,11 +122,11 @@ def get_screen_type(worm, temperature):
 
 @register.simple_tag
 def get_image_url(experiment, mode=None):
-    """Get the url for an experiment's image.
+    """
+    Get the url for an experiment's image.
 
     Set mode to 'thumbnail' or 'devstar' for either of those image
     types. Otherwise, returns the normal full-size image.
-
     """
     return experiment.get_image_url(mode=mode)
 
@@ -141,11 +139,11 @@ def get_tile(well):
 
 @register.filter
 def get_manual_score_summary(experiment):
-    """Get a string summarizing the scores for this experiment.
+    """
+    Get a string summarizing the scores for this experiment.
 
     Groups such that scores by different scorers, and scores made at
     different timepoints, can be distinguished.
-
     """
     scores = experiment.get_manual_scores()
     d = {}

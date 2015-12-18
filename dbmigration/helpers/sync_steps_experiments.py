@@ -1,7 +1,11 @@
-"""This module contains the steps for the sync_legacy_database command
-that involve the experiments app.
-
 """
+Steps for the sync_legacy_database command to sync experiments.
+
+This includes steps to sync the tables in the experiments app: the
+Experiment and ExperimentWell tables, as well as those regarding
+manual and DevStaR scores.
+"""
+
 from django.core.management.base import CommandError
 
 from dbmigration.helpers.name_getters import get_experiment_name
@@ -22,8 +26,8 @@ from utils.well_tile_conversion import tile_to_well
 
 
 def update_Experiment_tables(command, cursor):
-    """Update the ExperimentPlate and Experiment tables according
-    to legacy table RawData.
+    """
+    Update ExperimentPlate and Experiment according to legacy table `RawData`.
 
     Several datatype transforms occur from the old to the new schema:
 
@@ -37,7 +41,6 @@ def update_Experiment_tables(command, cursor):
 
     Also, experiments of Julie's (which were done with a line of spn-4 worms
     later deemed untrustworthy) are excluded.
-
     """
     recorded_plates = ExperimentPlate.objects.all()
     recorded_wells = Experiment.objects.all()
@@ -104,8 +107,8 @@ def update_Experiment_tables(command, cursor):
 
 
 def update_DevstarScore_table(command, cursor):
-    """Update the DevstarScore table according to legacy table
-    RawDataWithScore.
+    """
+    Update DevstarScore according to legacy table `RawDataWithScore`.
 
     Redundant fields (mutantAllele, targetRNAiClone, RNAiPlateID) are
     excluded.
@@ -123,7 +126,6 @@ def update_DevstarScore_table(command, cursor):
         - division by 0 in embryo/larva per adult remain 0, but when
           adult=0 we DO now calculate survival and lethality
         - machineCall becomes a Boolean
-
     """
     recorded_scores = DevstarScore.objects.all()
 
@@ -250,7 +252,8 @@ def update_DevstarScore_table(command, cursor):
 
 
 def update_ManualScoreCode_table(command, cursor):
-    """Update the ManualScoreCode table according to the legacy table.
+    """
+    Update ManualScoreCode according to the legacy table of the same name.
 
     We've made these decisions about migrating score codes and scores
         into the new database:
@@ -267,7 +270,6 @@ def update_ManualScoreCode_table(command, cursor):
 
     - Migrate these antiquated codes, but do not show in interface:
         -5: IA Error
-
     """
     recorded_score_codes = ManualScoreCode.objects.all()
     fields_to_compare = ('legacy_description',)
@@ -288,7 +290,8 @@ def update_ManualScoreCode_table(command, cursor):
 
 
 def update_ManualScore_table_primary(command, cursor):
-    """Update the ManualScore table according to the legacy table.
+    """
+    Update ManualScore according to the legacy table of the same name.
 
     Requires that ScoreYear, ScoreMonth, ScoreDate, and ScoreTime
     are valid fields for a python datetime.datetime.
@@ -323,7 +326,6 @@ def update_ManualScore_table_primary(command, cursor):
 
         - for sherly and patricia's ENH scores, ensure that any medium or
           strong enhancers were caught by official scorers
-
     """
     recorded_scores = ManualScore.objects.all()
     fields_to_compare = None

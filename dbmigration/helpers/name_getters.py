@@ -1,6 +1,7 @@
-"""This module contains functions establishing naming conventions
-for certain objects created while syncing to the legacy database.
+"""
+This module contains functions enforcing certain naming conventions.
 
+These helpers are meant for use while syncing to the legacy database.
 """
 
 

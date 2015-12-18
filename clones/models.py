@@ -4,6 +4,7 @@ from django.db import models
 
 class Clone(models.Model):
     """An RNAi clone used in the screen."""
+
     id = models.CharField(max_length=30, primary_key=True)
     mapping_db_pk = models.IntegerField(blank=True, null=True)
     library = models.CharField(max_length=30, blank=True)
@@ -29,7 +30,8 @@ class Clone(models.Model):
 
 
 class Gene(models.Model):
-    """A gene, potentially targeted by an RNAi clone used in the screen."""
+    """A gene targeted by an RNAi clone used in the screen."""
+
     id = models.CharField(max_length=30, primary_key=True)
     cosmid_id = models.CharField(max_length=30)
     locus = models.CharField(max_length=30, blank=True)
@@ -59,12 +61,13 @@ class Gene(models.Model):
 
 
 class CloneTarget(models.Model):
-    """Class defining a clone-to-gene-target relationship.
+    """
+    Class defining a clone-to-gene relationship.
 
     If there is a CloneTarget in the database, it means that the
     given clone targets the given gene.
-
     """
+
     clone = models.ForeignKey(Clone)
     gene = models.ForeignKey(Gene)
     transcript_isoform = models.CharField(max_length=30, blank=True)

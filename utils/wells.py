@@ -1,33 +1,34 @@
-"""Utility module to help work with wells (e.g. library wells and experiment
-wells).
+"""
+Utility module to help work with wells.
+
+Wells might be library wells or experiment wells.
 
 These functions are mainly useful for migrating data from the legacy
 database, which did not use consistent well names (it sometimes
 used 2-character format, e.g. 'A1', and sometimes used 3-character
 format, e.g. 'A01').
-
 """
 
 from constants import ROWS_96, COLS_96, ROWS_384, COLS_384
 
 
 def get_well_name(row, column):
-    """Get well name (e.g. 'A05') from row (e.g. 'A') and column (e.g. 4).
+    """
+    Get well name (e.g. 'A05') from row (e.g. 'A') and column (e.g. 4).
 
     row_name should be a capital letter.
 
     column_name should be an integer.
-
     """
     return '{}{}'.format(row, str(column).zfill(2))
 
 
 def get_three_character_well(well):
-    """Return a well in proper 3-character format (e.g. 'A05').
+    """
+    Return a well in proper 3-character format (e.g. 'A05').
 
     Works whether the input is in proper 3-character format, or in
     2-character format (e.g. 'A5').
-
     """
     row = well[0]
     column = int(well[1:])

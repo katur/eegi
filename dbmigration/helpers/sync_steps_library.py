@@ -1,7 +1,10 @@
-"""This module contains the steps for the sync_legacy_database command
-that involve the library and clones apps.
-
 """
+Steps for the sync_legacy_database command to sync clones and library.
+
+This includes steps to sync the Clone table, as well as the LibraryPlate
+and LibraryStock tables.
+"""
+
 import re
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -23,8 +26,8 @@ from utils.wells import get_three_character_well
 
 
 def update_Clone_table(command, cursor):
-    """Update the Clone table with distinct clones from legacy table
-    RNAiPlate.
+    """
+    Update Clone with distinct clones from legacy table `RNAiPlate`.
 
     Find the distinct Ahringer clone names (in 'sjj_X' format) and
     the L4440 empty vector clone (just called 'L4440')
@@ -34,7 +37,6 @@ def update_Clone_table(command, cursor):
     from the 384PlateID and 384Well fields of RNAiPlate
     (note that we are no longer using the 'mv_X'-style Vidal clone names,
     and our PK for Vidal clones will now be in 'GHR-X@X' style).
-
     """
     recorded_clones = Clone.objects.all()
     fields_to_compare = None
@@ -61,8 +63,10 @@ def update_Clone_table(command, cursor):
 
 
 def update_LibraryPlate_table(command, cursor):
-    """Update LibraryPlate table with distinct plates in legacy tables
-    RNAiPlate and CherryPickRNAiPlate.
+    """
+    Update LibraryPlate according to legacy tables.
+
+    Uses legacy tables `RNAiPlate` and `CherryPickRNAiPlate`.
 
     Find original Ahringer 384-well plates through the chromosome and
     384PlateID fields of RNAiPlate (384PlateID NOT LIKE GHR-%, != 0).
@@ -80,7 +84,6 @@ def update_LibraryPlate_table(command, cursor):
     (because in order to get around some bizarities in the old database
     separating the primary and secondary screens into two tables, we have
     the same L4440 plate listed in both tables in the legacy database).
-
     """
     recorded_plates = LibraryPlate.objects.all()
     fields_to_compare = ('screen_stage', 'number_of_wells')
@@ -155,15 +158,12 @@ def update_LibraryPlate_table(command, cursor):
 
 
 def update_LibraryStock_table(command, cursor):
-    """Update the LibraryStock table to reflect the clone layout of all plates:
-    source plates (Ahringer 384 and original Orfeome plates e.g. GHR-10001),
-    primary plates, and secondary plates. Also update the parent LibraryStocks
-    of primary and secondary plates.
+    """
+    Update LibraryStock according to legacy tables.
 
     This information comes from a variety of queries of
     primarily according to legacy tables RNAiPlate and CherryPickRNAiPlate.
     Detailed comments inline.
-
     """
     recorded_wells = LibraryStock.objects.all()
     fields_to_compare = ('plate', 'well', 'parent_stock',

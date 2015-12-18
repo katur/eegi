@@ -19,7 +19,6 @@ def get_distinct_temperatures(experiment_filters):
 
 
 def get_closest_temperature(goal, experiment_filters):
-    """Get the temperature that is closest to goal among the Experiments
-    that match filters."""
+    """Get temperature closest to goal among Experiments that match filters."""
     options = get_distinct_temperatures(experiment_filters)
     return get_closest_candidate(goal, options)

@@ -51,7 +51,8 @@ class ExperimentFormBase(forms.Form):
 
 
 class ExperimentFilterForm(ExperimentFormBase):
-    """Form for filtering Experiment intstances."""
+    """Form for filtering Experiment instances."""
+
     library_stock = forms.CharField(
         required=False, help_text='e.g. II-3-B2_A01')
 
@@ -81,6 +82,7 @@ class ExperimentFilterForm(ExperimentFormBase):
 
 class ExperimentPlateFilterForm(ExperimentFormBase):
     """Form for filtering ExperimentPlate instances."""
+
     library_stock__plate = forms.CharField(
         required=False, label='Library plate', help_text='e.g. II-3-B2')
 
@@ -111,6 +113,7 @@ class ExperimentPlateFilterForm(ExperimentFormBase):
 
 class RNAiKnockdownForm(forms.Form):
     """Form for finding wildtype worms tested with a single RNAi clone."""
+
     rnai_query = RNAiKnockdownField(
         label='RNAi query',
         validators=[MinLengthValidator(1, message='No clone matches')])
@@ -121,6 +124,7 @@ class RNAiKnockdownForm(forms.Form):
 
 class MutantKnockdownForm(forms.Form):
     """Form for finding a mutant worm with the control bacteria."""
+
     mutant_query = MutantKnockdownField()
     screen_type = ScreenTypeChoiceField()
 
@@ -132,6 +136,7 @@ class MutantKnockdownForm(forms.Form):
 
 class DoubleKnockdownForm(forms.Form):
     """Form for finding a double knockdown."""
+
     mutant_query = MutantKnockdownField()
     rnai_query = RNAiKnockdownField(
         label='RNAi query',
@@ -146,6 +151,7 @@ class DoubleKnockdownForm(forms.Form):
 
 class SecondaryScoresForm(forms.Form):
     """Form for getting all secondary scores for a worm/screen combo."""
+
     mutant_query = MutantKnockdownField()
     screen_type = ScreenTypeChoiceField()
 

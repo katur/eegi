@@ -9,7 +9,8 @@ from utils.scripting import require_db_write_acknowledgement
 
 
 class Command(BaseCommand):
-    """Command to add empty (no intended clone) library wells to the database.
+    """
+    Command to add empty (no intended clone) library wells to the database.
 
     This is not one of the legacy database syncing steps, because
     empty library wells were not represented in the legacy database.
@@ -19,8 +20,8 @@ class Command(BaseCommand):
     are cases where despite there being no intended clone according
     to the library manufacturer, we do have bacteria that grows in the
     well, whose identity can be resolved through sequencing.
-
     """
+
     help = 'Add empty (i.e. no intended clone) library wells to the database.'
 
     def handle(self, **options):
@@ -74,12 +75,13 @@ class Command(BaseCommand):
 
 
 def _get_ahringer_384_parent(child_stock):
-    """Get the 384-format LibraryStock from which a particular 96-format
-    LibraryStock is derived, assuming standard Ahringer naming conventions.
+    """
+    Get the 384-format LibraryStock corresponding to a 96-format child stock.
+
+    Assumes standard Ahringer naming conventions.
 
     If the parent doesn't exist, creates it, assuming same parent
     as the child.
-
     """
     child_plate_parts = child_stock.plate.id.split('-')
     parent_plate_name = child_plate_parts[0] + '-' + child_plate_parts[1]

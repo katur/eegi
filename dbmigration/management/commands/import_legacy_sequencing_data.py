@@ -16,8 +16,10 @@ from utils.wells import get_well_name
 
 
 class Command(BaseCommand):
-    """Command to import SUP Secondary sequencing data from legacy
-    database GenomeWideGI and Genewiz output files.
+    """
+    Command to import SUP Secondary sequencing data.
+
+    Imports this from both the legacy database and from Genewiz output files.
 
     This script requires that LEGACY_DATABASE be defined in
     local_settings.py.
@@ -42,8 +44,8 @@ class Command(BaseCommand):
       This directory currently lives at:
 
           materials/sequencing/genewiz/genewiz_data
-
     """
+
     help = 'Import sequencing data from Genewiz output files'
 
     def add_arguments(self, parser):
@@ -220,10 +222,10 @@ class Command(BaseCommand):
                         source_stock, seq_plate_number, seq_well)
 
     def _process_tracking_number(self, tracking_number):
-        """Process all the rows for a particular Genewiz tracking number.
+        """
+        Process all the rows for a particular Genewiz tracking number.
 
         A Genewiz tracking number corresponds to one sequencing plate.
-
         """
         qscrl_txt = ('{}/{}_qscrl.txt'.format(self.genewiz_root,
                                               tracking_number))
@@ -263,7 +265,8 @@ class Command(BaseCommand):
                     .format(tracking_number, e.errno, e.strerror))
 
     def _process_qscrl_row(self, row):
-        """Process a row of QSCRL information.
+        """
+        Process a row of QSCRL information.
 
         Need sample_plate_name and sample_tube_number because they are
         how we label our samples (to identify what sequence well came
@@ -273,9 +276,7 @@ class Command(BaseCommand):
         because it is often 1-2 instead of 95-96
 
         Also, avoid Template_Name... sometimes e.g. 'GC1'
-
         """
-
         tracking_number = row['trackingNumber']
         tube_label = row['TubeLabel']
         dna_name = row['DNAName']
@@ -330,13 +331,13 @@ class Command(BaseCommand):
     def _process_source_information(self, source_stock,
                                     seq_plate_number, seq_well,
                                     legacy_clone=None, legacy_tracking=None):
-        """Process the source information for a sequencing sample.
+        """
+        Process the source information for a sequencing sample.
 
         source_stock is the library stock that was sequenced.
 
         seq_plate_number and seq_well are identifying information re:
         the sequencing plate/tube that was sent off to Genewiz.
-
         """
         # Sanity check that clone matches
         if legacy_clone:

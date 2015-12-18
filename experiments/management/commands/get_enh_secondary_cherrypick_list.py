@@ -9,14 +9,15 @@ UNIVERSAL_THRESHOLD = 4
 
 
 class Command(BaseCommand):
-    """Command to generate the ENH secondary cherrypick list.
+    """
+    Command to generate the ENH secondary cherrypick list.
 
     Determines the library wells to be cherrypicked for the ENH
     secondary screen, and assigns them to new plates.
 
     This list is based on the manual scores of the ENH Primary screen.
-
     """
+
     help = 'Generate the ENH secondary cherrypick list.'
 
     def add_arguments(self, parser):

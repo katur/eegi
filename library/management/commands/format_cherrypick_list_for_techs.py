@@ -4,8 +4,8 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    """Command to format a cherrypick list so that it is easier for
-    techs to cherrypick from.
+    """
+    Command to format a cherrypick list so it is easier to cherrypick from.
 
     Simply adds blank lines at the points where the techs would need to
     change the plates in front of them.
@@ -18,8 +18,8 @@ class Command(BaseCommand):
           header row, where each row is in format:
 
             source_plate,source_well,destination_plate,destination_well
-
     """
+
     help = 'Format a cherrypick list for techs.'
 
     def add_arguments(self, parser):

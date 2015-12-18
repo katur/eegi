@@ -7,12 +7,13 @@ from library.models import LibraryStock
 
 
 class WormStrain(models.Model):
-    """A worm strain used in the screen.
+    """
+    A worm strain used in the screen.
 
     Can be either a temperature-sensitive mutant strain, or a control
     strain. Control strains are signified by allele=None.
-
     """
+
     # The name of this strain (e.g. KK300)
     id = models.CharField(max_length=10, primary_key=True)
 
@@ -68,7 +69,8 @@ class WormStrain(models.Model):
         return self.restrictive_temperature == Decimal(temperature)
 
     def get_screen_type(self, temperature):
-        """Determine if temperature is a screening temperature for this worm.
+        """
+        Determine if temperature is a screening temperature for this worm.
 
         Returns 'ENH' if temperature is this strain's permissive
         screening temperature.
@@ -78,7 +80,6 @@ class WormStrain(models.Model):
 
         Returns None if temperature is not an official screening
         temperature for this strain.
-
         """
         if self.is_permissive_temperature(temperature):
             return 'ENH'
@@ -89,9 +90,10 @@ class WormStrain(models.Model):
 
     def get_organized_scores(self, screen_type, screen_stage,
                              most_relevant_only=False):
-        """Get all scores for this worm for a particular screen.
+        """
+        Get all scores for this worm in a particular screen.
 
-        A screen is defined by both screen_type ('ENH' or 'SUP')
+        The screen is defined by both screen_type ('ENH' or 'SUP')
         and screen_stage (1 for primary, 2 for secondary).
 
         The data returned is organized as:
@@ -99,7 +101,6 @@ class WormStrain(models.Model):
 
         Or, if most_relevant_only is set to True:
             data[library_stock][experiment] = most_relevant_score
-
         """
         # Keep this import here, to avoid creating a circular dependency
         from experiments.models import ManualScore
@@ -134,9 +135,11 @@ class WormStrain(models.Model):
         return organize_manual_scores(scores, most_relevant_only)
 
     def get_positives(self, screen_type, screen_stage, criteria, **kwargs):
-        """Get the library stocks that are positive for this worm,
-        screen, and criteria.
+        """
+        Get stocks that meet criteria for this worm in a particular screen.
 
+        The screen is defined by both screen_type ('ENH' or 'SUP')
+        and screen_stage (1 for primary, 2 for secondary).
         """
         s = self.get_organized_scores(screen_type, screen_stage,
                                       most_relevant_only=True)
@@ -151,7 +154,12 @@ class WormStrain(models.Model):
         return positives
 
     def get_experiments_by_screen(self, screen_type, screen_stage):
-        """Get all experiments for this worm and screen."""
+        """
+        Get all experiments for this worm in a particular screen.
+
+        The screen is defined by both screen_type ('ENH' or 'SUP')
+        and screen_stage (1 for primary, 2 for secondary).
+        """
         from experiments.models import Experiment
         prefix = Experiment.objects.filter(
             is_junk=False, worm_strain=self,
@@ -166,8 +174,15 @@ class WormStrain(models.Model):
 
     def get_stocks_tested_by_number_of_replicates(
             self, screen_type, screen_stage, number_of_replicates):
-        """Get the library stocks tested exactly number_of_replicates
-        times for this worm and screen."""
+        """
+        Get stocks tested a specific number of times for this worm.
+
+        Returns the stocks that were tested *exactly* number_of_replicates
+        times in a particular screen.
+
+        The screen is defined by both screen_type ('ENH' or 'SUP')
+        and screen_stage (1 for primary, 2 for secondary).
+        """
         annotated = (self
             .get_experiments_by_screen(screen_type, screen_stage)
             .order_by('library_stock')

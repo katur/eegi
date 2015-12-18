@@ -4,11 +4,11 @@ import sys
 
 
 def require_db_write_acknowledgement():
-    """Require acknowledgement to modify the database.
+    """
+    Require acknowledgement to modify the database.
 
     Inform the command line user that proceeding will modify the database,
     and require typed acknowledgement to proceed.
-
     """
     proceed = False
 

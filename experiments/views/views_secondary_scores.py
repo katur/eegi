@@ -16,10 +16,10 @@ from worms.models import WormStrain
 
 
 def secondary_scores(request, worm, temperature):
-    """Render the page to display secondary scores for a mutant/screen.
+    """
+    Render the page to display secondary scores for a mutant/screen.
 
     Results show strongest positives on top.
-
     """
     worm = get_object_or_404(WormStrain, pk=worm)
     screen_type = worm.get_screen_type(temperature)

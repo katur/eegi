@@ -9,11 +9,11 @@ NO_CLONE_NO_BLAT = 'no intended clone, no BLAT results (good)'
 
 
 def categorize_sequences_by_blat_results(seqs):
-    """Assign seqs to high-level descriptive categories.
+    """
+    Assign seqs to high-level descriptive categories.
 
     This is to get a general sense of the quality of our sequencing
     results.
-
     """
     s = {
         L4440_NO_BLAT: [],
@@ -64,10 +64,10 @@ def categorize_sequences_by_blat_results(seqs):
 
 
 def _get_organized_blat_results():
-    """Get all blat results from the database, organized as:
+    """
+    Get all blat results from the database, organized as:
 
         b[sequencing_result] = blats
-
     """
     blats = (LibrarySequencingBlatResult.objects.all()
              .select_related('sequencing', 'clone_hit'))

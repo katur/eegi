@@ -10,7 +10,8 @@ def get_l4440():
 
 
 def get_clones_from_search_term(search_term):
-    """Get list of clones matching a search term.
+    """
+    Get list of clones matching a search term.
 
     If no search_term is provided, raises a ValueError. This is
     to distinguish the case of no search term from the case of
@@ -20,7 +21,6 @@ def get_clones_from_search_term(search_term):
     clone.pk, or if that does not exist, a perfect match between
     search_term and the gene.locus, gene.cosmid, or gene.pk of
     one of the clone's targets.
-
     """
     if not search_term:
         raise ValueError('Search term is required')

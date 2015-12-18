@@ -29,8 +29,8 @@ class Command(BaseCommand):
 
     Copied images will be prefixed with experiment_id,
     e.g. 54034_Tile000005.bmp.
-
     """
+
     help = 'Copy a set of images to a local directory.'
 
     def add_arguments(self, parser):

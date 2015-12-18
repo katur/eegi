@@ -1,9 +1,9 @@
-"""Utility module with helpers for working with timestamps.
+"""
+Utility module with helpers for working with timestamps.
 
 These functions are mainly useful for migrating data from the legacy
 database, which did not use proper mysql date and time fields,
 into the proper types.
-
 """
 
 import datetime
@@ -12,9 +12,11 @@ from django.utils import timezone
 
 
 def get_timestamp(year, month, day, time, ymd):
-    """Get a datetime object from an integer year,
-    a 3-letter-string month (e.g. 'Jan'), an integer day,
-    and a string time in format '00:00:00'.
+    """
+    Get a datetime object.
+
+    Args should be an integer year, a 3-letter-string month (e.g. 'Jan'),
+    an integer day, and a string time in format '00:00:00'.
 
     If a ymd is passed in, it is simply confirmed to match the date derived
     from the year/month/day/time.
@@ -26,7 +28,6 @@ def get_timestamp(year, month, day, time, ymd):
     This function assumes that the arguments refer to the timezone
     listed in settings.py, and converts to an 'aware' timestamp capable
     of more universal treatment.
-
     """
     try:
         string = '{}-{}-{}::{}'.format(year, month, day, time)

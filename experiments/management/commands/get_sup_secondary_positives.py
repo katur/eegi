@@ -7,12 +7,13 @@ from worms.models import WormStrain
 
 
 class Command(BaseCommand):
-    """Command to get the list of SUP secondary positives.
+    """
+    Command to get the list of SUP secondary positives.
 
     Limited for now to just those that are sequence-verified, and to the
     most stringent 'high confidence criteria'.
-
     """
+
     help = 'Get the list of SUP secondary positives.'
 
     def add_arguments(self, parser):

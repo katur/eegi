@@ -1,15 +1,19 @@
-"""This module contains helpers for the sync_legacy_database command,
-e.g. functions to sync sets of rows and to sync individual objects.
-
 """
+This module contains helpers for the sync_legacy_database command.
+
+For example, there are functions to sync sets of rows, and to sync
+individual objects.
+"""
+
 from django.core.exceptions import ObjectDoesNotExist
 from utils.comparison import compare_values_for_equality
 
 
 def sync_rows(command, cursor, legacy_query, sync_row_function, **kwargs):
-    """Sync the rows from a query to the legacy database to the current
-    database, according to sync_row_function(legacy_row, **kwargs).
+    """
+    Sync rows resulting from legacy database query to the new database.
 
+    Syncs according to sync_row_function(single_legacy_row, **kwargs).
     """
     cursor.execute(legacy_query)
     legacy_rows = cursor.fetchall()
@@ -35,7 +39,8 @@ def sync_rows(command, cursor, legacy_query, sync_row_function, **kwargs):
 
 def update_or_save_object(command, new_object, recorded_objects,
                           fields_to_compare, alternate_pk=False):
-    """Update the database to represent new_object.
+    """
+    Update the database to represent new_object.
 
     If new_object is not present in the database, add it (and print
     warning to syserr).
@@ -47,7 +52,6 @@ def update_or_save_object(command, new_object, recorded_objects,
 
     Returns True if new_object was already present and matched
     on all provided fields. Returns False otherwise.
-
     """
     try:
         if alternate_pk:
@@ -69,13 +73,13 @@ def update_or_save_object(command, new_object, recorded_objects,
 
 
 def compare_fields(command, old_object, new_object, fields, update=False):
-    """Compare two objects on the provided fields.
+    """
+    Compare two objects on the provided fields.
 
     Any differences are printed to stderr.
 
     If 'update' is True, old_object is updated to match
     new_object on these fields.
-
     """
     differences = []
     for field in fields:

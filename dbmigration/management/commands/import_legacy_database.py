@@ -41,7 +41,8 @@ ARG_HELP = '''
 
 
 class Command(BaseCommand):
-    """Command to sync legacy databases to the new database.
+    """
+    Command to sync legacy databases to the new database.
 
     Summary:
 
@@ -52,7 +53,6 @@ class Command(BaseCommand):
         with the new database. This Python object(s) is inserted
         into the new database if not present, or used to update an
         existing record if changes have occurred.
-
 
     The steps are (dependencies in parentheses):
 
@@ -77,15 +77,14 @@ class Command(BaseCommand):
         Step 7 requires that LEGACY_DATABASE_2 be defined in local_settings.py,
         to connect to the GWGI2 database.
 
-
     Output:
 
         Stdout reports whether or not a particular step had changes.
 
         Stderr reports every change (such as an added row), so can get
         quite long; consider redirecting with 2> stderr.out.
-
     """
+
     help = 'Sync the database according to any changes in the legacy database.'
 
     def add_arguments(self, parser):

@@ -4,7 +4,8 @@ from worms.helpers.queries import get_worm_and_temperature_from_search_term
 
 
 class MutantKnockdownField(forms.CharField):
-    """Field to find a mutant worm strain.
+    """
+    Field to find a mutant worm strain.
 
     Finds the worm strain based on worm strain name, gene,
     or allele. Since some genes have different worm strains
@@ -23,8 +24,8 @@ class MutantKnockdownField(forms.CharField):
     at the ScreenTypeChoiceField. The clean_mutant_query_and_screen_type
     function is meant for help transforming both fields
     into a particular worm strain and temperature.
-
     """
+
     def __init__(self, **kwargs):
         if 'help_text' not in kwargs:
             kwargs['help_text'] = 'gene, allele, or worm strain name'
@@ -39,6 +40,7 @@ class MutantKnockdownField(forms.CharField):
 
 class ScreenTypeChoiceField(forms.ChoiceField):
     """Field defining a screen as SUP or ENH."""
+
     def __init__(self, **kwargs):
         if 'widget' not in kwargs:
             kwargs['widget'] = forms.RadioSelect
@@ -49,9 +51,14 @@ class ScreenTypeChoiceField(forms.ChoiceField):
 
 
 def clean_mutant_query_and_screen_type(form, cleaned_data):
-    """Helper method to transform a mutant_query and a screen_type
-    choice into a worm strain and temperature.
+    """
+    Helper to derive worm strain and temperature from cleaned_data.
 
+    If cleaned_data['mutant_query'] and cleaned_data['screen_type']
+    are defined, cleaned_data['worm'] and cleaned_data['temperature']
+    will be populated.
+
+    Returns the modified cleaned_data.
     """
     mutant_query = cleaned_data.get('mutant_query')
     screen_type = cleaned_data.get('screen_type')

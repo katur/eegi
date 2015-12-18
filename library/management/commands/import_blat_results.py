@@ -10,7 +10,8 @@ from utils.scripting import require_db_write_acknowledgement
 
 
 class Command(BaseCommand):
-    """Command to import Firoz's BLAT hits of our sequencing results.
+    """
+    Command to import Firoz's BLAT hits of our sequencing results.
 
     This script starts by clearing the LibrarySequencingBlatResult table.
     It is okay to do this because no other tables depend on
@@ -24,8 +25,8 @@ class Command(BaseCommand):
     The transformation script, which explains itself:
 
         materials/sequencing/blat_results_from_firoz/transform
-
     """
+
     help = 'Import the BLAT hits of our sequencing results.'
 
     def add_arguments(self, parser):

@@ -8,7 +8,8 @@ from utils.scripting import require_db_write_acknowledgement
 
 
 class Command(BaseCommand):
-    """Command to add WormBase gene functional descriptions.
+    """
+    Command to add WormBase gene functional descriptions.
 
     The WormBase file can be found at:
 
@@ -20,8 +21,8 @@ class Command(BaseCommand):
 
     As of November 2015, Firoz's mapping database uses WS240, so Katherine
     also used WS240 for the functional descriptions.
-
     """
+
     help = 'Import gene functional descriptions.'
 
     def add_arguments(self, parser):

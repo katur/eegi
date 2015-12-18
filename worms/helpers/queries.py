@@ -9,7 +9,8 @@ def get_n2():
 
 
 def get_worm_and_temperature_from_search_term(search_term, screen_type):
-    """Get a tuple of (worm, temperature) matching search_term and screen_type.
+    """
+    Get a tuple of (worm, temperature) matching search_term and screen_type.
 
     screen_type must be 'ENH' or 'SUP'; otherwise an exception is thrown.
 
@@ -17,7 +18,6 @@ def get_worm_and_temperature_from_search_term(search_term, screen_type):
 
     The combination of search_term/screen_type must uniquely identify a worm
     strain. Otherwise an exception is thrown.
-
     """
     if screen_type != 'ENH' and screen_type != 'SUP':
         raise Exception('screen_type must be ENH or SUP')
@@ -51,10 +51,10 @@ def get_worm_and_temperature_from_search_term(search_term, screen_type):
 
 
 def get_worms_for_screen_type(screen_type):
-    """Get the worm strains relevant to a particular screen type.
+    """
+    Get the worm strains involved in a particular screen.
 
     screen_type must be 'ENH' or 'SUP'.
-
     """
     worms = WormStrain.objects
 
