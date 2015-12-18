@@ -1,17 +1,20 @@
 {% load extra_tags %}
 
 
+{% if clone %}
 <span>
   <b>RNAi clone</b>
   &nbsp;
 
-  {% if clone %}
   <a href="{{ clone.get_absolute_url }}">{{ clone.id }}</a>
   &nbsp;
   (targets {{ clone|get_comma_separated_targets|safe }})
-
-  {% else %}
-  {{ clone }}
-  {% endif %}
-
 </span>
+
+{% else %}
+<span class="error-message">
+  <b>RNAi clone</b>
+  &nbsp;
+  {{ clone }}
+</span>
+{% endif %}
