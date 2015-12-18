@@ -40,6 +40,7 @@ def experiments(request):
     if request.GET:
         form = ExperimentFilterForm(request.GET)
         if not form.is_valid():
+            print form.errors
             raise Http404
 
         experiments = form.cleaned_data['experiments']

@@ -49,6 +49,9 @@ class ExperimentFormBase(forms.Form):
         required=False, label='Screen stage',
         choices=[('', '')] + list(ExperimentPlate.SCREEN_STAGE_CHOICES))
 
+    library_stock__plate = forms.CharField(
+        required=False, label='Library plate', help_text='e.g. II-3-B2')
+
 
 class ExperimentFilterForm(ExperimentFormBase):
     """Form for filtering Experiment instances."""
@@ -61,11 +64,20 @@ class ExperimentFilterForm(ExperimentFormBase):
         required=False, label='Intended clone', help_text='e.g. sjj_AH10.4',
         widget=forms.TextInput(attrs={'size': '15'}))
 
+    exclude_l4440 = forms.BooleanField(
+        required=False, label='Exclude L4440')
+
     is_junk = forms.NullBooleanField(
-        required=False, widget=BlankNullBooleanSelect)
+        required=False, initial=False, widget=BlankNullBooleanSelect)
 
     def clean(self):
         cleaned_data = super(ExperimentFilterForm, self).clean()
+
+        if 'exclude_l4440' in cleaned_data:
+            exclude_l4440 = cleaned_data['exclude_l4440']
+            del cleaned_data['exclude_l4440']
+        else:
+            exclude_l4440 = None
 
         for k, v in cleaned_data.items():
             # Retain 'False' as a legitimate filter
@@ -76,7 +88,11 @@ class ExperimentFilterForm(ExperimentFormBase):
             if not v:
                 del cleaned_data[k]
 
-        experiments = (Experiment.objects.filter(**cleaned_data))
+        experiments = Experiment.objects.filter(**cleaned_data)
+
+        if exclude_l4440:
+            experiments = experiments.exclude(library_stock__intended_clone='L4440')
+
         cleaned_data['experiments'] = experiments
         return cleaned_data
 
@@ -85,11 +101,8 @@ class ExperimentFilterForm(ExperimentFormBase):
 class ExperimentPlateFilterForm(ExperimentFormBase):
     """Form for filtering ExperimentPlate instances."""
 
-    library_stock__plate = forms.CharField(
-        required=False, label='Library plate', help_text='e.g. II-3-B2')
-
     is_junk = forms.NullBooleanField(
-        required=False, label="Has junk",
+        required=False, initial=False, label="Has junk",
         widget=BlankNullBooleanSelect)
 
     def clean(self):
