@@ -64,7 +64,7 @@
   </table>
   {% endfor %}
 
-  {% ifnotequal experiments None %}
+  {% if experiments %}
   <div id="results-header">
     <span id="total">
       {{ experiments|length }} matching
@@ -75,7 +75,7 @@
     {% include 'pagination_status.html' with paginated=display_experiments %}
     {% endif %}
   </div>
-  {% endifnotequal %}
+  {% endif %}
 </div>
 
 {% endblock %}
