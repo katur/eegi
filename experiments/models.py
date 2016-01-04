@@ -366,7 +366,7 @@ class DevstarScore(models.Model):
         """
         Clean up to run when saving a DevstarScore instance.
 
-        This sets the fields that are dericed from the DevStaR raw output.
+        This sets the fields that are derived from the DevStaR raw output.
         """
         # Use floor division for egg count
         if self.area_embryo is not None:
