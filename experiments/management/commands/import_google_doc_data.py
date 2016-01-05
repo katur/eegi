@@ -1,11 +1,14 @@
-import json
+import datetime
 import gspread
+import json
 from oauth2client.client import SignedJwtAssertionCredentials
+import re
 
 from django.core.management.base import BaseCommand, CommandError
 
 from dbmigration.helpers.name_getters import get_library_plate_name
 from eegi.settings import GOOGLE_API_KEY
+from experiments.helpers.new import save_experiment_plate_and_wells
 from experiments.models import ExperimentPlate
 from library.models import LibraryPlate
 from utils.scripting import require_db_write_acknowledgement
@@ -31,9 +34,18 @@ class Command(BaseCommand):
 
         # Get sheet-wide values
         date = values[0][1]
+
+        if re.match('^\d\d\d\d\d\d\d\d$', date):
+            date = datetime.datetime.strptime(date, '%Y%m%d').date()
+        elif re.match('^\d\d\d\d-\d\d-\d\d$', date):
+            date = datetime.datetime.strptime(date, '%Y-%m-%d').date()
+        else:
+            raise CommandError('Date must be in format YYYYMMDD or '
+                               'YYYY-MM-DD')
+
         screen_stage = values[1][1]
 
-        # Get worm strains from genes and alleles
+        # Get worm strain list, from gene and allele lists
         genes = values[3][1:]
         alleles = values[4][1:]
         worms = []
@@ -51,7 +63,7 @@ class Command(BaseCommand):
 
             worms.append(worm)
 
-        # Get temperatures
+        # Get properly typed temperature list
         temperatures = values[5][1:]
         screen_types = values[6][1:]
 
@@ -78,19 +90,28 @@ class Command(BaseCommand):
                                    'for worm strain {}'
                                    .format(screen_type, temperature, worm))
 
-        for row in values[7:]:
-            library_plate = get_library_plate_name(row[0])
-            if not LibraryPlate.objects.filter(id=library_plate):
-                raise CommandError('Library Plate {} does not exist'
-                                   .format(library_plate))
+        _parse_experiment_rows(values[7:], screen_stage, date, worms,
+                               temperatures, dry_run=True)
+        self.stdout.write('Dry run raised no errors. '
+                          'Proceeding to actual run.')
+        _parse_experiment_rows(values[7:], screen_stage, date, worms,
+                               temperatures, dry_run=False)
+        self.stdout.write('Actual run raised no errors.')
 
-            for i, experiment in enumerate(row[1:]):
-                if not experiment:
-                    continue
 
-                if ExperimentPlate.objects.filter(id=experiment).count():
-                    raise CommandError('Experiment Plate {} already '
-                                       'exists'.format(experiment))
+def _parse_experiment_rows(rows, screen_stage, date, worms,
+                           temperatures, dry_run=True):
+    for row in rows:
+        library_plate = get_library_plate_name(row[0])
 
-                print 'experiment {} is {}, {}, {}'.format(
-                    experiment, library_plate, worms[i], temperatures[i])
+        if not LibraryPlate.objects.filter(id=library_plate):
+            raise CommandError('Library Plate {} does not exist'
+                               .format(library_plate))
+
+        for i, experiment_plate_id in enumerate(row[1:]):
+            if not experiment_plate_id:
+                continue
+
+            save_experiment_plate_and_wells(
+                experiment_plate_id, screen_stage, date, temperatures[i],
+                worms[i], library_plate, dry_run=dry_run)
