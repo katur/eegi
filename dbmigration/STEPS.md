@@ -31,5 +31,5 @@
 ./manage.py import_legacy_database 3 3 2> stderr.out
 
 # Import scores
-./manage.py import_legacy_database 4
+./manage.py import_legacy_database 4 2> stderr.out
 ```
