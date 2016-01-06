@@ -7,7 +7,7 @@ import re
 from django.core.management.base import BaseCommand, CommandError
 
 from eegi.settings import GOOGLE_API_KEY
-from experiments.helpers.new import save_experiment_plate_and_wells
+from experiments.helpers.new import save_new_experiment_plate_and_wells
 from experiments.models import ExperimentPlate
 from library.models import LibraryPlate
 from library.helpers.naming import generate_library_plate_name
@@ -19,8 +19,6 @@ class Command(BaseCommand):
     help = 'Import batch experiments recorded in Google Doc'
 
     def handle(self, **options):
-        require_db_write_acknowledgement()
-
         json_key = json.load(open(GOOGLE_API_KEY))
         scope = ['https://spreadsheets.google.com/feeds']
 
@@ -90,21 +88,36 @@ class Command(BaseCommand):
                                    'for worm strain {}'
                                    .format(screen_type, temperature, worm))
 
-        _parse_experiment_rows(values[7:], screen_stage, date, worms,
-                               temperatures, dry_run=True)
-        self.stdout.write('Dry run raised no errors. '
-                          'Proceeding to actual run.')
-        _parse_experiment_rows(values[7:], screen_stage, date, worms,
-                               temperatures, dry_run=False)
-        self.stdout.write('Actual run raised no errors.')
+
+        count = _parse_experiment_rows(values[7:], screen_stage, date,
+                                       worms, temperatures, dry_run=True)
+
+        self.stdout.write('Dry run complete. '
+                          '{} experiment plates found in sheet.'
+                          .format(count))
+
+        require_db_write_acknowledgement('Proceed to actual run? '
+                                         '(yes/no) ')
+
+        count = _parse_experiment_rows(values[7:], screen_stage, date,
+                                       worms, temperatures)
+
+        self.stdout.write('Actual run complete. '
+                          '{} experiment plates added to database.'
+                          .format(count))
 
 
 def _parse_experiment_rows(rows, screen_stage, date, worms,
-                           temperatures, dry_run=True):
-    for row in rows:
-        library_plate = generate_library_plate_name(row[0])
+                           temperatures, dry_run=False):
+    """Parse the rows with new experiments."""
+    plate_count = 0
 
-        if not LibraryPlate.objects.filter(id=library_plate):
+    for row in rows:
+        library_plate_name = generate_library_plate_name(row[0])
+
+        try:
+            library_plate = LibraryPlate.objects.get(id=library_plate_name)
+        except ObjectDoesNotExist:
             raise CommandError('Library Plate {} does not exist'
                                .format(library_plate))
 
@@ -112,6 +125,15 @@ def _parse_experiment_rows(rows, screen_stage, date, worms,
             if not experiment_plate_id:
                 continue
 
-            save_experiment_plate_and_wells(
-                experiment_plate_id, screen_stage, date, temperatures[i],
-                worms[i], library_plate, dry_run=dry_run)
+            try:
+                save_new_experiment_plate_and_wells(
+                    experiment_plate_id, screen_stage, date,
+                    temperatures[i], worms[i], library_plate,
+                    dry_run=dry_run)
+
+            except Exception as e:
+                raise CommandError(str(e))
+
+            plate_count += 1
+
+    return plate_count
