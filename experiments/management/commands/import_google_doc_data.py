@@ -10,7 +10,7 @@ from eegi.settings import GOOGLE_API_KEY
 from experiments.helpers.new import save_experiment_plate_and_wells
 from experiments.models import ExperimentPlate
 from library.models import LibraryPlate
-from utils.name_getters import get_library_plate_name
+from library.helpers.naming import generate_library_plate_name
 from utils.scripting import require_db_write_acknowledgement
 from worms.models import WormStrain
 
@@ -102,7 +102,7 @@ class Command(BaseCommand):
 def _parse_experiment_rows(rows, screen_stage, date, worms,
                            temperatures, dry_run=True):
     for row in rows:
-        library_plate = get_library_plate_name(row[0])
+        library_plate = generate_library_plate_name(row[0])
 
         if not LibraryPlate.objects.filter(id=library_plate):
             raise CommandError('Library Plate {} does not exist'

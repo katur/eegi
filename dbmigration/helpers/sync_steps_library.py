@@ -10,16 +10,16 @@ import re
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import CommandError
 
+from clones.helpers.naming import generate_vidal_clone_name
 from clones.models import Clone
-from library.models import LibraryPlate, LibraryStock
-
 from dbmigration.helpers.object_getters import (
     get_clone, get_library_stock, get_library_plate)
-from dbmigration.helpers.sync_helpers import sync_rows, update_or_save_object
-
-from utils.name_getters import (
-    get_ahringer_384_plate_name, get_vidal_clone_name,
-    get_library_stock_name, get_library_plate_name)
+from dbmigration.helpers.sync_helpers import (
+    sync_rows, update_or_save_object)
+from library.helpers.naming import (
+    generate_ahringer_384_plate_name, generate_library_plate_name,
+    generate_library_stock_name)
+from library.models import LibraryPlate, LibraryStock
 from utils.wells import get_three_character_well
 
 
@@ -51,7 +51,8 @@ def update_Clone_table(command, cursor):
                           'WHERE clone LIKE "mv%"')
 
     def sync_clone_row_vidal(legacy_row):
-        vidal_clone_name = get_vidal_clone_name(legacy_row[0], legacy_row[1])
+        vidal_clone_name = generate_vidal_clone_name(legacy_row[0],
+                                                     legacy_row[1])
         new_clone = Clone(id=vidal_clone_name)
         return update_or_save_object(command, new_clone, recorded_clones,
                                      fields_to_compare)
@@ -114,10 +115,10 @@ def update_LibraryPlate_table(command, cursor):
     def sync_library_plate_row(legacy_row, screen_stage=None,
                                number_of_wells=96):
         if len(legacy_row) > 1:
-            plate_name = get_ahringer_384_plate_name(legacy_row[0],
-                                                     legacy_row[1])
+            plate_name = generate_ahringer_384_plate_name(legacy_row[0],
+                                                          legacy_row[1])
         else:
-            plate_name = get_library_plate_name(legacy_row[0])
+            plate_name = generate_library_plate_name(legacy_row[0])
 
         new_plate = LibraryPlate(id=plate_name, screen_stage=screen_stage,
                                  number_of_wells=number_of_wells)
@@ -183,16 +184,18 @@ def update_LibraryStock_table(command, cursor):
 
         if re.match('sjj', clone_name):
             chromosome = legacy_row[2]
-            plate_name = get_ahringer_384_plate_name(chromosome, plate_name)
+            plate_name = generate_ahringer_384_plate_name(
+                chromosome, plate_name)
 
         well_improper = legacy_row[1]
         well_proper = get_three_character_well(well_improper)
 
         if re.match('mv', clone_name):
-            clone_name = get_vidal_clone_name(plate_name, well_improper)
+            clone_name = generate_vidal_clone_name(plate_name,
+                                                   well_improper)
 
         new_well = LibraryStock(
-            id=get_library_stock_name(plate_name, well_proper),
+            id=generate_library_stock_name(plate_name, well_proper),
             plate=get_library_plate(plate_name), well=well_proper,
             parent_stock=None, intended_clone=get_clone(clone_name))
 
@@ -216,12 +219,12 @@ def update_LibraryStock_table(command, cursor):
 
         if re.match('sjj', clone_name):
             parent_chromosome = legacy_row[3]
-            parent_plate_name = get_ahringer_384_plate_name(parent_chromosome,
-                                                            parent_plate_name)
+            parent_plate_name = generate_ahringer_384_plate_name(
+                parent_chromosome, parent_plate_name)
         parent_well_improper = legacy_row[5]
         if re.match('mv', clone_name):
-            clone_name = get_vidal_clone_name(parent_plate_name,
-                                              parent_well_improper)
+            clone_name = generate_vidal_clone_name(parent_plate_name,
+                                                   parent_well_improper)
 
         intended_clone = get_clone(clone_name)
 
@@ -239,7 +242,7 @@ def update_LibraryStock_table(command, cursor):
                                    .format(clone_name))
 
         new_well = LibraryStock(
-            id=get_library_stock_name(plate_name, well),
+            id=generate_library_stock_name(plate_name, well),
             plate=get_library_plate(plate_name), well=well,
             parent_stock=parent_stock,
             intended_clone=intended_clone)
@@ -259,7 +262,7 @@ def update_LibraryStock_table(command, cursor):
         well = get_three_character_well(legacy_row[1])
 
         new_well = LibraryStock(
-            id=get_library_stock_name(plate_name, well),
+            id=generate_library_stock_name(plate_name, well),
             plate=get_library_plate(plate_name), well=well,
             parent_stock=None, intended_clone=get_clone('L4440'))
 
@@ -362,7 +365,7 @@ def update_LibraryStock_table(command, cursor):
                     .format(plate_name, well))
 
         new_well = LibraryStock(
-            id=get_library_stock_name(plate_name, well),
+            id=generate_library_stock_name(plate_name, well),
             plate=get_library_plate(plate_name), well=well,
             parent_stock=parent_stock,
             intended_clone=intended_clone)
@@ -391,7 +394,7 @@ def update_LibraryStock_table(command, cursor):
             intended_clone = None
 
         new_well = LibraryStock(
-            id=get_library_stock_name(plate_name, well),
+            id=generate_library_stock_name(plate_name, well),
             plate=get_library_plate(plate_name), well=well,
             parent_stock=parent_stock,
             intended_clone=intended_clone)

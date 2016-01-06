@@ -1,13 +1,13 @@
 """
-This module contains functions enforcing certain naming conventions.
+Functions to enforce certain library naming conventions.
 """
 
 
-def get_ahringer_384_plate_name(chromosome, plate_number):
+def generate_ahringer_384_plate_name(chromosome, plate_number):
     return '{}-{}'.format(chromosome, plate_number)
 
 
-def get_library_plate_name(plate_name):
+def generate_library_plate_name(plate_name):
     if not plate_name:
         return plate_name
 
@@ -28,14 +28,6 @@ def get_library_plate_name(plate_name):
     return plate_name
 
 
-def get_library_stock_name(plate_name, well):
-    plate_name = get_library_plate_name(plate_name)
+def generate_library_stock_name(plate_name, well):
+    plate_name = generate_library_plate_name(plate_name)
     return '{}_{}'.format(plate_name, well)
-
-
-def get_experiment_name(plate_id, well):
-    return '{}_{}'.format(plate_id, well)
-
-
-def get_vidal_clone_name(orfeome_plate_name, orfeome_well):
-    return '{}@{}'.format(orfeome_plate_name, orfeome_well)
