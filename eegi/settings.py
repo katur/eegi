@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 # Local configuration
 from local_settings import (
     DEBUG, SECRET_KEY, LOCKDOWN_PASSWORDS, DATABASES, MATERIALS_DIR,
-    GOOGLE_API_KEY, BASE_URL_IMG, BASE_URL_THUMBNAIL, BASE_URL_DEVSTAR)
+    BASE_URL_IMG, BASE_URL_THUMBNAIL, BASE_URL_DEVSTAR,
+    GOOGLE_API_KEY, BATCH_DATA_ENTRY_GDOC_NAME)
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
