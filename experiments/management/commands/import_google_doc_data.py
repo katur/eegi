@@ -20,7 +20,10 @@ class Command(BaseCommand):
         require_db_write_acknowledgement('Proceed to actual run? '
                                          '(yes/no) ')
 
-        count = parse_batch_data_entry_gdoc()
+        try:
+            count = parse_batch_data_entry_gdoc()
+        except Exception as e:
+            raise CommandError(e)
 
         self.stdout.write('Actual run complete. '
                           '{} experiment plates added to database.'
