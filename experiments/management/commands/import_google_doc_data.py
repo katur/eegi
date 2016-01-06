@@ -32,7 +32,7 @@ class Command(BaseCommand):
         sheet = gc.open('eegi_batch_experiment_entry').sheet1
         values = sheet.get_all_values()
 
-        # Get sheet-wide values
+        # Parse sheet-wide values
         date = values[0][1]
 
         if re.match('^\d\d\d\d\d\d\d\d$', date):
