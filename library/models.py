@@ -71,6 +71,13 @@ class LibraryPlate(models.Model):
                 .select_related('intended_clone')
                 .order_by('well'))
 
+    def get_stocks_as_dictionary(self):
+        stocks = self.librarystock_set.all()
+        s = {}
+        for stock in stocks:
+            s[stock.well] = stock
+        return s
+
     def get_l4440_stocks(self):
         return self.librarystock_set.filter(intended_clone='L4440')
 
