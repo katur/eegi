@@ -3,7 +3,10 @@
 import sys
 
 
-def require_db_write_acknowledgement():
+DEFAULT_PROMPT = 'This script may modify the database. Proceed? (yes/no): '
+
+
+def require_db_write_acknowledgement(prompt=DEFAULT_PROMPT):
     """
     Require acknowledgement to modify the database.
 
@@ -13,8 +16,7 @@ def require_db_write_acknowledgement():
     proceed = False
 
     while not proceed:
-        sys.stdout.write('This script may modify the database. '
-                         'Proceed? (yes/no): ')
+        sys.stdout.write(prompt)
         response = raw_input()
         if response == 'no':
             sys.stdout.write('Okay. Goodbye!\n')
