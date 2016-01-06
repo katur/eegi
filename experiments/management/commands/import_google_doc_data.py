@@ -6,11 +6,11 @@ import re
 
 from django.core.management.base import BaseCommand, CommandError
 
-from dbmigration.helpers.name_getters import get_library_plate_name
 from eegi.settings import GOOGLE_API_KEY
 from experiments.helpers.new import save_experiment_plate_and_wells
 from experiments.models import ExperimentPlate
 from library.models import LibraryPlate
+from utils.name_getters import get_library_plate_name
 from utils.scripting import require_db_write_acknowledgement
 from worms.models import WormStrain
 

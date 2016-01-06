@@ -1,9 +1,9 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 
-from dbmigration.helpers.name_getters import get_library_stock_name
 from dbmigration.helpers.object_getters import get_library_plate
 from library.models import LibraryStock
+from utils.name_getters import get_library_stock_name
 from utils.plates import get_well_set, get_384_parent_well
 from utils.scripting import require_db_write_acknowledgement
 

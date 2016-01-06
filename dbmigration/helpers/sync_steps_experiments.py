@@ -8,18 +8,17 @@ manual and DevStaR scores.
 
 from django.core.management.base import CommandError
 
-from dbmigration.helpers.name_getters import get_experiment_name
 
 from dbmigration.helpers.object_getters import (
     get_experiment, get_experiment_plate,
     get_worm_strain, get_library_stock, get_score_code, get_user)
-
 from dbmigration.helpers.sync_helpers import sync_rows, update_or_save_object
 
 from experiments.models import (Experiment, ExperimentPlate, DevstarScore,
                                 ManualScoreCode, ManualScore)
 
 from utils.comparison import compare_floats_for_equality
+from utils.name_getters import get_experiment_name
 from utils.plates import get_well_list
 from utils.time_conversion import get_timestamp, get_timestamp_from_ymd
 from utils.well_tile_conversion import tile_to_well

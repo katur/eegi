@@ -1,8 +1,7 @@
-from dbmigration.helpers.name_getters import (get_experiment_name,
-                                              get_library_stock_name)
 from experiments.models import Experiment, ExperimentPlate
 from library.models import LibraryStock
 from utils.comparison import get_closest_candidate
+from utils.name_getters import get_experiment_name, get_library_stock_name
 from utils.plates import get_well_list
 
 

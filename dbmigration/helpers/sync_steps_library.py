@@ -13,15 +13,13 @@ from django.core.management.base import CommandError
 from clones.models import Clone
 from library.models import LibraryPlate, LibraryStock
 
-from dbmigration.helpers.name_getters import (
-    get_ahringer_384_plate_name, get_vidal_clone_name,
-    get_library_stock_name, get_library_plate_name)
-
 from dbmigration.helpers.object_getters import (
     get_clone, get_library_stock, get_library_plate)
-
 from dbmigration.helpers.sync_helpers import sync_rows, update_or_save_object
 
+from utils.name_getters import (
+    get_ahringer_384_plate_name, get_vidal_clone_name,
+    get_library_stock_name, get_library_plate_name)
 from utils.wells import get_three_character_well
 
 
