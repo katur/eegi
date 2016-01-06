@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 
 from dbmigration.helpers.object_getters import get_library_plate
 from library.models import LibraryStock
-from utils.name_getters import get_library_stock_name
+from library.helpers.naming import generate_library_stock_name
 from utils.plates import get_well_set, get_384_parent_well
 from utils.scripting import require_db_write_acknowledgement
 
@@ -55,7 +55,8 @@ class Command(BaseCommand):
 
             for missing_well in missing_wells:
                 library_stock = LibraryStock(
-                    id=get_library_stock_name(library_plate.id, missing_well),
+                    id=generate_library_stock_name(library_plate.id,
+                                                   missing_well),
                     plate=library_plate, well=missing_well,
                     parent_stock=None, intended_clone=None,
                 )
@@ -90,7 +91,7 @@ def _get_ahringer_384_parent(child_stock):
     child_well = child_stock.well
     parent_well = get_384_parent_well(child_plate_parts[2], child_well)
 
-    parent_pk = get_library_stock_name(parent_plate_name, parent_well)
+    parent_pk = generate_library_stock_name(parent_plate_name, parent_well)
 
     try:
         parent_stock = LibraryStock.objects.get(pk=parent_pk)

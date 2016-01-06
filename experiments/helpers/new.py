@@ -1,7 +1,8 @@
 from experiments.models import Experiment, ExperimentPlate
+from experiments.helpers.naming import generate_experiment_id
 from library.models import LibraryStock
+from library.helpers.naming import generate_library_stock_name
 from utils.comparison import get_closest_candidate
-from utils.name_getters import get_experiment_name, get_library_stock_name
 from utils.plates import get_well_list
 
 
@@ -38,9 +39,10 @@ def save_experiment_plate_and_wells(
         experiment_plate.save()
 
     for well in get_well_list():
-        experiment_id = get_experiment_name(experiment_plate_id, well)
+        experiment_id = generate_experiment_id(experiment_plate_id, well)
 
-        library_stock_name = get_library_stock_name(library_plate_id, well)
+        library_stock_name = generate_library_stock_name(library_plate_id,
+                                                         well)
 
         library_stock = LibraryStock.objects.get(id=library_stock_name)
 

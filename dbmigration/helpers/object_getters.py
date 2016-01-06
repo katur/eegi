@@ -10,10 +10,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from clones.models import Clone
 from experiments.models import Experiment, ExperimentPlate, ManualScoreCode
 from library.models import LibraryStock, LibraryPlate
-from worms.models import WormStrain
-
-from utils.name_getters import get_library_plate_name, get_library_stock_name
+from library.helpers.naming import (generate_library_plate_name,
+                                    generate_library_stock_name
 from utils.wells import get_three_character_well
+from worms.models import WormStrain
 
 
 def get_missing_object_message(klass, **kwargs):
@@ -33,7 +33,7 @@ def get_clone(clone_name):
 
 def get_library_plate(legacy_plate_name):
     """Get a library plate from a legacy library plate name."""
-    legacy_plate_name = get_library_plate_name(legacy_plate_name)
+    legacy_plate_name = generate_library_plate_name(legacy_plate_name)
 
     try:
         return LibraryPlate.objects.get(id=legacy_plate_name)
@@ -45,7 +45,7 @@ def get_library_plate(legacy_plate_name):
 
 def get_library_stock(legacy_plate_name, well):
     """Get a library well from its legacy plate name and well."""
-    library_stock_name = get_library_stock_name(legacy_plate_name, well)
+    library_stock_name = generate_library_stock_name(legacy_plate_name, well)
 
     try:
         return LibraryStock.objects.get(id=library_stock_name)
