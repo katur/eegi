@@ -30,7 +30,7 @@ class WormStrain(models.Model):
 
     class Meta:
         db_table = 'WormStrain'
-        ordering = ['id']
+        ordering = ['genotype']
 
     def __cmp__(self, other):
         if hasattr(other, 'genotype'):
