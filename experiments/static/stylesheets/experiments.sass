@@ -17,15 +17,27 @@
 
 
 #experiment-plates, #experiments
-  form
-    p
+  #form-section
+    #form-errors, #clear-form
       float: left
-      width: 30%
-      margin-right: 3%
-      padding-bottom: 8px
+      clear: both
+
+    #form-errors
+      margin-bottom: $vertical-whitespace
+
+    p, ul
+      float: left
+      width: 45%
+      padding-bottom: 12px
+
+      &:nth-child(odd)
+        clear: left
+
+      &:nth-child(even)
+        clear: right
 
       &.submit
-        clear: left
+        clear: both
 
   #experiment-results
     width: 100%
@@ -33,16 +45,6 @@
   .vertical-links
     a
       margin-left: 40px
-
-
-.pretty-th
-  font-size: $base-font-size - 2
-  font-weight: normal
-  padding: 10px
-
-  span, h4
-    float: left
-    clear: both
 
 
 #experiments
@@ -55,6 +57,16 @@
       .image-frame
         width: 100%
         float: left
+
+
+.pretty-th
+  font-size: $base-font-size - 2
+  font-weight: normal
+  padding: 10px
+
+  span, h4
+    float: left
+    clear: both
 
 
 .knockdown-clone-section

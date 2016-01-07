@@ -155,6 +155,9 @@ body {
     float: left;
     margin-top: 160px; }
 
+.nowrap {
+  white-space: nowrap; }
+
 .page-section {
   margin-bottom: 40px; }
   .page-section:last-of-type {
@@ -302,25 +305,25 @@ table thead th {
   #experiment-plate .vertical-links a {
     margin-right: 40px; }
 
-#experiment-plates form p, #experiments form p {
+#experiment-plates #form-section #form-errors, #experiment-plates #form-section #clear-form, #experiments #form-section #form-errors, #experiments #form-section #clear-form {
   float: left;
-  width: 30%;
-  margin-right: 3%;
-  padding-bottom: 8px; }
-  #experiment-plates form p.submit, #experiments form p.submit {
+  clear: both; }
+#experiment-plates #form-section #form-errors, #experiments #form-section #form-errors {
+  margin-bottom: 40px; }
+#experiment-plates #form-section p, #experiment-plates #form-section ul, #experiments #form-section p, #experiments #form-section ul {
+  float: left;
+  width: 45%;
+  padding-bottom: 12px; }
+  #experiment-plates #form-section p:nth-child(odd), #experiment-plates #form-section ul:nth-child(odd), #experiments #form-section p:nth-child(odd), #experiments #form-section ul:nth-child(odd) {
     clear: left; }
+  #experiment-plates #form-section p:nth-child(even), #experiment-plates #form-section ul:nth-child(even), #experiments #form-section p:nth-child(even), #experiments #form-section ul:nth-child(even) {
+    clear: right; }
+  #experiment-plates #form-section p.submit, #experiment-plates #form-section ul.submit, #experiments #form-section p.submit, #experiments #form-section ul.submit {
+    clear: both; }
 #experiment-plates #experiment-results, #experiments #experiment-results {
   width: 100%; }
 #experiment-plates .vertical-links a, #experiments .vertical-links a {
   margin-left: 40px; }
-
-.pretty-th {
-  font-size: 14px;
-  font-weight: normal;
-  padding: 10px; }
-  .pretty-th span, .pretty-th h4 {
-    float: left;
-    clear: both; }
 
 #experiments table {
   width: 100%;
@@ -329,6 +332,14 @@ table thead th {
   #experiments table td .image-frame {
     width: 100%;
     float: left; }
+
+.pretty-th {
+  font-size: 14px;
+  font-weight: normal;
+  padding: 10px; }
+  .pretty-th span, .pretty-th h4 {
+    float: left;
+    clear: both; }
 
 .knockdown-clone-section h4 {
   width: 100%;

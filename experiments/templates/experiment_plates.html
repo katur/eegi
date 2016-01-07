@@ -10,11 +10,11 @@
 
 {% block content %}
 
-<div class="page-section gray-bubble">
+<div id="form-section" class="page-section gray-bubble">
   {% if form.errors %}
-  <span class="error-message">
+  <div id="form-errors" class="error-message">
     Please correct the error{{ form.errors|pluralize }} below.
-  </span>
+  </div>
   {% endif %}
 
   <form action="" method="get">
@@ -24,6 +24,11 @@
       <input type="submit" value="Submit">
     </p>
   </form>
+
+  <div id="clear-form">
+    <a href="{{ request.path }}">
+      Clear all fields</a>
+  </div>
 </div>
 
 <div class="page-section">

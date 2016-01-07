@@ -37,20 +37,19 @@ def experiment(request, pk):
 
 def experiments(request):
     """Render the page showing experiments based on filters."""
+    experiments = None
+    display_experiments = None
+
     if request.GET:
         form = ExperimentFilterForm(request.GET)
-        if not form.is_valid():
-            print form.errors
-            raise Http404
 
-        experiments = form.cleaned_data['experiments']
-        display_experiments = get_paginated(request, experiments,
-                                            EXPERIMENTS_PER_PAGE)
+        if form.is_valid():
+            experiments = form.cleaned_data['experiments']
+            display_experiments = get_paginated(request, experiments,
+                                                EXPERIMENTS_PER_PAGE)
 
     else:
         form = ExperimentFilterForm()
-        experiments = None
-        display_experiments = None
 
     context = {
         'form': form,
@@ -78,18 +77,19 @@ def experiment_plate(request, pk):
 
 def experiment_plates(request, context=None):
     """Render the page to search for experiment plates."""
+    experiment_plates = None
+    display_plates = None
+
     if request.GET:
         form = ExperimentPlateFilterForm(request.GET)
-        if not form.is_valid():
-            raise Http404
 
-        experiment_plates = form.cleaned_data['experiment_plates']
-        display_plates = get_paginated(request, experiment_plates,
-                                       EXPERIMENT_PLATES_PER_PAGE)
+        if form.is_valid():
+            experiment_plates = form.cleaned_data['experiment_plates']
+            display_plates = get_paginated(request, experiment_plates,
+                                           EXPERIMENT_PLATES_PER_PAGE)
+
     else:
         form = ExperimentPlateFilterForm()
-        experiment_plates = None
-        display_plates = None
 
     context = {
         'form': form,
