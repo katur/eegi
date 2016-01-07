@@ -19,45 +19,43 @@ def get_worm_gene_choices():
 
 
 def get_temperature_choices():
-    return (
-        [EMPTY_CHOICE] + [(x, x) for x in (
-            ExperimentPlate.objects.all().order_by('temperature')
-            .values_list('temperature', flat=True).distinct())])
+    return ([(x, x) for x in (
+        ExperimentPlate.objects.all().order_by('temperature')
+        .values_list('temperature', flat=True).distinct())])
 
 
-class WormModelChoiceField(forms.ModelChoiceField):
+class WormMultipleChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
         return obj.get_display_string()
 
 
+
+ID_KWARGS = {'min_value': 1}
+TEMPERATURE_KWARGS = {'max_value': 100, 'decimal_places': 2}
+
+
 class ExperimentFormBase(forms.Form):
     plate__id = forms.IntegerField(
-        required=False, label='Exact plate ID', help_text='e.g. 32412')
+        required=False, label='Plate ID', help_text='e.g. 32412',
+        **ID_KWARGS)
 
     plate__id__range = RangeField(
-        forms.IntegerField, required=False, label='Plate ID range')
+        forms.IntegerField, field_kwargs=ID_KWARGS,
+        required=False, label='Plate ID range')
 
     plate__date = forms.DateField(
-        required=False, label='Exact date', help_text='YYYY-MM-DD')
+        required=False, label='Date', help_text='YYYY-MM-DD')
 
     plate__date__range = RangeField(
         forms.DateField, required=False, label='Date range')
 
-    plate__temperature = forms.ChoiceField(
+    plate__temperature__in = forms.MultipleChoiceField(
         choices=get_temperature_choices(),
-        required=False, label='Exact temp')
+        required=False, label='Temperature(s)')
 
-    plate__temperature__range = RangeField(
-        forms.DecimalField, widget_kwargs={'attrs': {'step': '0.1'}},
-        required=False, label='Temp range')
-
-    worm_strain = WormModelChoiceField(
+    worm_strain = WormMultipleChoiceField(
         queryset=WormStrain.objects.all(),
-        required=False, label='Worm strain')
-
-    worm_strain__gene = forms.ChoiceField(
-        choices=get_worm_gene_choices(),
-        required=False, label='Worm gene')
+        required=False, label='Worm strain(s)')
 
     plate__screen_stage = forms.ChoiceField(
         choices=[EMPTY_CHOICE] + list(ExperimentPlate.SCREEN_STAGE_CHOICES),

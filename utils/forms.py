@@ -14,8 +14,8 @@ class BlankNullBooleanSelect(forms.NullBooleanSelect):
 
 
 class RangeWidget(forms.MultiWidget):
-    def __init__(self, widget_class, *args, **kwargs):
-        widgets = (widget_class, widget_class)
+    def __init__(self, widget, *args, **kwargs):
+        widgets = (widget, widget)
 
         super(RangeWidget, self).__init__(widgets=widgets,
                                           *args, **kwargs)
@@ -38,20 +38,16 @@ class RangeField(forms.MultiValueField):
     Optionally pass widget_class while initializing to define the
     type of the min and max widgets.
     """
-    def __init__(self, field_class, widget_class=None, widget_kwargs={},
-                 *args, **kwargs):
+    def __init__(self, field_class, field_kwargs={}, *args, **kwargs):
         # Initialize both min/max to blank
         if not 'initial' in kwargs:
             kwargs['initial'] = ['','']
 
         # Define min/max pair of fields
-        fields = (field_class(), field_class())
+        fields = (field_class(**field_kwargs), field_class(**field_kwargs))
 
-        # Use default field_class widget if not set
-        if not widget_class:
-            widget_class = field_class.widget
-
-        widget = RangeWidget(widget_class, **widget_kwargs)
+        # Use default field_class widget
+        widget = RangeWidget(field_class().widget)
 
         super(RangeField, self).__init__(fields=fields, widget=widget,
                                          *args, **kwargs)
