@@ -34,21 +34,22 @@ class ExperimentFormBase(forms.Form):
     plate__id = forms.IntegerField(
         required=False, label='Exact plate ID', help_text='e.g. 32412')
 
-    plate__id__range = RangeField(forms.IntegerField,
-        required=False, label='Plate ID range')
+    plate__id__range = RangeField(
+        forms.IntegerField, required=False, label='Plate ID range')
 
     plate__date = forms.DateField(
         required=False, label='Exact date', help_text='YYYY-MM-DD')
 
-    plate__date__range = RangeField(forms.DateField,
-        required=False, label='Date range')
+    plate__date__range = RangeField(
+        forms.DateField, required=False, label='Date range')
 
     plate__temperature = forms.ChoiceField(
         choices=get_temperature_choices(),
         required=False, label='Exact temp')
 
-    plate__temperature__range = RangeField(forms.DecimalField,
-        required=False, label='Temp range', help_text='inclusive')
+    plate__temperature__range = RangeField(
+        forms.DecimalField, widget_kwargs={'attrs': {'step': '0.1'}},
+        required=False, label='Temp range')
 
     worm_strain = WormModelChoiceField(
         queryset=WormStrain.objects.all(),
@@ -115,7 +116,7 @@ class ExperimentPlateFilterForm(ExperimentFormBase):
     """Form for filtering ExperimentPlate instances."""
 
     is_junk = forms.NullBooleanField(
-        required=False, initial=False, label="Has junk",
+        required=False, initial=None, label="Has junk",
         widget=BlankNullBooleanSelect)
 
     def clean(self):

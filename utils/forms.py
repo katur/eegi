@@ -38,7 +38,7 @@ class RangeField(forms.MultiValueField):
     Optionally pass widget_class while initializing to define the
     type of the min and max widgets.
     """
-    def __init__(self, field_class, widget_class=None,
+    def __init__(self, field_class, widget_class=None, widget_kwargs={},
                  *args, **kwargs):
         # Initialize both min/max to blank
         if not 'initial' in kwargs:
@@ -51,7 +51,7 @@ class RangeField(forms.MultiValueField):
         if not widget_class:
             widget_class = field_class.widget
 
-        widget = RangeWidget(widget_class)
+        widget = RangeWidget(widget_class, **widget_kwargs)
 
         super(RangeField, self).__init__(fields=fields, widget=widget,
                                          *args, **kwargs)
