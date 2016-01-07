@@ -1,0 +1,20 @@
+<div id="form-section" class="page-section gray-bubble">
+  {% if form.errors %}
+  <div id="form-errors" class="error-message">
+    Please correct the error{{ form.errors|pluralize }} below.
+  </div>
+  {% endif %}
+
+  <form action="" method="get">
+    {{ form.as_p }}
+
+    <p class="submit">
+      <input type="submit" value="Submit">
+    </p>
+  </form>
+
+  <div id="clear-form">
+    <a href="{{ request.path }}">
+      Clear all fields</a>
+  </div>
+</div>
