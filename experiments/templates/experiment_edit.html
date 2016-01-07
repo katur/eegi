@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load extra_tags %}
+
+
+{% block body_id %}experiment-edit{% endblock %}
+
+
+{% block page_title %}
+Edit Experiment Plate
+<a href="{{ experiment.plate.get_absolute_url }}">
+  {{ experiment.plate.id }}</a>,
+Well {{ experiment.well }}
+{% endblock %}
+
+
+{% block content %}
+
+{% endblock %}

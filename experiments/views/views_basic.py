@@ -1,5 +1,6 @@
 import os
 
+from django.contrib.auth.decorators import permission_required
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -33,6 +34,17 @@ def experiment(request, pk):
     }
 
     return render(request, 'experiment.html', context)
+
+
+@permission_required('experiments.change_experiment')
+def experiment_edit(request, pk):
+    experiment = get_object_or_404(Experiment, pk=pk)
+
+    context = {
+        'experiment': experiment,
+    }
+
+    return render(request, 'experiment_edit.html', context)
 
 
 def experiments(request):

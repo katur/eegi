@@ -42,4 +42,9 @@ Well {{ experiment.well }}
   {% include 'image.html' %}
 </div>
 
+{% if perms.experiments.change_experiment %}
+  <a href="{% url 'experiment_edit_url' experiment %}">
+    Edit this well</a>
+{% endif %}
+
 {% endblock %}

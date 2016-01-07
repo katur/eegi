@@ -5,6 +5,8 @@ urlpatterns = patterns(
     'experiments.views',
     url(r'^experiment/(\d+_[A-H]\d\d)$', 'experiment',
         name='experiment_url'),
+    url(r'^experiment/(\d+_[A-H]\d\d)/edit$', 'experiment_edit',
+        name='experiment_edit_url'),
     url(r'^experiment/(\d+)$', 'experiment_plate',
         name='experiment_plate_url'),
 
