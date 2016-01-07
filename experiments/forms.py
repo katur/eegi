@@ -8,14 +8,10 @@ from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
                          clean_mutant_query_and_screen_type)
 from worms.models import WormStrain
 
+
 EMPTY_CHOICE = ('', '---------')
-
-
-def get_worm_gene_choices():
-    return (
-        [EMPTY_CHOICE] + [(x, x) for x in (
-            WormStrain.objects.all().order_by('gene')
-            .values_list('gene', flat=True).distinct())])
+ID_KWARGS = {'min_value': 1}
+TEMPERATURE_KWARGS = {'max_value': 100, 'decimal_places': 2}
 
 
 def get_temperature_choices():
@@ -30,11 +26,11 @@ class WormMultipleChoiceField(forms.ModelMultipleChoiceField):
 
 
 
-ID_KWARGS = {'min_value': 1}
-TEMPERATURE_KWARGS = {'max_value': 100, 'decimal_places': 2}
+class ExperimentFilterFormBase(forms.Form):
+    """
+    Base class for filtering Experiment and ExperimentPlate instances.
+    """
 
-
-class ExperimentFormBase(forms.Form):
     plate__id = forms.IntegerField(
         required=False, label='Plate ID', help_text='e.g. 32412',
         **ID_KWARGS)
@@ -65,7 +61,7 @@ class ExperimentFormBase(forms.Form):
         required=False, label='Library plate', help_text='e.g. II-3-B2')
 
 
-class ExperimentFilterForm(ExperimentFormBase):
+class ExperimentFilterForm(ExperimentFilterFormBase):
     """Form for filtering Experiment instances."""
 
     library_stock = forms.CharField(
@@ -110,7 +106,7 @@ class ExperimentFilterForm(ExperimentFormBase):
 
 
 
-class ExperimentPlateFilterForm(ExperimentFormBase):
+class ExperimentPlateFilterForm(ExperimentFilterFormBase):
     """Form for filtering ExperimentPlate instances."""
 
     is_junk = forms.NullBooleanField(
