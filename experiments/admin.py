@@ -6,87 +6,53 @@ from website.admin import ReadOnlyAdmin
 
 
 class ExperimentAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'worm_strain',
-        'library_stock',
-        'is_junk',
-    )
+    list_display = ('id',)
 
-    list_filter = (
-        'worm_strain',
-        'is_junk',
-    )
+    list_filter = ('worm_strain', 'is_junk',)
 
-    search_fields = (
-        'id',
-    )
+    search_fields = ('id',)
+
+    raw_id_fields = ('plate', 'library_stock',)
+
+    readonly_fields = ('id', 'plate', 'well',)
+
+    fields = ('id', 'plate', 'well', 'worm_strain', 'library_stock',
+              'is_junk', 'comment',)
 
 
 class ExperimentPlateAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'screen_stage',
-        'temperature',
-        'date',
-    )
+    list_display = ('id', 'screen_stage', 'temperature', 'date',)
 
-    list_filter = (
-        'screen_stage',
-        'temperature',
-        'date',
-    )
+    search_fields = ('id',)
 
-    search_fields = (
-        'id',
-    )
+    readonly_fields = ('id',)
+
+    fields = ('id', 'temperature', 'date', 'comment',)
 
 
 class ManualScoreCodeAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'short_description',
-        'description',
-        'legacy_description',
-    )
+    list_display = ('id', 'short_description', 'description',
+                    'legacy_description',)
 
-    search_fields = (
-        'short_description',
-        'description',
-        'legacy_description',
-    )
+    search_fields = ('short_description', 'description',
+                     'legacy_description',)
 
 
 class ManualScoreAdmin(admin.ModelAdmin):
-    list_display = (
-        'experiment',
-        'scorer',
-        'score_code',
-    )
+    list_display = ('experiment', 'scorer', 'score_code',)
 
-    list_filter = (
-        'scorer',
-        'score_code',
-    )
+    search_fields = ('experiment__id',)
 
-    search_fields = (
-        'experiment__id',
-    )
+    raw_id_fields = ('experiment',)
 
 
 class DevstarScoreAdmin(ReadOnlyAdmin):
-    list_display = (
-        'experiment',
-        'area_adult',
-        'area_larva',
-        'area_embryo',
-        'count_adult',
-        'count_larva',
-    )
+    list_display = ('experiment', 'area_adult', 'area_larva', 'area_embryo',
+                    'count_adult', 'count_larva',)
 
-    search_fields = (
-        'experiment__id',
-    )
+    search_fields = ('experiment__id',)
+
+    raw_id_fields = ('experiment',)
 
 
 admin.site.register(Experiment, ExperimentAdmin)
