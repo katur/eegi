@@ -43,8 +43,7 @@ INSTALLED_APPS = [
     'library',
     'experiments',
 
-    # Must be listed after website, so the lockdown custom template
-    # (which is inside the website app) has precedence.
+    # Must be listed after website
     'lockdown',
 ]
 
