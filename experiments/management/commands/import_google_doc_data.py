@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from experiments.helpers.new import parse_batch_data_entry_gdoc
+from experiments.helpers.create import parse_batch_data_entry_gdoc
 from utils.scripting import require_db_write_acknowledgement
 
 
