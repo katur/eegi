@@ -320,6 +320,10 @@ table thead th {
     clear: right; }
   #experiment-plates #form-section p.submit, #experiment-plates #form-section ul.submit, #experiments #form-section p.submit, #experiments #form-section ul.submit {
     clear: both; }
+#experiment-plates #form-section #id_plate__temperature__in, #experiments #form-section #id_plate__temperature__in {
+  width: 50px; }
+#experiment-plates #form-section #id_worm_strain, #experiments #form-section #id_worm_strain {
+  width: 150px; }
 #experiment-plates #experiment-results, #experiments #experiment-results {
   width: 100%; }
 #experiment-plates .vertical-links a, #experiments .vertical-links a {
