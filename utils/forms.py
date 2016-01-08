@@ -1,8 +1,27 @@
 """Utility module with Django form helpers."""
 
+from collections import OrderedDict
+
 from django import forms
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext as _
+
+
+EMPTY_CHOICE = ('', '---------')
+
+
+def reorder_fields(obj, key_order):
+    """
+    Reorder obj.fields in the order determined by key_order.
+
+    Use this function to set the field order for a forms.Form object.
+    (NOTE: While the field order can be changed for a forms.ModelForm by
+    setting the Meta 'fields' option, this does not work for a forms.Form.)
+    """
+    original_fields = obj.fields
+    new_fields = OrderedDict()
+    for key in key_order:
+        new_fields[key] = original_fields[key]
+    obj.fields = new_fields
 
 
 class BlankNullBooleanSelect(forms.NullBooleanSelect):

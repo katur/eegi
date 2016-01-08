@@ -1,34 +1,16 @@
-from collections import OrderedDict
-
 from django import forms
 from django.core.validators import MinLengthValidator
 
 from clones.forms import RNAiKnockdownField
 from experiments.models import Experiment, ExperimentPlate
-from utils.forms import BlankNullBooleanSelect, RangeField
+from utils.forms import (EMPTY_CHOICE, BlankNullBooleanSelect, RangeField,
+                         reorder_fields)
 from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
                          clean_mutant_query_and_screen_type)
 from worms.models import WormStrain
 
 
-EMPTY_CHOICE = ('', '---------')
 ID_KWARGS = {'min_value': 1}
-TEMPERATURE_KWARGS = {'max_value': 100, 'decimal_places': 2}
-
-
-def reorder_fields(obj, key_order):
-    """
-    Reorder obj.fields in the order determined by key_order.
-
-    Use this function to set the field order for a forms.Form object.
-    (NOTE: While the field order can be changed for a forms.ModelForm by
-    setting the Meta 'fields' option, this does not work for a forms.Form.)
-    """
-    original_fields = obj.fields
-    new_fields = OrderedDict()
-    for key in key_order:
-        new_fields[key] = original_fields[key]
-    obj.fields = new_fields
 
 
 def get_temperature_choices():
@@ -128,7 +110,8 @@ class ExperimentFilterForm(ExperimentFilterFormBase):
         experiments = Experiment.objects.filter(**cleaned_data)
 
         if exclude_l4440:
-            experiments = experiments.exclude(library_stock__intended_clone='L4440')
+            experiments = experiments.exclude(
+                library_stock__intended_clone='L4440')
 
         cleaned_data['experiments'] = experiments
         return cleaned_data
