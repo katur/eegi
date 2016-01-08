@@ -1,5 +1,5 @@
 """
-Django settings for eegi project.
+Django settings for the eegi project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/dev/topics/settings/
@@ -8,20 +8,30 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+
 # Local configuration
+
 from local_settings import (
     DEBUG, SECRET_KEY, LOCKDOWN_PASSWORDS, DATABASES, MATERIALS_DIR,
     BASE_URL_IMG, BASE_URL_THUMBNAIL, BASE_URL_DEVSTAR,
     GOOGLE_API_KEY, BATCH_DATA_ENTRY_GDOC_NAME)
 
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
-
 TEMPLATE_DEBUG = DEBUG
+
+
+# Security
+
 ALLOWED_HOSTS = ['*']
+
+
+# Administration
+
+ADMINS = [('Katherine Erickson', 'katherine.erickson@gmail.com'),]
 
 
 # Application definition
@@ -73,16 +83,16 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'America/New_York'
 
-SHORT_DATE_FORMAT = 'Y-m-d'
-
 USE_I18N = True
 
 USE_L10N = False
 
 USE_TZ = True
 
+SHORT_DATE_FORMAT = 'Y-m-d'
 
-# Static files (CSS, JavaScript, Images)
+
+# Static files
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 
 STATIC_URL = '/static/'
@@ -90,7 +100,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
 
 
-# For request objects in templates
+# For request object in templates
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
