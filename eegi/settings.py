@@ -98,7 +98,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
 
 
-# Templates: overridden to provide request object in templates
+# Templates
+# (Customized to provide request object in templates)
 
 TEMPLATES = [
     {
