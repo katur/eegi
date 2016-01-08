@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django import forms
 from django.core.validators import MinLengthValidator
 
@@ -12,6 +14,21 @@ from worms.models import WormStrain
 EMPTY_CHOICE = ('', '---------')
 ID_KWARGS = {'min_value': 1}
 TEMPERATURE_KWARGS = {'max_value': 100, 'decimal_places': 2}
+
+
+def reorder_fields(obj, key_order):
+    """
+    Reorder obj.fields in the order determined by key_order.
+
+    Use this function to set the field order for a forms.Form object.
+    (NOTE: While the field order can be changed for a forms.ModelForm by
+    setting the Meta 'fields' option, this does not work for a forms.Form.)
+    """
+    original_fields = obj.fields
+    new_fields = OrderedDict()
+    for key in key_order:
+        new_fields[key] = original_fields[key]
+    obj.fields = new_fields
 
 
 def get_temperature_choices():
@@ -49,13 +66,13 @@ class ExperimentFilterFormBase(forms.Form):
         choices=get_temperature_choices(),
         required=False, label='Temperature(s)')
 
-    worm_strain = WormMultipleChoiceField(
-        queryset=WormStrain.objects.all(),
-        required=False, label='Worm strain(s)')
-
     plate__screen_stage = forms.ChoiceField(
         choices=[EMPTY_CHOICE] + list(ExperimentPlate.SCREEN_STAGE_CHOICES),
         required=False, label='Screen stage')
+
+    worm_strain = WormMultipleChoiceField(
+        queryset=WormStrain.objects.all(),
+        required=False, label='Worm strain(s)')
 
     library_stock__plate = forms.CharField(
         required=False, label='Library plate', help_text='e.g. II-3-B2')
@@ -63,6 +80,10 @@ class ExperimentFilterFormBase(forms.Form):
 
 class ExperimentFilterForm(ExperimentFilterFormBase):
     """Form for filtering Experiment instances."""
+
+    id = forms.CharField(required=False, help_text='e.g. 32412_A01')
+
+    well = forms.CharField(required=False, help_text='e.g. A01')
 
     library_stock = forms.CharField(
         required=False, help_text='e.g. I-3-B2_A01',
@@ -77,6 +98,20 @@ class ExperimentFilterForm(ExperimentFilterFormBase):
 
     is_junk = forms.NullBooleanField(
         required=False, initial=None, widget=BlankNullBooleanSelect)
+
+    def __init__(self, *args, **kwargs):
+        super(ExperimentFilterForm, self).__init__(*args, **kwargs)
+
+        key_order = [
+            'id', 'well', 'plate__id', 'plate__id__range',
+            'plate__date',  'plate__date__range',
+            'plate__temperature__in', 'plate__screen_stage',
+            'worm_strain', 'library_stock__plate',
+            'library_stock', 'library_stock__intended_clone',
+            'exclude_l4440', 'is_junk',
+        ]
+
+        reorder_fields(self, key_order)
 
     def clean(self):
         cleaned_data = super(ExperimentFilterForm, self).clean()
@@ -112,6 +147,20 @@ class ExperimentPlateFilterForm(ExperimentFilterFormBase):
     is_junk = forms.NullBooleanField(
         required=False, initial=None, label="Has junk",
         widget=BlankNullBooleanSelect)
+
+
+    def __init__(self, *args, **kwargs):
+        super(ExperimentPlateFilterForm, self).__init__(*args, **kwargs)
+
+        key_order = [
+            'plate__id', 'plate__id__range',
+            'plate__date',  'plate__date__range',
+            'plate__temperature__in', 'plate__screen_stage',
+            'worm_strain', 'library_stock__plate',
+            'is_junk',
+        ]
+
+        reorder_fields(self, key_order)
 
     def clean(self):
         cleaned_data = super(ExperimentPlateFilterForm, self).clean()
