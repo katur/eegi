@@ -39,7 +39,7 @@ class WormStrain(models.Model):
             return cmp(self.genotype, str(other))
 
     def __unicode__(self):
-        return self.id
+        return self.get_display_string()
 
     def get_display_string(self):
         if self.genotype:

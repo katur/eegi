@@ -37,12 +37,6 @@ def get_temperature_choices():
         .values_list('temperature', flat=True).distinct())])
 
 
-class WormMultipleChoiceField(forms.ModelMultipleChoiceField):
-    def label_from_instance(self, obj):
-        return obj.get_display_string()
-
-
-
 class ExperimentFilterFormBase(forms.Form):
     """
     Base class for filtering Experiment and ExperimentPlate instances.
@@ -70,7 +64,7 @@ class ExperimentFilterFormBase(forms.Form):
         choices=[EMPTY_CHOICE] + list(ExperimentPlate.SCREEN_STAGE_CHOICES),
         required=False, label='Screen stage')
 
-    worm_strain = WormMultipleChoiceField(
+    worm_strain = forms.ModelMultipleChoiceField(
         queryset=WormStrain.objects.all(),
         required=False, label='Worm strain(s)')
 
