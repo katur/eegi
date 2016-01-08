@@ -43,8 +43,16 @@ Well {{ experiment.well }}
 </div>
 
 {% if perms.experiments.change_experiment %}
-  <a href="{% url 'experiment_edit_url' experiment %}">
-    Edit this well</a>
+<div class="page-section">
+  <a href="{% url 'experiment_toggle_junk_url' experiment %}">
+    {% if experiment.is_junk %}
+      Unmark
+    {% else %}
+      Mark
+    {% endif %}
+    this well as junk
+  </a>
+</div>
 {% endif %}
 
 {% endblock %}

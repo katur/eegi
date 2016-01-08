@@ -37,14 +37,12 @@ def experiment(request, pk):
 
 
 @permission_required('experiments.change_experiment')
-def experiment_edit(request, pk):
-    experiment = get_object_or_404(Experiment, pk=pk)
-
-    context = {
-        'experiment': experiment,
-    }
-
-    return render(request, 'experiment_edit.html', context)
+def experiment_toggle_junk(request, pk):
+    """Toggle the junk state of the experiment with primary key pk."""
+    exp = get_object_or_404(Experiment, pk=pk)
+    exp.is_junk = not exp.is_junk
+    exp.save()
+    return redirect(experiment, exp.pk)
 
 
 def experiments(request):

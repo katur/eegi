@@ -134,9 +134,8 @@
   td, th
     border: 2px solid $site-background
 
-  .empty-well
-    .well-caption
-      color: $error-color
+  .image-frame
+    display: block
 
   .well-title,
   .well-caption,
@@ -156,6 +155,12 @@
     &.well-caption
       bottom: 0
 
+  .well-title
+    font-size: 12px
+    font-weight: bold
+
+    .parenthetical
+      font-weight: normal
 
   .well-caption
     a
@@ -164,15 +169,14 @@
       &:hover, &.active
         color: $link-hover-color-light
 
-  .image-frame
-    display: block
+  .empty-well
+    .well-caption
+      font-weight: bold
+      color: $dark-peach
 
-  .well-title
-    font-size: 12px
-    font-weight: bold
+  .junk-well
+    background: $error-color
 
-    .parenthetical
-      font-weight: normal
 
 #library-plate
   .plate-96

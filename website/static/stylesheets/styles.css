@@ -98,14 +98,14 @@ a {
   font-weight: bold; }
 
 .error-message, .errorlist {
-  color: #CC3355;
+  color: #BB1133;
   font-weight: bold; }
 
 .error-background {
-  background: #CC3355; }
+  background: #BB1133; }
 
 .warning-background {
-  background: #ebadbb; }
+  background: #f2738c; }
 
 #header #menu {
   float: left; }
@@ -522,8 +522,8 @@ table thead th {
     color: #e0e0e0; }
   .plate-96 td, .plate-96 th {
     border: 2px solid white; }
-  .plate-96 .empty-well .well-caption {
-    color: #CC3355; }
+  .plate-96 .image-frame {
+    display: block; }
   .plate-96 .well-title,
   .plate-96 .well-caption,
   .plate-96 .image-frame {
@@ -544,17 +544,20 @@ table thead th {
     .plate-96 .well-title.well-caption,
     .plate-96 .well-caption.well-caption {
       bottom: 0; }
-  .plate-96 .well-caption a {
-    color: #bb99dd; }
-    .plate-96 .well-caption a:hover, .plate-96 .well-caption a.active {
-      color: #a5a5a5; }
-  .plate-96 .image-frame {
-    display: block; }
   .plate-96 .well-title {
     font-size: 12px;
     font-weight: bold; }
     .plate-96 .well-title .parenthetical {
       font-weight: normal; }
+  .plate-96 .well-caption a {
+    color: #bb99dd; }
+    .plate-96 .well-caption a:hover, .plate-96 .well-caption a.active {
+      color: #a5a5a5; }
+  .plate-96 .empty-well .well-caption {
+    font-weight: bold;
+    color: #f36a5e; }
+  .plate-96 .junk-well {
+    background: #BB1133; }
 
 #library-plate .plate-96 td {
   background: #eee;

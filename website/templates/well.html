@@ -3,9 +3,10 @@
 
 <td
   data-hover-tag="{{ well.well|get_tile }}"
-  {% if not well.intended_clone %}
-  class="empty-well"
-  {% endif %}>
+  class="
+    {% if not well.intended_clone %}empty-well{% endif %}
+    {% if well.is_junk %}junk-well{% endif %}
+  ">
 
   <div class="well-title">
     {{ well.well }}
