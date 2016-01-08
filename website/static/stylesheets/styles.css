@@ -97,6 +97,9 @@ a {
   color: green;
   font-weight: bold; }
 
+.no-clone-message {
+  color: #ed865a; }
+
 .error-message, .errorlist {
   color: #BB1133;
   font-weight: bold; }
@@ -555,7 +558,7 @@ table thead th {
       color: #a5a5a5; }
   .plate-96 .empty-well .well-caption {
     font-weight: bold;
-    color: #f36a5e; }
+    color: #ed865a; }
   .plate-96 .junk-well {
     background: #BB1133; }
 
