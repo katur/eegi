@@ -21,8 +21,6 @@ from local_settings import (
     BASE_URL_IMG, BASE_URL_THUMBNAIL, BASE_URL_DEVSTAR,
     GOOGLE_API_KEY, BATCH_DATA_ENTRY_GDOC_NAME)
 
-TEMPLATE_DEBUG = DEBUG
-
 
 # Security
 
@@ -100,12 +98,26 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
 
 
-# For request object in templates
+# Templates: overridden to provide request object in templates
 
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
-TEMPLATE_CONTEXT_PROCESSORS = TCP + (
-    'django.core.context_processors.request',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.request',
+            ],
+        },
+    },
+]
 
 
 # Login
