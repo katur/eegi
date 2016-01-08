@@ -67,7 +67,7 @@ def clean_mutant_query_and_screen_type(form, cleaned_data):
         worm_and_temp = get_worm_and_temperature_from_search_term(
             mutant_query, screen_type)
         if worm_and_temp:
-            cleaned_data['worm'] = worm_and_temp[0].pk
+            cleaned_data['worm'] = worm_and_temp[0]
             cleaned_data['temperature'] = worm_and_temp[1]
         else:
             form.add_error('mutant_query', 'No mutant match')

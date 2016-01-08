@@ -84,7 +84,7 @@ def secondary_scores_search(request):
             data = form.cleaned_data
             worm = data['worm']
             temperature = data['temperature']
-            return redirect(secondary_scores, worm, temperature)
+            return redirect(secondary_scores, worm.pk, temperature)
 
     else:
         form = SecondaryScoresForm(initial={'screen_type': 'SUP'})

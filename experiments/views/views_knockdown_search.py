@@ -16,7 +16,7 @@ def double_knockdown_search(request):
             worm = data['worm']
             temperature = data['temperature']
             clones = ','.join(clone.id for clone in data['rnai_query'])
-            return redirect(double_knockdown, worm, clones, temperature)
+            return redirect(double_knockdown, worm.pk, clones, temperature)
 
     else:
         form = DoubleKnockdownForm(initial={'screen_type': 'SUP'})
@@ -56,7 +56,7 @@ def single_knockdown_search(request):
             data = mutant_form.cleaned_data
             worm = data['worm']
             temperature = data['temperature']
-            return redirect(mutant_knockdown, worm, temperature)
+            return redirect(mutant_knockdown, worm.pk, temperature)
 
         rnai_form = empty_rnai_form
 
