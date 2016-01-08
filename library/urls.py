@@ -1,8 +1,11 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+
+from library import views
 
 
-urlpatterns = patterns(
-    'library.views',
-    url(r'^library-plates$', 'library_plates', name='library_plates_url'),
-    url(r'^library-plate/([^/]*)$', 'library_plate', name='library_plate_url'),
-)
+urlpatterns = [
+    url(r'^library-plates$', views.library_plates,
+        name='library_plates_url'),
+    url(r'^library-plate/([^/]*)$', views.library_plate,
+        name='library_plate_url'),
+]
