@@ -23,6 +23,10 @@ def experiment(request, pk):
     devstar_url = experiment.get_image_url(mode='devstar')
     devstar_available = http_response_ok(devstar_url)
 
+    if (request.POST.get('toggle-junk') and
+            request.user.has_perm('experiments.change_experiment')):
+        experiment.toggle_junk()
+
     context = {
         'experiment': experiment,
         'devstar_available': devstar_available,

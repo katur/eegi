@@ -44,13 +44,10 @@ Well {{ experiment.well }}
 
 {% if perms.experiments.change_experiment %}
 <div class="page-section">
-  <a href="{% url 'experiment_toggle_junk_url' experiment %}">
-    {% if experiment.is_junk %}
-      Unmark
-    {% else %}
-      Mark
-    {% endif %}
-    this well as junk</a>
+  <form action="" method="post">
+    {% csrf_token %}
+    <input type="submit" name="toggle-junk" value="Toggle junk">
+  </form>
 </div>
 {% endif %}
 

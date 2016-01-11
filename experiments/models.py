@@ -165,6 +165,16 @@ class Experiment(models.Model):
         scores = self.get_manual_scores()
         return get_most_relevant_score_per_experiment(scores)
 
+    def toggle_junk(self):
+        """
+        Toggle the junk state of this experiment.
+
+        I.e., if this experiment is not junk, change it to junk;
+        if this experiment is junk, change it to not junk.
+        """
+        self.is_junk = not self.is_junk
+        self.save()
+
 
 class ManualScoreCode(models.Model):
     """A class of score that could be assigned to an image by a human."""
