@@ -4,10 +4,11 @@
   <span class="image-topbar">
 
     <span class="image-title">
-      Experiment {{ experiment.id }},
+      Experiment
+      <a href="{{ experiment.get_absolute_url }}">
+        {{ experiment.id }}</a>,
       {{ experiment.plate.temperature|celsius }}
 
-      (<a href="{{ experiment.get_absolute_url }}">more info</a>)
     </span>
 
     <span class="placement">

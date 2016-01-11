@@ -89,6 +89,9 @@
       .placement
         float: right
 
+      a
+        @include link-color-light()
+
     .image-frame
       float: left
       width: 100%
@@ -162,13 +165,6 @@
     .parenthetical
       font-weight: normal
 
-  .well-caption
-    a
-      color: $link-color-light
-
-      &:hover, &.active
-        color: $link-hover-color-light
-
   .empty-well
     .well-caption
       font-weight: bold
@@ -177,6 +173,12 @@
   .junk-well
     background: $error-color
 
+
+#experiment-plate
+  .plate-96
+    .well-caption
+      a
+        @include link-color-light()
 
 #library-plate
   .plate-96

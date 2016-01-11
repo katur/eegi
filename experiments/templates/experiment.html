@@ -22,7 +22,7 @@ Well {{ experiment.well }}
 <div class="links">
   {% if not experiment.is_control %}
   {% url 'double_knockdown_url' experiment.worm_strain.id experiment.library_stock.intended_clone.id experiment.plate.temperature as double_url %}
-  <a href="{{ double_url }}">Link to view controls and replicates</a>
+  <a href="{{ double_url }}">View controls + replicates</a>
   {% endif %}
 
   {% if devstar_available %}
@@ -50,8 +50,7 @@ Well {{ experiment.well }}
     {% else %}
       Mark
     {% endif %}
-    this well as junk
-  </a>
+    this well as junk</a>
 </div>
 {% endif %}
 

@@ -491,6 +491,10 @@ table thead th {
         float: left; }
       .carousel .individual-image .image-topbar .placement {
         float: right; }
+      .carousel .individual-image .image-topbar a {
+        color: #bb99dd; }
+        .carousel .individual-image .image-topbar a:hover, .carousel .individual-image .image-topbar a.active {
+          color: #a5a5a5; }
     .carousel .individual-image .image-frame {
       float: left;
       width: 100%;
@@ -552,15 +556,16 @@ table thead th {
     font-weight: bold; }
     .plate-96 .well-title .parenthetical {
       font-weight: normal; }
-  .plate-96 .well-caption a {
-    color: #bb99dd; }
-    .plate-96 .well-caption a:hover, .plate-96 .well-caption a.active {
-      color: #a5a5a5; }
   .plate-96 .empty-well .well-caption {
     font-weight: bold;
     color: #ed865a; }
   .plate-96 .junk-well {
     background: #BB1133; }
+
+#experiment-plate .plate-96 .well-caption a {
+  color: #bb99dd; }
+  #experiment-plate .plate-96 .well-caption a:hover, #experiment-plate .plate-96 .well-caption a.active {
+    color: #a5a5a5; }
 
 #library-plate .plate-96 td {
   background: #eee;
