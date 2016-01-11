@@ -1,34 +1,34 @@
 # from django.forms import Textarea
-# from django.db import models
 from django.contrib import admin
 
 from library.models import LibraryStock, LibraryPlate, LibrarySequencing
-from website.admin import ReadOnlyAdmin
 
 
-class LibraryStockAdmin(ReadOnlyAdmin):
-    list_display = (
-        'id',
-        'parent_stock',
-        'intended_clone',
-    )
+class LibraryStockAdmin(admin.ModelAdmin):
+    list_display = ('id', 'parent_stock', 'intended_clone',)
 
     search_fields = ('id', 'plate', 'intended_clone',)
 
+    readonly_fields = ('id', 'plate', 'well',)
 
-class LibraryPlateAdmin(ReadOnlyAdmin):
-    list_display = (
-        'id',
-        'number_of_wells',
-        'screen_stage',
-    )
+    raw_id_fields = ('parent_stock', 'intended_clone',
+                     'sequence_verified_clone',)
 
-    list_filter = ('screen_stage', 'number_of_wells',)
+    fields = ('id', 'plate', 'well', 'parent_stock',
+              'intended_clone', 'sequence_verified_clone',)
+
+
+class LibraryPlateAdmin(admin.ModelAdmin):
+    list_display = ('id', 'number_of_wells', 'screen_stage',)
 
     search_fields = ('id',)
 
+    readonly_fields = ('id',)
 
-class LibrarySequencingAdmin(ReadOnlyAdmin):
+    fields = ('id', 'number_of_wells', 'screen_stage',)
+
+
+class LibrarySequencingAdmin(admin.ModelAdmin):
     list_display = (
         'source_stock',
         'sample_plate_name',

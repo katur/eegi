@@ -12,7 +12,7 @@ class ExperimentAdmin(admin.ModelAdmin):
 
     readonly_fields = ('id', 'plate', 'well',)
 
-    # Do not load dropdown with all library_stocks, because there are so many
+    # Don't load dropdown
     raw_id_fields = ('library_stock',)
 
     fields = ('id', 'plate', 'well', 'worm_strain', 'library_stock',
@@ -42,6 +42,7 @@ class ManualScoreAdmin(admin.ModelAdmin):
 
     search_fields = ('experiment__id',)
 
+    # Don't load dropdown
     raw_id_fields = ('experiment',)
 
 
