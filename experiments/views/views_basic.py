@@ -1,8 +1,6 @@
 import os
 
-from django.contrib.auth.decorators import permission_required
-from django.http import Http404
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 
 from eegi.settings import MATERIALS_DIR
 from experiments.models import Experiment, ExperimentPlate
@@ -34,15 +32,6 @@ def experiment(request, pk):
     }
 
     return render(request, 'experiment.html', context)
-
-
-@permission_required('experiments.change_experiment')
-def experiment_toggle_junk(request, pk):
-    """Toggle the junk state of the experiment with primary key pk."""
-    exp = get_object_or_404(Experiment, pk=pk)
-    exp.is_junk = not exp.is_junk
-    exp.save()
-    return redirect(experiment, exp.pk)
 
 
 def experiments(request):
