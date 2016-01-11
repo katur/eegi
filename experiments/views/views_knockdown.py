@@ -25,7 +25,7 @@ def rnai_knockdown(request, clones, temperature=None):
     for clone in clones:
         filters = {
             'is_junk': False,
-            'worm_strain': n2,
+            'worm_strain': n2.pk,
             'library_stock__intended_clone': clone,
         }
 
@@ -72,7 +72,7 @@ def mutant_knockdown(request, mutant, temperature):
 
     filters = {
         'is_junk': False,
-        'worm_strain': mutant,
+        'worm_strain': mutant.pk,
         'library_stock__intended_clone': l4440,
         'plate__temperature': temperature,
     }
@@ -149,7 +149,7 @@ def double_knockdown(request, mutant, clones, temperature):
                 filters = {
                     'is_junk': False,
                     'plate__date': date,
-                    'worm_strain': mutant,
+                    'worm_strain': mutant.pk,
                     'library_stock': library_stock,
                     'plate__temperature': temperature,
                 }
@@ -160,7 +160,7 @@ def double_knockdown(request, mutant, clones, temperature):
                 filters = {
                     'is_junk': False,
                     'plate__date': date,
-                    'worm_strain': mutant,
+                    'worm_strain': mutant.pk,
                     'library_stock__intended_clone': l4440,
                     'plate__temperature': temperature,
                 }
@@ -170,7 +170,7 @@ def double_knockdown(request, mutant, clones, temperature):
                 filters = {
                     'is_junk': False,
                     'plate__date': date,
-                    'worm_strain': n2,
+                    'worm_strain': n2.pk,
                     'library_stock': library_stock,
                 }
 
@@ -183,7 +183,7 @@ def double_knockdown(request, mutant, clones, temperature):
                 filters = {
                     'is_junk': False,
                     'plate__date': date,
-                    'worm_strain': n2,
+                    'worm_strain': n2.pk,
                     'library_stock__intended_clone': l4440,
                 }
 
