@@ -98,4 +98,10 @@
   {% endif %}
 </div>
 
+{% if experiment_plates and perms.experiments.change_experiment and perms.experiments.change_experiment_plate %}
+<div class="page-section">
+  You are allowed to edit these plates!
+</div>
+{% endif %}
+
 {% endblock %}
