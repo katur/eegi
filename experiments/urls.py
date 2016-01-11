@@ -28,7 +28,8 @@ urlpatterns = patterns(
         name='mutant_knockdown_url'),
     url(r'^double-knockdown/$', 'double_knockdown_search',
         name='double_knockdown_search_url'),
-    url(r'^double-knockdown/([^/]+)/([^/]+)/([^/]+)/$', 'double_knockdown',
+    url(r'^double-knockdown/([^/]+)/([^/]+)/([^/]+)/$',
+        'double_knockdown',
         name='double_knockdown_url'),
 
     url(r'^secondary-scores/$', 'secondary_scores_search',
@@ -36,8 +37,10 @@ urlpatterns = patterns(
     url(r'^secondary-scores/([^/]+)/([^/]+)/$', 'secondary_scores',
         name='secondary_scores_url'),
 
-    url(r'^devstar-scoring-categories/$', 'devstar_scoring_categories',
+    url(r'^devstar-scoring-categories/$',
+        'devstar_scoring_categories',
         name='devstar_scoring_categories_url'),
-    url(r'^devstar-scoring-category/([^/]+)/$', 'devstar_scoring_category',
+    url(r'^devstar-scoring-category/([^/]+)/$',
+        'devstar_scoring_category',
         name='devstar_scoring_category_url'),
 )
