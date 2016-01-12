@@ -10,11 +10,15 @@ urlpatterns = patterns(
 
     url(r'^experiments/$', 'experiments',
         name='experiments_url'),
+
     url(r'^experiment-plates/$', 'experiment_plates',
         name='experiment_plates_url'),
     url(r'^experiment-plates-vertical/([\d,]+)/$',
         'experiment_plates_vertical',
         name='experiment_plates_vertical_url'),
+
+    url(r'^new-experiment-plate/$', 'new_experiment_plate_and_wells',
+        name='new_experiment_plate_and_wells_url'),
 
     url(r'^single-knockdown/$', 'single_knockdown_search',
         name='single_knockdown_search_url'),

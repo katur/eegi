@@ -1,16 +1,15 @@
 from django import forms
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinLengthValidator
 
 from clones.forms import RNAiKnockdownField
 from experiments.models import Experiment, ExperimentPlate
+from library.models import LibraryPlate
 from utils.forms import (EMPTY_CHOICE, BlankNullBooleanSelect, RangeField,
                          reorder_fields)
 from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
                          clean_mutant_query_and_screen_type)
 from worms.models import WormStrain
-
-
-ID_KWARGS = {'min_value': 1}
 
 
 def get_temperature_choices():
@@ -19,18 +18,61 @@ def get_temperature_choices():
         .values_list('temperature', flat=True).distinct())])
 
 
+def validate_new_experiment_plate_id(x):
+    if x <= 0:
+        raise forms.ValidationError('ExperimentPlate ID must be positive')
+
+    if ExperimentPlate.objects.filter(pk=x).count():
+        raise forms.ValidationError('ExperimentPlate ID {} already exists'
+                                    .format(x))
+
+
+def validate_library_plate_name_exists(x):
+    try:
+        LibraryPlate.objects.get(pk=x)
+    except ObjectDoesNotExist:
+        raise forms.ValidationError('No LibraryPlate exists with name {}'
+                                    .format(x))
+
+
+class NewExperimentPlateAndWellsForm(forms.Form):
+    """
+    Form for adding a new experiment plate (along with its wells).
+
+    This form makes certain assumptions about the experiment plate:
+        - it comes from one library plate
+        - it has same worm strain in every well
+        - the whole plate is or is not junk
+    """
+
+    plate_id = forms.IntegerField(
+        required=True,
+        validators=[validate_new_experiment_plate_id])
+    screen_stage = forms.ChoiceField(
+        required=True,
+        choices=ExperimentPlate.SCREEN_STAGE_CHOICES)
+    date = forms.DateField(required=True)
+    temperature = forms.DecimalField(required=True)
+    worm_strain = forms.ModelChoiceField(
+        queryset=WormStrain.objects.all(), required=True)
+    library_plate = forms.CharField(
+        required=True,
+        validators=[validate_library_plate_name_exists])
+    is_junk = forms.BooleanField(initial=False, required=False)
+    plate_comment = forms.CharField(required=False)
+    well_comment = forms.CharField(required=False)
+
+
 class ExperimentFilterFormBase(forms.Form):
     """
     Base class for filtering Experiment and ExperimentPlate instances.
     """
 
     plate__id = forms.IntegerField(
-        required=False, label='Plate ID', help_text='e.g. 32412',
-        **ID_KWARGS)
+        required=False, label='Plate ID', help_text='e.g. 32412')
 
     plate__id__range = RangeField(
-        forms.IntegerField, field_kwargs=ID_KWARGS,
-        required=False, label='Plate ID range')
+        forms.IntegerField, required=False, label='Plate ID range')
 
     plate__date = forms.DateField(
         required=False, label='Date', help_text='YYYY-MM-DD')
@@ -115,7 +157,6 @@ class ExperimentFilterForm(ExperimentFilterFormBase):
 
         cleaned_data['experiments'] = experiments
         return cleaned_data
-
 
 
 class ExperimentPlateFilterForm(ExperimentFilterFormBase):
