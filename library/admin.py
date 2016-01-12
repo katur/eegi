@@ -28,20 +28,5 @@ class LibraryPlateAdmin(admin.ModelAdmin):
     fields = ('id', 'number_of_wells', 'screen_stage',)
 
 
-class LibrarySequencingAdmin(admin.ModelAdmin):
-    list_display = (
-        'source_stock',
-        'sample_plate_name',
-        'sample_tube_number',
-        'genewiz_tracking_number',
-        'genewiz_tube_label',
-    )
-
-    list_filter = ('sample_plate_name', 'genewiz_tracking_number',)
-
-    search_fields = ('source_stock',)
-
-
 admin.site.register(LibraryStock, LibraryStockAdmin)
 admin.site.register(LibraryPlate, LibraryPlateAdmin)
-admin.site.register(LibrarySequencing, LibrarySequencingAdmin)
