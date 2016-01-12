@@ -1,37 +1,52 @@
 from django import forms
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinLengthValidator
 
 from clones.forms import RNAiKnockdownField
 from experiments.models import Experiment, ExperimentPlate
-from library.models import LibraryPlate
+from library.forms import validate_library_plate_name_exists
 from utils.forms import (EMPTY_CHOICE, BlankNullBooleanSelect, RangeField,
                          reorder_fields)
 from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
+                         WormChoiceField, WormMultipleChoiceField,
                          clean_mutant_query_and_screen_type)
-from worms.models import WormStrain
 
 
-def get_temperature_choices():
-    return ([(x, x) for x in (
-        ExperimentPlate.objects.all().order_by('temperature')
-        .values_list('temperature', flat=True).distinct())])
+class ScreenStageChoiceField(forms.ChoiceField):
+    """Field for choosing Primary, Secondary, etc."""
+
+    def __init__(self, **kwargs):
+        if 'choices' not in kwargs:
+            choices = ([EMPTY_CHOICE] +
+                       list(ExperimentPlate.SCREEN_STAGE_CHOICES))
+
+            kwargs['choices'] = choices
+
+        super(ScreenStageChoiceField, self).__init__(**kwargs)
+
+
+class TemperatureMultipleChoiceField(forms.MultipleChoiceField):
+    """Field for selecting multiple tested temperatures."""
+
+    def __init__(self, **kwargs):
+        if 'choices' not in kwargs:
+            temperatures = (ExperimentPlate.objects.all()
+                            .order_by('temperature')
+                            .values_list('temperature', flat=True)
+                            .distinct())
+            kwargs['choices'] = [(x, x) for x in temperatures]
+
+        super(TemperatureMultipleChoiceField, self).__init__(**kwargs)
 
 
 def validate_new_experiment_plate_id(x):
+    """
+    Validate that x is a valid ID for a new experiment plate.
+    """
     if x <= 0:
         raise forms.ValidationError('ExperimentPlate ID must be positive')
 
     if ExperimentPlate.objects.filter(pk=x).count():
         raise forms.ValidationError('ExperimentPlate ID {} already exists'
-                                    .format(x))
-
-
-def validate_library_plate_name_exists(x):
-    try:
-        LibraryPlate.objects.get(pk=x)
-    except ObjectDoesNotExist:
-        raise forms.ValidationError('No LibraryPlate exists with name {}'
                                     .format(x))
 
 
@@ -48,13 +63,10 @@ class NewExperimentPlateAndWellsForm(forms.Form):
     plate_id = forms.IntegerField(
         required=True,
         validators=[validate_new_experiment_plate_id])
-    screen_stage = forms.ChoiceField(
-        required=True,
-        choices=ExperimentPlate.SCREEN_STAGE_CHOICES)
+    screen_stage = ScreenStageChoiceField(required=True)
     date = forms.DateField(required=True)
     temperature = forms.DecimalField(required=True)
-    worm_strain = forms.ModelChoiceField(
-        queryset=WormStrain.objects.all(), required=True)
+    worm_strain = WormChoiceField(required=True)
     library_plate = forms.CharField(
         required=True,
         validators=[validate_library_plate_name_exists])
@@ -80,20 +92,18 @@ class ExperimentFilterFormBase(forms.Form):
     plate__date__range = RangeField(
         forms.DateField, required=False, label='Date range')
 
-    plate__temperature__in = forms.MultipleChoiceField(
-        choices=get_temperature_choices(),
+    plate__temperature__in = TemperatureMultipleChoiceField(
         required=False, label='Temperature(s)')
 
-    plate__screen_stage = forms.ChoiceField(
-        choices=[EMPTY_CHOICE] + list(ExperimentPlate.SCREEN_STAGE_CHOICES),
+    plate__screen_stage = ScreenStageChoiceField(
         required=False, label='Screen stage')
 
-    worm_strain = forms.ModelMultipleChoiceField(
-        queryset=WormStrain.objects.all(),
+    worm_strain = WormMultipleChoiceField(
         required=False, label='Worm strain(s)')
 
     library_stock__plate = forms.CharField(
-        required=False, label='Library plate', help_text='e.g. II-3-B2')
+        required=False, label='Library plate', help_text='e.g. II-3-B2',
+        validators=[validate_library_plate_name_exists])
 
 
 class ExperimentFilterForm(ExperimentFilterFormBase):
@@ -207,6 +217,7 @@ class RNAiKnockdownForm(forms.Form):
     rnai_query = RNAiKnockdownField(
         label='RNAi query',
         validators=[MinLengthValidator(1, message='No clone matches')])
+
     temperature = forms.DecimalField(required=False,
                                      label='Temperature',
                                      help_text='optional')

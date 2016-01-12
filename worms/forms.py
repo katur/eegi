@@ -1,6 +1,47 @@
 from django import forms
 
 from worms.helpers.queries import get_worm_and_temperature_from_search_term
+from worms.models import WormStrain
+
+
+class WormChoiceField(forms.ModelChoiceField):
+    """
+    Field to choose a worm strain.
+    """
+    def __init__(self, **kwargs):
+        if 'queryset' not in kwargs:
+            kwargs['queryset'] = WormStrain.objects.all()
+
+        super(WormChoiceField, self).__init__(**kwargs)
+
+
+class WormMultipleChoiceField(forms.ModelMultipleChoiceField):
+    """
+    Field to choose multiple worm strains.
+    """
+    def __init__(self, **kwargs):
+        if 'queryset' not in kwargs:
+            kwargs['queryset'] = WormStrain.objects.all()
+
+        super(WormMultipleChoiceField, self).__init__(**kwargs)
+
+
+class ScreenTypeChoiceField(forms.ChoiceField):
+    """
+    Field defining a screen as SUP or ENH.
+
+    This field is in the worms app because whether an experiment
+    is SUP/ENH has entirely to do with the worm strain's
+    restrictive/permissive temperature.
+    """
+
+    def __init__(self, **kwargs):
+        if 'widget' not in kwargs:
+            kwargs['widget'] = forms.RadioSelect
+
+        if 'choices' not in kwargs:
+            kwargs['choices'] = [('SUP', 'suppressor'), ('ENH', 'enhancer')]
+        super(ScreenTypeChoiceField, self).__init__(**kwargs)
 
 
 class MutantKnockdownField(forms.CharField):
@@ -36,18 +77,6 @@ class MutantKnockdownField(forms.CharField):
         if value == 'N2':
             raise forms.ValidationError('Mutant query cannot be N2')
         return value
-
-
-class ScreenTypeChoiceField(forms.ChoiceField):
-    """Field defining a screen as SUP or ENH."""
-
-    def __init__(self, **kwargs):
-        if 'widget' not in kwargs:
-            kwargs['widget'] = forms.RadioSelect
-
-        if 'choices' not in kwargs:
-            kwargs['choices'] = [('SUP', 'suppressor'), ('ENH', 'enhancer')]
-        super(ScreenTypeChoiceField, self).__init__(**kwargs)
 
 
 def clean_mutant_query_and_screen_type(form, cleaned_data):
