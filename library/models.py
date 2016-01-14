@@ -31,31 +31,7 @@ class LibraryPlate(models.Model):
 
     class Meta:
         db_table = 'LibraryPlate'
-        ordering = ['id']
-
-    def __cmp__(self, other):
-        # First order by screen stage
-        if self.screen_stage != other.screen_stage:
-            return cmp(self.screen_stage, other.screen_stage)
-
-        # Then by id
-        if self.id.isdecimal() and other.id.isdecimal():
-            return cmp(int(self.id), int(other.id))
-
-        elif self.is_ahringer_96_plate() and other.is_ahringer_96_plate():
-            self_parts = self.id.split('-')
-            other_parts = other.id.split('-')
-
-            if (self_parts[0] != other_parts[0]):
-                return cmp(self_parts[0], other_parts[0])
-            elif (self_parts[1] != other_parts[1]):
-                return cmp(int(self_parts[1]), int(other_parts[1]))
-            else:  # chromosome and number match
-                return cmp(self_parts[2], other_parts[2])
-
-        # All other situations, simply order alphabetically
-        else:
-            return cmp(self.id, other.id)
+        ordering = ['screen_stage', 'id']
 
     def __hash__(self):
         return 31 * hash(self.id)
