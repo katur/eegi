@@ -15,8 +15,15 @@ from utils.http import build_url
 
 
 def rnai_knockdown(request, clones, temperature=None):
-    """Render the page showing knockdown by RNAi only."""
-    # data = {clone: {library_stock: [exp, exp, ...]}}
+    """
+    Render the page showing knockdown by RNAi only.
+
+    context['data'] is returned in format:
+
+        {clone: {
+            library_stock: [experiments]
+        }}
+    """
     data = OrderedDict()
 
     n2 = get_n2()
@@ -61,10 +68,15 @@ def rnai_knockdown(request, clones, temperature=None):
 
 
 def mutant_knockdown(request, mutant, temperature):
-    """Render the page showing knockdown by mutation only."""
-    # data = {date: {
-    #   'link_to_all': url,
-    #   'experiments': [experiments]}}
+    """
+    Render the page showing knockdown by mutation only.
+
+    context['data'] is returned in format:
+
+        {date: {
+            'link_to_all': url, 'experiments': [experiments]
+        }}
+    """
     data = OrderedDict()
 
     l4440 = get_l4440()
@@ -106,20 +118,31 @@ def mutant_knockdown(request, mutant, temperature):
 
 
 def double_knockdown(request, mutant, clones, temperature):
-    """Render the page showing knockdown by both mutation and RNAi."""
-    # data = {clone: {library_stock: {date: {
-    #   'mutant_rnai': {
-    #       'link_to_all': url,
-    #       'experiments': [exp, exp, ...]},
-    #   'n2_rnai': {
-    #       'link_to_all': url,
-    #       'experiments': [exp, exp, ...]},
-    #   'mutant_l4440': {
-    #       'link_to_all': url,
-    #       'experiments': [exp, exp, ...]},
-    #   'n2_l4440': {
-    #       'link_to_all': url,
-    #       'experiments': [exp, exp, ...]}}}}}
+    """
+    Render the page showing knockdown by both mutation and RNAi.
+
+    context['data'] is returned in format:
+
+        {clone: {
+            library_stock: {
+                date: {
+                    'mutant_rnai': {
+                        'link_to_all': url, 'experiments': [experiments]
+                    },
+                    'n2_rnai': {
+                        'link_to_all': url, 'experiments': [experiments]
+                    },
+                    'mutant_l4440': {
+                        'link_to_all': url, 'experiments': [experiments]
+                    },
+                    'n2_l4440': {
+                        'link_to_all': url, 'experiments': [experiments]
+                    },
+                }
+            }
+        }}
+
+    """
 
     data = OrderedDict()
 
