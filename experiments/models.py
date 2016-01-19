@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 
 from eegi.settings import (BASE_URL_IMG, BASE_URL_DEVSTAR,
-                           BASE_URL_THUMBNAIL, BASE_DIR_DEVSTAR)
+                           BASE_URL_THUMBNAIL, BASE_DIR_DEVSTAR_OUTPUT)
 from experiments.helpers.scores import (
     get_most_relevant_score_per_experiment)
 from library.models import LibraryPlate, LibraryStock
@@ -138,7 +138,7 @@ class Experiment(models.Model):
 
     def get_devstar_count_path(self):
         tile = well_to_tile(self.well)
-        f = '/'.join((BASE_DIR_DEVSTAR, str(self.plate_id), tile))
+        f = '/'.join((BASE_DIR_DEVSTAR_OUTPUT, str(self.plate_id), tile))
         f += 'cnt.txt'
         return f
 

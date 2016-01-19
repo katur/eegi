@@ -1,19 +1,13 @@
-import os
-
 from django.shortcuts import render, get_object_or_404
 
-from eegi.settings import MATERIALS_DIR
 from experiments.models import Experiment, ExperimentPlate
 from experiments.forms import ExperimentFilterForm, ExperimentPlateFilterForm
-from utils.well_tile_conversion import tile_to_well
 from utils.http import http_response_ok
 from utils.pagination import get_paginated
 
 
 EXPERIMENT_PLATES_PER_PAGE = 100
 EXPERIMENTS_PER_PAGE = 10
-DEVSTAR_SCORING_CATEGORIES_DIR = MATERIALS_DIR + '/devstar_scoring/categories'
-DEVSTAR_SCORING_IMAGES_PER_PAGE = 10
 
 
 def experiment(request, pk):
@@ -118,43 +112,3 @@ def experiment_plates_vertical(request, pks):
     }
 
     return render(request, 'experiment_plates_vertical.html', context)
-
-
-def devstar_scoring_categories(request):
-    categories = os.listdir(DEVSTAR_SCORING_CATEGORIES_DIR)
-
-    context = {
-        'categories': categories,
-    }
-
-    return render(request, 'devstar_scoring_categories.html', context)
-
-
-def devstar_scoring_category(request, category):
-    tuples = []
-
-    f = open(DEVSTAR_SCORING_CATEGORIES_DIR + '/' + category, 'r')
-
-    rows = f.readlines()
-
-    for row in rows:
-        experiment_plate_id, tile = row.split('_')
-        tile = tile.split('.')[0]
-        well = tile_to_well(tile)
-        experiment = get_object_or_404(Experiment,
-                                       plate=experiment_plate_id,
-                                       well=well)
-        tuples.append((experiment, tile))
-
-    f.close()
-
-    display_tuples = get_paginated(request, tuples,
-                                   DEVSTAR_SCORING_IMAGES_PER_PAGE)
-
-    context = {
-        'category': category,
-        'tuples': tuples,
-        'display_tuples': display_tuples,
-    }
-
-    return render(request, 'devstar_scoring_category.html', context)
