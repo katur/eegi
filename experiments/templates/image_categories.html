@@ -3,7 +3,7 @@
 
 
 {% block page_title %}
-DevStaR Scoring Categories
+Image Categories
 {% endblock %}
 
 
@@ -11,8 +11,7 @@ DevStaR Scoring Categories
 <ul>
   {% for category in categories %}
   <li>
-    <a href="{% url 'devstar_scoring_category_url' category %}">
-      {{ category }}</a>
+    <a href="{% url 'image_category_url' category %}">{{ category }}</a>
   </li>
   {% endfor %}
 </ul>

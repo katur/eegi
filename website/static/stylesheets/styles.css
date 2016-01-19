@@ -476,10 +476,10 @@ form table th, form table td {
       width: 100%;
       height: 100%; }
 
-#devstar-scoring-category td {
+table#image-category td {
   padding: 20px;
   vertical-align: middle; }
-#devstar-scoring-category .image-frame {
+table#image-category .image-frame {
   width: 800px; }
 
 .image-frame {

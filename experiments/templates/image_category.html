@@ -3,7 +3,7 @@
 
 
 {% block page_title %}
-DevStaR Scoring Category: {{ category }}
+Image Category: {{ category }}
 {% endblock %}
 
 
@@ -16,7 +16,7 @@ DevStaR Scoring Category: {{ category }}
   {% include 'pagination_status.html' with paginated=display_tuples %}
 </div>
 
-<table id="devstar-scoring-category">
+<table id="image-category">
   {% for experiment, tile in display_tuples %}
   <tr>
     <td>
