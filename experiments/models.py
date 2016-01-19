@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
 
-from eegi.settings import BASE_URL_IMG, BASE_URL_DEVSTAR, BASE_URL_THUMBNAIL
+from eegi.settings import (BASE_URL_IMG, BASE_URL_DEVSTAR,
+                           BASE_URL_THUMBNAIL, BASE_DIR_DEVSTAR)
 from experiments.helpers.scores import (
     get_most_relevant_score_per_experiment)
 from library.models import LibraryPlate, LibraryStock
@@ -125,18 +126,21 @@ class Experiment(models.Model):
         """
         tile = well_to_tile(self.well)
         if mode == 'thumbnail':
-            url = '/'.join((BASE_URL_THUMBNAIL,
-                            str(self.plate_id), tile))
+            url = '/'.join((BASE_URL_THUMBNAIL, str(self.plate_id), tile))
             url += '.jpg'
         elif mode == 'devstar':
-            url = '/'.join((BASE_URL_DEVSTAR,
-                            str(self.plate_id), tile))
+            url = '/'.join((BASE_URL_DEVSTAR, str(self.plate_id), tile))
             url += 'res.png'
         else:
-            url = '/'.join((BASE_URL_IMG,
-                            str(self.plate_id), tile))
+            url = '/'.join((BASE_URL_IMG, str(self.plate_id), tile))
             url += '.bmp'
         return url
+
+    def get_devstar_count_path(self):
+        tile = well_to_tile(self.well)
+        f = '/'.join((BASE_DIR_DEVSTAR, str(self.plate_id), tile))
+        f += 'cnt.txt'
+        return f
 
     def get_manual_scores(self):
         """Get all manual scores for this experiment well."""
@@ -402,3 +406,13 @@ class DevstarScore(models.Model):
             else:
                 self.survival = self.count_larva / brood_size
                 self.lethality = self.count_embryo / brood_size
+
+    def matches_raw_fields(self, other):
+        return (
+            self.experiment == other.experiment and
+            self.is_bacteria_present == other.is_bacteria_present and
+            self.area_adult == other.area_adult and
+            self.area_larva == other.area_larva and
+            self.area_embryo == other.area_embryo and
+            self.count_adult == other.count_adult and
+            self.count_larva == other.count_larva)
