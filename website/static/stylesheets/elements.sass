@@ -1,6 +1,53 @@
+// Miscellaneous styles used across apps
+
+
+/////////////////////
+// Simple elements //
+/////////////////////
+
+hr
+  height: 1px
+  border: none
+  background: $gray-light
+
+
+ul.bulleted
+  list-style: disc inside
+
+
 .nowrap
   white-space: nowrap
 
+
+.gray-bubble
+  @include box-sizing(border-box)
+  @include clearfix
+  background: $gray-lightest
+  padding: 20px
+  border-radius: 3px
+
+
+////////////////
+// Pagination //
+////////////////
+
+#results-header
+  #total
+    float: left
+
+  .pagination-status
+    float: right
+
+    span, a
+      margin-left: 10px
+
+      &:first-child
+        margin-left: 0
+
+
+////////////////////////////////
+// Content layout and spacing //
+////////////////////////////////
 
 .page-section
   margin-bottom: $whitespace
@@ -40,32 +87,9 @@
       float: right
 
 
-.gray-bubble
-  @include box-sizing(border-box)
-  @include clearfix
-  background: $gray-lightest
-  padding: 20px
-  border-radius: 3px
-
-
-ul.bulleted
-  list-style: disc inside
-
-
-hr
-  height: 1px
-  border: none
-  background: $gray-light
-
-
-form table
-  th
-    padding-right: 5px
-    text-align: left
-    padding-right: 20px
-  th, td
-    padding-bottom: 5px
-
+//////////////////
+// Table styles //
+//////////////////
 
 table
   thead
@@ -87,6 +111,21 @@ table
       background: $gray-lightest
 
 
+.nice-padding
+  th, td
+    padding: 10px
+
+
+.pretty-th
+  font-size: $base-font-size - 2
+  font-weight: normal
+  padding: 10px
+
+  span, h4
+    float: left
+    clear: both
+
+
 .grid
   border-right: 1px $gray-light solid
   border-bottom: 1px $gray-light solid
@@ -96,24 +135,19 @@ table
     border-top: 1px $gray-light solid
 
 
-.nice-padding
+form table
+  th
+    padding-right: 5px
+    text-align: left
+    padding-right: 20px
+
   th, td
-    padding: 10px
+    padding-bottom: 5px
 
 
-#results-header
-  #total
-    float: left
-
-  .pagination-status
-    float: right
-
-    span, a
-      margin-left: 10px
-
-      &:first-child
-        margin-left: 0
-
+////////////////
+// Hover tags //
+////////////////
 
 .hover_tag
   position: absolute
@@ -144,3 +178,55 @@ table
     margin-left: -($big-pointer-size / 4)
     bottom: -($big-pointer-size / 2)
     @include triangle($big-pointer-size, black, down)
+
+
+/////////////////////////////////////////////////////
+// 96-well plates                                  //
+// (relevant to both library and experiments apps) //
+/////////////////////////////////////////////////////
+
+.plate-96
+  width: 100%
+  font-size: $base-font-size - 4
+
+  td, tr
+    position: relative
+    padding: 20px 0
+
+  td, th
+    border: 2px solid $site-background
+
+  .image-frame
+    display: block
+
+  .well-title,
+  .well-caption,
+  .image-frame
+    width: 100%
+
+  .well-title,
+  .well-caption
+    position: absolute
+    left: 0
+    text-align: center
+    @include ellipsis
+
+    &.well-title
+      top: 0
+
+    &.well-caption
+      bottom: 0
+
+  .well-title
+    font-weight: bold
+
+    .parenthetical
+      font-weight: normal
+
+  .empty-well
+    .well-caption
+      font-weight: bold
+      color: $no-clone-color
+
+  .junk-well
+    background: $error-color

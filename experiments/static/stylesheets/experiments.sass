@@ -1,3 +1,10 @@
+$max-image-width: 1300px
+
+
+///////////////////////////////////////
+// Basic experiment navigation pages //
+///////////////////////////////////////
+
 #experiment
   .links
     a
@@ -17,7 +24,39 @@
       margin-right: $whitespace
 
 
-#experiment-plates, #experiments
+#experiment-plates-vertical
+  .plate-96
+    min-width: 320px
+    float: left
+
+    &.mode-devstar, &.mode-big
+      min-width: 1000px
+
+
+#experiment-plate, #experiment-plates-vertical
+  .plate-96
+    td
+      background: black
+      color: $gray-light
+
+    .well-caption
+      a
+        @include link-color-light()
+
+
+#experiments
+  table
+    width: 100%
+    float: left
+    margin-bottom: $whitespace
+
+    td
+      .image-frame
+        width: 100%
+        float: left
+
+
+#experiments, #experiment-plates
   #form-section
     #form-errors, #clear-form
       float: left
@@ -54,27 +93,9 @@
       margin-left: $whitespace
 
 
-#experiments
-  table
-    width: 100%
-    float: left
-    margin-bottom: $whitespace
-
-    td
-      .image-frame
-        width: 100%
-        float: left
-
-
-.pretty-th
-  font-size: $base-font-size - 2
-  font-weight: normal
-  padding: 10px
-
-  span, h4
-    float: left
-    clear: both
-
+/////////////////////
+// Knockdown pages //
+/////////////////////
 
 .knockdown-clone-section
   h4
@@ -123,9 +144,9 @@
       max-width: $max-image-width
 
 
-$github-green-dark: #1e6823
-$github-green-medium: #44a340
-$github-green-light: #8cc665
+////////////////////////////
+// Secondary scores pages //
+////////////////////////////
 
 #secondary-scores
   .Strong
@@ -175,6 +196,9 @@ $github-green-light: #8cc665
         width: 100%
         height: 100%
 
+///////////////////////////
+// DevStaR scoring pages //
+///////////////////////////
 
 #devstar-scoring-category
   td
@@ -183,3 +207,126 @@ $github-green-light: #8cc665
 
   .image-frame
     width: 800px
+
+
+/////////////////////////////////////////
+// Image styles, used on various pages //
+/////////////////////////////////////////
+
+.image-frame
+  position: relative
+
+  // For aspect ratio
+  &:after
+    content: ''
+    display: block
+    position: relative
+    padding-top: 75%
+
+  // This interacts with &:after for aspect ratio
+  img
+    position: absolute
+    width: 100%
+
+
+// Rotating image carousel
+.carousel
+  width: 94%
+  padding: 3%
+  background: black
+  color: $gray-light
+
+  .individual-image
+    display: none
+    position: relative
+
+    &.show
+      display: block
+
+    .image-topbar
+      float: left
+      width: 100%
+      padding: 2% 0
+      text-align: center
+
+      .image-title
+        float: left
+
+      .placement
+        float: right
+
+      a
+        @include link-color-light()
+
+    .image-caption
+      float: left
+      width: 100%
+      padding: 2% 0
+      font-size: $base-font-size - 2
+
+      .image-scores
+        float: left
+
+        span
+          float: left
+          clear: both
+
+    .image-frame
+      $image-frame-z-index: 1
+      float: left
+      width: 100%
+      -webkit-user-select: none // webkit (safari, chrome) browsers
+      -moz-user-select: none // mozilla browsers
+      -khtml-user-select: none // webkit (konqueror) browsers
+      -ms-user-select: none // IE10+
+
+      &:after
+        z-index: $image-frame-z-index
+
+      // To show/hide arrows when carousel is present
+      &:hover
+        .image-frame-previous, .image-frame-next
+          span
+            opacity: 1
+
+            // Fade in
+            @include transition(opacity 50ms linear)
+
+      .image-frame-previous, .image-frame-next
+        position: absolute
+        top: 0
+        width: 50%
+        height: 100%
+        z-index: $image-frame-z-index + 1
+        color: lighten($link-color, 20%)
+
+        &:hover
+          color: lighten($link-hover-color, 30%)
+
+        // For browsers that don't support vw
+        font-size: 50px
+
+        // vw is "Viewport-width" (font size relative to window size)
+        font-size: 4vw
+
+        span
+          position: absolute
+          top: 50%
+
+          // Move up by 50% of itself, for vertical centering
+          @include transform(translateY(calc(-50%)))
+
+          opacity: 0
+          @include transition(opacity 250ms linear)
+
+      .image-frame-previous
+        left: 0
+
+        span
+          left: 5%
+
+      .image-frame-next
+        right: 0
+
+        span
+          right: 5%

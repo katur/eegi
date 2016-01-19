@@ -44,6 +44,54 @@ table {
   border-spacing: 0; }
 
 body {
+  float: left;
+  width: 94%;
+  padding: 3%;
+  background: white; }
+  body #header {
+    width: 100%;
+    float: left;
+    margin-bottom: 40px; }
+    body #header h1 {
+      margin-bottom: 13.33333px; }
+  body #content {
+    width: 100%;
+    float: left; }
+    body #content h2 {
+      clear: both;
+      margin-bottom: 40px; }
+    body #content h4 {
+      clear: both;
+      margin-bottom: 20px; }
+  body #footer {
+    width: 100%;
+    float: left;
+    margin-top: 160px; }
+
+#header #menu {
+  float: left; }
+  #header #menu a, #header #menu span {
+    float: left;
+    padding-right: 20px; }
+#header #login {
+  float: right; }
+  #header #login a {
+    float: left;
+    padding-left: 20px; }
+
+#footer #logos {
+  float: left; }
+  #footer #logos img {
+    float: left;
+    padding-right: 20px; }
+#footer #copyright {
+  float: right;
+  padding-top: 40px; }
+  #footer #copyright span {
+    float: left;
+    clear: both; }
+
+body {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 16px;
   color: #333;
@@ -75,8 +123,8 @@ h4 {
   color: gray; }
 
 a {
-  text-decoration: none;
-  color: #8d54c6; }
+  color: #8d54c6;
+  text-decoration: none; }
   a:hover, a.active {
     color: #777; }
   a.active {
@@ -104,56 +152,37 @@ a {
 .no-clone-message {
   color: #ed865a; }
 
-#header #menu {
-  float: left; }
-  #header #menu a, #header #menu span {
-    float: left;
-    padding-right: 20px; }
-#header #login {
-  float: right; }
-  #header #login a {
-    float: left;
-    padding-left: 20px; }
+hr {
+  height: 1px;
+  border: none;
+  background: #e0e0e0; }
 
-#footer #logos {
-  float: left; }
-  #footer #logos img {
-    float: left;
-    padding-right: 20px; }
-#footer #copyright {
-  float: right;
-  padding-top: 40px; }
-  #footer #copyright span {
-    float: left;
-    clear: both; }
-
-body {
-  float: left;
-  width: 94%;
-  padding: 3%;
-  background: white; }
-  body #header {
-    width: 100%;
-    float: left;
-    margin-bottom: 40px; }
-    body #header h1 {
-      margin-bottom: 13.33333px; }
-  body #content {
-    width: 100%;
-    float: left; }
-    body #content h2 {
-      clear: both;
-      margin-bottom: 40px; }
-    body #content h4 {
-      clear: both;
-      margin-bottom: 20px; }
-  body #footer {
-    width: 100%;
-    float: left;
-    margin-top: 160px; }
+ul.bulleted {
+  list-style: disc inside; }
 
 .nowrap {
   white-space: nowrap; }
+
+.gray-bubble {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background: #f8f8f8;
+  padding: 20px;
+  border-radius: 3px; }
+  .gray-bubble:after {
+    content: "";
+    display: table;
+    clear: both; }
+
+#results-header #total {
+  float: left; }
+#results-header .pagination-status {
+  float: right; }
+  #results-header .pagination-status span, #results-header .pagination-status a {
+    margin-left: 10px; }
+    #results-header .pagination-status span:first-child, #results-header .pagination-status a:first-child {
+      margin-left: 0; }
 
 .page-section {
   margin-bottom: 40px; }
@@ -179,33 +208,6 @@ body {
     .columns div:last-of-type {
       float: right; }
 
-.gray-bubble {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  background: #f8f8f8;
-  padding: 20px;
-  border-radius: 3px; }
-  .gray-bubble:after {
-    content: "";
-    display: table;
-    clear: both; }
-
-ul.bulleted {
-  list-style: disc inside; }
-
-hr {
-  height: 1px;
-  border: none;
-  background: #e0e0e0; }
-
-form table th {
-  padding-right: 5px;
-  text-align: left;
-  padding-right: 20px; }
-form table th, form table td {
-  padding-bottom: 5px; }
-
 table thead th {
   text-align: left; }
 
@@ -219,6 +221,17 @@ table thead th {
 .striped tbody tr:nth-child(odd) {
   background: #f8f8f8; }
 
+.nice-padding th, .nice-padding td {
+  padding: 10px; }
+
+.pretty-th {
+  font-size: 14px;
+  font-weight: normal;
+  padding: 10px; }
+  .pretty-th span, .pretty-th h4 {
+    float: left;
+    clear: both; }
+
 .grid {
   border-right: 1px #e0e0e0 solid;
   border-bottom: 1px #e0e0e0 solid; }
@@ -226,17 +239,12 @@ table thead th {
     border-left: 1px #e0e0e0 solid;
     border-top: 1px #e0e0e0 solid; }
 
-.nice-padding th, .nice-padding td {
-  padding: 10px; }
-
-#results-header #total {
-  float: left; }
-#results-header .pagination-status {
-  float: right; }
-  #results-header .pagination-status span, #results-header .pagination-status a {
-    margin-left: 10px; }
-    #results-header .pagination-status span:first-child, #results-header .pagination-status a:first-child {
-      margin-left: 0; }
+form table th {
+  padding-right: 5px;
+  text-align: left;
+  padding-right: 20px; }
+form table th, form table td {
+  padding-bottom: 5px; }
 
 .hover_tag {
   position: absolute;
@@ -271,6 +279,46 @@ table thead th {
     border-right: 7px solid transparent;
     border-top: 7px solid black; }
 
+.plate-96 {
+  width: 100%;
+  font-size: 12px; }
+  .plate-96 td, .plate-96 tr {
+    position: relative;
+    padding: 20px 0; }
+  .plate-96 td, .plate-96 th {
+    border: 2px solid white; }
+  .plate-96 .image-frame {
+    display: block; }
+  .plate-96 .well-title,
+  .plate-96 .well-caption,
+  .plate-96 .image-frame {
+    width: 100%; }
+  .plate-96 .well-title,
+  .plate-96 .well-caption {
+    position: absolute;
+    left: 0;
+    text-align: center;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; }
+    .plate-96 .well-title.well-title,
+    .plate-96 .well-caption.well-title {
+      top: 0; }
+    .plate-96 .well-title.well-caption,
+    .plate-96 .well-caption.well-caption {
+      bottom: 0; }
+  .plate-96 .well-title {
+    font-weight: bold; }
+    .plate-96 .well-title .parenthetical {
+      font-weight: normal; }
+  .plate-96 .empty-well .well-caption {
+    font-weight: bold;
+    color: #ed865a; }
+  .plate-96 .junk-well {
+    background: #BB1133; }
+
 #clones #results-header, #clones table {
   width: 100%;
   max-width: 700px; }
@@ -290,6 +338,16 @@ table thead th {
   width: 100%;
   max-width: 700px; }
 
+#library-plate .plate-96 td {
+  background: #eee;
+  color: #333; }
+  #library-plate .plate-96 td .well-title,
+  #library-plate .plate-96 td .well-caption {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 3px; }
+
 #experiment .links a {
   margin-right: 40px; }
 #experiment .image-frame {
@@ -302,29 +360,19 @@ table thead th {
   #experiment-plate .vertical-links a {
     margin-right: 40px; }
 
-#experiment-plates #form-section #form-errors, #experiment-plates #form-section #clear-form, #experiments #form-section #form-errors, #experiments #form-section #clear-form {
-  float: left;
-  clear: both; }
-#experiment-plates #form-section #form-errors, #experiments #form-section #form-errors {
-  margin-bottom: 40px; }
-#experiment-plates #form-section p, #experiment-plates #form-section ul, #experiments #form-section p, #experiments #form-section ul {
-  float: left;
-  width: 45%;
-  padding-bottom: 12px; }
-  #experiment-plates #form-section p:nth-child(odd), #experiment-plates #form-section ul:nth-child(odd), #experiments #form-section p:nth-child(odd), #experiments #form-section ul:nth-child(odd) {
-    clear: left; }
-  #experiment-plates #form-section p:nth-child(even), #experiment-plates #form-section ul:nth-child(even), #experiments #form-section p:nth-child(even), #experiments #form-section ul:nth-child(even) {
-    clear: right; }
-  #experiment-plates #form-section p.submit, #experiment-plates #form-section ul.submit, #experiments #form-section p.submit, #experiments #form-section ul.submit {
-    clear: both; }
-#experiment-plates #form-section #id_plate__temperature__in, #experiments #form-section #id_plate__temperature__in {
-  width: 50px; }
-#experiment-plates #form-section #id_worm_strain, #experiments #form-section #id_worm_strain {
-  width: 150px; }
-#experiment-plates #experiment-results, #experiments #experiment-results {
-  width: 100%; }
-#experiment-plates .vertical-links a, #experiments .vertical-links a {
-  margin-left: 40px; }
+#experiment-plates-vertical .plate-96 {
+  min-width: 320px;
+  float: left; }
+  #experiment-plates-vertical .plate-96.mode-devstar, #experiment-plates-vertical .plate-96.mode-big {
+    min-width: 1000px; }
+
+#experiment-plate .plate-96 td, #experiment-plates-vertical .plate-96 td {
+  background: black;
+  color: #e0e0e0; }
+#experiment-plate .plate-96 .well-caption a, #experiment-plates-vertical .plate-96 .well-caption a {
+  color: #bb99dd; }
+  #experiment-plate .plate-96 .well-caption a:hover, #experiment-plate .plate-96 .well-caption a.active, #experiment-plates-vertical .plate-96 .well-caption a:hover, #experiment-plates-vertical .plate-96 .well-caption a.active {
+    color: #a5a5a5; }
 
 #experiments table {
   width: 100%;
@@ -334,13 +382,29 @@ table thead th {
     width: 100%;
     float: left; }
 
-.pretty-th {
-  font-size: 14px;
-  font-weight: normal;
-  padding: 10px; }
-  .pretty-th span, .pretty-th h4 {
-    float: left;
+#experiments #form-section #form-errors, #experiments #form-section #clear-form, #experiment-plates #form-section #form-errors, #experiment-plates #form-section #clear-form {
+  float: left;
+  clear: both; }
+#experiments #form-section #form-errors, #experiment-plates #form-section #form-errors {
+  margin-bottom: 40px; }
+#experiments #form-section p, #experiments #form-section ul, #experiment-plates #form-section p, #experiment-plates #form-section ul {
+  float: left;
+  width: 45%;
+  padding-bottom: 12px; }
+  #experiments #form-section p:nth-child(odd), #experiments #form-section ul:nth-child(odd), #experiment-plates #form-section p:nth-child(odd), #experiment-plates #form-section ul:nth-child(odd) {
+    clear: left; }
+  #experiments #form-section p:nth-child(even), #experiments #form-section ul:nth-child(even), #experiment-plates #form-section p:nth-child(even), #experiment-plates #form-section ul:nth-child(even) {
+    clear: right; }
+  #experiments #form-section p.submit, #experiments #form-section ul.submit, #experiment-plates #form-section p.submit, #experiment-plates #form-section ul.submit {
     clear: both; }
+#experiments #form-section #id_plate__temperature__in, #experiment-plates #form-section #id_plate__temperature__in {
+  width: 50px; }
+#experiments #form-section #id_worm_strain, #experiment-plates #form-section #id_worm_strain {
+  width: 150px; }
+#experiments #experiment-results, #experiment-plates #experiment-results {
+  width: 100%; }
+#experiments .vertical-links a, #experiment-plates .vertical-links a {
+  margin-left: 40px; }
 
 .knockdown-clone-section h4 {
   width: 100%;
@@ -424,47 +488,10 @@ table thead th {
     content: "";
     display: block;
     position: relative;
-    padding-top: 75%;
-    z-index: 1; }
-  .image-frame:hover .image-frame-previous span, .image-frame:hover .image-frame-next span {
-    opacity: 1;
-    -webkit-transition: opacity 50ms linear;
-    -moz-transition: opacity 50ms linear;
-    transition: opacity 50ms linear; }
+    padding-top: 75%; }
   .image-frame img {
     position: absolute;
     width: 100%; }
-  .image-frame .image-frame-previous, .image-frame .image-frame-next {
-    position: absolute;
-    top: 0;
-    width: 50%;
-    height: 100%;
-    z-index: 2;
-    color: #c0a1e0;
-    font-size: 50px;
-    font-size: 4vw; }
-    .image-frame .image-frame-previous:hover, .image-frame .image-frame-next:hover {
-      color: #c4c4c4; }
-    .image-frame .image-frame-previous span, .image-frame .image-frame-next span {
-      position: absolute;
-      top: 50%;
-      -webkit-transform: translateY(calc(-50%));
-      -moz-transform: translateY(calc(-50%));
-      -ms-transform: translateY(calc(-50%));
-      -o-transform: translateY(calc(-50%));
-      transform: translateY(calc(-50%));
-      opacity: 0;
-      -webkit-transition: opacity 250ms linear;
-      -moz-transition: opacity 250ms linear;
-      transition: opacity 250ms linear; }
-  .image-frame .image-frame-previous {
-    left: 0; }
-    .image-frame .image-frame-previous span {
-      left: 5%; }
-  .image-frame .image-frame-next {
-    right: 0; }
-    .image-frame .image-frame-next span {
-      right: 5%; }
 
 .carousel {
   width: 94%;
@@ -489,13 +516,6 @@ table thead th {
         color: #bb99dd; }
         .carousel .individual-image .image-topbar a:hover, .carousel .individual-image .image-topbar a.active {
           color: #a5a5a5; }
-    .carousel .individual-image .image-frame {
-      float: left;
-      width: 100%;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -khtml-user-select: none;
-      -ms-user-select: none; }
     .carousel .individual-image .image-caption {
       float: left;
       width: 100%;
@@ -506,67 +526,48 @@ table thead th {
         .carousel .individual-image .image-caption .image-scores span {
           float: left;
           clear: both; }
-
-.plate-96 {
-  width: 100%;
-  font-size: 13px; }
-  .plate-96.vertical-tiles {
-    min-width: 320px;
-    float: left; }
-    .plate-96.vertical-tiles.mode-devstar, .plate-96.vertical-tiles.mode-big {
-      min-width: 1000px; }
-  .plate-96 td, .plate-96 tr {
-    position: relative;
-    padding: 20px 0; }
-  .plate-96 td {
-    background: black;
-    color: #e0e0e0; }
-  .plate-96 td, .plate-96 th {
-    border: 2px solid white; }
-  .plate-96 .image-frame {
-    display: block; }
-  .plate-96 .well-title,
-  .plate-96 .well-caption,
-  .plate-96 .image-frame {
-    width: 100%; }
-  .plate-96 .well-title,
-  .plate-96 .well-caption {
-    position: absolute;
-    left: 0;
-    text-align: center;
-    display: inline-block;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap; }
-    .plate-96 .well-title.well-title,
-    .plate-96 .well-caption.well-title {
-      top: 0; }
-    .plate-96 .well-title.well-caption,
-    .plate-96 .well-caption.well-caption {
-      bottom: 0; }
-  .plate-96 .well-title {
-    font-size: 12px;
-    font-weight: bold; }
-    .plate-96 .well-title .parenthetical {
-      font-weight: normal; }
-  .plate-96 .empty-well .well-caption {
-    font-weight: bold;
-    color: #ed865a; }
-  .plate-96 .junk-well {
-    background: #BB1133; }
-
-#experiment-plate .plate-96 .well-caption a {
-  color: #bb99dd; }
-  #experiment-plate .plate-96 .well-caption a:hover, #experiment-plate .plate-96 .well-caption a.active {
-    color: #a5a5a5; }
-
-#library-plate .plate-96 td {
-  background: #eee;
-  color: #333; }
-  #library-plate .plate-96 td .well-title,
-  #library-plate .plate-96 td .well-caption {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    padding: 3px; }
+    .carousel .individual-image .image-frame {
+      float: left;
+      width: 100%;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -khtml-user-select: none;
+      -ms-user-select: none; }
+      .carousel .individual-image .image-frame:after {
+        z-index: 1; }
+      .carousel .individual-image .image-frame:hover .image-frame-previous span, .carousel .individual-image .image-frame:hover .image-frame-next span {
+        opacity: 1;
+        -webkit-transition: opacity 50ms linear;
+        -moz-transition: opacity 50ms linear;
+        transition: opacity 50ms linear; }
+      .carousel .individual-image .image-frame .image-frame-previous, .carousel .individual-image .image-frame .image-frame-next {
+        position: absolute;
+        top: 0;
+        width: 50%;
+        height: 100%;
+        z-index: 2;
+        color: #c0a1e0;
+        font-size: 50px;
+        font-size: 4vw; }
+        .carousel .individual-image .image-frame .image-frame-previous:hover, .carousel .individual-image .image-frame .image-frame-next:hover {
+          color: #c4c4c4; }
+        .carousel .individual-image .image-frame .image-frame-previous span, .carousel .individual-image .image-frame .image-frame-next span {
+          position: absolute;
+          top: 50%;
+          -webkit-transform: translateY(calc(-50%));
+          -moz-transform: translateY(calc(-50%));
+          -ms-transform: translateY(calc(-50%));
+          -o-transform: translateY(calc(-50%));
+          transform: translateY(calc(-50%));
+          opacity: 0;
+          -webkit-transition: opacity 250ms linear;
+          -moz-transition: opacity 250ms linear;
+          transition: opacity 250ms linear; }
+      .carousel .individual-image .image-frame .image-frame-previous {
+        left: 0; }
+        .carousel .individual-image .image-frame .image-frame-previous span {
+          left: 5%; }
+      .carousel .individual-image .image-frame .image-frame-next {
+        right: 0; }
+        .carousel .individual-image .image-frame .image-frame-next span {
+          right: 5%; }

@@ -1,3 +1,6 @@
+// Basic font styles
+
+
 body
   font-family: Helvetica, Arial, sans-serif
   font-size: $base-font-size
@@ -37,11 +40,9 @@ h4
 
 
 a
-  text-decoration: none
-  color: $link-color
+  @include link-color
 
-  &:hover, &.active
-    color: $link-hover-color
+  text-decoration: none
 
   &.active
     cursor: default
@@ -56,7 +57,7 @@ a
 
 .helptext
   color: $helptext-color
-  font-size: 13px
+  font-size: $base-font-size - 3
   font-style: italic
 
 
