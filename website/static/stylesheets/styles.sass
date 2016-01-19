@@ -1,14 +1,29 @@
 // Main styles file
 
 
-$site-background: white
-$whitespace: 40px
+////////////
+// Colors //
+////////////
+
+$light-gray: #e0e0e0
+$lighter-gray: #eee
+$lightest-gray: #f8f8f8
+
+$github-dark-green: #1e6823
+$github-medium-green: #44a340
+$github-light-green: #8cc665
+
+$site-background-color: white
 $base-font-color: #333
-$base-font-size: 16px
-$base-line-height: 130%
+$helptext-color: #888
+
+$error-color: #BB1133
+$success-color: green
+$no-clone-color: #ed865a
 
 $link-color: #8d54c6
 $link-hover-color: #777
+
 
 @mixin link-color()
   color: $link-color
@@ -16,25 +31,26 @@ $link-hover-color: #777
   &:hover, &.active
     color: $link-hover-color
 
+
 @mixin link-color-light()
   color: lighten($link-color, 18%)
 
   &:hover, &.active
     color: lighten($link-hover-color, 18%)
 
-$error-color: #BB1133
-$success-color: green
-$helptext-color: #888
-$no-clone-color: #ed865a
 
-$gray-light: #e0e0e0
-$gray-lighter: #eee
-$gray-lightest: #f8f8f8
+/////////////////////////////////////////////
+// Other variables used across stylesheets //
+/////////////////////////////////////////////
 
-$github-green-dark: #1e6823
-$github-green-medium: #44a340
-$github-green-light: #8cc665
+$whitespace: 40px
+$base-font-size: 16px
+$base-line-height: 130%
 
+
+//////////////////////////////
+// Import other style files //
+//////////////////////////////
 
 @import bourbon/bourbon
 @import reset
