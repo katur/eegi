@@ -93,22 +93,16 @@ a {
   font-size: 13px;
   font-style: italic; }
 
+.error-message, .errorlist {
+  color: #BB1133;
+  font-weight: bold; }
+
 .success-message {
   color: green;
   font-weight: bold; }
 
 .no-clone-message {
   color: #ed865a; }
-
-.error-message, .errorlist {
-  color: #BB1133;
-  font-weight: bold; }
-
-.error-background {
-  background: #BB1133; }
-
-.warning-background {
-  background: #f2738c; }
 
 #header #menu {
   float: left; }
