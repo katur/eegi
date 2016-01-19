@@ -74,7 +74,7 @@ def mutant_knockdown(request, mutant, temperature):
     context['data'] is returned in format:
 
         {date: {
-            'link_to_all': url, 'experiments': [experiments]
+            'experiments': [experiments], 'link_to_all': url,
         }}
     """
     data = OrderedDict()
@@ -127,16 +127,16 @@ def double_knockdown(request, mutant, clones, temperature):
             library_stock: {
                 date: {
                     'mutant_rnai': {
-                        'link_to_all': url, 'experiments': [experiments]
+                        'experiments': [experiments], 'link_to_all': url
                     },
                     'n2_rnai': {
-                        'link_to_all': url, 'experiments': [experiments]
+                        'experiments': [experiments], 'link_to_all': url
                     },
                     'mutant_l4440': {
-                        'link_to_all': url, 'experiments': [experiments]
+                        'experiments': [experiments], 'link_to_all': url
                     },
                     'n2_l4440': {
-                        'link_to_all': url, 'experiments': [experiments]
+                        'experiments': [experiments], 'link_to_all': url
                     },
                 }
             }
@@ -237,8 +237,7 @@ def double_knockdown(request, mutant, clones, temperature):
     return render(request, 'double_knockdown.html', context)
 
 
-def _create_inner_dictionary(filters, join_devstar=True, join_manual=False,
-                             order_by=None, limit=None):
+def _create_inner_dictionary(filters, join_devstar=True, join_manual=False):
     experiments = Experiment.objects.filter(**filters).select_related('plate')
     if join_devstar:
         experiments = experiments.prefetch_related('devstarscore_set')
