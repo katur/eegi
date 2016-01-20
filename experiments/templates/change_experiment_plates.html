@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load extra_tags %}
+
+
+{% block body_id %}change-experiment-plates{% endblock %}
+
+
+{% block page_title %}
+Change experiment plates
+{% endblock %}
+
+
+{% block content %}
+
+You have reached the page to change these
+{{ experiment_plates|length }}
+experiment plates:
+{% for experiment_plate in experiment_plates %}
+{{ experiment_plate.id }}
+{% endfor %}
+
+{% endblock %}

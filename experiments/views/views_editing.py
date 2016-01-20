@@ -9,19 +9,22 @@ from library.models import LibraryPlate
 
 @permission_required(['experiments.change_experiment',
                       'experiments.change_experimentplate]'])
-def update_experiment_plates_and_wells(request):
+def change_experiment_plates(request, pks):
     """Render the page to update bulk experiment plates (and wells)."""
-    experiment_plates = None
-    if request.GET:
-        plate_filter_form = ExperimentPlateFilterForm(request.GET)
-        if plate_filter_form.is_valid():
-            experiment_plates = (plate_filter_form
-                                 .cleaned_data['experiment_plates'])
+    pks = pks.split(',')
+
+    plates = ExperimentPlate.objects.filter(pk__in=pks)
+
+    context = {
+        'experiment_plates': plates,
+    }
+
+    return render(request, 'change_experiment_plates.html', context)
 
 
 @permission_required(['experiments.add_experiment',
                       'experiments.add_experimentplate'])
-def new_experiment_plate_and_wells(request):
+def add_experiment_plate(request):
     """Render the page to add a new experiment plate (and wells)."""
     if request.POST:
         form = NewExperimentPlateAndWellsForm(request.POST)
@@ -53,4 +56,4 @@ def new_experiment_plate_and_wells(request):
         'form': form,
     }
 
-    return render(request, 'new_experiment_plate.html', context)
+    return render(request, 'add_experiment_plate.html', context)

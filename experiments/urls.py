@@ -17,8 +17,11 @@ urlpatterns = [
     url(r'^find-experiment-plates/$', views.find_experiment_plates,
         name='find_experiment_plates_url'),
 
-    url(r'^new-experiment-plate/$', views.new_experiment_plate_and_wells,
-        name='new_experiment_plate_and_wells_url'),
+    url(r'^add-experiment-plate/$', views.add_experiment_plate,
+        name='add_experiment_plate_url'),
+    url(r'^change-experiment-plates/([\d,]+)/$',
+        views.change_experiment_plates,
+        name='change_experiment_plates_url'),
 
     url(r'^single-knockdown/$', views.single_knockdown_search,
         name='single_knockdown_search_url'),

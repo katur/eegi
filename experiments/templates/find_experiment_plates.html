@@ -27,15 +27,18 @@
 
     <span class="vertical-links">
       <a href="{{ vertical_url }}"
-        {% if experiment_plates|length > 500 %}class="inactive-link"{% endif %}
+        {% if experiment_plates|length > 500 %}
+          class="inactive-link"{% endif %}
         >See all thumbnails</a>
 
       <a href="{{ vertical_url }}?mode=big"
-        {% if experiment_plates|length > 50 %}class="inactive-link"{% endif %}
+        {% if experiment_plates|length > 50 %}
+          class="inactive-link"{% endif %}
         >See all large size</a>
 
       <a href="{{ vertical_url }}?mode=devstar"
-        {% if experiment_plates|length > 50 %}class="inactive-link"{% endif %}
+        {% if experiment_plates|length > 50 %}
+          class="inactive-link"{% endif %}
         >See all DevStaR</a>
     </span>
 
@@ -98,9 +101,12 @@
   {% endif %}
 </div>
 
-{% if experiment_plates and perms.experiments.change_experiment and perms.experiments.change_experiment_plate %}
+{% if experiment_plates and perms.experiments.change_experiment and perms.experiments.change_experimentplate %}
 <div class="page-section">
-  You are allowed to edit these plates!
+  {% with c=experiment_plates|get_comma_separated_ids %}
+  <a href="{% url 'change_experiment_plates_url' c %}">
+    Change these plates</a>
+  {% endwith%}
 </div>
 {% endif %}
 
