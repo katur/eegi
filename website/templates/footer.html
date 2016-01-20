@@ -46,6 +46,7 @@
 
   <span id="login">
     {% if user.is_authenticated %}
+    Hi {{ user.first_name }}.
     <a href="{% url 'logout_url' %}?next={{ request.path }}">Logout</a>
 
     {% else %}
