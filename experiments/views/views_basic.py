@@ -1,16 +1,17 @@
 from django.shortcuts import render, get_object_or_404
 
 from experiments.models import Experiment, ExperimentPlate
-from experiments.forms import ExperimentFilterForm, ExperimentPlateFilterForm
+from experiments.forms import (ExperimentWellFilterForm,
+                               ExperimentPlateFilterForm)
 from utils.http import http_response_ok
 from utils.pagination import get_paginated
 
 
 EXPERIMENT_PLATES_PER_PAGE = 100
-EXPERIMENTS_PER_PAGE = 10
+EXPERIMENT_WELLS_PER_PAGE = 10
 
 
-def experiment(request, pk):
+def experiment_well(request, pk):
     """Render the page to see a particular experiment well."""
     experiment = get_object_or_404(Experiment, pk=pk)
 
@@ -29,24 +30,24 @@ def experiment(request, pk):
         'mode': request.GET.get('mode', 'big')
     }
 
-    return render(request, 'experiment.html', context)
+    return render(request, 'experiment_well.html', context)
 
 
-def experiments(request):
+def experiment_wells(request):
     """Render the page showing experiments based on filters."""
     experiments = None
     display_experiments = None
 
     if request.GET:
-        form = ExperimentFilterForm(request.GET)
+        form = ExperimentWellFilterForm(request.GET)
 
         if form.is_valid():
             experiments = form.cleaned_data['experiments']
             display_experiments = get_paginated(request, experiments,
-                                                EXPERIMENTS_PER_PAGE)
+                                                EXPERIMENT_WELLS_PER_PAGE)
 
     else:
-        form = ExperimentFilterForm()
+        form = ExperimentWellFilterForm()
 
     context = {
         'form': form,
@@ -54,7 +55,7 @@ def experiments(request):
         'display_experiments': display_experiments,
     }
 
-    return render(request, 'experiments.html', context)
+    return render(request, 'experiment_wells.html', context)
 
 
 def experiment_plate(request, pk):

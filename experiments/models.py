@@ -84,7 +84,7 @@ class Experiment(models.Model):
         return str(self.id)
 
     def get_absolute_url(self):
-        return reverse('experiments.views.experiment', args=[self.id])
+        return reverse('experiments.views.experiment_well', args=[self.id])
 
     def is_control(self):
         return self.has_control_worm() or self.has_control_clone()

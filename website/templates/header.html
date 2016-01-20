@@ -8,8 +8,8 @@
   {% url 'worms_url' as worms_url %}
   {% url 'clones_url' as clones_url %}
   {% url 'library_plates_url' as library_plates_url %}
-  {% url 'experiments_url' as experiments_url %}
   {% url 'experiment_plates_url' as experiment_plates_url %}
+  {% url 'experiment_wells_url' as experiment_wells_url %}
   {% url 'single_knockdown_search_url' as single_knockdown_search_url %}
   {% url 'double_knockdown_search_url' as double_knockdown_search_url %}
   {% url 'secondary_scores_search_url' as secondary_scores_search_url %}
@@ -36,18 +36,18 @@
     Library
   </a>
 
-  <a href="{{ experiments_url }}"
-      {% ifequal request.path experiments_url %}
-      class="active"
-      {% endifequal %}>
-    Experiment Wells
-  </a>
-
   <a href="{{ experiment_plates_url }}"
       {% ifequal request.path experiment_plates_url %}
       class="active"
       {% endifequal %}>
     Experiment Plates
+  </a>
+
+  <a href="{{ experiment_wells_url }}"
+      {% ifequal request.path experiment_wells_url %}
+      class="active"
+      {% endifequal %}>
+    Experiment Wells
   </a>
 
   <a href="{{ single_knockdown_search_url }}"
