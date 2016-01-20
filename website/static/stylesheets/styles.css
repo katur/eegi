@@ -387,20 +387,20 @@ form table th, form table td {
   clear: both; }
 #experiments #form-section #form-errors, #experiment-plates #form-section #form-errors {
   margin-bottom: 40px; }
-#experiments #form-section p, #experiments #form-section ul, #experiment-plates #form-section p, #experiment-plates #form-section ul {
+#experiments #form-section .field, #experiment-plates #form-section .field {
   float: left;
   width: 45%;
   padding-bottom: 12px; }
-  #experiments #form-section p:nth-child(odd), #experiments #form-section ul:nth-child(odd), #experiment-plates #form-section p:nth-child(odd), #experiment-plates #form-section ul:nth-child(odd) {
+  #experiments #form-section .field:nth-child(odd), #experiment-plates #form-section .field:nth-child(odd) {
     clear: left; }
-  #experiments #form-section p:nth-child(even), #experiments #form-section ul:nth-child(even), #experiment-plates #form-section p:nth-child(even), #experiment-plates #form-section ul:nth-child(even) {
+  #experiments #form-section .field:nth-child(even), #experiment-plates #form-section .field:nth-child(even) {
     clear: right; }
-  #experiments #form-section p.submit, #experiments #form-section ul.submit, #experiment-plates #form-section p.submit, #experiment-plates #form-section ul.submit {
+  #experiments #form-section .field#submit, #experiment-plates #form-section .field#submit {
     clear: both; }
-#experiments #form-section #id_plate__temperature__in, #experiment-plates #form-section #id_plate__temperature__in {
-  width: 50px; }
-#experiments #form-section #id_worm_strain, #experiment-plates #form-section #id_worm_strain {
-  width: 150px; }
+  #experiments #form-section .field #id_plate__temperature__in, #experiment-plates #form-section .field #id_plate__temperature__in {
+    width: 50px; }
+  #experiments #form-section .field #id_worm_strain, #experiment-plates #form-section .field #id_worm_strain {
+    width: 150px; }
 #experiments #experiment-results, #experiment-plates #experiment-results {
   width: 100%; }
 #experiments .vertical-links a, #experiment-plates .vertical-links a {
