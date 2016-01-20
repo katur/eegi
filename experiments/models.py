@@ -36,8 +36,7 @@ class ExperimentPlate(models.Model):
         return str(self.id)
 
     def get_absolute_url(self):
-        return reverse('experiments.views.experiment_plate',
-                       args=[self.id])
+        return reverse('experiment_plate_url', args=[self.id])
 
     def get_experiments(self):
         experiments = (self.experiment_set
@@ -84,7 +83,7 @@ class Experiment(models.Model):
         return str(self.id)
 
     def get_absolute_url(self):
-        return reverse('experiments.views.experiment_well', args=[self.id])
+        return reverse('experiment_well_url', args=[self.id])
 
     def is_control(self):
         return self.has_control_worm() or self.has_control_clone()

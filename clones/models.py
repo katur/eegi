@@ -20,7 +20,7 @@ class Clone(models.Model):
         return self.id
 
     def get_absolute_url(self):
-        return reverse('clones.views.clone', args=[self.id])
+        return reverse('clone_url', args=[self.id])
 
     def is_control(self):
         return self.id == 'L4440'
