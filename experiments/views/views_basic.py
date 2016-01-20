@@ -52,7 +52,7 @@ def vertical_experiment_plates(request, pks):
     """Render the page to view experiment plate images vertically."""
     pks = pks.split(',')
 
-    # NOTE: To preserve order, do not do .filter(id__in=ids)
+    # NOTE: To preserve order, do not do .filter(pk__in=pks)
     plates = [get_object_or_404(ExperimentPlate, pk=pk) for pk in pks]
 
     context = {
