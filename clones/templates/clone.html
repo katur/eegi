@@ -37,6 +37,9 @@
 
 <div class="page-section">
   <h4>Gene Targets</h4>
+  {% with targets=clone.get_targets %}
+
+  {% if targets %}
   <table class="grayscale striped nice-padding">
     <thead>
       <tr>
@@ -62,13 +65,16 @@
         <td>{{ target.gene.gene_class_description }}</td>
         <td>{{ target.gene.functional_description }}</td>
       </tr>
-
-      {% empty %}
-        No gene targets according to Firoz's database.
       {% endfor %}
     </tbody>
-
   </table>
+
+  {% else %}
+  No gene targets according to Firoz's database.
+  {% endif %}
+
+  {% endwith %}
+
 </div>
 
 {% endblock %}
