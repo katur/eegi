@@ -8,11 +8,11 @@ var sassFiles = '**/*.sass';
 var sassMain = 'website/static/stylesheets/styles.sass';
 var cssDir = 'website/static/stylesheets/';
 
-var coffeeFiles = 'website/static/js/*.coffee';
-var jsDir = 'website/static/js/';
+var coffeeFiles = '**/*.coffee';
 
 gulp.task('default', function() {
-  gulp.start('compileSass', 'compileCoffee')
+  gulp.run('compileSass')
+  gulp.run('compileCoffee')
   gulp.watch(sassFiles, ['compileSass']);
   gulp.watch(coffeeFiles, ['compileCoffee']);
 });
@@ -27,5 +27,6 @@ gulp.task('compileCoffee', function() {
   return gulp.src(coffeeFiles)
     .pipe(plumber())
     .pipe(coffee().on('error', util.log))
-    .pipe(gulp.dest(jsDir));
+    // write js to same dir as coffee
+    .pipe(gulp.dest(''));
 });
