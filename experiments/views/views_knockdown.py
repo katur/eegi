@@ -105,7 +105,7 @@ def mutant_knockdown(request, mutant, temperature):
         inner_filters['plate__date'] = date
 
         data[date]['link_to_all'] = build_url(
-            'experiments.views.experiment_wells', get=inner_filters)
+            'find_experiment_wells_url', get=inner_filters)
 
     context = {
         'mutant': mutant,
@@ -247,6 +247,5 @@ def _create_inner_dictionary(filters, join_devstar=True, join_manual=False):
 
     d = {}
     d['experiments'] = experiments
-    d['link_to_all'] = build_url('experiments.views.experiment_wells',
-                                 get=filters)
+    d['link_to_all'] = build_url('find_experiment_wells_url', get=filters)
     return d
