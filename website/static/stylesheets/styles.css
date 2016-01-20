@@ -360,50 +360,50 @@ form table th, form table td {
   #experiment-plate .vertical-links a {
     margin-right: 40px; }
 
-#experiment-plates-vertical .plate-96 {
+#vertical-experiment-plates .plate-96 {
   min-width: 320px;
   float: left; }
-  #experiment-plates-vertical .plate-96.mode-devstar, #experiment-plates-vertical .plate-96.mode-big {
+  #vertical-experiment-plates .plate-96.mode-devstar, #vertical-experiment-plates .plate-96.mode-big {
     min-width: 1000px; }
 
-#experiment-plate .plate-96 td, #experiment-plates-vertical .plate-96 td {
+#experiment-plate .plate-96 td, #vertical-experiment-plates .plate-96 td {
   background: black;
   color: #e0e0e0; }
-#experiment-plate .plate-96 .well-caption a, #experiment-plates-vertical .plate-96 .well-caption a {
+#experiment-plate .plate-96 .well-caption a, #vertical-experiment-plates .plate-96 .well-caption a {
   color: #bb99dd; }
-  #experiment-plate .plate-96 .well-caption a:hover, #experiment-plate .plate-96 .well-caption a.active, #experiment-plates-vertical .plate-96 .well-caption a:hover, #experiment-plates-vertical .plate-96 .well-caption a.active {
+  #experiment-plate .plate-96 .well-caption a:hover, #experiment-plate .plate-96 .well-caption a.active, #vertical-experiment-plates .plate-96 .well-caption a:hover, #vertical-experiment-plates .plate-96 .well-caption a.active {
     color: #a5a5a5; }
 
-#experiments table {
+#find-experiment-wells table {
   width: 100%;
   float: left;
   margin-bottom: 40px; }
-  #experiments table td .image-frame {
+  #find-experiment-wells table td .image-frame {
     width: 100%;
     float: left; }
 
-#experiments #form-section #form-errors, #experiments #form-section #clear-form, #experiment-plates #form-section #form-errors, #experiment-plates #form-section #clear-form {
+#find-experiment-wells #form-section #form-errors, #find-experiment-wells #form-section #clear-form, #find-experiment-plates #form-section #form-errors, #find-experiment-plates #form-section #clear-form {
   float: left;
   clear: both; }
-#experiments #form-section #form-errors, #experiment-plates #form-section #form-errors {
+#find-experiment-wells #form-section #form-errors, #find-experiment-plates #form-section #form-errors {
   margin-bottom: 40px; }
-#experiments #form-section .field, #experiment-plates #form-section .field {
+#find-experiment-wells #form-section .field, #find-experiment-plates #form-section .field {
   float: left;
   width: 45%;
   padding-bottom: 12px; }
-  #experiments #form-section .field:nth-child(odd), #experiment-plates #form-section .field:nth-child(odd) {
+  #find-experiment-wells #form-section .field:nth-child(odd), #find-experiment-plates #form-section .field:nth-child(odd) {
     clear: left; }
-  #experiments #form-section .field:nth-child(even), #experiment-plates #form-section .field:nth-child(even) {
+  #find-experiment-wells #form-section .field:nth-child(even), #find-experiment-plates #form-section .field:nth-child(even) {
     clear: right; }
-  #experiments #form-section .field#submit, #experiment-plates #form-section .field#submit {
+  #find-experiment-wells #form-section .field#submit, #find-experiment-plates #form-section .field#submit {
     clear: both; }
-  #experiments #form-section .field #id_plate__temperature__in, #experiment-plates #form-section .field #id_plate__temperature__in {
+  #find-experiment-wells #form-section .field #id_plate__temperature__in, #find-experiment-plates #form-section .field #id_plate__temperature__in {
     width: 50px; }
-  #experiments #form-section .field #id_worm_strain, #experiment-plates #form-section .field #id_worm_strain {
+  #find-experiment-wells #form-section .field #id_worm_strain, #find-experiment-plates #form-section .field #id_worm_strain {
     width: 150px; }
-#experiments #experiment-results, #experiment-plates #experiment-results {
+#find-experiment-wells #experiment-results, #find-experiment-plates #experiment-results {
   width: 100%; }
-#experiments .vertical-links a, #experiment-plates .vertical-links a {
+#find-experiment-wells .vertical-links a, #find-experiment-plates .vertical-links a {
   margin-left: 40px; }
 
 .knockdown-clone-section h4 {

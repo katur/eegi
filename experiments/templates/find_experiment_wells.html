@@ -2,7 +2,7 @@
 {% load extra_tags %}
 
 
-{% block body_id %}experiments{% endblock %}
+{% block body_id %}find-experiment-wells{% endblock %}
 
 
 {% block page_title %}Find Experiment Wells{% endblock %}
@@ -10,7 +10,7 @@
 
 {% block content %}
 
-{% include 'experiment_filters.html' %}
+{% include 'find_experiment_form.html' %}
 
 <div class="page-section">
   {% ifnotequal experiments None %}

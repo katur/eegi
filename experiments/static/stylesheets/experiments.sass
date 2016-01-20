@@ -1,9 +1,9 @@
 $max-image-width: 1300px
 
 
-///////////////////////////////////////
-// Basic experiment navigation pages //
-///////////////////////////////////////
+////////////////////////////////////
+// Basic experiment display pages //
+////////////////////////////////////
 
 #experiment
   .links
@@ -24,7 +24,7 @@ $max-image-width: 1300px
       margin-right: $whitespace
 
 
-#experiment-plates-vertical
+#vertical-experiment-plates
   .plate-96
     min-width: 320px
     float: left
@@ -33,7 +33,7 @@ $max-image-width: 1300px
       min-width: 1000px
 
 
-#experiment-plate, #experiment-plates-vertical
+#experiment-plate, #vertical-experiment-plates
   .plate-96
     td
       background: black
@@ -44,7 +44,11 @@ $max-image-width: 1300px
         @include link-color-light()
 
 
-#experiments
+///////////////////////////////////
+// Basic experiment search pages //
+///////////////////////////////////
+
+#find-experiment-wells
   table
     width: 100%
     float: left
@@ -56,7 +60,7 @@ $max-image-width: 1300px
         float: left
 
 
-#experiments, #experiment-plates
+#find-experiment-wells, #find-experiment-plates
   #form-section
     #form-errors, #clear-form
       float: left

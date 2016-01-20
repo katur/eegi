@@ -16,16 +16,19 @@ Experiment Plate {{ experiment_plate.id }}
 </div>
 
 <div class="page-section">
+  {% url 'vertical_experiment_plates_url' experiment_plate.id as vertical_url %}
+
   <span class="vertical-links">
-    <a href="{% url 'experiment_plates_vertical_url' experiment_plate.id %}">
+    <a href="{{ vertical_url }}">
       See vertical thumbnails</a>
 
-    <a href="{% url 'experiment_plates_vertical_url' experiment_plate.id %}?mode=big">
+    <a href="{{ vertical_url }}?mode=big">
       See vertical full-size</a>
 
-    <a href="{% url 'experiment_plates_vertical_url' experiment_plate.id %}?mode=devstar">
+    <a href="{{ vertical_url }}?mode=devstar">
       See vertical DevStaR</a>
   </span>
+
   {% include 'plate.html' with wells=experiments is_experiment=True %}
 </div>
 

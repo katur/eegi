@@ -2,7 +2,7 @@
 {% load extra_tags %}
 
 
-{% block body_id %}experiment-plates{% endblock %}
+{% block body_id %}find-experiment-plates{% endblock %}
 
 
 {% block page_title %}Find Experiment Plates{% endblock %}
@@ -10,7 +10,7 @@
 
 {% block content %}
 
-{% include 'experiment_filters.html' %}
+{% include 'find_experiment_form.html' %}
 
 <div class="page-section">
   {% ifnotequal experiment_plates None %}
@@ -23,20 +23,20 @@
     {% if experiment_plates %}
 
     {% with c=experiment_plates|get_comma_separated_ids %}
-    {% url 'experiment_plates_vertical_url' c as vertical_url %}
+    {% url 'vertical_experiment_plates_url' c as vertical_url %}
 
     <span class="vertical-links">
       <a href="{{ vertical_url }}"
-          {% if experiment_plates|length > 500 %}class="inactive-link"{% endif %}>
-        See all thumbnails</a>
+        {% if experiment_plates|length > 500 %}class="inactive-link"{% endif %}
+        >See all thumbnails</a>
 
       <a href="{{ vertical_url }}?mode=big"
-          {% if experiment_plates|length > 50 %}class="inactive-link"{% endif %}>
-        See all full-size</a>
+        {% if experiment_plates|length > 50 %}class="inactive-link"{% endif %}
+        >See all full-size</a>
 
       <a href="{{ vertical_url }}?mode=devstar"
-          {% if experiment_plates|length > 50 %}class="inactive-link"{% endif %}>
-        See all DevStaR</a>
+        {% if experiment_plates|length > 50 %}class="inactive-link"{% endif %}
+        >See all DevStaR</a>
     </span>
 
     {% include 'pagination_status.html' with paginated=display_plates %}

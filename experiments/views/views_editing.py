@@ -7,11 +7,22 @@ from experiments.forms import NewExperimentPlateAndWellsForm
 from library.models import LibraryPlate
 
 
+@permission_required(['experiments.change_experiment',
+                      'experiments.change_experimentplate]'])
+def update_experiment_plates_and_wells(request):
+    """Render the page to update bulk experiment plates (and wells)."""
+    experiment_plates = None
+    if request.GET:
+        plate_filter_form = ExperimentPlateFilterForm(request.GET)
+        if plate_filter_form.is_valid():
+            experiment_plates = (plate_filter_form
+                                 .cleaned_data['experiment_plates'])
+
+
 @permission_required(['experiments.add_experiment',
-                      'experiments.add_experimentplage'])
+                      'experiments.add_experimentplate'])
 def new_experiment_plate_and_wells(request):
     """Render the page to add a new experiment plate (and wells)."""
-
     if request.POST:
         form = NewExperimentPlateAndWellsForm(request.POST)
 

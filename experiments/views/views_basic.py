@@ -33,8 +33,40 @@ def experiment_well(request, pk):
     return render(request, 'experiment_well.html', context)
 
 
-def experiment_wells(request):
-    """Render the page showing experiments based on filters."""
+def experiment_plate(request, pk):
+    """Render the page to see a particular experiment plate."""
+    experiment_plate = get_object_or_404(ExperimentPlate, pk=pk)
+
+    context = {
+        'experiment_plate': experiment_plate,
+        'experiments': experiment_plate.get_experiments(),
+
+        # Default to thumbnail images
+        'mode': request.GET.get('mode', 'thumbnail'),
+    }
+
+    return render(request, 'experiment_plate.html', context)
+
+
+def vertical_experiment_plates(request, pks):
+    """Render the page to view experiment plate images vertically."""
+    pks = pks.split(',')
+
+    # NOTE: To preserve order, do not do .filter(id__in=ids)
+    plates = [get_object_or_404(ExperimentPlate, pk=pk) for pk in pks]
+
+    context = {
+        'experiment_plates': plates,
+
+        # Default to thumbnail
+        'mode': request.GET.get('mode', 'thumbnail')
+    }
+
+    return render(request, 'vertical_experiment_plates.html', context)
+
+
+def find_experiment_wells(request):
+    """Render the page to find experiment wells based on filters."""
     experiments = None
     display_experiments = None
 
@@ -55,26 +87,11 @@ def experiment_wells(request):
         'display_experiments': display_experiments,
     }
 
-    return render(request, 'experiment_wells.html', context)
+    return render(request, 'find_experiment_wells.html', context)
 
 
-def experiment_plate(request, pk):
-    """Render the page to see a particular experiment plate."""
-    experiment_plate = get_object_or_404(ExperimentPlate, pk=pk)
-
-    context = {
-        'experiment_plate': experiment_plate,
-        'experiments': experiment_plate.get_experiments(),
-
-        # Default to thumbnail images
-        'mode': request.GET.get('mode', 'thumbnail'),
-    }
-
-    return render(request, 'experiment_plate.html', context)
-
-
-def experiment_plates(request, context=None):
-    """Render the page to search for experiment plates."""
+def find_experiment_plates(request, context=None):
+    """Render the page to find experiment plates based on filters."""
     experiment_plates = None
     display_plates = None
 
@@ -95,21 +112,4 @@ def experiment_plates(request, context=None):
         'display_plates': display_plates,
     }
 
-    return render(request, 'experiment_plates.html', context)
-
-
-def experiment_plates_vertical(request, pks):
-    """Render the page to view experiment plate images vertically."""
-    pks = pks.split(',')
-
-    # NOTE: To preserve order, do not do .filter(id__in=ids)
-    plates = [get_object_or_404(ExperimentPlate, pk=pk) for pk in pks]
-
-    context = {
-        'experiment_plates': plates,
-
-        # Default to thumbnail
-        'mode': request.GET.get('mode', 'thumbnail')
-    }
-
-    return render(request, 'experiment_plates_vertical.html', context)
+    return render(request, 'find_experiment_plates.html', context)
