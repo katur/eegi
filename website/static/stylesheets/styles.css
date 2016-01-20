@@ -395,7 +395,7 @@ form table th, form table td {
     clear: left; }
   #find-experiment-wells #form-section .field:nth-child(even), #find-experiment-plates #form-section .field:nth-child(even) {
     clear: right; }
-  #find-experiment-wells #form-section .field#submit, #find-experiment-plates #form-section .field#submit {
+  #find-experiment-wells #form-section .field.submit, #find-experiment-plates #form-section .field.submit {
     clear: both; }
   #find-experiment-wells #form-section .field #id_plate__temperature__in, #find-experiment-plates #form-section .field #id_plate__temperature__in {
     width: 50px; }
