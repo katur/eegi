@@ -3,7 +3,7 @@ from django.shortcuts import redirect, render
 
 from experiments.helpers.create import save_new_experiment_plate_and_wells
 from experiments.models import Experiment, ExperimentPlate
-from experiments.forms import NewExperimentPlateAndWellsForm
+from experiments.forms import AddExperimentPlateForm
 from library.models import LibraryPlate
 
 
@@ -27,7 +27,7 @@ def change_experiment_plates(request, pks):
 def add_experiment_plate(request):
     """Render the page to add a new experiment plate (and wells)."""
     if request.POST:
-        form = NewExperimentPlateAndWellsForm(request.POST)
+        form = AddExperimentPlateForm(request.POST)
 
         if form.is_valid():
             data = form.cleaned_data
@@ -50,7 +50,7 @@ def add_experiment_plate(request):
             return redirect('experiment_plate_url', plate_id)
 
     else:
-        form = NewExperimentPlateAndWellsForm()
+        form = AddExperimentPlateForm()
 
     context = {
         'form': form,

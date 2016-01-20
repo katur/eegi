@@ -37,18 +37,6 @@ class TemperatureChoiceField(forms.ChoiceField):
         super(TemperatureChoiceField, self).__init__(**kwargs)
 
 
-def validate_new_experiment_plate_id(x):
-    """
-    Validate that x is a valid ID for a new experiment plate.
-    """
-    if x <= 0:
-        raise forms.ValidationError('ExperimentPlate ID must be positive')
-
-    if ExperimentPlate.objects.filter(pk=x).count():
-        raise forms.ValidationError('ExperimentPlate ID {} already exists'
-                                    .format(x))
-
-
 class ExperimentFilterFormBase(forms.Form):
     """
     Base class for filtering Experiment and ExperimentPlate instances.
@@ -175,7 +163,19 @@ class ExperimentWellFilterForm(ExperimentFilterFormBase):
         return cleaned_data
 
 
-class NewExperimentPlateAndWellsForm(forms.Form):
+def validate_new_experiment_plate_id(x):
+    """
+    Validate that x is a valid ID for a new experiment plate.
+    """
+    if x <= 0:
+        raise forms.ValidationError('ExperimentPlate ID must be positive')
+
+    if ExperimentPlate.objects.filter(pk=x).count():
+        raise forms.ValidationError('ExperimentPlate ID {} already exists'
+                                    .format(x))
+
+
+class AddExperimentPlateForm(forms.Form):
     """
     Form for adding a new experiment plate (along with its wells).
 
