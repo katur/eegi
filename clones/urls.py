@@ -1,8 +1,9 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+
+from . import views
 
 
-urlpatterns = patterns(
-    'clones.views',
-    url(r'^clones/$', 'clones', name='clones_url'),
-    url(r'^clone/([^/]*)/$', 'clone', name='clone_url'),
-)
+urlpatterns = [
+    url(r'^clones/$', views.clones, name='clones_url'),
+    url(r'^clone/([^/]*)/$', views.clone, name='clone_url'),
+]
