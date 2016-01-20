@@ -8,7 +8,7 @@ from library.models import LibraryPlate
 
 
 @permission_required(['experiments.change_experiment',
-                      'experiments.change_experimentplate]'])
+                      'experiments.change_experimentplate'])
 def change_experiment_plates(request, pks):
     """Render the page to update bulk experiment plates (and wells)."""
     pks = pks.split(',')
