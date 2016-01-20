@@ -4,8 +4,7 @@ from django.core.validators import MinLengthValidator
 from clones.forms import RNAiKnockdownField
 from experiments.models import Experiment, ExperimentPlate
 from library.forms import validate_library_plate_name_exists
-from utils.forms import (EMPTY_CHOICE, BlankNullBooleanSelect, RangeField,
-                         reorder_fields)
+from utils.forms import EMPTY_CHOICE, BlankNullBooleanSelect, RangeField
 from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
                          WormChoiceField, clean_mutant_query_and_screen_type)
 
@@ -90,19 +89,13 @@ class ExperimentPlateFilterForm(ExperimentFilterFormBase):
         required=False, initial=None, label="Has junk",
         widget=BlankNullBooleanSelect)
 
-
-    def __init__(self, *args, **kwargs):
-        super(ExperimentPlateFilterForm, self).__init__(*args, **kwargs)
-
-        key_order = [
-            'plate__id', 'plate__id__range',
-            'plate__date',  'plate__date__range',
-            'plate__temperature', 'plate__temperature__range',
-            'worm_strain', 'plate__screen_stage',
-            'library_stock__plate', 'is_junk',
-        ]
-
-        reorder_fields(self, key_order)
+    field_order = [
+        'plate__id', 'plate__id__range',
+        'plate__date',  'plate__date__range',
+        'plate__temperature', 'plate__temperature__range',
+        'worm_strain', 'plate__screen_stage',
+        'library_stock__plate', 'is_junk',
+    ]
 
     def clean(self):
         cleaned_data = super(ExperimentPlateFilterForm, self).clean()
@@ -146,18 +139,13 @@ class ExperimentWellFilterForm(ExperimentFilterFormBase):
     is_junk = forms.NullBooleanField(
         required=False, initial=None, widget=BlankNullBooleanSelect)
 
-    def __init__(self, *args, **kwargs):
-        super(ExperimentWellFilterForm, self).__init__(*args, **kwargs)
-
-        key_order = [
-            'id', 'plate__id', 'well',
-            'plate__date', 'plate__temperature',
-            'worm_strain', 'plate__screen_stage',
-            'library_stock', 'library_stock__intended_clone',
-            'exclude_l4440', 'is_junk',
-        ]
-
-        reorder_fields(self, key_order)
+    field_order = [
+        'id', 'plate__id', 'well',
+        'plate__date', 'plate__temperature',
+        'worm_strain', 'plate__screen_stage',
+        'library_stock', 'library_stock__intended_clone',
+        'exclude_l4440', 'is_junk',
+    ]
 
     def clean(self):
         cleaned_data = super(ExperimentWellFilterForm, self).clean()

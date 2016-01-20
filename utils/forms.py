@@ -9,21 +9,6 @@ from django.template.loader import render_to_string
 EMPTY_CHOICE = ('', '---------')
 
 
-def reorder_fields(obj, key_order):
-    """
-    Reorder obj.fields in the order determined by key_order.
-
-    Use this function to set the field order for a forms.Form object.
-    (NOTE: While the field order can be changed for a forms.ModelForm by
-    setting the Meta 'fields' option, this does not work for a forms.Form.)
-    """
-    original_fields = obj.fields
-    new_fields = OrderedDict()
-    for key in key_order:
-        new_fields[key] = original_fields[key]
-    obj.fields = new_fields
-
-
 class BlankNullBooleanSelect(forms.NullBooleanSelect):
     def __init__(self, attrs=None):
         choices = ((u'1', u'---'),
