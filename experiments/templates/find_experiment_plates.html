@@ -18,12 +18,14 @@
   {% include 'experiment_plates_table_results.html' %}
 </div>
 
-{% if experiment_plates and perms.experiments.change_experiment and perms.experiments.change_experimentplate %}
+{% if experiment_plates and request.user|can_change_experiments %}
 <div class="page-section">
   {% with c=experiment_plates|get_comma_separated_ids %}
+
   <a href="{% url 'change_experiment_plates_url' c %}">
     Change th{{ experiment_plates|pluralize:'is,ese' }}
     plate{{ experiment_plates|pluralize }}</a>
+
   {% endwith%}
 </div>
 {% endif %}

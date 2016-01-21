@@ -5,6 +5,12 @@ from utils.well_tile_conversion import well_to_tile
 register = template.Library()
 
 
+@register.filter
+def can_change_experiments(user):
+    return user.has_perms(['experiments.change_experiment',
+                           'experiments.change_experimentplate'])
+
+
 @register.simple_tag
 def url_replace(request, field, value):
     """
