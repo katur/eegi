@@ -147,8 +147,9 @@ a {
   color: green;
   font-weight: bold; }
 
-.no-clone-message {
-  color: #ed865a; }
+.warning-message {
+  color: #ed865a;
+  font-weight: bold; }
 
 hr {
   height: 1px;
