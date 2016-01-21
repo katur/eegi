@@ -3,7 +3,7 @@ from django.core.validators import MinLengthValidator
 
 from clones.forms import RNAiKnockdownField
 from experiments.models import Experiment, ExperimentPlate
-from library.forms import validate_library_plate_name_exists
+from library.forms import LibraryPlateField
 from utils.forms import EMPTY_CHOICE, BlankNullBooleanSelect, RangeField
 from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
                          WormChoiceField, clean_mutant_query_and_screen_type)
@@ -35,6 +35,18 @@ class TemperatureChoiceField(forms.ChoiceField):
             kwargs['choices'] = choices
 
         super(TemperatureChoiceField, self).__init__(**kwargs)
+
+
+def validate_new_experiment_plate_id(x):
+    """
+    Validate that x is a valid ID for a new experiment plate.
+    """
+    if x <= 0:
+        raise forms.ValidationError('ExperimentPlate ID must be positive')
+
+    if ExperimentPlate.objects.filter(pk=x).count():
+        raise forms.ValidationError('ExperimentPlate ID {} already exists'
+                                    .format(x))
 
 
 class ExperimentFilterFormBase(forms.Form):
@@ -69,9 +81,8 @@ class ExperimentPlateFilterForm(ExperimentFilterFormBase):
     plate__temperature__range = RangeField(
         forms.DecimalField, required=False, label='Temperature range')
 
-    library_stock__plate = forms.CharField(
-        required=False, label='Library plate', help_text='e.g. II-3-B2',
-        validators=[validate_library_plate_name_exists])
+    library_stock__plate = LibraryPlateField(
+        required=False, label='Library plate', help_text='e.g. II-3-B2')
 
     is_junk = forms.NullBooleanField(
         required=False, initial=None, label="Has junk",
@@ -163,21 +174,12 @@ class ExperimentWellFilterForm(ExperimentFilterFormBase):
         return cleaned_data
 
 
-def validate_new_experiment_plate_id(x):
-    """
-    Validate that x is a valid ID for a new experiment plate.
-    """
-    if x <= 0:
-        raise forms.ValidationError('ExperimentPlate ID must be positive')
-
-    if ExperimentPlate.objects.filter(pk=x).count():
-        raise forms.ValidationError('ExperimentPlate ID {} already exists'
-                                    .format(x))
-
-
 class AddExperimentPlateForm(forms.Form):
     """
-    Form for adding a new experiment plate (along with its wells).
+    Form for adding a new experiment plate.
+
+    Adding a new experiment plate also adds the corresponding
+    expeirment wells.
 
     This form makes certain assumptions about the experiment plate:
         - it comes from one library plate
@@ -185,19 +187,50 @@ class AddExperimentPlateForm(forms.Form):
         - the whole plate is or is not junk
     """
 
-    plate_id = forms.IntegerField(
+    experiment_plate_id = forms.IntegerField(
         required=True,
         validators=[validate_new_experiment_plate_id])
     screen_stage = ScreenStageChoiceField(required=True)
     date = forms.DateField(required=True)
     temperature = forms.DecimalField(required=True)
     worm_strain = WormChoiceField(required=True)
-    library_plate = forms.CharField(
-        required=True,
-        validators=[validate_library_plate_name_exists])
+    library_plate = LibraryPlateField(required=True)
     is_junk = forms.BooleanField(initial=False, required=False)
     plate_comment = forms.CharField(required=False)
     well_comment = forms.CharField(required=False)
+
+
+class ChangeExperimentPlatesForm(forms.Form):
+    """
+    Form for updating multiple experiment plates.
+
+    Depending on what field(s) are being updated, the corresponding
+    experiment wells might be updated as well.
+
+    Keep in mind the following assumptions that will apply if
+    updating one of the following fields:
+        - each experiment plate comes from one library plate
+        - each experiment plate has only one worm strain
+        - each experiment plate is or is not junk
+    """
+    # Plate-level fields
+    screen_stage = ScreenStageChoiceField(required=False)
+    date = forms.DateField(required=False)
+    temperature = forms.DecimalField(required=False)
+    comment = forms.CharField(required=False, label='Plate comment')
+
+    # Well-level fields
+    worm_strain = WormChoiceField(required=False)
+    is_junk = forms.NullBooleanField(
+        required=False, initial=None, widget=BlankNullBooleanSelect)
+
+    # Other
+    library_plate = LibraryPlateField(required=False)
+    clear_plate_comment = forms.BooleanField(required=False)
+
+    field_order = [
+        'screen_stage', 'date', 'temperature', 'worm_strain',
+        'library_plate', 'is_junk', 'plate_comment', 'well_comment']
 
 
 class RNAiKnockdownForm(forms.Form):
