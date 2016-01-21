@@ -316,7 +316,7 @@ form table th, form table td {
   .plate-96 .empty-well .well-caption {
     font-weight: bold;
     color: #ed865a; }
-  .plate-96 .junk-well {
+  .plate-96 .junk-well .well-title, .plate-96 .junk-well .well-caption {
     background: #BB1133; }
 
 #clones #results-header, #clones table {
@@ -401,10 +401,11 @@ form table th, form table td {
     width: 50px; }
   #find-experiment-wells #form-section .field #id_worm_strain, #find-experiment-plates #form-section .field #id_worm_strain {
     width: 150px; }
-#find-experiment-wells #experiment-results, #find-experiment-plates #experiment-results {
-  width: 100%; }
-#find-experiment-wells .vertical-links a, #find-experiment-plates .vertical-links a {
+
+#find-experiment-plates .vertical-links a, #change-experiment-plates .vertical-links a {
   margin-left: 40px; }
+#find-experiment-plates table#experiment-results, #change-experiment-plates table#experiment-results {
+  width: 100%; }
 
 .knockdown-clone-section h4 {
   width: 100%;

@@ -10,7 +10,9 @@
 
 {% block content %}
 
-{% include 'find_experiment_form.html' %}
+<div class="page-section">
+  {% include 'find_experiment_form.html' %}
+</div>
 
 <div class="page-section">
   {% ifnotequal experiments None %}

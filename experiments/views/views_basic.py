@@ -1,13 +1,17 @@
-from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import permission_required
+from django.shortcuts import redirect, render, get_object_or_404
 
+from experiments.helpers.new import save_new_experiment_plate_and_wells
 from experiments.models import Experiment, ExperimentPlate
-from experiments.forms import (ExperimentWellFilterForm,
-                               ExperimentPlateFilterForm)
+from experiments.forms import (
+    ExperimentWellFilterForm, ExperimentPlateFilterForm,
+    AddExperimentPlateForm, ChangeExperimentPlatesForm
+)
 from utils.http import http_response_ok
 from utils.pagination import get_paginated
 
 
-EXPERIMENT_PLATES_PER_PAGE = 100
+EXPERIMENT_PLATES_PER_PAGE = 30
 EXPERIMENT_WELLS_PER_PAGE = 10
 
 
@@ -113,3 +117,99 @@ def find_experiment_plates(request, context=None):
     }
 
     return render(request, 'find_experiment_plates.html', context)
+
+
+@permission_required(['experiments.add_experiment',
+                      'experiments.add_experimentplate'])
+def add_experiment_plate(request):
+    """
+    Render the page to add a new experiment plate.
+
+    Adding an experiment plate also adds the corresponding experiment wells.
+    """
+    if request.POST:
+        form = AddExperimentPlateForm(request.POST)
+
+        if form.is_valid():
+            data = form.cleaned_data
+            experiment_plate_id = data['experiment_plate_id']
+
+            save_new_experiment_plate_and_wells(
+                experiment_plate_id, data['screen_stage'], data['date'],
+                data['temperature'], data['worm_strain'],
+                data['library_plate'], data['is_junk'],
+                data['plate_comment'], data['well_comment'])
+
+            plate = ExperimentPlate.objects.get(id=experiment_plate_id)
+
+            return redirect('experiment_plate_url', experiment_plate_id)
+
+    else:
+        form = AddExperimentPlateForm()
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'add_experiment_plate.html', context)
+
+
+@permission_required(['experiments.change_experiment',
+                      'experiments.change_experimentplate'])
+def change_experiment_plates(request, pks):
+    """
+    Render the page to update bulk experiment plates.
+
+    When bulk updating experiment plates, the corresponding experiment
+    wells might change too.
+    """
+    split_pks = pks.split(',')
+    experiment_plates = ExperimentPlate.objects.filter(pk__in=split_pks)
+    display_plates = get_paginated(request, experiment_plates,
+                                   EXPERIMENT_PLATES_PER_PAGE)
+
+    if request.POST:
+        form = ChangeExperimentPlatesForm(request.POST)
+
+        if form.is_valid():
+            data = form.cleaned_data
+            for plate in experiment_plates:
+                _process_change_experiment_plates_form(plate, **data)
+
+            return redirect('change_experiment_plates_url', pks)
+
+    else:
+        form = ChangeExperimentPlatesForm()
+
+    context = {
+        'experiment_plates': experiment_plates,
+        'display_plates': display_plates,
+        'form': form,
+    }
+
+    return render(request, 'change_experiment_plates.html', context)
+
+
+def _process_change_experiment_plates_form(experiment_plate, **data):
+    """
+    Helper to process the plate changes for change_experiment_plates.
+    """
+    # First update straightforward plate fields
+    for key in ('screen_stage', 'date', 'temperature', 'comment',):
+        value = data.get(key)
+
+        if value:
+            setattr(experiment_plate, key, value)
+            experiment_plate.save()
+
+    # Next update plate methods
+    if data.get('worm_strain'):
+        experiment_plate.set_worm_strain(data.get('worm_strain'))
+
+    if data.get('library_plate'):
+        experiment_plate.set_library_plate(data.get('library_plate'))
+
+    if data.get('is_junk') is not None:
+        experiment_plate.set_junk(data.get('is_junk'))
+
+    return

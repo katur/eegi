@@ -1,0 +1,92 @@
+{% load extra_tags%}
+
+
+{% ifnotequal experiment_plates None %}
+<div id="results-header">
+  <span id="total">
+    {{ experiment_plates|length }} matching
+    plate{{ experiment_plates|pluralize }}
+  </span>
+
+  {% if experiment_plates %}
+
+  {% with c=experiment_plates|get_comma_separated_ids %}
+  {% url 'vertical_experiment_plates_url' c as vertical_url %}
+  <span class="vertical-links">
+    <a href="{{ vertical_url }}"
+      {% if experiment_plates|length > 500 %}
+        class="inactive-link"{% endif %}
+      >See all thumbnails</a>
+
+    <a href="{{ vertical_url }}?mode=big"
+      {% if experiment_plates|length > 50 %}
+        class="inactive-link"{% endif %}
+      >See all large size</a>
+
+    <a href="{{ vertical_url }}?mode=devstar"
+      {% if experiment_plates|length > 50 %}
+        class="inactive-link"{% endif %}
+      >See all DevStaR</a>
+  </span>
+  {% endwith %}
+
+  {% include 'pagination_status.html' with paginated=display_plates %}
+
+  {% endif %}
+</div>
+{% endifnotequal %}
+
+
+{% if display_plates %}
+<table id="experiment-results" class="grayscale striped nice-padding">
+  <thead>
+    <tr>
+      <th>Experiment Plate ID</th>
+      <th>Screen Stage</th>
+      <th>Date</th>
+      <th>Temperature</th>
+      <th>Worm Strain(s)</th>
+      <th>RNAi Library Plate(s)</th>
+      <th>Has any Junk?</th>
+      <th>Comment</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for experiment_plate in display_plates %}
+    <tr>
+      <td>
+        <a href="{% url 'experiment_plate_url' experiment_plate.id %}">
+          {{ experiment_plate.id }}</a>
+      </td>
+
+      <td>{{ experiment_plate.screen_stage }}</td>
+
+      <td>{{ experiment_plate.date|date:'SHORT_DATE_FORMAT' }}</td>
+
+      <td>{{ experiment_plate.temperature|celsius }}</td>
+
+      <td>
+        {% with worms=experiment_plate.get_worm_strains %}
+        {{ worms|get_comma_separated_strings:True|safe }}
+        {% endwith %}
+      </td>
+
+      <td>
+        {% with lplates=experiment_plate.get_library_plates %}
+        {{ lplates|get_comma_separated_strings:True|safe }}
+        {% endwith %}
+      </td>
+
+      <td
+        {% if experiment_plate.has_junk %}class="error-message">HAS JUNK
+        {% else %}>no junk
+        {% endif %}
+      </td>
+
+      <td>{{ experiment_plate.comment }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
