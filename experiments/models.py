@@ -40,7 +40,7 @@ class ExperimentPlate(models.Model):
     def get_absolute_url(self):
         return reverse('experiment_plate_url', args=[self.id])
 
-    def get_experiments(self):
+    def get_experiment_wells(self):
         """
         Get the experiment wells for this plate, ordered by well.
 

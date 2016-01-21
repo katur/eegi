@@ -44,7 +44,7 @@ def experiment_plate(request, pk):
 
     context = {
         'experiment_plate': experiment_plate,
-        'experiments': experiment_plate.get_experiments(),
+        'experiments': experiment_plate.get_experiment_wells(),
 
         # Default to thumbnail images
         'mode': request.GET.get('mode', 'thumbnail'),
