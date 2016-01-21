@@ -138,7 +138,7 @@ def add_experiment_plate(request):
                 experiment_plate_id, data['screen_stage'], data['date'],
                 data['temperature'], data['worm_strain'],
                 data['library_plate'], data['is_junk'],
-                data['plate_comment'], data['well_comment'])
+                data['plate_comment'])
 
             plate = ExperimentPlate.objects.get(id=experiment_plate_id)
 

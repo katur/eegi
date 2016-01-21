@@ -197,7 +197,6 @@ class AddExperimentPlateForm(forms.Form):
     library_plate = LibraryPlateField(required=True)
     is_junk = forms.BooleanField(initial=False, required=False)
     plate_comment = forms.CharField(required=False)
-    well_comment = forms.CharField(required=False)
 
 
 class ChangeExperimentPlatesForm(forms.Form):
