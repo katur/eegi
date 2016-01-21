@@ -70,14 +70,12 @@ body {
 
 #header #menu {
   float: left; }
-  #header #menu a, #header #menu span {
+  #header #menu a {
     float: left;
-    padding-right: 20px; }
-#header #login {
-  float: right; }
-  #header #login a {
-    float: left;
-    padding-left: 20px; }
+    padding-right: 20px;
+    line-height: 162.5%; }
+    #header #menu a:last-child {
+      padding-right: 0px; }
 
 #footer #logos {
   float: left; }

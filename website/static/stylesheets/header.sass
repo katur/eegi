@@ -1,19 +1,14 @@
 // Styles within the header
 
 
-$menu-item-padding: 20px
-
 #header
   #menu
     float: left
 
-    a, span
-      float: left
-      padding-right: $menu-item-padding
-
-  #login
-    float: right
-
     a
       float: left
-      padding-left: $menu-item-padding
+      padding-right: $whitespace / 2
+      line-height: $base-line-height * 1.25
+
+      &:last-child
+        padding-right: 0px
