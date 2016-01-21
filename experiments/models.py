@@ -6,9 +6,11 @@ from django.db import models
 
 from eegi.settings import (BASE_URL_IMG, BASE_URL_DEVSTAR,
                            BASE_URL_THUMBNAIL, BASE_DIR_DEVSTAR_OUTPUT)
+from experiments.helpers.naming import generate_experiment_id
 from experiments.helpers.scores import (
     get_most_relevant_score_per_experiment)
 from library.models import LibraryPlate, LibraryStock
+from utils.plates import get_well_list
 from utils.well_tile_conversion import well_to_tile
 from worms.models import WormStrain
 
@@ -39,6 +41,11 @@ class ExperimentPlate(models.Model):
         return reverse('experiment_plate_url', args=[self.id])
 
     def get_experiments(self):
+        """
+        Get the experiment wells for this plate, ordered by well.
+
+        Selects the related library stocks and intended clones.
+        """
         experiments = (self.experiment_set
                        .select_related('library_stock',
                                        'library_stock__intended_clone')
@@ -47,12 +54,26 @@ class ExperimentPlate(models.Model):
         return experiments
 
     def get_worm_strains(self):
+        """
+        Get all worm strains present in this plate.
+
+        While we typically only put one worm strain in each plate,
+        the database accommodates different worm strains
+        in different wells.
+        """
         worm_pks = (self.experiment_set.order_by('worm_strain')
                     .values('worm_strain').distinct())
 
         return WormStrain.objects.filter(pk__in=worm_pks)
 
     def get_library_plates(self):
+        """
+        Get all library plates present in this experiment plate.
+
+        While we typically only put one library plate into each
+        experiment plate, the database accommodates different
+        assortments of library stocks.
+        """
         library_plate_pks = (self.experiment_set
                              .order_by('library_stock__plate')
                              .values('library_stock__plate')
@@ -61,11 +82,71 @@ class ExperimentPlate(models.Model):
         return LibraryPlate.objects.filter(pk__in=library_plate_pks)
 
     def has_junk(self):
+        """
+        Determine if any of the wells in this experiment plate are junk.
+        """
         junk = self.experiment_set.values_list('is_junk', flat=True)
         return True in junk
 
+    def create_experiment_wells(self, worm_strain, library_plate,
+                                is_junk=False, dry_run=False):
+        """
+        Create the experiment wells that go with this experiment plate.
+
+        Raises an exception if there are already experiment wells
+        for this experiment plate in the database.
+
+        Initializes each new well's worm, library stock, and junk
+        according to the parameters passed in.
+
+        Set dry_run=True to not save these newly created wells.
+        """
+        if Experiment.objects.filter(plate=self).count():
+            raise Exception('Experiments already exists for plate {}'
+                            .format(experiment_plate))
+
+        stocks_by_well = library_plate.get_stocks_as_dictionary()
+        for well in get_well_list():
+            library_stock = stocks_by_well[well]
+
+            experiment_well = Experiment(
+                id=generate_experiment_id(self.id, well),
+                plate=self, well=well,
+                worm_strain=worm_strain,
+                library_stock=stocks_by_well[well],
+                is_junk=is_junk)
+
+            if not dry_run:
+                experiment_well.save()
+
+    def set_worm_strain(self, worm_strain):
+        """Set the worm strain for all wells in this plate."""
+        for experiment in self.experiment_set.all():
+            experiment.worm_strain = worm_strain
+            experiment.save()
+
+    def set_library_plate(self, library_plate):
+        """
+        Set the library stock for all wells in this plate.
+
+        Assumes the standard mapping from library_plate positions
+        to experiment_plate positions.
+        """
+        stocks_by_well = library_plate.get_stocks_as_dictionary()
+        for experiment in self.experiment_set.all():
+            well = experiment.well
+            experiment.library_stock = stocks_by_well[well]
+            experiment.save()
+
+    def set_junk(self, is_junk):
+        """Set the junk field for all wells in this plate."""
+        for experiment in self.experiment_set.all():
+            experiment.is_junk = is_junk
+            experiment.save()
+
 
 class Experiment(models.Model):
+    """A well-level experiment."""
     id = models.CharField(max_length=20, primary_key=True)
     plate = models.ForeignKey(ExperimentPlate)
     well = models.CharField(max_length=3)
