@@ -1,16 +1,20 @@
 from collections import OrderedDict
 from copy import copy
-from django.shortcuts import render, get_object_or_404
 
-from clones.models import Clone
-from experiments.models import Experiment
-from library.models import LibraryStock
-from worms.models import WormStrain
+from django.shortcuts import redirect, render, get_object_or_404
 
 from clones.helpers.queries import get_l4440
+from clones.models import Clone
+
+from experiments.forms import (
+    DoubleKnockdownForm, MutantKnockdownForm, RNAiKnockdownForm)
+from experiments.helpers.queries import (
+    get_closest_temperature, get_distinct_dates)
+from experiments.models import Experiment
+
+from library.models import LibraryStock
 from worms.helpers.queries import get_n2
-from experiments.helpers.queries import (get_closest_temperature,
-                                         get_distinct_dates)
+from worms.models import WormStrain
 from utils.http import build_url
 
 
@@ -249,3 +253,69 @@ def _create_inner_dictionary(filters, join_devstar=True, join_manual=False):
     d['experiments'] = experiments
     d['link_to_all'] = build_url('find_experiment_wells_url', get=filters)
     return d
+
+
+def find_double_knockdown(request):
+    """Render the page to search for a double knockdown."""
+    if request.method == 'POST':
+        form = DoubleKnockdownForm(request.POST)
+
+        if form.is_valid():
+            data = form.cleaned_data
+            worm = data['worm']
+            temperature = data['temperature']
+            clones = ','.join(clone.id for clone in data['rnai_query'])
+            return redirect(double_knockdown, worm.pk, clones, temperature)
+
+    else:
+        form = DoubleKnockdownForm(initial={'screen_type': 'SUP'})
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'find_double_knockdown.html', context)
+
+
+def find_single_knockdown(request):
+    """Render the page to search for a single knockdown."""
+    empty_rnai_form = RNAiKnockdownForm(prefix='rnai')
+    empty_mutant_form = MutantKnockdownForm(prefix='mutant',
+                                            initial={'screen_type': 'SUP'})
+
+    if request.method == 'POST' and 'rnai' in request.POST:
+        rnai_form = RNAiKnockdownForm(request.POST, prefix='rnai')
+
+        if rnai_form.is_valid():
+            data = rnai_form.cleaned_data
+            temperature = data['temperature']
+            clones = ','.join(clone.id for clone in data['rnai_query'])
+
+            if temperature:
+                return redirect(rnai_knockdown, clones, temperature)
+            else:
+                return redirect(rnai_knockdown, clones)
+
+        mutant_form = empty_mutant_form
+
+    elif request.method == 'POST' and 'mutant' in request.POST:
+        mutant_form = MutantKnockdownForm(request.POST, prefix='mutant')
+
+        if mutant_form.is_valid():
+            data = mutant_form.cleaned_data
+            worm = data['worm']
+            temperature = data['temperature']
+            return redirect(mutant_knockdown, worm.pk, temperature)
+
+        rnai_form = empty_rnai_form
+
+    else:
+        mutant_form = empty_mutant_form
+        rnai_form = empty_rnai_form
+
+    context = {
+        'rnai_form': rnai_form,
+        'mutant_form': mutant_form,
+    }
+
+    return render(request, 'find_single_knockdown.html', context)

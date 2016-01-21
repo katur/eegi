@@ -75,7 +75,7 @@ def secondary_scores(request, worm, temperature):
     return render(request, 'secondary_scores.html', context)
 
 
-def secondary_scores_search(request):
+def find_secondary_scores(request):
     """Render the page to find secondary scores for a mutant/screen."""
     if request.method == 'POST':
         form = SecondaryScoresForm(request.POST)
@@ -93,4 +93,4 @@ def secondary_scores_search(request):
         'form': form,
     }
 
-    return render(request, 'secondary_scores_search.html', context)
+    return render(request, 'find_secondary_scores.html', context)

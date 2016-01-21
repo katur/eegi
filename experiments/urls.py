@@ -23,21 +23,22 @@ urlpatterns = [
         views.change_experiment_plates,
         name='change_experiment_plates_url'),
 
-    url(r'^single-knockdown/$', views.single_knockdown_search,
-        name='single_knockdown_search_url'),
+    url(r'^single-knockdown/$', views.find_single_knockdown,
+        name='find_single_knockdown_url'),
     url(r'^rnai-knockdown/([^/]+)/$', views.rnai_knockdown,
         name='rnai_knockdown_url'),
     url(r'^rnai-knockdown/([^/]+)/([^/]+)/$', views.rnai_knockdown,
         name='rnai_knockdown_url'),
     url(r'^mutant-knockdown/([^/]+)/([^/]+)/$', views.mutant_knockdown,
         name='mutant_knockdown_url'),
-    url(r'^double-knockdown/$', views.double_knockdown_search,
-        name='double_knockdown_search_url'),
+
+    url(r'^double-knockdown/$', views.find_double_knockdown,
+        name='find_double_knockdown_url'),
     url(r'^double-knockdown/([^/]+)/([^/]+)/([^/]+)/$',
         views.double_knockdown, name='double_knockdown_url'),
 
-    url(r'^secondary-scores/$', views.secondary_scores_search,
-        name='secondary_scores_search_url'),
+    url(r'^secondary-scores/$', views.find_secondary_scores,
+        name='find_secondary_scores_url'),
     url(r'^secondary-scores/([^/]+)/([^/]+)/$', views.secondary_scores,
         name='secondary_scores_url'),
 
