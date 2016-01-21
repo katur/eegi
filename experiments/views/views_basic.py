@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from experiments.helpers.new import save_new_experiment_plate_and_wells
 from experiments.models import Experiment, ExperimentPlate
 from experiments.forms import (
-    ExperimentWellFilterForm, ExperimentPlateFilterForm,
+    FilterExperimentWellsForm, FilterExperimentPlatesForm,
     AddExperimentPlateForm, ChangeExperimentPlatesForm,
     process_ChangeExperimentPlatesForm_data,
 )
@@ -76,7 +76,7 @@ def find_experiment_wells(request):
     display_experiments = None
 
     if request.GET:
-        form = ExperimentWellFilterForm(request.GET)
+        form = FilterExperimentWellsForm(request.GET)
 
         if form.is_valid():
             experiments = form.cleaned_data['experiments']
@@ -84,7 +84,7 @@ def find_experiment_wells(request):
                                                 EXPERIMENT_WELLS_PER_PAGE)
 
     else:
-        form = ExperimentWellFilterForm()
+        form = FilterExperimentWellsForm()
 
     context = {
         'form': form,
@@ -101,7 +101,7 @@ def find_experiment_plates(request, context=None):
     display_plates = None
 
     if request.GET:
-        form = ExperimentPlateFilterForm(request.GET)
+        form = FilterExperimentPlatesForm(request.GET)
 
         if form.is_valid():
             experiment_plates = form.cleaned_data['experiment_plates']
@@ -109,7 +109,7 @@ def find_experiment_plates(request, context=None):
                                            EXPERIMENT_PLATES_PER_PAGE)
 
     else:
-        form = ExperimentPlateFilterForm()
+        form = FilterExperimentPlatesForm()
 
     context = {
         'form': form,

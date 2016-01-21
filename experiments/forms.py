@@ -61,9 +61,9 @@ def validate_new_experiment_plate_id(x):
 # Forms for Basic experiment pages #
 ####################################
 
-class ExperimentFilterFormBase(forms.Form):
+class _FilterExperimentsBaseForm(forms.Form):
     """
-    Base class for filtering Experiment and ExperimentPlate instances.
+    Base for FilterExperimentWellsForm and FilterExperimentPlatesForm.
     """
 
     plate__id = forms.IntegerField(
@@ -81,55 +81,7 @@ class ExperimentFilterFormBase(forms.Form):
     worm_strain = WormChoiceField(required=False)
 
 
-class ExperimentPlateFilterForm(ExperimentFilterFormBase):
-    """Form for filtering ExperimentPlate instances."""
-
-    plate__id__range = RangeField(
-        forms.IntegerField, required=False, label='Plate ID range')
-
-    plate__date__range = RangeField(
-        forms.DateField, required=False, label='Date range')
-
-    plate__temperature__range = RangeField(
-        forms.DecimalField, required=False, label='Temperature range')
-
-    library_stock__plate = LibraryPlateField(
-        required=False, label='Library plate', help_text='e.g. II-3-B2')
-
-    is_junk = forms.NullBooleanField(
-        required=False, initial=None, label="Has junk",
-        widget=BlankNullBooleanSelect)
-
-    field_order = [
-        'plate__id', 'plate__id__range',
-        'plate__date',  'plate__date__range',
-        'plate__temperature', 'plate__temperature__range',
-        'worm_strain', 'plate__screen_stage',
-        'library_stock__plate', 'is_junk',
-    ]
-
-    def clean(self):
-        cleaned_data = super(ExperimentPlateFilterForm, self).clean()
-
-        for k, v in cleaned_data.items():
-            # Retain 'False' as a legitimate filter
-            if v is False:
-                continue
-
-            # Ditch empty strings and None as filters
-            if not v:
-                del cleaned_data[k]
-
-        plate_pks = (Experiment.objects.filter(**cleaned_data)
-                     .order_by('plate').values_list('plate', flat=True))
-
-        cleaned_data['experiment_plates'] = (ExperimentPlate.objects
-                                             .filter(pk__in=plate_pks))
-
-        return cleaned_data
-
-
-class ExperimentWellFilterForm(ExperimentFilterFormBase):
+class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
     """Form for filtering Experiment instances."""
 
     id = forms.CharField(required=False, help_text='e.g. 32412_A01')
@@ -159,7 +111,7 @@ class ExperimentWellFilterForm(ExperimentFilterFormBase):
     ]
 
     def clean(self):
-        cleaned_data = super(ExperimentWellFilterForm, self).clean()
+        cleaned_data = super(FilterExperimentWellsForm, self).clean()
 
         if 'exclude_l4440' in cleaned_data:
             exclude_l4440 = cleaned_data['exclude_l4440']
@@ -183,6 +135,54 @@ class ExperimentWellFilterForm(ExperimentFilterFormBase):
                 library_stock__intended_clone='L4440')
 
         cleaned_data['experiments'] = experiments
+        return cleaned_data
+
+
+class FilterExperimentPlatesForm(_FilterExperimentsBaseForm):
+    """Form for filtering ExperimentPlate instances."""
+
+    plate__id__range = RangeField(
+        forms.IntegerField, required=False, label='Plate ID range')
+
+    plate__date__range = RangeField(
+        forms.DateField, required=False, label='Date range')
+
+    plate__temperature__range = RangeField(
+        forms.DecimalField, required=False, label='Temperature range')
+
+    library_stock__plate = LibraryPlateField(
+        required=False, label='Library plate', help_text='e.g. II-3-B2')
+
+    is_junk = forms.NullBooleanField(
+        required=False, initial=None, label="Has junk",
+        widget=BlankNullBooleanSelect)
+
+    field_order = [
+        'plate__id', 'plate__id__range',
+        'plate__date',  'plate__date__range',
+        'plate__temperature', 'plate__temperature__range',
+        'worm_strain', 'plate__screen_stage',
+        'library_stock__plate', 'is_junk',
+    ]
+
+    def clean(self):
+        cleaned_data = super(FilterExperimentPlatesForm, self).clean()
+
+        for k, v in cleaned_data.items():
+            # Retain 'False' as a legitimate filter
+            if v is False:
+                continue
+
+            # Ditch empty strings and None as filters
+            if not v:
+                del cleaned_data[k]
+
+        plate_pks = (Experiment.objects.filter(**cleaned_data)
+                     .order_by('plate').values_list('plate', flat=True))
+
+        cleaned_data['experiment_plates'] = (ExperimentPlate.objects
+                                             .filter(pk__in=plate_pks))
+
         return cleaned_data
 
 
