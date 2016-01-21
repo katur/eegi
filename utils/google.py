@@ -1,3 +1,5 @@
+"""Utility module for working with Google API."""
+
 import gspread
 import json
 from oauth2client.client import SignedJwtAssertionCredentials
