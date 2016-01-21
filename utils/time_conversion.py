@@ -11,7 +11,7 @@ import datetime
 from django.utils import timezone
 
 
-def get_timestamp(year, month, day, time, ymd):
+def get_timestamp(year, month, day, time, ymd=None):
     """
     Get a datetime object.
 
