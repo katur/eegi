@@ -6,8 +6,9 @@
 
 
 {% block page_title %}
-<span class="warning-message">Change</span>
-the {{ experiment_plates|length }} experiment plates
+<span class="warning-message">Change</span> the
+{{ experiment_plates|length }}
+experiment plate{{ experiment_plates|pluralize }}
 listed below
 {% endblock %}
 
