@@ -9,6 +9,10 @@ from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
                          WormChoiceField, clean_mutant_query_and_screen_type)
 
 
+######################
+# Custom Form Fields #
+######################
+
 class ScreenStageChoiceField(forms.ChoiceField):
     """Field for choosing Primary, Secondary, etc."""
 
@@ -37,6 +41,10 @@ class TemperatureChoiceField(forms.ChoiceField):
         super(TemperatureChoiceField, self).__init__(**kwargs)
 
 
+#####################
+# Custom validators #
+#####################
+
 def validate_new_experiment_plate_id(x):
     """
     Validate that x is a valid ID for a new experiment plate.
@@ -48,6 +56,10 @@ def validate_new_experiment_plate_id(x):
         raise forms.ValidationError('ExperimentPlate ID {} already exists'
                                     .format(x))
 
+
+####################################
+# Forms for Basic experiment pages #
+####################################
 
 class ExperimentFilterFormBase(forms.Form):
     """
@@ -212,6 +224,7 @@ class ChangeExperimentPlatesForm(forms.Form):
         - each experiment plate has only one worm strain
         - each experiment plate is or is not junk
     """
+
     # Plate-level fields
     screen_stage = ScreenStageChoiceField(required=False)
     date = forms.DateField(required=False)
@@ -231,6 +244,38 @@ class ChangeExperimentPlatesForm(forms.Form):
         'screen_stage', 'date', 'temperature', 'worm_strain',
         'library_plate', 'is_junk', 'plate_comment', 'well_comment']
 
+
+def process_ChangeExperimentPlatesForm_data(experiment_plate, data):
+    """
+    Helper to apply the ChangeExperimentPlateForm changes to a specific
+    plate.
+
+    data should be the cleaned_data from a ChangeExperimentPlatesForm.
+    """
+    # First update straightforward plate fields
+    for key in ('screen_stage', 'date', 'temperature', 'comment',):
+        value = data.get(key)
+
+        if value:
+            setattr(experiment_plate, key, value)
+            experiment_plate.save()
+
+    # Next update plate methods
+    if data.get('worm_strain'):
+        experiment_plate.set_worm_strain(data.get('worm_strain'))
+
+    if data.get('library_plate'):
+        experiment_plate.set_library_plate(data.get('library_plate'))
+
+    if data.get('is_junk') is not None:
+        experiment_plate.set_junk(data.get('is_junk'))
+
+    return
+
+
+#############################
+# Forms for Knockdown pages #
+#############################
 
 class RNAiKnockdownForm(forms.Form):
     """Form for finding wildtype worms tested with a single RNAi clone."""
@@ -270,6 +315,10 @@ class DoubleKnockdownForm(forms.Form):
         cleaned_data = clean_mutant_query_and_screen_type(self, cleaned_data)
         return cleaned_data
 
+
+####################################
+# Forms for Secondary Scores pages #
+####################################
 
 class SecondaryScoresForm(forms.Form):
     """Form for getting all secondary scores for a worm/screen combo."""

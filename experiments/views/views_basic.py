@@ -5,7 +5,8 @@ from experiments.helpers.new import save_new_experiment_plate_and_wells
 from experiments.models import Experiment, ExperimentPlate
 from experiments.forms import (
     ExperimentWellFilterForm, ExperimentPlateFilterForm,
-    AddExperimentPlateForm, ChangeExperimentPlatesForm
+    AddExperimentPlateForm, ChangeExperimentPlatesForm,
+    process_ChangeExperimentPlatesForm_data,
 )
 from utils.http import http_response_ok
 from utils.pagination import get_paginated
@@ -172,9 +173,9 @@ def change_experiment_plates(request, pks):
         form = ChangeExperimentPlatesForm(request.POST)
 
         if form.is_valid():
-            data = form.cleaned_data
             for plate in experiment_plates:
-                _process_change_experiment_plates_form(plate, **data)
+                process_ChangeExperimentPlatesForm_data(
+                    plate, form.cleaned_data)
 
             return redirect('change_experiment_plates_url', pks)
 
@@ -188,28 +189,3 @@ def change_experiment_plates(request, pks):
     }
 
     return render(request, 'change_experiment_plates.html', context)
-
-
-def _process_change_experiment_plates_form(experiment_plate, **data):
-    """
-    Helper to process the plate changes for change_experiment_plates.
-    """
-    # First update straightforward plate fields
-    for key in ('screen_stage', 'date', 'temperature', 'comment',):
-        value = data.get(key)
-
-        if value:
-            setattr(experiment_plate, key, value)
-            experiment_plate.save()
-
-    # Next update plate methods
-    if data.get('worm_strain'):
-        experiment_plate.set_worm_strain(data.get('worm_strain'))
-
-    if data.get('library_plate'):
-        experiment_plate.set_library_plate(data.get('library_plate'))
-
-    if data.get('is_junk') is not None:
-        experiment_plate.set_junk(data.get('is_junk'))
-
-    return
