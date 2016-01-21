@@ -1,7 +1,6 @@
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import redirect, render, get_object_or_404
 
-from experiments.helpers.new import save_new_experiment_plate_and_wells
 from experiments.models import Experiment, ExperimentPlate
 from experiments.forms import (
     FilterExperimentWellsForm, FilterExperimentPlatesForm,
@@ -135,11 +134,11 @@ def add_experiment_plate(request):
             data = form.cleaned_data
             experiment_plate_id = data['experiment_plate_id']
 
-            save_new_experiment_plate_and_wells(
+            ExperimentPlate.create_plate_and_wells(
                 experiment_plate_id, data['screen_stage'], data['date'],
                 data['temperature'], data['worm_strain'],
-                data['library_plate'], data['is_junk'],
-                data['plate_comment'])
+                data['library_plate'], is_junk=data['is_junk'],
+                plate_comment=data['plate_comment'])
 
             plate = ExperimentPlate.objects.get(id=experiment_plate_id)
 

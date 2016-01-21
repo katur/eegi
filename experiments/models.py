@@ -40,6 +40,71 @@ class ExperimentPlate(models.Model):
     def get_absolute_url(self):
         return reverse('experiment_plate_url', args=[self.id])
 
+    @classmethod
+    def create_plate_and_wells(
+            cls, experiment_plate_id, screen_stage, date,
+            temperature, worm_strain, library_plate,
+            is_junk=False, plate_comment='', dry_run=False):
+        """
+        Create a new experiment plate plus its 96 wells.
+
+        Assumes that the new experiment plate:
+            1) contains the same worm strain in all wells
+            2) is derived from one library plate
+            3) has the same is_junk value in all wells
+
+        By default, the plate and wells are saved to the database.
+        Set dry_run=True to instead do a dry run.
+        """
+        if cls.objects.filter(id=experiment_plate_id).count():
+            raise ValueError('ExperimentPlate {} already exists'
+                             .format(experiment_plate_id))
+
+        experiment_plate = cls(
+            id=experiment_plate_id,
+            screen_stage=screen_stage,
+            date=date,
+            temperature=temperature,
+            comment=plate_comment)
+
+        if not dry_run:
+            experiment_plate.save()
+
+        experiment_plate.create_wells(worm_strain, library_plate,
+                                      is_junk=is_junk, dry_run=dry_run)
+
+
+    def create_wells(self, worm_strain, library_plate,
+                     is_junk=False, dry_run=False):
+        """
+        Create the experiment wells that go with this experiment plate.
+
+        Raises an exception if there are already experiment wells
+        for this experiment plate in the database.
+
+        Initializes each new well's worm, library stock, and junk
+        according to the parameters passed in.
+
+        Set dry_run=True to not save these newly created wells.
+        """
+        if Experiment.objects.filter(plate=self).count():
+            raise Exception('Experiments already exists for plate {}'
+                            .format(experiment_plate))
+
+        stocks_by_well = library_plate.get_stocks_as_dictionary()
+        for well in get_well_list():
+            library_stock = stocks_by_well[well]
+
+            experiment_well = Experiment(
+                id=generate_experiment_id(self.id, well),
+                plate=self, well=well,
+                worm_strain=worm_strain,
+                library_stock=stocks_by_well[well],
+                is_junk=is_junk)
+
+            if not dry_run:
+                experiment_well.save()
+
     def get_experiment_wells(self):
         """
         Get the experiment wells for this plate, ordered by well.
@@ -87,37 +152,6 @@ class ExperimentPlate(models.Model):
         """
         junk = self.experiment_set.values_list('is_junk', flat=True)
         return True in junk
-
-    def create_experiment_wells(self, worm_strain, library_plate,
-                                is_junk=False, dry_run=False):
-        """
-        Create the experiment wells that go with this experiment plate.
-
-        Raises an exception if there are already experiment wells
-        for this experiment plate in the database.
-
-        Initializes each new well's worm, library stock, and junk
-        according to the parameters passed in.
-
-        Set dry_run=True to not save these newly created wells.
-        """
-        if Experiment.objects.filter(plate=self).count():
-            raise Exception('Experiments already exists for plate {}'
-                            .format(experiment_plate))
-
-        stocks_by_well = library_plate.get_stocks_as_dictionary()
-        for well in get_well_list():
-            library_stock = stocks_by_well[well]
-
-            experiment_well = Experiment(
-                id=generate_experiment_id(self.id, well),
-                plate=self, well=well,
-                worm_strain=worm_strain,
-                library_stock=stocks_by_well[well],
-                is_junk=is_junk)
-
-            if not dry_run:
-                experiment_well.save()
 
     def set_worm_strain(self, worm_strain):
         """Set the worm strain for all wells in this plate."""

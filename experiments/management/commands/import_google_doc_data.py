@@ -4,7 +4,7 @@ import re
 from django.core.management.base import BaseCommand, CommandError
 
 from eegi.settings import BATCH_DATA_ENTRY_GDOC_NAME
-from experiments.helpers.new import save_new_experiment_plate_and_wells
+from experiments.models import ExperimentPlate
 from library.helpers.naming import generate_library_plate_name
 from library.models import LibraryPlate
 from utils.google import connect_to_google_spreadsheets
@@ -135,7 +135,7 @@ def _parse_gdoc_experiment_rows(rows, screen_stage, date, worms,
             if not experiment_plate_id:
                 continue
 
-            save_new_experiment_plate_and_wells(
+            ExperimentPlate.create_plate_and_wells(
                 experiment_plate_id, screen_stage, date,
                 temperatures[i], worms[i], library_plate,
                 dry_run=dry_run)
