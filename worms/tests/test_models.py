@@ -3,29 +3,18 @@ from utils.http import http_response_ok
 
 
 class WormModelsTestCase(WormTestCase):
-    def test_str_and_unicode(self):
-        n2, dnc1, glp1, emb8 = self.get_worms()
-        self.assertEquals(unicode(n2), 'N2')
-        self.assertEquals(unicode(dnc1), 'EU1006')
-        self.assertEquals(unicode(glp1), 'EU552')
-        self.assertEquals(unicode(emb8), 'MJ69')
-        self.assertEquals(str(n2), 'N2')
-        self.assertEquals(str(dnc1), 'EU1006')
-        self.assertEquals(str(glp1), 'EU552')
-        self.assertEquals(str(emb8), 'MJ69')
-
-    def test_get_short_genotype(self):
-        n2, dnc1, glp1, emb8 = self.get_worms()
-        self.assertEquals(dnc1.get_short_genotype(), 'dnc-1(or404)')
-        self.assertEquals(glp1.get_short_genotype(), 'glp-1(or178)')
-        self.assertEquals(emb8.get_short_genotype(), 'emb-8(hc69)')
-
     def test_get_display_string(self):
         n2, dnc1, glp1, emb8 = self.get_worms()
         self.assertEquals(n2.get_display_string(), 'N2')
         self.assertEquals(dnc1.get_display_string(), 'EU1006: dnc-1(or404)')
         self.assertEquals(glp1.get_display_string(), 'EU552: glp-1(or178)')
         self.assertEquals(emb8.get_display_string(), 'MJ69: emb-8(hc69)')
+
+    def test_get_short_genotype(self):
+        n2, dnc1, glp1, emb8 = self.get_worms()
+        self.assertEquals(dnc1.get_short_genotype(), 'dnc-1(or404)')
+        self.assertEquals(glp1.get_short_genotype(), 'glp-1(or178)')
+        self.assertEquals(emb8.get_short_genotype(), 'emb-8(hc69)')
 
     def test_get_wormbase_url(self):
         worms = self.get_worms()
