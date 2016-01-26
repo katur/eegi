@@ -87,12 +87,6 @@ class LibraryStock(models.Model):
         ordering = ['id']
         unique_together = ('plate', 'well')
 
-    def __cmp__(self, other):
-        if self.plate == other.plate:
-            return cmp(self.well, other.well)
-        else:
-            return cmp(self.plate, other.plate)
-
     def __unicode__(self):
         return '{}'.format(self.id)
 

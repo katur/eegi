@@ -29,11 +29,20 @@ class Command(BaseCommand):
                 .select_related('source_stock',
                                 'source_stock__intended_clone'))
 
-        seqs_blat = categorize_sequences_by_blat_results(seqs)
+        categorized_seqs = categorize_sequences_by_blat_results(seqs)
 
-        reseq_wells = _get_wells_to_resequence(seqs_blat)
+        stocks_to_resequence = []
 
-        assigned = assign_to_plates(reseq_wells)
+        for key, values in categorized_seqs.items():
+            if ((isinstance(key, int) and key > 1) or
+                    key == NO_BLAT or key == NO_MATCH or key == NO_CLONE_BLAT):
+                stocks_to_resequence.extend(
+                    [x.source_stock for x in values])
+
+        stocks_to_resequence = sorted(stocks_to_resequence,
+                                      key=lambda stock: stock.id)
+
+        assigned = assign_to_plates(stocks_to_resequence)
 
         rows = get_plate_assignment_rows(assigned)
 
@@ -54,15 +63,3 @@ class Command(BaseCommand):
 
             self.stdout.write('{},{},{},{}'
                               .format(plate, well, row[0], row[1]))
-
-
-def _get_wells_to_resequence(s):
-    wells_to_resequence = []
-
-    for key in s:
-        if ((isinstance(key, int) and key > 1) or
-                key == NO_BLAT or key == NO_MATCH or key == NO_CLONE_BLAT):
-            wells_to_resequence.extend(
-                [x.source_stock for x in s[key]])
-
-    return sorted(wells_to_resequence)
