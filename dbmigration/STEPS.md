@@ -32,4 +32,8 @@
 
 # Import scores
 ./manage.py import_legacy_database 4 2> stderr.out
+
+# Manually fix rotated seq plate JL69
+
+# Manually sort out the cherry pick source ambiguities (from paperwork)
 ```
