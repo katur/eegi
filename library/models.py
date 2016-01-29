@@ -106,6 +106,22 @@ class LibraryStock(models.Model):
     def get_tile(self):
         return well_to_tile(self.well)
 
+    def get_sequencing_results(self):
+        return (self.librarysequencing_set.all()
+                .prefetch_related('librarysequencingblatresult_set'))
+
+    def get_sequencing_hits(self, top_hit_only=False):
+        hits = []
+        for s in self.get_sequencing_results():
+            blats = s.get_blat_results(top_hit_only=top_hit_only)
+            hits.extend([blat.clone_hit for blat in blats])
+
+        return hits
+
+    def has_sequencing_match(self, top_hit_only=False):
+        hits = self.get_sequencing_hits(top_hit_only=top_hit_only)
+        return self.intended_clone in hits
+
 
 class LibrarySequencing(models.Model):
     """Genewiz sequencing result from a particular LibraryStock."""
@@ -141,6 +157,12 @@ class LibrarySequencing(models.Model):
 
     def is_decent_quality(self):
         return self.crl >= 400 and self.quality_score >= 30
+
+    def get_blat_results(self, top_hit_only=False):
+        if top_hit_only:
+            return self.librarysequencingblatresult_set.filter(hit_rank=1)
+        else:
+            return self.librarysequencingblatresult_set.all()
 
 
 class LibrarySequencingBlatResult(models.Model):
