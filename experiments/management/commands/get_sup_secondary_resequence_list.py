@@ -5,8 +5,7 @@ from experiments.helpers.criteria import (
 from experiments.helpers.scores import get_positives_any_worm
 from experiments.models import Experiment
 from library.helpers.sequencing import (
-    categorize_sequences_by_blat_results,
-    NO_BLAT, NO_MATCH, NO_CLONE_BLAT)
+    categorize_sequences_by_blat_results, NO_BLAT, NO_MATCH, NO_CLONE_BLAT)
 from library.models import LibrarySequencing
 from utils.google import connect_to_google_spreadsheets
 from utils.plates import assign_to_plates, get_plate_assignment_rows
@@ -44,9 +43,8 @@ class Command(BaseCommand):
         categorized_seqs = categorize_sequences_by_blat_results(seqs)
 
         stocks_to_resequence = []
-        for key, values in categorized_seqs.items():
-            if ((isinstance(key, int) and key > 1) or
-                    key == NO_BLAT or key == NO_MATCH or key == NO_CLONE_BLAT):
+        for category, values in categorized_seqs.items():
+            if is_bad_sequence(category):
                 stocks_to_resequence.extend(
                     [x.source_stock for x in values])
 
@@ -80,6 +78,12 @@ class Command(BaseCommand):
             self.stdout.write('{},{},{},{}'.format(
                 source_plate, source_well,
                 destination_plate, destination_well))
+
+
+def is_bad_sequence(category):
+    return ((isinstance(category, int) and category > 1) or
+        category == NO_BLAT or category == NO_MATCH or
+        category == NO_CLONE_BLAT)
 
 
 def get_destination_plate(index, first_plate_number=None):
