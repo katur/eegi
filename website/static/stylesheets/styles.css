@@ -318,6 +318,9 @@ form table th, form table td {
   .plate-96 .junk-well .well-title, .plate-96 .junk-well .well-caption {
     background: #BB1133; }
 
+#help-page ul {
+  list-style: disc inside; }
+
 #clones #results-header, #clones table {
   width: 100%;
   max-width: 700px; }

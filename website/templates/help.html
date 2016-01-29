@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block body_id %}help-page{% endblock %}
+
+
+{% block page_title %}User Manual for eegi Website{% endblock %}
+
+
+{% block content %}
+<div class="page-section">
+  This page will be populated over time.
+</div>
+
+<div class="page-section">
+  <h4>Custom add/update interfaces</h4>
+
+  <ul>
+    <li>Add a single ExperimentPlate</li>
+    <li>Change one or more ExperimentPlates</li>
+    <li>Toggle is_junk on a single Experiment well</li>
+    <li>Add ManualScores</li>
+  </ul>
+</div>
+
+<div class="page-section">
+  <h4>Django admin</h4>
+
+  <ul>
+    <li>Add/Update/Delete Users, Groups, and Permissions</li>
+    <li>Add/Update/Delete WormStrains</li>
+    <li>Add/Update/Delete ManualScoreCodes</li>
+    <li>Change WormStrain or LibraryStock on a single Experiment well</li>
+    <li>
+      Delete one or more ExperimentPlates
+      (NOTE: this cascades to ExperimentWell, ManualScore, DevstarScore;
+      marking junk may be preferred tactic)
+    </li>
+  </ul>
+</div>
+
+<div class="page-section">
+  <h4>Django management scripts</h4>
+
+  <ul>
+    <li>
+      Add bulk ExperimentPlates
+      (works in concert with Google Doc)
+    </li>
+
+    <li>
+      Import mapping data for our Clones, from RNAiCloneMapper database
+    </li>
+
+    <li>
+      Import functional descriptions for our Clones from Wormbase
+    </li>
+
+    <li>
+      Import sequencing data from the Genewiz dump on pleiades
+      (works in concert with Google Doc)
+    </li>
+
+    <li>
+      Add BLAT hits of our sequencing data from Firoz
+      (NOTE: we should modify this to actually run Firoz's program,
+      instead of simply importing his results)
+    </li>
+
+    <li>
+      Repopulate LibraryStock.consensus_clone field
+      (run this after the sequencing and/or blat data is updated)
+    </li>
+
+    <li>
+      Repopulate Experiment.gi_score field
+      (run this after doing new experiments, updating junk, etc.)
+    </li>
+  </ul>
+</div>
+
+<div class="page-section">
+  <h4>Cron jobs -- Lior is handling</h4>
+
+  <ul>
+    <li>Pull original images from scopes</li>
+    <li>Generate thumbnail and medium res images</li>
+    <li>Run DevStaR on new images</li>
+    <li>Back-up raw data (at least original images) to separate machine</li>
+  </ul>
+</div>
+
+<div class="page-section">
+  <h4>Cron jobs -- Katherine is handling</h4>
+
+  <ul>
+    <li>Back-up database</li>
+    <li>Import DevStaR txt output into database</li>
+  </ul>
+</div>
+
+<div class="page-section">
+  <h4>"Backend" only (extremely infrequent / special cases only)</h4>
+
+  <ul>
+    <li>Add/Update/Delete Clones</li>
+    <li>Add/Update/Delete LibraryPlates and/or LibraryStocks</li>
+  </ul>
+</div>
+
+
+{% endblock content %}
