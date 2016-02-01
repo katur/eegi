@@ -1,2 +1,24 @@
 #help-page
-  @include bulleted-list
+  #content
+    ul
+      @include bulleted-list
+
+    hr
+      margin: $whitespace 0
+
+    #documentation
+      max-width: 750px
+
+      li
+        margin-bottom: $whitespace
+
+      h5
+        display: block
+        width: 100%
+        margin-bottom: $whitespace / 4
+        font-weight: bold
+
+      code
+        display: block
+        width: 100%
+        margin: $whitespace / 2 $whitespace

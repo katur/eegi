@@ -11,13 +11,21 @@ hr
   background: $light-gray
 
 
-ul.bulleted
+@mixin bulleted-list
+  list-style-position: inside
   list-style: disc inside
 
+  ul li, ul ul
+    padding-left: $whitespace
 
-@mixin bulleted-list
   ul
-    list-style: disc inside
+    list-style-type: circle
+
+    ul
+      list-style-type: square
+
+      ul
+        list-style-type: disc
 
 
 .nowrap

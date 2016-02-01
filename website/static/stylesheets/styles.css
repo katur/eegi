@@ -101,6 +101,9 @@ i, em {
 b, strong {
   font-weight: bold; }
 
+code {
+  font-family: monospace; }
+
 h1, h2, h3, h4 {
   font-weight: normal;
   line-height: 117%; }
@@ -155,9 +158,6 @@ hr {
   height: 1px;
   border: none;
   background: #e0e0e0; }
-
-ul.bulleted {
-  list-style: disc inside; }
 
 .nowrap {
   white-space: nowrap; }
@@ -318,8 +318,32 @@ form table th, form table td {
   .plate-96 .junk-well .well-title, .plate-96 .junk-well .well-caption {
     background: #BB1133; }
 
-#help-page ul {
+#help-page #content ul {
+  list-style-position: inside;
   list-style: disc inside; }
+  #help-page #content ul ul li, #help-page #content ul ul ul {
+    padding-left: 40px; }
+  #help-page #content ul ul {
+    list-style-type: circle; }
+    #help-page #content ul ul ul {
+      list-style-type: square; }
+      #help-page #content ul ul ul ul {
+        list-style-type: disc; }
+#help-page #content hr {
+  margin: 40px 0; }
+#help-page #content #documentation {
+  max-width: 750px; }
+  #help-page #content #documentation li {
+    margin-bottom: 40px; }
+  #help-page #content #documentation h5 {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    font-weight: bold; }
+  #help-page #content #documentation code {
+    display: block;
+    width: 100%;
+    margin: 20px 40px; }
 
 #clones #results-header, #clones table {
   width: 100%;
@@ -454,6 +478,17 @@ form table th, form table td {
   background: white; }
 #secondary-scores .Other {
   background: black; }
+#secondary-scores #rules {
+  list-style-position: inside;
+  list-style: disc inside; }
+  #secondary-scores #rules ul li, #secondary-scores #rules ul ul {
+    padding-left: 40px; }
+  #secondary-scores #rules ul {
+    list-style-type: circle; }
+    #secondary-scores #rules ul ul {
+      list-style-type: square; }
+      #secondary-scores #rules ul ul ul {
+        list-style-type: disc; }
 #secondary-scores #key {
   font-size: 14px;
   float: right; }

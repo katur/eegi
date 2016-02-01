@@ -7,98 +7,180 @@
 
 
 {% block content %}
-<div class="page-section">
-  This page will be populated over time.
-</div>
-
-<div class="page-section">
-  <h4>Custom Interfaces</h4>
-
+<div id="intro" class="page-section">
   <ul>
-    <li>Add a single ExperimentPlate</li>
-    <li>Change one or more ExperimentPlates</li>
-    <li>Toggle is_junk on a single Experiment well</li>
-    <li>Add ManualScores</li>
+    <li><a href="#navigating">Navigating data</a></li>
+    <li><a href="#changing">Changing data</a></li>
   </ul>
+  <hr>
 </div>
 
-<div class="page-section">
-  <h4>Django Admin Interface</h4>
-
-  <ul>
-    <li>Add/Update/Delete Users, Groups, and Permissions</li>
-    <li>Add/Update/Delete WormStrains</li>
-    <li>Add/Update/Delete ManualScoreCodes</li>
-    <li>Change WormStrain or LibraryStock on a single Experiment well</li>
-    <li>
-      Delete one or more ExperimentPlates
-      (NOTE: this cascades to ExperimentWell, ManualScore, DevstarScore;
-      marking junk may be preferred tactic)
-    </li>
-  </ul>
-</div>
 
 <div class="page-section">
-  <h4>Django Management Scripts</h4>
+  <ul id="documentation">
+    <li id="navigating"><h3>Navigating data</h3></li>
 
-  <ul>
-    <li>
-      Add bulk ExperimentPlates
-      (works in concert with Google Doc)
-    </li>
 
-    <li>
-      Import mapping data for our Clones, from RNAiCloneMapper database
-    </li>
+    <li id="changing"><h3>Changing data</h3></li>
 
-    <li>
-      Import functional descriptions for our Clones from Wormbase
-    </li>
+    <ul>
+      <li>
+      <h4>Custom Interfaces</h4>
+      </li>
 
-    <li>
-      Import sequencing data from the Genewiz dump on pleiades
-      (works in concert with Google Doc)
-    </li>
+      <ul>
+        <li>
+        <h5>Add a single Experiment Plate</h5>
 
-    <li>
-      Add BLAT hits of our sequencing data from Firoz
-      (NOTE: we should modify this to actually run Firoz's program,
-      instead of simply importing his results)
-    </li>
+        Use the <a href="{% url 'add_experiment_plate_url' %}">
+          Add Experiment Page</a>.
+        </li>
 
-    <li>
-      Repopulate LibraryStock.consensus_clone field
-      (run this after the sequencing and/or blat data is updated)
-    </li>
+        <li>
+        <h5>Change one or more Experiment Plates</h5>
 
-    <li>
-      Repopulate Experiment.gi_score field
-      (run this after doing new experiments, updating junk, etc.)
-    </li>
-  </ul>
-</div>
+        Select the plates you would like to change using
+        the filters on the
+        <a href="{% url 'find_experiment_plates_url' %}">
+          Find Experiments Page</a>.
+        If you are logged in with the correct permissions,
+        you will see a link at the bottom to "Change these plates".
+        From there, you can change any plate-wide attributes.
+        </li>
 
-<div class="page-section">
-  <h4>Cron Jobs</h4>
+        <li>
+        <h5>Toggle junk on a single Experiment Well</h5>
 
-  <ul>
-    <li>Pull original images from scopes (LG)</li>
-    <li>Generate thumbnail and medium res images (LG)</li>
-    <li>Run DevStaR on new images (LG)</li>
-    <li>Import DevStaR txt output into database</li>
-    <li>
-      Back-up raw data (at least original images) to separate machine (LG)
-    </li>
-    <li>Back-up database</li>
-  </ul>
-</div>
+        Go to the page for that experiment well
+        (e.g., <a href="{% url 'experiment_well_url' '30010_A12' %}">
+          here is 30010_A12</a>).
+        If you are logged in with the correct permissions,
+        you will see a button at the bottom to "Toggle Junk".
+        </li>
 
-<div class="page-section">
-  <h4>"Backend" only (extremely infrequent / special cases only)</h4>
+        <li>
+        <h5>Add ManualScores</h5>
 
-  <ul>
-    <li>Add/Update/Delete Clones</li>
-    <li>Add/Update/Delete LibraryPlates and/or LibraryStocks</li>
+        <span class="error-message">TODO:
+        build a general scoring interface for any primary and
+        SUP secondary rescoring needs.</span>
+        </li>
+      </ul>
+
+
+      <li>
+      <h4>Django Admin Interface</h4>
+
+      The following operations can be done with the straightforward
+      <a href="{% url 'admin:index' %}">Django Admin Interface</a>.
+
+      </li>
+
+      <ul>
+        <li>
+        <h5>Add/Update/Delete Users, Groups, and Permissions</h5>
+        </li>
+
+        <li>
+        <h5>Add/Update/Delete Worm Strains</h5>
+        </li>
+
+        <li>
+        <h5>Add/Update/Delete Manual Score Codes</h5>
+        </li>
+
+        <li>
+        <h5>Change Worm Strain or Library Stock on a single Experiment Well</h5>
+        </li>
+
+        <li>
+        <h5>Delete one or more Experiment Plates</h5>
+        NOTE: Deleting an Experiment Plate in the Admin interface
+        cascades to delete any associated Experiment Wells,
+        Manual Scores, and Devstar Scores.
+        Unless you are confident, marking junk may be preferred tactic.
+        </li>
+      </ul>
+
+
+      <li>
+      <h4>Django Management Scripts</h4>
+
+      The following operations can be done with custom scripts that
+      have been integrated with Django's command-line management.
+
+      For help with a particular script, try:
+      <code>./manage.py scriptname help</code>
+
+      To list all available scripts, activate the proper Python
+      virtualenv, and then from the project root, run:
+      <code>./manage.py help</code>
+
+      You will see the scripts organized by which app they are in.
+      Note that some of these scripts ship with Django (for example,
+      scripts to generate and apply database migrations).
+      </li>
+
+      <ul>
+        <li>
+          Add bulk ExperimentPlates
+          (works in concert with Google Doc)
+        </li>
+
+        <li>
+          Import mapping data for our Clones, from RNAiCloneMapper database
+        </li>
+
+        <li>
+          Import functional descriptions for our Clones from Wormbase
+        </li>
+
+        <li>
+          Import sequencing data from the Genewiz dump on pleiades
+          (works in concert with Google Doc)
+        </li>
+
+        <li>
+          Add BLAT hits of our sequencing data from Firoz
+          (NOTE: we should modify this to actually run Firoz's program,
+          instead of simply importing his results)
+        </li>
+
+        <li>
+          Repopulate LibraryStock.consensus_clone field
+          (run this after the sequencing and/or blat data is updated)
+        </li>
+
+        <li>
+          Repopulate Experiment.gi_score field
+          (run this after doing new experiments, updating junk, etc.)
+        </li>
+      </ul>
+
+
+      <li><h4>Cron Jobs</h4></li>
+
+      <ul>
+        <li>Pull original images from scopes (LG)</li>
+        <li>Generate thumbnail and medium res images (LG)</li>
+        <li>Run DevStaR on new images (LG)</li>
+        <li>Import DevStaR txt output into database</li>
+        <li>
+          Back-up raw data (at least original images) to separate machine (LG)
+        </li>
+        <li>Back-up database</li>
+      </ul>
+
+
+      <li><h4>
+        "Backend" only (extremely infrequent / special cases only)
+      </h4></li>
+
+      <ul>
+        <li>Add/Update/Delete Clones</li>
+        <li>Add/Update/Delete LibraryPlates and/or LibraryStocks</li>
+      </ul>
+    </ul>
   </ul>
 </div>
 
