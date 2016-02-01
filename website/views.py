@@ -1,5 +1,8 @@
 from django.shortcuts import render
 
+from eegi.settings import (BATCH_DATA_ENTRY_GDOC_NAME,
+                           BATCH_DATA_ENTRY_GDOC_URL)
+
 
 def home(request):
     """Render the homepage."""
@@ -8,4 +11,9 @@ def home(request):
 
 def help_page(request):
     """Render the help page."""
-    return render(request, 'help.html')
+    context = {
+        'batch_data_entry_gdoc_url': BATCH_DATA_ENTRY_GDOC_URL,
+        'batch_data_entry_gdoc_name': BATCH_DATA_ENTRY_GDOC_NAME,
+    }
+
+    return render(request, 'help.html', context)

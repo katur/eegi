@@ -343,7 +343,7 @@ form table th, form table td {
   #help-page #content #documentation code {
     display: block;
     width: 100%;
-    margin: 20px 40px; }
+    margin: 20px 0; }
 
 #clones #results-header, #clones table {
   width: 100%;

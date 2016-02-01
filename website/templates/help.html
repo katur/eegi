@@ -108,52 +108,113 @@
 
       The following operations can be done with custom scripts that
       have been integrated with Django's command-line management.
+      To use these command-line tools, you should activate the proper
+      Python virtualenv, and be in the project root.
 
-      For help with a particular script, try:
-      <code>./manage.py scriptname help</code>
-
-      To list all available scripts, activate the proper Python
-      virtualenv, and then from the project root, run:
+      To list all available scripts (organized by which app they are in):
       <code>./manage.py help</code>
 
-      You will see the scripts organized by which app they are in.
       Note that some of these scripts ship with Django (for example,
-      scripts to generate and apply database migrations).
+      scripts to generate and apply database migrations), while others
+      were built custom for this project.
+
+      To run a particular script:
+      <code>./manage.py scriptname [args]</code>
+
+      For help with a particular script, including arguments:
+      <code>./manage.py scriptname --help</code>
+
+      For further help, please consult the command's docstring in the code.
       </li>
 
       <ul>
         <li>
-          Add bulk ExperimentPlates
-          (works in concert with Google Doc)
+        <h5>Add bulk Experiment Plates</h5>
+        <code>./manage.py import_google_doc_data</code>
+
+        This script works in concert with the
+        <a href="{{ batch_data_entry_gdoc_url }}">
+          {{ batch_data_entry_gdoc_name }}</a>
+        Google Doc, which should be filled in with the new
+        experiments prior to running the command.
         </li>
 
         <li>
-          Import mapping data for our Clones, from RNAiCloneMapper database
+        <h5>Update Clone mapping data</h5>
+        <code>./manage.py import_mapping_data</code>
+
+        This script connects to Firoz's RNAiCloneMapper database
+        to update the gene mappings for the clones in this project.
         </li>
 
         <li>
-          Import functional descriptions for our Clones from Wormbase
+        <h5>Update Gene functional descriptions</h5>
+        <code>./manage.py import_functional_descriptions</code>
+
+        This script updates the functional descriptions of the Genes
+        in this database, using a file of functional descriptions
+        from WormBase.
         </li>
 
         <li>
-          Import sequencing data from the Genewiz dump on pleiades
-          (works in concert with Google Doc)
+        <h5>Import sequencing data</h5>
+        <code>./manage.py import_legacy_sequencing_data </code>
+
+        This script imports sequencing data from the Genewiz dump on
+        pleiades. It works in concert with a file specifying which
+        Genewiz tracking numbers correspond to which sequencing plates,
+        and with a reference of which library wells correspond to
+        which sequencing wells.
+
+        <span class="error-message">TODO:
+          The current script uses the legacy database as the reference
+          for which library wells correspond with which sequencing wells.
+          It needs to be modified to work for sequencing needs going forward.
+          The typical pipeline is to generate a CSV cherrypick list
+          (in the standard source/destination format),
+          do the cherrypicking, and then update the CSV
+          for any changes/mistakes that occurred during cherrypicking.
+          The plan is that this script should accept a finalized
+          cherrypicking CSV.
+        </span>
         </li>
 
         <li>
-          Add BLAT hits of our sequencing data from Firoz
-          (NOTE: we should modify this to actually run Firoz's program,
-          instead of simply importing his results)
+        <h5>Import BLAT hits of our sequencing data </h5>
+        <code>./manage.py import_blat_results</code>
+
+        This script adds the BLAT hits of our sequencing data
+        to the database.
+
+        <span class="error-message">TODO:
+          Previously, Firoz performed the BLAT, and Katherine imported
+          his txt results into our database. Ideally, we would
+          modify Firoz's script to update the database directly.
+        </span>
         </li>
 
         <li>
-          Repopulate LibraryStock.consensus_clone field
-          (run this after the sequencing and/or blat data is updated)
+        <h5>Update LibraryStock.consensus_clone field</h5>
+
+        This script updates each library stock's "consensus clone",
+        which is informed by our sequencing results.
+
+        You should run this after receiving new sequencing results.
+
+        <span class="error-message">TODO: build this, once relevant
+          decisions are made!</span>
         </li>
 
         <li>
-          Repopulate Experiment.gi_score field
-          (run this after doing new experiments, updating junk, etc.)
+        <h5>Update Experiment.gi_score field</h5>
+
+        This script updates each experiment's "gi score",
+        which is informed by its DevStaR output and that of its controls.
+
+        You should run this script after adding or updating Experiments and/or
+        DevStaR Scores.
+
+        <span class="error-message">TODO: build this with Michelle</span>
         </li>
       </ul>
 
@@ -161,14 +222,27 @@
       <li><h4>Cron Jobs</h4></li>
 
       <ul>
-        <li>Pull original images from scopes (LG)</li>
-        <li>Generate thumbnail and medium res images (LG)</li>
-        <li>Run DevStaR on new images (LG)</li>
-        <li>Import DevStaR txt output into database</li>
         <li>
-          Back-up raw data (at least original images) to separate machine (LG)
+        <h5>Pull original images from scopes (LG)<h5>
         </li>
-        <li>Back-up database</li>
+
+        <li><h5>Generate thumbnail and medium res images (LG)</h5></li>
+
+        <li><h5>Run DevStaR on new images (LG)</h5></li>
+
+        <li><h5>Import DevStaR txt output into database</h5></li>
+
+        <li>
+        <h5>Back-up raw data (at least original images)
+          to separate machine (LG)</h5>
+        </li>
+
+        <li><h5>Back-up database</h5>
+        <span class="error-message">TODO:
+          Katherine needs to activate this after her final
+          legacy-database-sync.
+        </span>
+        </li>
       </ul>
 
 
@@ -177,8 +251,15 @@
       </h4></li>
 
       <ul>
-        <li>Add/Update/Delete Clones</li>
-        <li>Add/Update/Delete LibraryPlates and/or LibraryStocks</li>
+        <li>
+        <h5>Add/Update/Delete Clones</h5>
+        </li>
+
+        <li>
+        <h5>
+          Add/Update/Delete LibraryPlates and/or LibraryStocks
+        </h5>
+        </li>
       </ul>
     </ul>
   </ul>
