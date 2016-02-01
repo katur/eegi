@@ -16,8 +16,8 @@
 </div>
 
 
-<div class="page-section">
-  <ul id="documentation">
+<div id="documentation" class="page-section">
+  <ul>
     <li id="navigating"><h3>Navigating data</h3></li>
 
 
@@ -33,7 +33,7 @@
         <h5>Add a single Experiment Plate</h5>
 
         Use the <a href="{% url 'add_experiment_plate_url' %}">
-          Add Experiment Page</a>.
+          Add Experiment Plate page</a>.
         </li>
 
         <li>
@@ -42,7 +42,7 @@
         Select the plates you would like to change using
         the filters on the
         <a href="{% url 'find_experiment_plates_url' %}">
-          Find Experiments Page</a>.
+          Find Experiment Plates page</a>.
         If you are logged in with the correct permissions,
         you will see a link at the bottom to "Change these plates".
         From there, you can change any plate-wide attributes.
@@ -201,8 +201,8 @@
 
         You should run this after receiving new sequencing results.
 
-        <span class="error-message">TODO: build this, once relevant
-          decisions are made!</span>
+        <span class="error-message">TODO: build this once relevant
+          decisions are made</span>
         </li>
 
         <li>
@@ -230,14 +230,21 @@
 
         <li><h5>Run DevStaR on new images (LG)</h5></li>
 
-        <li><h5>Import DevStaR txt output into database</h5></li>
+        <li>
+        <h5>Import DevStaR txt output into database</h5>
+
+        <span class="error-message">TODO:
+          Katherine needs to finish this.
+        </span>
 
         <li>
         <h5>Back-up raw data (at least original images)
           to separate machine (LG)</h5>
         </li>
 
-        <li><h5>Back-up database</h5>
+        <li>
+        <h5>Back-up database</h5>
+
         <span class="error-message">TODO:
           Katherine needs to activate this after her final
           legacy-database-sync.

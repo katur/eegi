@@ -321,7 +321,7 @@ form table th, form table td {
 #help-page #content ul {
   list-style-position: inside;
   list-style: disc inside; }
-  #help-page #content ul ul li, #help-page #content ul ul ul {
+  #help-page #content ul ul, #help-page #content ul ul li, #help-page #content ul ul ul {
     padding-left: 40px; }
   #help-page #content ul ul {
     list-style-type: circle; }
@@ -333,8 +333,11 @@ form table th, form table td {
   margin: 40px 0; }
 #help-page #content #documentation {
   max-width: 750px; }
-  #help-page #content #documentation li {
-    margin-bottom: 40px; }
+  #help-page #content #documentation ul {
+    list-style-position: outside; }
+    #help-page #content #documentation ul li {
+      padding-left: 10px;
+      margin-bottom: 40px; }
   #help-page #content #documentation h5 {
     display: block;
     width: 100%;
@@ -481,7 +484,7 @@ form table th, form table td {
 #secondary-scores #rules {
   list-style-position: inside;
   list-style: disc inside; }
-  #secondary-scores #rules ul li, #secondary-scores #rules ul ul {
+  #secondary-scores #rules ul, #secondary-scores #rules ul li, #secondary-scores #rules ul ul {
     padding-left: 40px; }
   #secondary-scores #rules ul {
     list-style-type: circle; }
