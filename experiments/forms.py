@@ -203,7 +203,7 @@ class AddExperimentPlateForm(forms.Form):
         required=True,
         validators=[validate_new_experiment_plate_id])
     screen_stage = ScreenStageChoiceField(required=True)
-    date = forms.DateField(required=True)
+    date = forms.DateField(required=True, help_text='YYYY-MM-DD')
     temperature = forms.DecimalField(required=True)
     worm_strain = WormChoiceField(required=True)
     library_plate = LibraryPlateField(required=True)
@@ -227,7 +227,7 @@ class ChangeExperimentPlatesForm(forms.Form):
 
     # Plate-level fields
     screen_stage = ScreenStageChoiceField(required=False)
-    date = forms.DateField(required=False)
+    date = forms.DateField(required=False, help_text='YYYY-MM-DD')
     temperature = forms.DecimalField(required=False)
     comment = forms.CharField(required=False, label='Plate comment')
 
