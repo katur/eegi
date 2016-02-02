@@ -27,9 +27,9 @@ CSS is in [SASS](http://sass-lang.com/).
 
 Javascript is in [CoffeeScript](http://coffeescript.org/).
 
-<gulpfile.js> automates the compilation of both SASS and
-CoffeeScript while in development. The Node.js package dependencies
-for using Gulp are listed in <package.json>. Please see
+[gulpfile.js](gulpfile.js) can be used to automate the compilation of
+SASS and CoffeeScript while in development. The Node.js package dependencies
+for using Gulp are listed in [package.json](package.json). Please see
 [the dev portion of INSTALL.md](https://github.com/katur/eegi/blob/master/INSTALL.md#cssjavascript-dependencies)
 for more details
 
