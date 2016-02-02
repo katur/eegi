@@ -6,9 +6,9 @@ knockdown experiments to uncover suppressor and enhancer phenotypes to
 reveal genetic interactions.
 
 1. [Code](#code)
-1. [Apps](#apps)
-1. [Database](#database)
-1. [Installation](#installation)
+2. [Apps](#apps)
+3. [Database](#database)
+4. [Installation](#installation)
 
 
 ## Code
@@ -28,10 +28,10 @@ CSS is in [SASS](http://sass-lang.com/).
 Javascript is in [CoffeeScript](http://coffeescript.org/).
 
 [gulpfile.js](gulpfile.js) can be used to automate the compilation of
-SASS and CoffeeScript while in development. The Node.js package dependencies
+SASS and CoffeeScript while in development. The package dependencies
 for using Gulp are listed in [package.json](package.json). Please see
-[the dev portion of INSTALL.md](https://github.com/katur/eegi/blob/master/INSTALL.md#cssjavascript-dependencies)
-for more details
+[INSTALL.md](https://github.com/katur/eegi/blob/master/INSTALL.md#cssjavascript-dependencies)
+for more details on how to install these dependencies and use this script.
 
 Managerial scripts live in the standard Django location:
 `appname/management/commands/scriptname.py`, to be run with
