@@ -27,6 +27,12 @@ CSS is in [SASS](http://sass-lang.com/).
 
 Javascript is in [CoffeeScript](http://coffeescript.org/).
 
+<gulpfile.js> automates the compilation of both SASS and
+CoffeeScript while in development. The Node.js package dependencies
+for using Gulp are listed in <package.json>. Please see
+[the dev portion of INSTALL.md](https://github.com/katur/eegi/blob/master/INSTALL.md#cssjavascript-dependencies)
+for more details
+
 Managerial scripts live in the standard Django location:
 `appname/management/commands/scriptname.py`, to be run with
 `./manage.py scriptname`.
@@ -62,10 +68,6 @@ are not Django apps:
 
 - [utils](utils) holds some very general helper functions
 - [antiquated](antiquated) holds some old code that predates this Django project
-- `materials`, excluded from the repo, holds various input files (Genewiz
-sequencing output, the official Ahringer RNAi library Excel database, etc.)
-- `backups`, excluded from the repo, holds MySQL database backups, schema
-backups, etc.
 
 
 ## Database
