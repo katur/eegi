@@ -48,11 +48,11 @@ data:
 
 - [worms](worms) captures the *C. elegans* strains used in the screen.
 - [clones](clones) captures the RNAi feeding clones used in the screen,
-including information about what genes these clones target.
+  including information about what genes these clones target.
 - [library](library) captures the physical RNAi stocks used in the screen,
-including sequencing results.
+  including sequencing results.
 - [experiments](experiments) captures the actual experiments, including
-human and machine scores of results.
+  human and machine scores of results.
 
 
 There are two other, organizational Django apps:
@@ -63,7 +63,7 @@ There are two other, organizational Django apps:
   from the legacy database
 
 
-Finally, here is an explanation of some other top-level directories, which
+Finally, an explanation of some other top-level directories, which
 are not Django apps:
 
 - [utils](utils) holds some very general helper functions

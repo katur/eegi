@@ -7,270 +7,310 @@
 
 
 {% block content %}
-<div id="intro" class="page-section">
-  <ul>
-    <li><a href="#navigating">Navigating data</a></li>
-    <li><a href="#changing">Changing data</a></li>
+<section id="table-of-contents">
+  <a href="#updating-exp">
+    Updating data -- experiments & scores</a>
+  <a href="#updating-lib">
+    Updating data -- library & clones</a>
+  <a href="#updating-other">
+    Updating data -- other</a>
+</section>
+
+
+<section id="updating-exp">
+  <h3>Updating Experiment Data</h3>
+
+  There are a few common ways to update the database, depending on
+  the context:
+
+  <ul id="updating-methods">
+    <li>
+    <span><a href="{% url 'admin:index' %}">
+        Django Admin Interface:</a></span>
+    This ships with Django, and can be used for some simple updates.
+    </li>
+
+    <li>
+    <span>Custom Interfaces:</span>
+
+    Some interfaces were built to update the database in ways not easy
+    handled by the Django admin.
+    </li>
+
+    <li>
+    <span>Django Management Scripts:</span>
+
+    These scripts are run from the command line, and should only be
+    run after activating the project's Python virtualenv. As written,
+    the commands below should be run from the project root.
+    <br><br>
+    To list all available scripts (organized by project app):
+    <code class="clear">./manage.py help</code>
+
+    To run a particular script:
+    <code class="clear">./manage.py scriptname [args]</code>
+
+    For help with a particular script, including arguments:
+    <code class="clear">./manage.py help scriptname</code>
+
+    For further help with a particular script, please consult the
+    command's docstring.
+    </li>
+
+    <li>
+    <span>Cron Jobs:</span>
+
+    These jobs run automatically, in the crontab of the <code>eegi</code>
+    user on pyxis.
+    </li>
   </ul>
-  <hr>
-</div>
 
+  <section>
+    <h5>Add a single Experiment Plate</h5>
 
-<div id="documentation" class="page-section">
-  <ul>
-    <li id="navigating"><h3>Navigating data</h3></li>
+    Use the custom <a href="{% url 'add_experiment_plate_url' %}">
+      Add Experiment Plate page</a>.
+  </section>
+
+  <section>
+    <h5>Add multiple Experiment Plates</h5>
+
+    <code>./manage.py import_google_doc_data</code>
 
+    This script works in concert with the
+    <a href="{{ batch_data_entry_gdoc_url }}">
+      {{ batch_data_entry_gdoc_name }}</a>
+    Google Doc, which should be filled in prior to running the
+    command.
+  </section>
 
-    <li id="changing"><h3>Changing data</h3></li>
+  <section>
+    <h5>Change one or more Experiment Plates</h5>
 
-    <ul>
-      <li>
-      <h4>Custom Interfaces</h4>
-      </li>
+    Select the plates you would like to change using
+    the filters on the
+    <a href="{% url 'find_experiment_plates_url' %}">
+      Find Experiment Plates page</a>.
+    If you are logged in with the correct permissions,
+    you will see a link at the bottom to "Change these plates".
+    From there, you can change any plate-wide attributes.
+  </section>
 
-      <ul>
-        <li>
-        <h5>Add a single Experiment Plate</h5>
+  <section>
+    <h5>Delete one or more Experiment Plates</h5>
 
-        Use the <a href="{% url 'add_experiment_plate_url' %}">
-          Add Experiment Plate page</a>.
-        </li>
+    Use the Admin interface.
 
-        <li>
-        <h5>Change one or more Experiment Plates</h5>
+    NOTE: Deleting an Experiment Plate cascades to delete any
+    associated Experiment Wells, Manual Scores, and Devstar Scores.
+    Unless you are confident, marking junk may be preferred tactic.
+  </section>
 
-        Select the plates you would like to change using
-        the filters on the
-        <a href="{% url 'find_experiment_plates_url' %}">
-          Find Experiment Plates page</a>.
-        If you are logged in with the correct permissions,
-        you will see a link at the bottom to "Change these plates".
-        From there, you can change any plate-wide attributes.
-        </li>
+  <section>
+    <h5>Toggle junk on a single Experiment Well</h5>
 
-        <li>
-        <h5>Toggle junk on a single Experiment Well</h5>
+    Go to the page for that experiment well
+    (e.g., <a href="{% url 'experiment_well_url' '30010_A12' %}">
+      here is 30010_A12</a>).
+    If you are logged in with the correct permissions,
+    you will see a button at the bottom to "Toggle Junk".
+  </section>
+
+  <section>
+    <h5>Change Worm Strain or Library Stock on a
+      single Experiment Well</h5>
+
+    Use the Django admin (or develop a custom solution if this becomes
+    common practice).
+  </section>
+
+  <section>
+    <h5>Add/Update/Delete Manual Score Codes</h5>
+
+    Use the Django admin.
+  </section>
+
+  <section>
+    <h5>Add Manual Scores</h5>
+
+    <span class="error-message">
+      TODO: build a general scoring interface for any primary and
+      SUP secondary rescoring needs.
+    </span>
+  </section>
+
+  <section>
+    <h5>Run DevStaR on new images (LG)</h5>
+
+    Cron job.
+    <span class="error-message">
+      TODO: Lior is re-writing this for pyxis.
+    </span>
+  </section>
 
-        Go to the page for that experiment well
-        (e.g., <a href="{% url 'experiment_well_url' '30010_A12' %}">
-          here is 30010_A12</a>).
-        If you are logged in with the correct permissions,
-        you will see a button at the bottom to "Toggle Junk".
-        </li>
+  <section>
+    <h5>Import DevStaR txt output into database</h5>
+
+    <span class="error-message">
+      TODO: Katherine needs to finish this after Lior finishes
+      redoing some of the wrapper scripts.
+    </span>
+  </section>
+
+  <section>
+    <h5>Update Experiment.gi_score field</h5>
+
+    This script updates each experiment's "gi score",
+    which is informed by its DevStaR output and that of its controls.
+
+    You should run this script after adding or updating Experiments and/or
+    DevStaR Scores.
+
+    <span class="error-message">
+      TODO: build this with Michelle
+    </span>
+  </section>
+</section>
 
-        <li>
-        <h5>Add ManualScores</h5>
+<section id="updating-lib">
+  <h3>Changing Library & Clone Data</h3>
 
-        <span class="error-message">TODO:
-        build a general scoring interface for any primary and
-        SUP secondary rescoring needs.</span>
-        </li>
-      </ul>
+  <section>
+    <h5>Update Clone mapping data</h5>
 
+    <code>./manage.py import_mapping_data</code>
 
-      <li>
-      <h4>Django Admin Interface</h4>
-
-      The following operations can be done with the straightforward
-      <a href="{% url 'admin:index' %}">Django Admin Interface</a>.
-
-      </li>
-
-      <ul>
-        <li>
-        <h5>Add/Update/Delete Users, Groups, and Permissions</h5>
-        </li>
-
-        <li>
-        <h5>Add/Update/Delete Worm Strains</h5>
-        </li>
-
-        <li>
-        <h5>Add/Update/Delete Manual Score Codes</h5>
-        </li>
-
-        <li>
-        <h5>Change Worm Strain or Library Stock on a single Experiment Well</h5>
-        </li>
-
-        <li>
-        <h5>Delete one or more Experiment Plates</h5>
-        NOTE: Deleting an Experiment Plate in the Admin interface
-        cascades to delete any associated Experiment Wells,
-        Manual Scores, and Devstar Scores.
-        Unless you are confident, marking junk may be preferred tactic.
-        </li>
-      </ul>
-
-
-      <li>
-      <h4>Django Management Scripts</h4>
-
-      The following operations can be done with custom scripts that
-      have been integrated with Django's command-line management.
-      To use these command-line tools, you should activate the proper
-      Python virtualenv, and be in the project root.
-
-      To list all available scripts (organized by which app they are in):
-      <code>./manage.py help</code>
-
-      Note that some of these scripts ship with Django (for example,
-      scripts to generate and apply database migrations), while others
-      were built custom for this project.
-
-      To run a particular script:
-      <code>./manage.py scriptname [args]</code>
-
-      For help with a particular script, including arguments:
-      <code>./manage.py scriptname --help</code>
-
-      For further help, please consult the command's docstring in the code.
-      </li>
-
-      <ul>
-        <li>
-        <h5>Add bulk Experiment Plates</h5>
-        <code>./manage.py import_google_doc_data</code>
+    This script connects to Firoz's RNAiCloneMapper database
+    to update the gene mappings for the clones in this project.
+  </section>
 
-        This script works in concert with the
-        <a href="{{ batch_data_entry_gdoc_url }}">
-          {{ batch_data_entry_gdoc_name }}</a>
-        Google Doc, which should be filled in with the new
-        experiments prior to running the command.
-        </li>
+  <section>
+    <h5>Update Gene functional descriptions</h5>
 
-        <li>
-        <h5>Update Clone mapping data</h5>
-        <code>./manage.py import_mapping_data</code>
+    <code>./manage.py import_functional_descriptions</code>
 
-        This script connects to Firoz's RNAiCloneMapper database
-        to update the gene mappings for the clones in this project.
-        </li>
+    This script updates the functional descriptions of the Genes
+    in this database, using a file of functional descriptions
+    from WormBase.
+  </section>
 
-        <li>
-        <h5>Update Gene functional descriptions</h5>
-        <code>./manage.py import_functional_descriptions</code>
-
-        This script updates the functional descriptions of the Genes
-        in this database, using a file of functional descriptions
-        from WormBase.
-        </li>
+  <section>
+    <h5>Import sequencing data</h5>
 
-        <li>
-        <h5>Import sequencing data</h5>
-        <code>./manage.py import_legacy_sequencing_data </code>
+    <code>./manage.py import_legacy_sequencing_data </code>
 
-        This script imports sequencing data from the Genewiz dump on
-        pleiades. It works in concert with a file specifying which
-        Genewiz tracking numbers correspond to which sequencing plates,
-        and with a reference of which library wells correspond to
-        which sequencing wells.
-
-        <span class="error-message">TODO:
-          The current script uses the legacy database as the reference
-          for which library wells correspond with which sequencing wells.
-          It needs to be modified to work for sequencing needs going forward.
-          The typical pipeline is to generate a CSV cherrypick list
-          (in the standard source/destination format),
-          do the cherrypicking, and then update the CSV
-          for any changes/mistakes that occurred during cherrypicking.
-          The plan is that this script should accept a finalized
-          cherrypicking CSV.
-        </span>
-        </li>
-
-        <li>
-        <h5>Import BLAT hits of our sequencing data </h5>
-        <code>./manage.py import_blat_results</code>
-
-        This script adds the BLAT hits of our sequencing data
-        to the database.
-
-        <span class="error-message">TODO:
-          Previously, Firoz performed the BLAT, and Katherine imported
-          his txt results into our database. Ideally, we would
-          modify Firoz's script to update the database directly.
-        </span>
-        </li>
-
-        <li>
-        <h5>Update LibraryStock.consensus_clone field</h5>
-
-        This script updates each library stock's "consensus clone",
-        which is informed by our sequencing results.
-
-        You should run this after receiving new sequencing results.
-
-        <span class="error-message">TODO: build this once relevant
-          decisions are made</span>
-        </li>
-
-        <li>
-        <h5>Update Experiment.gi_score field</h5>
-
-        This script updates each experiment's "gi score",
-        which is informed by its DevStaR output and that of its controls.
-
-        You should run this script after adding or updating Experiments and/or
-        DevStaR Scores.
-
-        <span class="error-message">TODO: build this with Michelle</span>
-        </li>
-      </ul>
-
-
-      <li><h4>Cron Jobs</h4></li>
-
-      <ul>
-        <li>
-        <h5>Pull original images from scopes (LG)<h5>
-        </li>
-
-        <li><h5>Generate thumbnail and medium res images (LG)</h5></li>
-
-        <li><h5>Run DevStaR on new images (LG)</h5></li>
-
-        <li>
-        <h5>Import DevStaR txt output into database</h5>
-
-        <span class="error-message">TODO:
-          Katherine needs to finish this.
-        </span>
-
-        <li>
-        <h5>Back-up raw data (at least original images)
-          to separate machine (LG)</h5>
-        </li>
-
-        <li>
-        <h5>Back-up database</h5>
-
-        <span class="error-message">TODO:
-          Katherine needs to activate this after her final
-          legacy-database-sync.
-        </span>
-        </li>
-      </ul>
-
-
-      <li><h4>
-        "Backend" only (extremely infrequent / special cases only)
-      </h4></li>
-
-      <ul>
-        <li>
-        <h5>Add/Update/Delete Clones</h5>
-        </li>
-
-        <li>
-        <h5>
-          Add/Update/Delete LibraryPlates and/or LibraryStocks
-        </h5>
-        </li>
-      </ul>
-    </ul>
-  </ul>
-</div>
+    This script imports sequencing data from the Genewiz dump on
+    pleiades. It works in concert with a file specifying which
+    Genewiz tracking numbers correspond to which sequencing plates,
+    and with a reference of which library stocks correspond to
+    which sequencing wells.
 
+    <span class="error-message">TODO:
+      The current script uses the legacy database as the reference
+      for which library stocks correspond with which sequencing
+      wells. It should be modified to work for sequencing needs
+      going forward. The typical pipeline is to generate a
+      cherrypick list as a CSV
+      (in the standard source/destination format),
+      do the cherrypicking, and then update the CSV
+      for any changes/mistakes that occurred during cherrypicking.
+      The plan is that this script should accept the finalized
+      cherrypicking CSV.
+    </span>
+  </section>
+
+  <section>
+    <h5>Import BLAT hits of sequencing data </h5>
+
+    <code>./manage.py import_blat_results</code>
+
+    This script adds the BLAT hits of our sequencing data
+    to the database.
+
+    <span class="error-message">TODO:
+      Previously, Firoz performed the BLAT, and Katherine imported
+      his txt results. We should modify Firoz's script to update
+      the database directly.
+    </span>
+  </section>
+
+  <section>
+    <h5>Update LibraryStock.consensus_clone field</h5>
+
+    <code>./manage.py ???</code>
+
+    This script updates each library stock's "consensus clone",
+    informed by our sequencing results. It should run after
+    BLATing new sequencing results.
+
+    <span class="error-message">TODO: build this once relevant
+      decisions are made</span>
+  </section>
+
+  <section>
+    <h5>
+      Add/Update/Delete Clones, Library Plates, or Library Stocks
+    </h5>
+
+    Extremely infrequent. Update database directly or write
+    a one-off script.
+  </section>
+</section>
+
+<section id="updating-other">
+  <h3>Other Updates</h3>
+
+  <section>
+    <h5>Add/Update/Delete Users, Groups, and Permissions</h5>
+
+    Use the Django admin.
+  </section>
+
+  <section>
+    <h5>Add/Update/Delete Worm Strains</h5>
+
+    Use the Django admin.
+  </section>
+
+  <section>
+    <h5>Back-up database</h5>
+
+    <span class="error-message">
+      TODO: Katherine just needs to activate this cronjob after her
+      final sync to the legacy database.
+    </span>
+  </section>
+
+  <section>
+    <h5>Pull images from scopes (LG)<h5>
+
+    Daily cron job.
+
+    <span class="error-message">
+      TODO: Lior is re-writing this for pyxis.
+    </span>
+  </section>
+
+  <section>
+    <h5>Generate thumbnail and medium res images (LG)</h5>
+
+    Cron job.
+
+    <span class="error-message">
+      TODO: Lior is re-writing this for pyxis.
+    </span>
+  </section>
+
+  <section>
+  <h5>Back-up raw data (at least original images) to separate
+    machine (LG)</h5>
+
+    Cron job.
+
+    <span class="error-message">
+      TODO: Lior is re-writing this for pyxis.
+    </span>
+  </section>
+</section>
 
 {% endblock content %}

@@ -1,28 +1,51 @@
 #help-page
-  #content
-    ul
-      @include bulleted-list
+  h3
+    margin-bottom: $whitespace
 
-    hr
-      margin: $whitespace 0
+  h5
+    margin-bottom: $whitespace / 2
+    font-weight: bold
 
-    #documentation
-      max-width: 750px
+  code.clear
+    display: block
+    width: 100%
+    margin: $whitespace / 2 0
 
-      ul
-        list-style-position: outside
+  #updating-methods
+    @include bulleted-list
+    list-style-position: outside
+    padding: $whitespace / 2 $whitespace
 
-        li
-          padding-left: 10px
-          margin-bottom: $whitespace
+    li
+      margin-bottom: $whitespace / 4
 
-      h5
-        display: block
-        width: 100%
-        margin-bottom: $whitespace / 4
-        font-weight: bold
+      span
+        font-size: $base-font-size + 2
+        font-style: italic
+        margin-right: 4px
 
-      code
-        display: block
-        width: 100%
-        margin: $whitespace / 2 0
+  section
+    max-width: 750px
+    padding: $whitespace 0
+    margin-bottom: 0
+    border-bottom: 1px solid #ccc
+
+    section
+      margin-bottom: $whitespace
+      border-bottom: none
+
+      &:last-child
+        margin-bottom-bottom: 0
+
+      section
+        margin-bottom: $whitespace / 2
+        border-bottom: none
+
+        &:last-child
+          margin-bottom: 0
+
+  #table-of-contents
+    padding-top: 0
+    a
+      display: block
+      width: 100%
