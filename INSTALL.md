@@ -12,7 +12,7 @@
 ```
 git clone https://github.com/katur/eegi.git
 vi eegi/eegi/local_settings.py
-# Add local_settings, setting DEBUG=True
+# add necessary local_settings; make sure to set DEBUG=True
 ```
 
 
@@ -156,7 +156,7 @@ cd /opt/local/eegi
 git clone https://github.com/katur/eegi.git
 
 cd /opt/local/eegi/eegi/eegi
-# create local_settings.py with database connection info, setting DEBUG=False
+# add necessary local_settings; make sure to set DEBUG=False
 ```
 
 
