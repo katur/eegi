@@ -58,9 +58,9 @@ human and machine scores of results.
 There are two other, organizational Django apps:
 
 - [website](website) holds aspects of the website that are common to all apps
-(e.g., the templates and stylesheets for the home page, footer, etc)
-- [dbmigration](dbmigration) holds the functionality for syncing the database according to
-the legacy database
+  (e.g., the templates and stylesheets for the home page, footer, etc)
+- [dbmigration](dbmigration) holds the functionality for syncing the database
+  from the legacy database
 
 
 Finally, here is an explanation of some other top-level directories, which
