@@ -14,7 +14,7 @@
   #updating-methods
     @include bulleted-list
     list-style-position: outside
-    padding: $whitespace / 2 $whitespace
+    padding: $whitespace / 2 $whitespace $whitespace $whitespace
 
     li
       margin-bottom: $whitespace / 4
@@ -31,18 +31,12 @@
     border-bottom: 1px solid #ccc
 
     section
-      margin-bottom: $whitespace
+      margin-bottom: $whitespace * 2
+      padding: 0
       border-bottom: none
 
       &:last-child
-        margin-bottom-bottom: 0
-
-      section
-        margin-bottom: $whitespace / 2
-        border-bottom: none
-
-        &:last-child
-          margin-bottom: 0
+        margin-bottom: 0
 
   #table-of-contents
     padding-top: 0

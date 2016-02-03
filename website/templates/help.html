@@ -20,8 +20,7 @@
 <section id="updating-exp">
   <h3>Updating Experiment Data</h3>
 
-  There are a few common ways to update the database, depending on
-  the context:
+  There are a few ways to update the database, depending on the context:
 
   <ul id="updating-methods">
     <li>
@@ -44,17 +43,16 @@
     run after activating the project's Python virtualenv. As written,
     the commands below should be run from the project root.
     <br><br>
-    To list all available scripts (organized by project app):
-    <code class="clear">./manage.py help</code>
-
     To run a particular script:
     <code class="clear">./manage.py scriptname [args]</code>
 
-    For help with a particular script, including arguments:
+    For help with a particular script (also find more help in the
+    command's docstring):
     <code class="clear">./manage.py help scriptname</code>
 
-    For further help with a particular script, please consult the
-    command's docstring.
+    To list all available scripts:
+    <code class="clear">./manage.py help</code>
+
     </li>
 
     <li>
@@ -75,7 +73,7 @@
   <section>
     <h5>Add multiple Experiment Plates</h5>
 
-    <code>./manage.py import_google_doc_data</code>
+    <code class="clear">./manage.py import_google_doc_data</code>
 
     This script works in concert with the
     <a href="{{ batch_data_entry_gdoc_url }}">
@@ -99,7 +97,8 @@
   <section>
     <h5>Delete one or more Experiment Plates</h5>
 
-    Use the Admin interface.
+    Use the <a href="{% url 'admin:index' %}">
+        Django Admin Interface</a>.
 
     NOTE: Deleting an Experiment Plate cascades to delete any
     associated Experiment Wells, Manual Scores, and Devstar Scores.
@@ -120,14 +119,16 @@
     <h5>Change Worm Strain or Library Stock on a
       single Experiment Well</h5>
 
-    Use the Django admin (or develop a custom solution if this becomes
-    common practice).
+    Use the <a href="{% url 'admin:index' %}">
+        Django Admin Interface</a>
+    (or develop a custom solution if this becomes common practice).
   </section>
 
   <section>
     <h5>Add/Update/Delete Manual Score Codes</h5>
 
-    Use the Django admin.
+    Use the <a href="{% url 'admin:index' %}">
+        Django Admin Interface</a>.
   </section>
 
   <section>
@@ -149,16 +150,19 @@
   </section>
 
   <section>
-    <h5>Import DevStaR txt output into database</h5>
+    <h5>Import DevStaR .txt output into database</h5>
 
+    TBD cron job or management script.
     <span class="error-message">
       TODO: Katherine needs to finish this after Lior finishes
-      redoing some of the wrapper scripts.
+      redoing some the DevStaR wrapper scripts.
     </span>
   </section>
 
   <section>
     <h5>Update Experiment.gi_score field</h5>
+
+    <code class="clear">./manage.py update_gi_score (?)</code>
 
     This script updates each experiment's "gi score",
     which is informed by its DevStaR output and that of its controls.
@@ -178,7 +182,7 @@
   <section>
     <h5>Update Clone mapping data</h5>
 
-    <code>./manage.py import_mapping_data</code>
+    <code class="clear">./manage.py import_mapping_data</code>
 
     This script connects to Firoz's RNAiCloneMapper database
     to update the gene mappings for the clones in this project.
@@ -187,7 +191,7 @@
   <section>
     <h5>Update Gene functional descriptions</h5>
 
-    <code>./manage.py import_functional_descriptions</code>
+    <code class="clear">./manage.py import_functional_descriptions</code>
 
     This script updates the functional descriptions of the Genes
     in this database, using a file of functional descriptions
@@ -197,7 +201,7 @@
   <section>
     <h5>Import sequencing data</h5>
 
-    <code>./manage.py import_legacy_sequencing_data </code>
+    <code class="clear">./manage.py import_legacy_sequencing_data</code>
 
     This script imports sequencing data from the Genewiz dump on
     pleiades. It works in concert with a file specifying which
@@ -222,22 +226,22 @@
   <section>
     <h5>Import BLAT hits of sequencing data </h5>
 
-    <code>./manage.py import_blat_results</code>
+    <code class="clear">./manage.py import_blat_results</code>
 
     This script adds the BLAT hits of our sequencing data
     to the database.
 
     <span class="error-message">TODO:
       Previously, Firoz performed the BLAT, and Katherine imported
-      his txt results. We should modify Firoz's script to update
-      the database directly.
+      his .txt results. It would be better for Firoz's script to
+      query and update the database directly.
     </span>
   </section>
 
   <section>
     <h5>Update LibraryStock.consensus_clone field</h5>
 
-    <code>./manage.py ???</code>
+    <code class="clear">./manage.py update_consensus_clone (?)</code>
 
     This script updates each library stock's "consensus clone",
     informed by our sequencing results. It should run after
@@ -263,26 +267,30 @@
   <section>
     <h5>Add/Update/Delete Users, Groups, and Permissions</h5>
 
-    Use the Django admin.
+    Use the <a href="{% url 'admin:index' %}">
+        Django Admin Interface</a>.
   </section>
 
   <section>
     <h5>Add/Update/Delete Worm Strains</h5>
 
-    Use the Django admin.
+    Use the <a href="{% url 'admin:index' %}">
+        Django Admin Interface</a>.
   </section>
 
   <section>
     <h5>Back-up database</h5>
 
+    Weekly cron job.
+
     <span class="error-message">
-      TODO: Katherine just needs to activate this cronjob after her
+      TODO: Katherine just needs to uncomment this after her
       final sync to the legacy database.
     </span>
   </section>
 
   <section>
-    <h5>Pull images from scopes (LG)<h5>
+    <h5>Pull images from scopes</h5>
 
     Daily cron job.
 
@@ -292,7 +300,7 @@
   </section>
 
   <section>
-    <h5>Generate thumbnail and medium res images (LG)</h5>
+    <h5>Generate thumbnail and medium res images</h5>
 
     Cron job.
 
@@ -302,10 +310,9 @@
   </section>
 
   <section>
-  <h5>Back-up raw data (at least original images) to separate
-    machine (LG)</h5>
+  <h5>Update backup of raw data on separate machine</h5>
 
-    Cron job.
+    Weekly cron job.
 
     <span class="error-message">
       TODO: Lior is re-writing this for pyxis.

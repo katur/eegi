@@ -331,7 +331,7 @@ form table th, form table td {
   list-style-position: inside;
   list-style: disc inside;
   list-style-position: outside;
-  padding: 20px 40px; }
+  padding: 20px 40px 40px 40px; }
   #help-page #updating-methods ul, #help-page #updating-methods ul li, #help-page #updating-methods ul ul {
     padding-left: 40px; }
   #help-page #updating-methods ul {
@@ -352,15 +352,11 @@ form table th, form table td {
   margin-bottom: 0;
   border-bottom: 1px solid #ccc; }
   #help-page section section {
-    margin-bottom: 40px;
+    margin-bottom: 80px;
+    padding: 0;
     border-bottom: none; }
     #help-page section section:last-child {
-      margin-bottom-bottom: 0; }
-    #help-page section section section {
-      margin-bottom: 20px;
-      border-bottom: none; }
-      #help-page section section section:last-child {
-        margin-bottom: 0; }
+      margin-bottom: 0; }
 #help-page #table-of-contents {
   padding-top: 0; }
   #help-page #table-of-contents a {
