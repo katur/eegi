@@ -1,12 +1,11 @@
 from itertools import chain
 import os
-import re
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.management.base import BaseCommand, CommandError
 
 from experiments.models import Experiment, DevstarScore
-from utils.scripting import require_db_write_acknowledgement
+# from utils.scripting import require_db_write_acknowledgement
 
 
 PATTERNS = ('bacteria', 'W', 'LC', 'EC', 'NewcntW', 'NewcntL')
@@ -100,8 +99,8 @@ class Command(BaseCommand):
                 try:
                     new_score.full_clean()
 
-                except ValidationError as e:
+                except ValidationError:
                     raise CommandError('Cleaning DevStaR object {} '
-                                       'raised a ValidationError.'
+                                       'raised ValidationError'
                                        .format(new_score))
                 # new_score.save()

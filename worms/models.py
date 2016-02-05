@@ -183,8 +183,8 @@ class WormStrain(models.Model):
         The screen is defined by both screen_type ('ENH' or 'SUP')
         and screen_stage (1 for primary, 2 for secondary).
         """
-        annotated = (self
-            .get_experiments_by_screen(screen_type, screen_stage)
+        annotated = (
+            self.get_experiments_by_screen(screen_type, screen_stage)
             .order_by('library_stock')
             .values('library_stock').annotate(Count('id')))
 

@@ -19,7 +19,9 @@ class Command(BaseCommand):
     """
     Command to import SUP Secondary sequencing data.
 
-    Imports this from both the legacy database and from Genewiz output files.
+    Relies on Genewiz output files, along with the legacy database
+    (to determine which library stocks correspond to which sequencing
+    wells).
 
     This script requires that LEGACY_DATABASE be defined in
     local_settings.py.

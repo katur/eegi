@@ -140,8 +140,6 @@ def add_experiment_plate(request):
                 data['library_plate'], is_junk=data['is_junk'],
                 plate_comment=data['plate_comment'])
 
-            plate = ExperimentPlate.objects.get(id=experiment_plate_id)
-
             return redirect('experiment_plate_url', experiment_plate_id)
 
     else:

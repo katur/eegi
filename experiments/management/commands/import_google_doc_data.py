@@ -1,6 +1,7 @@
 import datetime
 import re
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 
 from eegi.settings import BATCH_DATA_ENTRY_GDOC_NAME
@@ -107,12 +108,12 @@ def _parse_gdoc_column_headers(values):
         # Sanity check that screen_type is correct
         if (
                 (screen_type == 'SUP' and
-                temperature != worm.restrictive_temperature) or
+                    temperature != worm.restrictive_temperature) or
                 (screen_type == 'ENH' and
-                temperature != worm.permissive_temperature)):
+                    temperature != worm.permissive_temperature)):
             raise ValueError('Screen {} and temperature {} do not agree '
-                               'for worm strain {}'
-                               .format(screen_type, temperature, worm))
+                             'for worm strain {}'
+                             .format(screen_type, temperature, worm))
 
     return (worms, temperatures, screen_types)
 

@@ -82,8 +82,8 @@ class Command(BaseCommand):
 
 def is_bad_sequence(category):
     return ((isinstance(category, int) and category > 1) or
-        category == NO_BLAT or category == NO_MATCH or
-        category == NO_CLONE_BLAT)
+            category == NO_BLAT or category == NO_MATCH or
+            category == NO_CLONE_BLAT)
 
 
 def get_destination_plate(index, first_plate_number=None):
@@ -101,7 +101,6 @@ def get_destination_plate(index, first_plate_number=None):
         return 'JL{}'.format(plate_number)
     else:
         return str(index)
-
 
 
 def get_additional_positives_from_google_doc():

@@ -30,7 +30,7 @@ ALLOWED_HOSTS = ['*']
 
 # Administration
 
-ADMINS = [('Katherine Erickson', 'katherine.erickson@gmail.com'),]
+ADMINS = [('Katherine Erickson', 'katherine.erickson@gmail.com')]
 
 
 # Application definition

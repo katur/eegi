@@ -12,7 +12,6 @@ def connect_to_google_spreadsheets():
     json_key = json.load(open(GOOGLE_API_KEY))
     scope = ['https://spreadsheets.google.com/feeds']
     credentials = SignedJwtAssertionCredentials(
-            json_key['client_email'], json_key['private_key'].encode(),
-            scope)
+        json_key['client_email'], json_key['private_key'].encode(), scope)
     gc = gspread.authorize(credentials)
     return gc

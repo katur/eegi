@@ -73,7 +73,6 @@ class ExperimentPlate(models.Model):
         experiment_plate.create_wells(worm_strain, library_plate,
                                       is_junk=is_junk, dry_run=dry_run)
 
-
     def create_wells(self, worm_strain, library_plate,
                      is_junk=False, dry_run=False):
         """
@@ -89,7 +88,7 @@ class ExperimentPlate(models.Model):
         """
         if Experiment.objects.filter(plate=self).count():
             raise Exception('Experiments already exists for plate {}'
-                            .format(experiment_plate))
+                            .format(self))
 
         stocks_by_well = library_plate.get_stocks_as_dictionary()
         for well in get_well_list():
@@ -99,7 +98,7 @@ class ExperimentPlate(models.Model):
                 id=generate_experiment_id(self.id, well),
                 plate=self, well=well,
                 worm_strain=worm_strain,
-                library_stock=stocks_by_well[well],
+                library_stock=library_stock,
                 is_junk=is_junk)
 
             if not dry_run:

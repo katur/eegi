@@ -1,7 +1,5 @@
 """Utility module with Django form helpers."""
 
-from collections import OrderedDict
-
 from django import forms
 from django.template.loader import render_to_string
 
@@ -44,8 +42,8 @@ class RangeField(forms.MultiValueField):
     """
     def __init__(self, field_class, field_kwargs={}, *args, **kwargs):
         # Initialize both min/max to blank
-        if not 'initial' in kwargs:
-            kwargs['initial'] = ['','']
+        if 'initial' not in kwargs:
+            kwargs['initial'] = ['', '']
 
         # Define min/max pair of fields
         fields = (field_class(**field_kwargs), field_class(**field_kwargs))

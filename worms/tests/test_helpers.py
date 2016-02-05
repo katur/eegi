@@ -27,7 +27,6 @@ class WormHelpersTestCase(WormTestCase):
         self.assertIsNone(query('EU552', 'ENH'))
         self.assertIsNone(query('nonsense', 'ENH'))
 
-
     def test_get_worms_for_screen_type(self):
         n2, dnc1, glp1, emb8 = self.get_worms()
 
