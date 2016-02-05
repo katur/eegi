@@ -57,10 +57,6 @@ INSTALLED_APPS = [
     'lockdown',
 ]
 
-if DEBUG:
-    # INSTALLED_APPS.append('debug_toolbar')
-    pass
-
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
