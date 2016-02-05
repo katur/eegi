@@ -20,7 +20,8 @@ from local_settings import (
     DEBUG, SECRET_KEY, LOCKDOWN_PASSWORDS, DATABASES,
     BASE_DIR_DEVSTAR_OUTPUT, BASE_DIR_IMAGE_CATEGORIES,
     BASE_URL_IMG, BASE_URL_THUMBNAIL, BASE_URL_DEVSTAR,
-    GOOGLE_API_KEY, BATCH_DATA_ENTRY_GDOC_NAME, BATCH_DATA_ENTRY_GDOC_URL)
+    GOOGLE_ANALYTICS_ID, GOOGLE_API_KEY,
+    BATCH_DATA_ENTRY_GDOC_NAME, BATCH_DATA_ENTRY_GDOC_URL)
 
 
 # Security
@@ -116,6 +117,7 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
+                'eegi.context_processors.google_analytics',
             ],
         },
     },
