@@ -42,6 +42,9 @@ class ExperimentPlate(models.Model):
 
     @classmethod
     def get_tested_temperatures(cls):
+        """
+        Get all temperatures for which there are experiments.
+        """
         return (cls.objects.all()
                 .order_by('temperature')
                 .values_list('temperature', flat=True)
