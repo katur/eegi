@@ -23,7 +23,7 @@
 
 # Import sequencing data (dbmigration app)
 # NOTE: save stderr to manually resolve some legacy ambiguities
-./manage.py import_legacy_sequencing_data ../materials/sequencing/genewiz/tracking_numbers.csv ../materials/sequencing/genewiz/genewiz_data 2> seq_stderr.out
+./manage.py import_legacy_sequencing_data ../materials/sequencing/genewiz_dump/tracking_numbers.csv ../materials/sequencing/genewiz_dump/genewiz_data 2> seq_stderr.out
 
 # Import blat results (library app)
 ./manage.py import_blat_results ../materials/sequencing/blat_results_from_firoz/joined
@@ -40,4 +40,6 @@
 # Manually fix rotated seq plate JL69
 
 # Manually sort out the cherry pick source ambiguities (from paperwork)
+
+# Manually sort out the 4 genewiz migration script errors
 ```
