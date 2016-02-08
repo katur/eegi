@@ -11,9 +11,21 @@ from utils.scripting import require_db_write_acknowledgement
 
 class Command(BaseCommand):
     """
-    Command to import Firoz's RNAi clone mapping data.
+    Import clone-gene mapping data from Firoz's RNAiCloneMapper database.
 
-    Mapping data is queried directly from Firoz's RNAiCloneMapper database.
+    This script:
+        - Does not add or delete rows in the Clone table, or touch the PK.
+          However, it may update any of the other fields in this table.
+
+        - Does not delete rows in the Gene table, or change the PK of
+          existing rows. However, it may add new rows, and may update
+          any of the other fields in this table.
+
+        - Deletes all existing rows in the CloneTarget table, and
+          creates this table from scratch. This is because, in addition
+          to new or changed clone-gene mappings since the last time
+          this command was run, there may be deleted mappings
+
     """
 
     help = "Import RNAi clone mapping data from Firoz's database."
@@ -28,84 +40,98 @@ class Command(BaseCommand):
 
         cursor = mapping_db.cursor()
 
-        self.mapping_alias_to_pk = _get_mapping_alias_to_pk(cursor)
-        self.mapping_clones = _get_mapping_clones(cursor)
-        self.mapping_genes = _get_mapping_genes(cursor)
-        self.mapping_targets = _get_mapping_targets(cursor)
+        # Get dictionary to translate from this database's pk to the
+        #   mapping database pk
+        pk_translator = _get_pk_translator(cursor)
 
-        self.number_clones_no_targets = 0
-        self.number_clones_multiple_targets = 0
+        # Get all info from the mapping database
+        all_mapping_clones = _get_all_mapping_clones(cursor)
+        all_mapping_genes = _get_all_mapping_genes(cursor)
+        all_mapping_targets = _get_all_mapping_targets(cursor)
 
-        clones = Clone.objects.all()
+        # Delete all Clone-to-Gene mappings from this database.
+        CloneTarget.objects.all().delete()
 
+        # Counters to keep track of no-target and multiple-target cases
+        num_clones_no_targets = 0
+        num_clones_multiple_targets = 0
+
+        # Iterate over the clones in this table, updating all mapping info
+        clones = Clone.objects.exclude(id='L4440')
         for clone in clones:
-            self._process_clone(clone)
+            num_targets = _process_clone(
+                clone, pk_translator, all_mapping_clones,
+                all_mapping_genes, all_mapping_targets)
+
+            if num_targets == 0:
+                num_clones_no_targets += 1
+
+            elif num_targets > 1:
+                num_clones_multiple_targets += 1
 
         self.stdout.write('{} clones with no targets.'
-                          .format(self.number_clones_no_targets))
+                          .format(num_clones_no_targets))
         self.stdout.write('{} clones with multiple targets.'
-                          .format(self.number_clones_multiple_targets))
+                          .format(num_clones_multiple_targets))
 
-    def _process_clone(self, clone):
-        """Do all processing for this clone, both its info and targets."""
-        if clone.pk == 'L4440':
-            return
 
-        if clone.pk not in self.mapping_alias_to_pk:
-            raise CommandError('No alias match for {}'.format(clone.pk))
+def _process_clone(clone, pk_translator, all_mapping_clones,
+                   all_mapping_genes, all_mapping_targets):
+    """
+    Process this clone's mapping information.
 
-        mapping_pks = self.mapping_alias_to_pk[clone.pk]
+    Returns the number of targets.
+    """
+    # Ensure exactly 1 PK for this clone in the mapping database
+    try:
+        mapping_pks = pk_translator[clone.pk]
+    except KeyError:
+        raise CommandError('No alias match for {}'.format(clone.pk))
 
-        if len(mapping_pks) > 1:
-            raise CommandError('>1 alias match for {}'.format(clone.pk))
+    if len(mapping_pks) > 1:
+        raise CommandError('>1 alias match for {}'.format(clone.pk))
 
-        clone.mapping_db_pk = mapping_pks[0]
-        _update_clone_info(clone, self.mapping_clones[clone.mapping_db_pk])
+    clone.mapping_db_pk = mapping_pks[0]
 
-        self._process_clone_targets(clone)
+    # Update general information about this clone (e.g. its primers)
+    clone_mapping_info = all_mapping_clones[clone.mapping_db_pk]
+    _update_clone_info(clone, clone_mapping_info)
 
-    def _process_clone_targets(self, clone):
-        """Do all processing for this clone's targets."""
+    # If there are no targets, move on
+    try:
+        mapping_targets = all_mapping_targets[clone.mapping_db_pk]
+
+    except KeyError:
+        return 0
+
+    # If there are targets, update the gene and save a new gene-target mapping
+    for target_mapping_info in mapping_targets:
+        gene_id = target_mapping_info['gene_id']
+
         try:
-            mapping_targets = self.mapping_targets[clone.mapping_db_pk]
+            gene = Gene.objects.get(pk=gene_id)
 
-        except KeyError:
-            self.stderr.write('WARNING: Clone {} has no targets'.format(clone))
-            self.number_clones_no_targets += 1
-            return
+        except ObjectDoesNotExist:
+            # RNAiCloneMapper uses MyISAM tables which don't enforce FKs
+            if gene_id not in all_mapping_genes:
+                raise CommandError('ERROR: Gene {} from targets table not '
+                                   'present in RNAiCloneMapper.Gene table'
+                                   .format(gene_id))
+            gene = Gene(id=gene_id)
 
-        if len(mapping_targets) > 1:
-            self.number_clones_multiple_targets += 1
+        gene_mapping_info = all_mapping_genes[gene_id]
+        _update_gene_info(gene, gene_mapping_info)
+        _add_target(clone, gene, target_mapping_info)
 
-        for target_info in mapping_targets:
-            gene_id = target_info['gene_id']
-
-            try:
-                gene = Gene.objects.get(pk=gene_id)
-
-            except ObjectDoesNotExist:
-                if gene_id in self.mapping_genes:
-                    gene = Gene(id=gene_id)
-                else:
-                    self.stderr.write('ERROR: Gene {} from targets table not '
-                                      'present in gene table'.format(gene_id))
-                    continue
-
-            _update_gene_info(gene, self.mapping_genes[gene.id])
-
-            target_id = target_info['id']
-
-            try:
-                target = CloneTarget.objects.get(pk=target_id)
-
-            except ObjectDoesNotExist:
-                target = CloneTarget(id=target_id)
-
-            _update_target_info(target, clone, gene, target_info)
+    return len(mapping_targets)
 
 
-def _get_mapping_alias_to_pk(cursor):
-    """Get a dictionary to translate mapping_alias to mapping_pk."""
+def _get_pk_translator(cursor):
+    """
+    Get a dictionary to translate mapping_alias to mapping_pk.
+
+    This can be used to translate this database's pk to the mapping pk.
+    """
     query = 'SELECT alias, clone_id FROM CloneAlias'
 
     cursor.execute(query)
@@ -125,7 +151,7 @@ def _get_mapping_alias_to_pk(cursor):
     return mapping_alias_to_pk
 
 
-def _get_mapping_clones(cursor):
+def _get_all_mapping_clones(cursor):
     """
     Get dictionary of all clones from the mapping database.
 
@@ -140,7 +166,7 @@ def _get_mapping_clones(cursor):
     return get_field_dictionary(cursor, 'Clone', fieldnames)
 
 
-def _get_mapping_genes(cursor):
+def _get_all_mapping_genes(cursor):
     """
     Get dictionary of all genes from the mapping database.
 
@@ -154,7 +180,7 @@ def _get_mapping_genes(cursor):
     return get_field_dictionary(cursor, 'Gene', fieldnames)
 
 
-def _get_mapping_targets(cursor):
+def _get_all_mapping_targets(cursor):
     """
     Get dictionary of all targets from the mapping database.
 
@@ -194,6 +220,9 @@ def _get_mapping_targets(cursor):
 
 
 def _update_clone_info(clone, clone_mapping_info):
+    """
+    Update clone's fields according to the clone_mapping_info dictionary.
+    """
     clone.library = clone_mapping_info['library']
     clone.clone_type = clone_mapping_info['clone_type']
     clone.forward_primer = clone_mapping_info['forward_primer']
@@ -202,6 +231,9 @@ def _update_clone_info(clone, clone_mapping_info):
 
 
 def _update_gene_info(gene, gene_mapping_info):
+    """
+    Update gene's fields according to the gene_mapping_info dictionary.
+    """
     gene.cosmid_id = gene_mapping_info['cosmid_id']
     gene.locus = gene_mapping_info['locus']
     if gene.locus == 'NA':
@@ -210,20 +242,33 @@ def _update_gene_info(gene, gene_mapping_info):
     gene.save()
 
 
-def _update_target_info(target, clone, gene, target_info):
+def _add_target(clone, gene, target_mapping_info):
+    """
+    Add a new CloneTarget to the database, representing clone targeting gene,
+    and with other fields specified in dictionary target_mapping_info.
+    """
+    # Keep the target PK consistent between this database and the
+    # RNAiCloneMapper database
+    target_id = target_mapping_info['id']
+
+    if CloneTarget.objects.filter(id=target_id):
+        raise CommandError('ERROR: all CloneTargets should have been deleted '
+                           'from the database at the start of this command')
+
+    target = CloneTarget(id=target_id)
     target.clone = clone
     target.gene = gene
-    target.clone_amplicon_id = target_info['clone_amplicon_id']
-    target.amplicon_evidence = target_info['amplicon_evidence']
-    target.amplicon_is_designed = target_info['amplicon_is_designed']
-    target.amplicon_is_unique = target_info['amplicon_is_unique']
-    target.transcript_isoform = target_info['transcript_isoform']
-    target.length_span = target_info['length_span']
-    target.raw_score = target_info['raw_score']
-    target.unique_raw_score = target_info['unique_raw_score']
-    target.relative_score = target_info['relative_score']
-    target.specificity_index = target_info['specificity_index']
-    target.unique_chunk_index = target_info['unique_chunk_index']
-    target.is_on_target = target_info['is_on_target']
-    target.is_primary_target = target_info['is_primary_target']
+    target.clone_amplicon_id = target_mapping_info['clone_amplicon_id']
+    target.amplicon_evidence = target_mapping_info['amplicon_evidence']
+    target.amplicon_is_designed = target_mapping_info['amplicon_is_designed']
+    target.amplicon_is_unique = target_mapping_info['amplicon_is_unique']
+    target.transcript_isoform = target_mapping_info['transcript_isoform']
+    target.length_span = target_mapping_info['length_span']
+    target.raw_score = target_mapping_info['raw_score']
+    target.unique_raw_score = target_mapping_info['unique_raw_score']
+    target.relative_score = target_mapping_info['relative_score']
+    target.specificity_index = target_mapping_info['specificity_index']
+    target.unique_chunk_index = target_mapping_info['unique_chunk_index']
+    target.is_on_target = target_mapping_info['is_on_target']
+    target.is_primary_target = target_mapping_info['is_primary_target']
     target.save()
