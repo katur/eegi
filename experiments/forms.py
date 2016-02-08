@@ -31,10 +31,7 @@ class TemperatureChoiceField(forms.ChoiceField):
 
     def __init__(self, **kwargs):
         if 'choices' not in kwargs:
-            temperatures = (ExperimentPlate.objects.all()
-                            .order_by('temperature')
-                            .values_list('temperature', flat=True)
-                            .distinct())
+            temperatures = ExperimentPlate.get_tested_temperatures()
             choices = [EMPTY_CHOICE] + [(x, x) for x in temperatures]
             kwargs['choices'] = choices
 

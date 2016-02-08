@@ -41,6 +41,13 @@ class ExperimentPlate(models.Model):
         return reverse('experiment_plate_url', args=[self.id])
 
     @classmethod
+    def get_tested_temperatures(cls):
+        return (cls.objects.all()
+                .order_by('temperature')
+                .values_list('temperature', flat=True)
+                .distinct())
+
+    @classmethod
     def create_plate_and_wells(
             cls, experiment_plate_id, screen_stage, date,
             temperature, worm_strain, library_plate,
