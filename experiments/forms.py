@@ -69,7 +69,26 @@ class _FilterExperimentsBaseForm(forms.Form):
     plate__date = forms.DateField(
         required=False, label='Date', help_text='YYYY-MM-DD')
 
-    plate__temperature = TemperatureChoiceField(
+    '''
+    TODO: When the below field was a TemperatureChoiceField, it caused
+    issues when calling ./manage.py subcommands on an empty database.
+
+    (In case you're wonding, why was I calling ./manage.py on an empty
+     database? It was to populate an empty database from scratch, by
+     running `./manage.py migrate`).
+
+    The error (which I saw both when trying to run `./manage.py migrate`
+    and `./manage.py runserver`:
+
+        django.db.utils.ProgrammingError: (1146, "Table
+            'eegi.experimentplate' doesn't exist")
+
+    This only causes an issue with Django >=1.9.0. Django 1.8.9 was
+    fine.
+
+    Will need to look into this. For now just use a DecimalField instead.
+    '''
+    plate__temperature = forms.DecimalField(
         required=False, label='Temperature')
 
     plate__screen_stage = ScreenStageChoiceField(
