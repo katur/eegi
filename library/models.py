@@ -126,6 +126,7 @@ class LibraryStock(models.Model):
 class LibrarySequencing(models.Model):
     """Genewiz sequencing result from a particular LibraryStock."""
 
+    id = models.CharField(primary_key=True, max_length=40)
     source_stock = models.ForeignKey(LibraryStock, null=True, blank=True)
     sample_plate_name = models.CharField(max_length=10, blank=True)
     sample_tube_number = models.IntegerField(null=True, blank=True)

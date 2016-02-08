@@ -33,7 +33,7 @@ class Command(BaseCommand):
       command skips Genewiz data unrelated to the GI screen. This file
       currently lives at:
 
-          materials/sequencing/genewiz/tracking_numbers.csv
+          materials/sequencing/genewiz_dump/tracking_numbers.csv
 
     - genewiz_output_root is the root directory where Genewiz dumps our
       sequencing data. Inside this directory are several Perl
@@ -45,7 +45,7 @@ class Command(BaseCommand):
       Genewiz's Excel format, or Huey-Ling's text file format.
       This directory currently lives at:
 
-          materials/sequencing/genewiz/genewiz_data
+          materials/sequencing/genewiz_dump/genewiz_data
     """
 
     help = 'Import sequencing data from Genewiz output files'
@@ -281,6 +281,7 @@ class Command(BaseCommand):
         """
         tracking_number = row['trackingNumber']
         tube_label = row['TubeLabel']
+        pk = tracking_number + '_' + tube_label
         dna_name = row['DNAName']
         sample_plate_name = _get_plate_name_from_dna_name(dna_name)
         sample_tube_number = _get_tube_number_from_dna_name(dna_name)
@@ -314,6 +315,7 @@ class Command(BaseCommand):
 
         except ObjectDoesNotExist:
             new_sequence = LibrarySequencing(
+                pk=pk,
                 sample_plate_name=sample_plate_name,
                 sample_tube_number=sample_tube_number,
                 genewiz_tracking_number=tracking_number,
