@@ -124,19 +124,27 @@ class LibraryStock(models.Model):
 
 
 class LibrarySequencing(models.Model):
-    """Genewiz sequencing result from a particular LibraryStock."""
+    """
+    Genewiz sequencing result from a particular LibraryStock.
+
+    The primary key -- id -- is in format x_y, where (x, y) are
+    (genewiz_tracking_number, genewiz_tube_label). Note that
+    (sample_plate_name, sample_tube_number) does not work
+    because sometimes Genewiz re-sequencing the same sample (in which
+    case they assign a unique genewiz_tube_label).
+    """
 
     id = models.CharField(primary_key=True, max_length=40)
     source_stock = models.ForeignKey(LibraryStock, null=True, blank=True)
     sample_plate_name = models.CharField(max_length=10, blank=True)
     sample_tube_number = models.IntegerField(null=True, blank=True)
 
-    genewiz_tracking_number = models.CharField(max_length=20, null=True,
-                                               blank=True)
-    genewiz_tube_label = models.CharField(max_length=20, null=True, blank=True)
+    genewiz_order_date = models.DateField(null=True, blank=True)
+    genewiz_tracking_number = models.CharField(max_length=20, blank=True)
+    genewiz_tube_label = models.CharField(max_length=20, blank=True)
 
     sequence = models.TextField(blank=True)
-    ab1_filename = models.CharField(max_length=20, null=True, blank=True)
+    ab1_filename = models.CharField(max_length=20, blank=True)
 
     quality_score = models.IntegerField(null=True, blank=True)
     crl = models.IntegerField(null=True, blank=True)
