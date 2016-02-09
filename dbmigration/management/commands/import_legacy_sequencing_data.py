@@ -3,6 +3,7 @@ import csv
 import glob
 import MySQLdb
 import os.path
+import sys
 import xlrd
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -51,7 +52,8 @@ class Command(BaseCommand):
     help = 'Import sequencing data from Genewiz output files'
 
     def add_arguments(self, parser):
-        parser.add_argument('tracking_numbers', type=argparse.FileType('r'),
+        parser.add_argument('tracking_numbers',
+                            type=argparse.FileType('r'),
                             help="CSV of Genewiz tracking numbers. "
                                  "See this command's docstring "
                                  "for more details.")
@@ -62,13 +64,13 @@ class Command(BaseCommand):
                                  "for more details.")
 
     def handle(self, **options):
-        tracking_numbers = options['tracking_numbers']
-        self.genewiz_root = options['genewiz_output_root']
-
-        if not os.path.isdir(self.genewiz_root):
-            raise CommandError('genewiz_root directory not found')
-
         require_db_write_acknowledgement()
+
+        tracking_numbers = options['tracking_numbers']
+        genewiz_root = options['genewiz_output_root']
+
+        if not os.path.isdir(genewiz_root):
+            raise CommandError('genewiz_root directory not found')
 
         legacy_db = MySQLdb.connect(host=LEGACY_DATABASE['HOST'],
                                     user=LEGACY_DATABASE['USER'],
@@ -87,25 +89,26 @@ class Command(BaseCommand):
 
         for row in reader:
             tracking_number = row['tracking_number'].strip()
-            self._process_tracking_number(tracking_number)
+            order_date = row['order_date'].strip()
+            _process_tracking_number(tracking_number, order_date, genewiz_root)
 
-        ######################################
+        ######################################################################
         # SECOND STAGE
         #
-        #   Add source LibraryStock information
+        #   Add source information (which LibraryStock the sequences are from)
         #
-        ######################################
+        ######################################################################
 
-        self.sequences = LibrarySequencing.objects.all()
+        all_sequences = LibrarySequencing.objects.all()
 
         # Create a dictionary to translate from sequencing well to tube number
         #   (use SeqPlateID=1 because it happens to have all 96 wells)
         cursor.execute('SELECT tubeNum, Seq96well FROM SeqPlate '
                        'WHERE SeqPlateID=1')
 
-        self.seq_well_to_tube = {}
+        seq_well_to_tube = {}
         for row in cursor.fetchall():
-            self.seq_well_to_tube[row[1]] = row[0]
+            seq_well_to_tube[row[1]] = row[0]
 
         # Process source information for plates 1-56
         #   (from the legacy database)
@@ -116,14 +119,17 @@ class Command(BaseCommand):
 
         for row in legacy_rows:
             try:
-                source_stock = get_library_stock(row[0], row[1])
+                library_stock = get_library_stock(row[0], row[1])
+                seq_plate, seq_well, legacy_clone, legacy_tracking = row[2:]
 
             except ObjectDoesNotExist:
                 raise CommandError('LibraryStock not found for {} {}\n'
                                    .format(row[0], row[1]))
 
-            self._process_source_information(source_stock, row[2],
-                                             row[3], row[4], row[5])
+            _process_source_information(
+                library_stock, seq_plate, seq_well,
+                seq_well_to_tube, all_sequences,
+                legacy_clone=legacy_clone, legacy_tracking=legacy_tracking)
 
         # Process source information for plates 57-66
         #   (these are NOT in legacy database; entire plate sequenced)
@@ -133,13 +139,14 @@ class Command(BaseCommand):
             63: 'universal-F5', 64: 'or346-F6', 65: 'or346-F7', 66: 'mr17-F3',
         }
 
-        for seq_plate_number in full_seq_plates:
-            source_plate_id = full_seq_plates[seq_plate_number]
+        for seq_plate in full_seq_plates:
+            source_plate_id = full_seq_plates[seq_plate]
             library_stocks = LibraryStock.objects.filter(plate=source_plate_id)
 
             for library_stock in library_stocks:
-                self._process_source_information(
-                    library_stock, seq_plate_number, library_stock.well)
+                _process_source_information(
+                    library_stock, seq_plate, library_stock.well,
+                    seq_well_to_tube, all_sequences)
 
         # Process plates 67-on
         #   (these are NOT in legacy database, and only some columns sequenced)
@@ -202,11 +209,11 @@ class Command(BaseCommand):
             },
         }
 
-        for seq_plate_number in full_seq_columns:
-            seq_columns = full_seq_columns[seq_plate_number]
+        for seq_plate in full_seq_columns:
+            seq_columns = full_seq_columns[seq_plate]
 
             for seq_column in seq_columns:
-                source_plate_id = seq_columns[seq_column][0]
+                source_plate = seq_columns[seq_column][0]
                 source_column = seq_columns[seq_column][1]
 
                 if len(seq_columns[seq_column]) > 2:
@@ -217,161 +224,171 @@ class Command(BaseCommand):
                 for letter in letters:
                     seq_well = get_well_name(letter, seq_column)
                     source_well = get_well_name(letter, source_column)
-                    source_stock = get_library_stock(
-                        source_plate_id, source_well)
+                    library_stock = get_library_stock(source_plate,
+                                                      source_well)
 
-                    self._process_source_information(
-                        source_stock, seq_plate_number, seq_well)
+                    _process_source_information(
+                        library_stock, seq_plate, seq_well,
+                        seq_well_to_tube, all_sequences)
 
-    def _process_tracking_number(self, tracking_number):
-        """
-        Process all the rows for a particular Genewiz tracking number.
 
-        A Genewiz tracking number corresponds to one sequencing plate.
-        """
-        qscrl_txt = ('{}/{}_qscrl.txt'.format(self.genewiz_root,
-                                              tracking_number))
-        qscrl_xls = ('{}/{}_qscrl.xls'.format(self.genewiz_root,
-                                              tracking_number))
-        # First try .txt file
+def _process_tracking_number(tracking_number, order_date, genewiz_root):
+    """
+    Process all the rows for a particular Genewiz tracking number.
+
+    A Genewiz tracking number corresponds to one sequencing plate.
+    """
+    qscrl_txt = ('{}/{}_qscrl.txt'.format(genewiz_root, tracking_number))
+    qscrl_xls = ('{}/{}_qscrl.xls'.format(genewiz_root, tracking_number))
+
+    # First try .txt file
+    try:
+        qscrl_file = open(qscrl_txt, 'rb')
+        with qscrl_file:
+            qscrl_reader = csv.DictReader(qscrl_file, delimiter='\t')
+            for row in qscrl_reader:
+                # need tracking number and tube label because they are the
+                # fields that genewiz uses to uniquely define sequences,
+                # in the case of resequencing.
+                _process_qscrl_row(
+                    row, tracking_number, order_date, genewiz_root)
+
+    # If .txt file does not work, try .xls
+    except IOError:
         try:
-            qscrl_file = open(qscrl_txt, 'rb')
-            with qscrl_file:
-                qscrl_reader = csv.DictReader(qscrl_file, delimiter='\t')
-                for row in qscrl_reader:
-                    # need tracking number and tube label because they are the
-                    # fields that genewiz uses to uniquely define sequences,
-                    # in the case of resequencing.
-                    self._process_qscrl_row(row)
+            book = xlrd.open_workbook(qscrl_xls, on_demand=True)
+            sheet = book.sheet_by_name(tracking_number)
+            keys = [sheet.cell(4, col_index).value
+                    for col_index in xrange(sheet.ncols)]
+            for row_index in xrange(5, sheet.nrows):
+                row = {}
+                for col_index in xrange(sheet.ncols):
+                    cell_value = sheet.cell_value(row_index, col_index)
+                    row[keys[col_index]] = cell_value
 
-        # If .txt file does not work, try .xls
-        except IOError:
-            try:
-                book = xlrd.open_workbook(qscrl_xls, on_demand=True)
-                sheet = book.sheet_by_name(tracking_number)
-                keys = [sheet.cell(4, col_index).value
-                        for col_index in xrange(sheet.ncols)]
-                for row_index in xrange(5, sheet.nrows):
-                    row = {}
-                    for col_index in xrange(sheet.ncols):
-                        cell_value = sheet.cell_value(row_index, col_index)
-                        row[keys[col_index]] = cell_value
+                _process_qscrl_row(
+                    row, tracking_number, order_date, genewiz_root)
 
-                    self._process_qscrl_row(row)
+        # If neither .txt or .xls file, error
+        except IOError as e:
+            raise CommandError(
+                'QSCRL file missing or could not be open for '
+                'tracking number {}. I/O error({}): {}\n'
+                .format(tracking_number, e.errno, e.strerror))
 
-            # If neither .txt or .xls file, error
-            except IOError as e:
-                raise CommandError(
-                    'QSCRL file missing or could not be open for '
-                    'tracking number {}. I/O error({}): {}\n'
-                    .format(tracking_number, e.errno, e.strerror))
 
-    def _process_qscrl_row(self, row):
-        """
-        Process a row of QSCRL information.
+def _process_qscrl_row(row, tracking_number, order_date, genewiz_root):
+    """
+    Process a row of QSCRL information.
 
-        Need sample_plate_name and sample_tube_number because they are
-        how we label our samples (to identify what sequence well came
-        from what library well).
+    Need sample_plate_name and sample_tube_number because they are
+    how we label our samples (to identify what sequence well came
+    from what library well).
 
-        Note that tube_label can't be used for sample_tube_number
-        because it is often 1-2 instead of 95-96
+    Note that tube_label can't be used for sample_tube_number
+    because it is often 1-2 instead of 95-96
 
-        Also, avoid Template_Name... sometimes e.g. 'GC1'
-        """
-        tracking_number = row['trackingNumber']
-        tube_label = row['TubeLabel']
-        pk = tracking_number + '_' + tube_label
-        dna_name = row['DNAName']
-        sample_plate_name = _get_plate_name_from_dna_name(dna_name)
-        sample_tube_number = _get_tube_number_from_dna_name(dna_name)
+    Also, avoid Template_Name... sometimes e.g. 'GC1'
+    """
+    if tracking_number != row['trackingNumber']:
+        raise CommandError('TrackingNumber in filename disagrees with that '
+                           'in QSCRL file for {}'.format(tracking_number))
 
-        if '_R' in tube_label:
-            dna_name += '_R'
+    tube_label = row['TubeLabel']
+    pk = tracking_number + '_' + tube_label
+    dna_name = row['DNAName']
+    sample_plate_name = _get_plate_name_from_dna_name(dna_name)
+    sample_tube_number = _get_tube_number_from_dna_name(dna_name)
 
-        seq_filepath = ('{}/{}_seq/{}_*.seq'.format(self.genewiz_root,
-                                                    tracking_number,
-                                                    dna_name))
-        try:
-            seq_file = open(glob.glob(seq_filepath)[0], 'rb')
+    if '_R' in tube_label:
+        dna_name += '_R'
 
-        except IOError:
-            raise CommandError('Seq file missing for tracking number '
-                               '{}, dna {}\n'
-                               .format(tracking_number, dna_name))
-        with seq_file:
-            ab1_filename = seq_file.next()
-            ab1_filename = ab1_filename.strip()
-            ab1_filename = ab1_filename.split('>')[1]
+    seq_filepath = ('{}/{}_seq/{}_*.seq'.format(
+        genewiz_root, tracking_number, dna_name))
 
-            sequence = ''
-            for seq_row in seq_file:
-                sequence += seq_row.strip()
+    try:
+        seq_file = open(glob.glob(seq_filepath)[0], 'rb')
 
-        try:
-            LibrarySequencing.objects.get(
-                genewiz_tracking_number=tracking_number,
-                genewiz_tube_label=tube_label)
+    except IOError:
+        raise CommandError('Seq file missing for tracking number {}, dna {}\n'
+                           .format(tracking_number, dna_name))
 
-        except ObjectDoesNotExist:
-            new_sequence = LibrarySequencing(
-                pk=pk,
-                sample_plate_name=sample_plate_name,
-                sample_tube_number=sample_tube_number,
-                genewiz_tracking_number=tracking_number,
-                genewiz_tube_label=tube_label,
-                sequence=sequence,
-                ab1_filename=ab1_filename,
-                quality_score=row['QualityScore'],
-                crl=row['CRL'],
-                qv20plus=row['QV20Plus'],
-                si_a=row['SI_A'],
-                si_c=row['SI_C'],
-                si_g=row['SI_G'],
-                si_t=row['SI_T'])
+    with seq_file:
+        ab1_filename = seq_file.next()
+        ab1_filename = ab1_filename.strip()
+        ab1_filename = ab1_filename.split('>')[1]
 
-            new_sequence.save()
+        sequence = ''
+        for seq_row in seq_file:
+            sequence += seq_row.strip()
 
-    def _process_source_information(self, source_stock,
-                                    seq_plate_number, seq_well,
-                                    legacy_clone=None, legacy_tracking=None):
-        """
-        Process the source information for a sequencing sample.
+    try:
+        LibrarySequencing.objects.get(
+            genewiz_tracking_number=tracking_number,
+            genewiz_tube_label=tube_label)
 
-        source_stock is the library stock that was sequenced.
+    except ObjectDoesNotExist:
+        new_sequence = LibrarySequencing(
+            pk=pk,
+            sample_plate_name=sample_plate_name,
+            sample_tube_number=sample_tube_number,
+            genewiz_order_date=order_date,
+            genewiz_tracking_number=tracking_number,
+            genewiz_tube_label=tube_label,
+            sequence=sequence,
+            ab1_filename=ab1_filename,
+            quality_score=row['QualityScore'],
+            crl=row['CRL'],
+            qv20plus=row['QV20Plus'],
+            si_a=row['SI_A'],
+            si_c=row['SI_C'],
+            si_g=row['SI_G'],
+            si_t=row['SI_T'])
 
-        seq_plate_number and seq_well are identifying information re:
-        the sequencing plate/tube that was sent off to Genewiz.
-        """
-        # Sanity check that clone matches
-        if legacy_clone:
-            clone = source_stock.intended_clone
-            if (not clone or (legacy_clone != clone.id and
-                              'GHR' not in clone.id)):
-                self.stderr.write(
-                    'ERROR: Clone mismatch for {}: {} {}\n'
-                    .format(source_stock, clone, legacy_clone))
+        new_sequence.save()
 
-        seq_plate_name = 'JL' + str(seq_plate_number)
-        seq_tube_number = self.seq_well_to_tube[seq_well]
 
-        sequences = self.sequences.filter(sample_plate_name=seq_plate_name,
-                                          sample_tube_number=seq_tube_number)
+def _process_source_information(source_stock,
+                                seq_plate_number, seq_well,
+                                seq_well_to_tube, all_sequences,
+                                legacy_clone=None, legacy_tracking=None):
+    """
+    Process the source information for a sequencing sample.
 
-        if not sequences:
-            raise CommandError('No record in database for sequencing '
-                               'record {} {}\n'.format(seq_plate_name,
-                                                       seq_tube_number))
+    source_stock is the library stock that was sequenced.
 
-        for sequence in sequences:
-            # Sanity check for tracking number match
-            if (legacy_tracking and
-                    legacy_tracking != sequence.genewiz_tracking_number):
-                raise CommandError('Tracking number mismatch for sequencing '
-                                   'record {}\n'.format(sequence))
+    seq_plate_number and seq_well are identifying information re:
+    the sequencing plate/tube that was sent off to Genewiz.
+    """
+    # Sanity check that clone matches
+    if legacy_clone:
+        clone = source_stock.intended_clone
+        if (not clone or (legacy_clone != clone.id and
+                          'GHR' not in clone.id)):
+            sys.stderr.write(
+                'ERROR: Clone mismatch for {}: {} {}\n'
+                .format(source_stock, clone, legacy_clone))
 
-            sequence.source_stock = source_stock
-            sequence.save()
+    seq_plate_name = 'JL' + str(seq_plate_number)
+    seq_tube_number = seq_well_to_tube[seq_well]
+
+    sequences = all_sequences.filter(sample_plate_name=seq_plate_name,
+                                     sample_tube_number=seq_tube_number)
+
+    if not sequences:
+        raise CommandError('No record in database for sequencing '
+                           'record {} {}\n'.format(seq_plate_name,
+                                                   seq_tube_number))
+
+    for sequence in sequences:
+        # Sanity check for tracking number match
+        if (legacy_tracking and
+                legacy_tracking != sequence.genewiz_tracking_number):
+            raise CommandError('Tracking number mismatch for sequencing '
+                               'record {}\n'.format(sequence))
+
+        sequence.source_stock = source_stock
+        sequence.save()
 
 
 def _get_plate_name_from_dna_name(dna_name):
