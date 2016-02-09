@@ -121,7 +121,7 @@ def _process_clone(clone, pk_translator, all_mapping_clones,
 
         gene_mapping_info = all_mapping_genes[gene_id]
         _update_gene_info(gene, gene_mapping_info)
-        _add_target(clone, gene, target_mapping_info)
+        _add_target(clone, target_mapping_info)
 
     return len(mapping_targets)
 
@@ -242,7 +242,7 @@ def _update_gene_info(gene, gene_mapping_info):
     gene.save()
 
 
-def _add_target(clone, gene, target_mapping_info):
+def _add_target(clone, target_mapping_info):
     """
     Add a new CloneTarget to the database, representing clone targeting gene,
     and with other fields specified in dictionary target_mapping_info.
@@ -255,20 +255,5 @@ def _add_target(clone, gene, target_mapping_info):
         raise CommandError('ERROR: all CloneTargets should have been deleted '
                            'from the database at the start of this command')
 
-    target = CloneTarget(id=target_id)
-    target.clone = clone
-    target.gene = gene
-    target.clone_amplicon_id = target_mapping_info['clone_amplicon_id']
-    target.amplicon_evidence = target_mapping_info['amplicon_evidence']
-    target.amplicon_is_designed = target_mapping_info['amplicon_is_designed']
-    target.amplicon_is_unique = target_mapping_info['amplicon_is_unique']
-    target.transcript_isoform = target_mapping_info['transcript_isoform']
-    target.length_span = target_mapping_info['length_span']
-    target.raw_score = target_mapping_info['raw_score']
-    target.unique_raw_score = target_mapping_info['unique_raw_score']
-    target.relative_score = target_mapping_info['relative_score']
-    target.specificity_index = target_mapping_info['specificity_index']
-    target.unique_chunk_index = target_mapping_info['unique_chunk_index']
-    target.is_on_target = target_mapping_info['is_on_target']
-    target.is_primary_target = target_mapping_info['is_primary_target']
+    target = CloneTarget(clone=clone, **target_mapping_info)
     target.save()
