@@ -90,7 +90,7 @@ class Command(BaseCommand):
         for row in reader:
             tracking_number = row['tracking_number'].strip()
             order_date = row['order_date'].strip()
-            _process_tracking_number(tracking_number, order_date, genewiz_root)
+            process_tracking_number(tracking_number, order_date, genewiz_root)
 
         ######################################################################
         # SECOND STAGE
@@ -232,7 +232,7 @@ class Command(BaseCommand):
                         seq_well_to_tube, all_sequences)
 
 
-def _process_tracking_number(tracking_number, order_date, genewiz_root):
+def process_tracking_number(tracking_number, order_date, genewiz_root):
     """
     Process all the rows for a particular Genewiz tracking number.
 
