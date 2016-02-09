@@ -7,7 +7,7 @@ import xlrd
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 
-from library.models import LibrarySequencing
+from library.models import LibrarySequencing, LibraryStock
 from utils.scripting import require_db_write_acknowledgement
 
 
@@ -15,11 +15,23 @@ class Command(BaseCommand):
     """
     Command to import sequencing data.
 
-    Arguments
+    Arguments:
+
+    - cherrypick_list is a csv with header row, listing which library
+      stocks correspond to which sequencing wells. It should be in
+      standard cherrypick list format, i.e., with four columns:
+      `source_plate`, `source_well`, `destination_plate`, and
+      `destination_well`. In this case, "source" is the library stock,
+      and "destination" is the sequencing plate. E.g., if
+      universal-F1_A12 was picked into sequencing plate JL42, well B09,
+      the row would look like `universal-F1,A12,JL42,B09`.
+      These files currently live in:
+
+          materials/sequencing/cherrypick_lists
 
     - tracking_numbers is a csv with header row, containing the genewiz
       orders to be added. Three columns are needed, in any order:
-      `order_date`, `tracking_number`, and `seq_plate_name`.
+      `order_date`, `tracking_number`, and `seq_plate`.
       These files currently live in:
 
           materials/sequencing/tracking_numbers
@@ -36,26 +48,17 @@ class Command(BaseCommand):
 
           materials/sequencing/genewiz_dump/genewiz_data
 
-    - cherrypick_list is a csv with header row, listing which library
-      stocks correspond to which sequencing wells. It should be in
-      standard cherrypick list format, i.e., with four columns:
-      `source_plate`, `source_well`, `destination_plate`, and
-      `destination_well`. In this case, "source" is the library stock,
-      and "destination" is the sequencing plate. E.g., if
-      universal-F1_A12 was picked into sequencing plate JL42, well B09,
-      the row would look like:
-
-          universal-F1,A12,JL42,B09
-
-      These files currently live in:
-
-          materials/sequencing/cherrypick_lists
-
     """
 
     help = 'Import sequencing data (from 2014-on)'
 
     def add_arguments(self, parser):
+        parser.add_argument('cherrypick_list',
+                            type=argparse.FileType('r'),
+                            help="CSV of cherrypick list. "
+                                 "See this command's docstring "
+                                 "for more details.")
+
         parser.add_argument('tracking_numbers',
                             type=argparse.FileType('r'),
                             help="CSV of Genewiz tracking numbers. "
@@ -70,16 +73,40 @@ class Command(BaseCommand):
     def handle(self, **options):
         require_db_write_acknowledgement()
 
+        cherrypick_list = options['cherrypick_list']
         tracking_numbers = options['tracking_numbers']
         genewiz_root = options['genewiz_output_root']
 
         if not os.path.isdir(genewiz_root):
             raise CommandError('genewiz_root directory not found')
 
-        ###################################
-        # FIRST STAGE: Add raw genewiz data
+        ####################################################
+        # FIRST STAGE: Create a dictionary of which
+        #   sequences correspond to which library stocks
+        #
+        # This information is stored in the legacy database.
+        ####################################################
+
+        seq_to_source = {}
+
+        reader = csv.DictReader(cherrypick_list)
+
+        for row in reader:
+            source_plate = row['source_plate'].strip()
+            source_well = row['source_well'].strip()
+            library_stock = LibraryStock.objects.get(
+                plate_id=source_plate, well=source_well)
+
+            seq_plate = row['destination_plate'].strip()
+            seq_well = row['destination_well'].strip()
+            key = seq_plate + '_' + seq_well
+
+            seq_to_source[key] = library_stock
+
+        ####################################
+        # SECOND STAGE: Add raw genewiz data
         #   (sequences and quality scores)
-        ###################################
+        ####################################
 
         reader = csv.DictReader(tracking_numbers)
 
@@ -87,22 +114,21 @@ class Command(BaseCommand):
             tracking_number = row['tracking_number'].strip()
             order_date = row['order_date'].strip()
             process_tracking_number(tracking_number, order_date,
-                                    genewiz_root)
-
-        ##################################################
-        # SECOND STAGE: Add source information
-        #   (which library stocks go with which sequences)
-        ##################################################
-
-        # TODO: here I should iterate over the CSV saying
-        # which seq wells correspond to which library wells
+                                    genewiz_root, seq_to_source)
 
 
-def process_tracking_number(tracking_number, order_date, genewiz_root):
+def process_tracking_number(tracking_number, order_date, genewiz_root,
+                            seq_to_source):
     """
     Process all the rows for a particular Genewiz tracking number.
 
-    A Genewiz tracking number corresponds to one sequencing plate.
+    Arguments
+        - the tracking_number and order_date supplied by Genewiz. You
+          can find these in our Genewiz account after Genewiz receives
+          and processes an order
+        - seq_to_source is a dictionary mapping sequencing wells to
+          the library stocks they came from. Keys should be in format
+          seqplate_seqwell, e.g., JL71_B09.
     """
     qscrl_txt = ('{}/{}_qscrl.txt'.format(genewiz_root, tracking_number))
     qscrl_xls = ('{}/{}_qscrl.xls'.format(genewiz_root, tracking_number))
@@ -116,8 +142,8 @@ def process_tracking_number(tracking_number, order_date, genewiz_root):
                 # need tracking number and tube label because they are the
                 # fields that genewiz uses to uniquely define sequences,
                 # in the case of resequencing.
-                _process_qscrl_row(
-                    row, tracking_number, order_date, genewiz_root)
+                _process_qscrl_row(row, tracking_number, order_date,
+                                   genewiz_root, seq_to_source)
 
     # If .txt file does not work, try .xls
     except IOError:
@@ -132,8 +158,8 @@ def process_tracking_number(tracking_number, order_date, genewiz_root):
                     cell_value = sheet.cell_value(row_index, col_index)
                     row[keys[col_index]] = cell_value
 
-                _process_qscrl_row(
-                    row, tracking_number, order_date, genewiz_root)
+                _process_qscrl_row(row, tracking_number, order_date,
+                                   genewiz_root, seq_to_source)
 
         # If neither .txt or .xls file, error
         except IOError as e:
@@ -143,7 +169,8 @@ def process_tracking_number(tracking_number, order_date, genewiz_root):
                 .format(tracking_number, e.errno, e.strerror))
 
 
-def _process_qscrl_row(row, tracking_number, order_date, genewiz_root):
+def _process_qscrl_row(row, tracking_number, order_date, genewiz_root,
+                       seq_to_source):
     """
     Process a row from a Genewiz QSCRL file.
 
@@ -164,8 +191,15 @@ def _process_qscrl_row(row, tracking_number, order_date, genewiz_root):
     tube_label = row['TubeLabel']
     pk = tracking_number + '_' + tube_label
     dna_name = row['DNAName']
-    sample_plate_name = _get_plate_name_from_dna_name(dna_name)
-    sample_tube_number = _get_tube_number_from_dna_name(dna_name)
+    seq_plate = _get_plate_name_from_dna_name(dna_name)
+    seq_tube_number = _get_tube_number_from_dna_name(dna_name)
+    seq_well = _seq_tube_number_to_well(seq_tube_number)
+
+    try:
+        key = seq_plate + '_' + seq_well
+        library_stock = seq_to_source[key]
+    except KeyError:
+        library_stock = None
 
     if '_R' in tube_label:
         dna_name += '_R'
@@ -197,8 +231,9 @@ def _process_qscrl_row(row, tracking_number, order_date, genewiz_root):
     except ObjectDoesNotExist:
         new_sequence = LibrarySequencing(
             pk=pk,
-            sample_plate_name=sample_plate_name,
-            sample_tube_number=sample_tube_number,
+            sample_plate_name=seq_plate,
+            sample_tube_number=seq_tube_number,
+            source_stock=library_stock,
             genewiz_order_date=order_date,
             genewiz_tracking_number=tracking_number,
             genewiz_tube_label=tube_label,
@@ -215,42 +250,25 @@ def _process_qscrl_row(row, tracking_number, order_date, genewiz_root):
         new_sequence.save()
 
 
-def add_source(seq_plate, seq_well, library_stock):
+def _seq_tube_number_to_well(seq_tube_number):
     """
-    For all sequences corresponding to seq_plate and seq_well,
-    add library_stock as the source.
-
-    Note that there might be multiple sequences in the database
-    corresponding to the same sequencing sample. This is because
-    Genewiz sometimes re-sequences samples with bad results.
-    """
-    seq_tube_number = _seq_well_to_seq_tube_number(seq_well)
-
-    sequences = LibrarySequencing.objects.filter(
-        sample_plate_name=seq_plate, sample_tube_number=seq_tube_number)
-
-    if not sequences:
-        raise CommandError('No sequences in database for {} {}\n'
-                           .format(seq_plate, seq_tube_number))
-
-    for sequence in sequences:
-        sequence.source_stock = library_stock
-        sequence.save()
-
-
-def _seq_well_to_seq_tube_number(seq_well):
-    """
-    Translate from seq well to seq tube number.
+    Translate from seq tube number to well.
 
     The pattern is:
-    (A01, B01, C01, ..., H01) => (1, 2, 3, ..., 8)
-    (A02, B02, C02, ..., H02) => (9, 10, 11, ..., 16)
+    (1, 2, 3, ..., 8) => (A01, B01, C01, ..., H01)
+    (9, 10, 11, ..., 16) => (A02, B02, C02, ..., H02)
     ...
-    (A12, B12, C12, ..., H12) => (89, 90, 91, ..., 96)
+    (89, 90, 91, ..., 96) => (A12, B12, C12, ..., H12)
     """
-    row = ord(seq_well[0]) - 64  # 1-indexed
-    col = int(seq_well[1:]) - 1  # 0-indexed
-    return row + (8 * col)
+    seq_tube_number -= 1  # make it 0-indexed
+
+    quotient = seq_tube_number // 8
+    remainder = (seq_tube_number % 8)
+
+    row = chr(remainder + 65)
+    col = str(quotient + 1).zfill(2)
+
+    return row + col
 
 
 def _get_plate_name_from_dna_name(dna_name):

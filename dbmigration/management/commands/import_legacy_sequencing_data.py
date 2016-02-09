@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from dbmigration.helpers.object_getters import get_library_stock
 from library.management.commands.import_sequencing_data import (
-    process_tracking_number, add_source)
+    process_tracking_number)
 from eegi.local_settings import LEGACY_DATABASE
 from utils.scripting import require_db_write_acknowledgement
 
@@ -69,45 +69,31 @@ class Command(BaseCommand):
 
         cursor = legacy_db.cursor()
 
-        ###################################
-        # FIRST STAGE: Add raw genewiz data
-        #   (sequences and quality scores)
-        ###################################
+        ####################################################
+        # FIRST STAGE: Create a dictionary of which
+        #   sequences correspond to which library stocks
+        #
+        # This information is stored in the legacy database.
+        ####################################################
+        seq_to_source = {}
 
-        reader = csv.DictReader(tracking_numbers)
-
-        for row in reader:
-            tracking_number = row['tracking_number'].strip()
-            order_date = row['order_date'].strip()
-            process_tracking_number(tracking_number, order_date,
-                                    genewiz_root)
-
-        ########################################################
-        # SECOND STAGE: Add source information
-        #   (which sequences correspond to which library stocks)
-        ########################################################
-
-        # Source information is stored in legacy database
         cursor.execute(
-            'SELECT RNAiPlateID, 96well, SeqPlateID, Seq96Well, '
-            'oriClone, receiptID FROM SeqPlate '
-            'WHERE SeqPlateID <= 55')
+            'SELECT SeqPlateID, Seq96Well, RNAiPlateID, 96well, oriClone '
+            'FROM SeqPlate WHERE SeqPlateID <= 55')
 
         for row in cursor.fetchall():
+            seq_plate_number, seq_well = row[0:2]
+            seq_plate = 'JL' + str(seq_plate_number)
+
             try:
-                library_stock = get_library_stock(row[0], row[1])
+                library_stock = get_library_stock(row[2], row[3])
 
             except ObjectDoesNotExist:
                 raise CommandError('LibraryStock not found for {} {}\n'
                                    .format(row[0], row[1]))
 
-            seq_plate_number, seq_well = row[2:4]
-            seq_plate = 'JL' + str(seq_plate_number)
-
-            # These are for sanity checks only
-            legacy_clone, legacy_tracking = row[4:6]
-
             # Sanity check that clone matches
+            legacy_clone = row[4]
             if legacy_clone:
                 clone = library_stock.intended_clone
                 if (not clone or (legacy_clone != clone.id and
@@ -116,6 +102,17 @@ class Command(BaseCommand):
                         'WARNING: Legacy clone mismatch for {}: {} {}\n'
                         .format(library_stock, clone, legacy_clone))
 
-            # TODO: add sanity check that legacy_tracking matches
+            seq_to_source[seq_plate + '_' + seq_well] = library_stock
 
-            add_source(seq_plate, seq_well, library_stock)
+        ####################################
+        # SECOND STAGE: Add raw genewiz data
+        #   (sequences and quality scores)
+        ####################################
+
+        reader = csv.DictReader(tracking_numbers)
+
+        for row in reader:
+            tracking_number = row['tracking_number'].strip()
+            order_date = row['order_date'].strip()
+            process_tracking_number(tracking_number, order_date,
+                                    genewiz_root, seq_to_source)
