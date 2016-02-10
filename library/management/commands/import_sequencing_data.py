@@ -93,6 +93,11 @@ class Command(BaseCommand):
 
         for row in reader:
             source_plate = row['source_plate'].strip()
+
+            # skip empty lines
+            if not source_plate:
+                continue
+
             source_well = row['source_well'].strip()
             library_stock = LibraryStock.objects.get(
                 plate_id=source_plate, well=source_well)
