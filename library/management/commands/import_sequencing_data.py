@@ -218,6 +218,8 @@ def _process_qscrl_row(row, tracking_number, order_date, genewiz_root,
         for seq_row in seq_file:
             sequence += seq_row.strip()
 
+    # TODO: decide whether this script should update the other fields if this
+    # sequencing result already exists.
     try:
         LibrarySequencing.objects.get(
             genewiz_tracking_number=tracking_number,
