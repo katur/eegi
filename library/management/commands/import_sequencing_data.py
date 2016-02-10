@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
     Arguments:
 
-    - cherrypick_list is a csv with header row, listing which library
+    - cherrypick_list is a csv, including header row, listing which library
       stocks correspond to which sequencing wells. It should be in
       standard cherrypick list format, i.e., with four columns:
       `source_plate`, `source_well`, `destination_plate`, and
@@ -25,14 +25,14 @@ class Command(BaseCommand):
       and "destination" is the sequencing plate. E.g., if
       universal-F1_A12 was picked into sequencing plate JL42, well B09,
       the row would look like `universal-F1,A12,JL42,B09`.
-      These files currently live in:
+      These files currently live in the directory:
 
           materials/sequencing/cherrypick_lists
 
-    - tracking_numbers is a csv with header row, containing the genewiz
+    - tracking_numbers is a csv, including header row, containing the genewiz
       orders to be added. Three columns are needed, in any order:
       `order_date`, `tracking_number`, and `seq_plate`.
-      These files currently live in:
+      These files currently live in the directory:
 
           materials/sequencing/tracking_numbers
 
@@ -263,7 +263,7 @@ def _seq_tube_number_to_well(seq_tube_number):
     seq_tube_number -= 1  # make it 0-indexed
 
     quotient = seq_tube_number // 8
-    remainder = (seq_tube_number % 8)
+    remainder = seq_tube_number % 8
 
     row = chr(remainder + 65)
     col = str(quotient + 1).zfill(2)
