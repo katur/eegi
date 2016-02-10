@@ -17,9 +17,8 @@ class Command(BaseCommand):
 
     Currently works only for the full-size, original .bmp images.
 
-    Input is a csv, including header row, in which each row
-    is in format `experiment_id,well` or `experiment_id,tile`.
-    For example, all these rows are okay:
+    Input is a csv in which each row is in format `experiment_id,well`
+    or `experiment_id,tile`. For example, all these rows are okay:
 
         54034,A05
         12412,B12
@@ -29,6 +28,10 @@ class Command(BaseCommand):
 
     Copied images will be prefixed with experiment_id,
     e.g. 54034_Tile000005.bmp.
+
+    If the first element cannot be converted to an int, or if the second
+    cannot be converted to a well, the row is skipped. So having a
+    header row is okay.
     """
 
     help = 'Copy a set of images to a local directory.'
@@ -56,16 +59,23 @@ class Command(BaseCommand):
         # Parse input
         reader = csv.reader(input_file, delimiter=',')
 
-        # Skip header
-        next(reader)
-
         for experiment_id, well in reader:
+            try:
+                experiment_id = int(experiment_id.strip())
+            except ValueError:
+                continue
+
+            well = well.strip()
+
             if re.match('Tile0000\d\d\.bmp', well):
                 tile = well.split('.bmp')[0]
             elif re.match('Tile0000\d\d', well):
                 tile = well
             else:
-                tile = well_to_tile(well)
+                try:
+                    tile = well_to_tile(well)
+                except ValueError:
+                    continue
 
             input_image_url = '{}/{}/{}.bmp'.format(
                 BASE_URL_IMG, experiment_id, tile)
@@ -80,4 +90,4 @@ class Command(BaseCommand):
                 r.raw.decode_content = True
                 shutil.copyfileobj(r.raw, f)
 
-            print '{} written'.format(output_image_path)
+            self.stdout.write('{} written'.format(output_image_path))
