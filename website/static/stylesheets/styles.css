@@ -318,8 +318,8 @@ form table th, form table td {
   .plate-96 .junk-well .well-title, .plate-96 .junk-well .well-caption {
     background: #BB1133; }
 
-#help-page h3 {
-  margin-bottom: 40px; }
+#help-page h4 {
+  padding-bottom: 20px; }
 #help-page h5 {
   margin-bottom: 20px;
   font-weight: bold; }
@@ -347,7 +347,7 @@ form table th, form table td {
       font-style: italic;
       margin-right: 4px; }
 #help-page section {
-  max-width: 750px;
+  max-width: 800px;
   padding: 40px 0;
   margin-bottom: 0;
   border-bottom: 1px solid #ccc; }
@@ -357,11 +357,25 @@ form table th, form table td {
     border-bottom: none; }
     #help-page section section:last-child {
       margin-bottom: 0; }
-#help-page #table-of-contents {
-  padding-top: 0; }
-  #help-page #table-of-contents a {
-    display: block;
-    width: 100%; }
+  #help-page section#table-of-contents {
+    padding-bottom: 20px;
+    padding-top: 0; }
+    #help-page section#table-of-contents section {
+      margin-bottom: 40px; }
+    #help-page section#table-of-contents ul {
+      list-style-position: inside;
+      list-style: disc inside; }
+      #help-page section#table-of-contents ul ul, #help-page section#table-of-contents ul ul li, #help-page section#table-of-contents ul ul ul {
+        padding-left: 40px; }
+      #help-page section#table-of-contents ul ul {
+        list-style-type: circle; }
+        #help-page section#table-of-contents ul ul ul {
+          list-style-type: square; }
+          #help-page section#table-of-contents ul ul ul ul {
+            list-style-type: disc; }
+    #help-page section#table-of-contents a {
+      display: block;
+      width: 100%; }
 
 #clones #results-header, #clones table {
   width: 100%;
