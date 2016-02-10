@@ -127,16 +127,39 @@ class LibrarySequencing(models.Model):
     """
     Genewiz sequencing result from a particular LibraryStock.
 
+    The fields sample_plate and sample_well are useful because they
+    are how we label our physical samples, and how we record which
+    library stocks were put into which sequencing plates.
+    sample_tube_number is a simple numeric translation of sample_well,
+    used in some of the Genewiz output, so convenient to have in the
+    database too.
+
     The primary key -- id -- is in format x_y, where (x, y) are
     (genewiz_tracking_number, genewiz_tube_label). Note that
-    (sample_plate_name, sample_tube_number) does not work
-    because sometimes Genewiz re-sequencing the same sample (in which
-    case they assign a unique genewiz_tube_label).
+    (sample_plate, sample_well) does not work because sometimes
+    Genewiz re-sequencing the same sample.
+
+    Also note that genewiz_tube_label and sample_tube_number differ in
+    two cases:
+
+        1) Re-sequencing the same sample. In this case,
+           sample_tube_number is the same for both sequences, but
+           Genewiz assigns a different genewiz_tube_label for each.
+
+        2) There are some sample plates for which wells 1-94 were
+           processed as a separate tracking number than wells 95-96.
+           This has something to do with Genewiz running a couple
+           controls, and with our using a different Genewiz form for
+           submitting the order.
+
+    Overall, genewiz_tracking_number and genewiz_tube_label provide
+    the only and best primary key for a sequencing result.
     """
 
     id = models.CharField(primary_key=True, max_length=40)
     source_stock = models.ForeignKey(LibraryStock, null=True, blank=True)
-    sample_plate_name = models.CharField(max_length=10, blank=True)
+    sample_plate = models.CharField(max_length=10, blank=True)
+    sample_well = models.CharField(max_length=3, blank=True)
     sample_tube_number = models.IntegerField(null=True, blank=True)
 
     genewiz_order_date = models.DateField(null=True, blank=True)
@@ -156,7 +179,7 @@ class LibrarySequencing(models.Model):
 
     class Meta:
         db_table = 'LibrarySequencing'
-        ordering = ['sample_plate_name', 'sample_tube_number']
+        ordering = ['sample_plate', 'sample_well']
         unique_together = ('genewiz_tracking_number', 'genewiz_tube_label')
 
     def __unicode__(self):

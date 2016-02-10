@@ -123,12 +123,14 @@ def process_tracking_number(tracking_number, order_date, genewiz_root,
     Process all the rows for a particular Genewiz tracking number.
 
     Arguments
-        - the tracking_number and order_date supplied by Genewiz. You
+        - the tracking_number and order_date, supplied by Genewiz. You
           can find these in our Genewiz account after Genewiz receives
-          and processes an order
+          and processes an order.
+        - the root of the directory where Genewiz dumps the sequencing
+          output. See command-level docstring for more details.
         - seq_to_source is a dictionary mapping sequencing wells to
           the library stocks they came from. Keys should be in format
-          seqplate_seqwell, e.g., JL71_B09.
+          seqplate_seqwell, e.g., "JL71_B09".
     """
     qscrl_txt = ('{}/{}_qscrl.txt'.format(genewiz_root, tracking_number))
     qscrl_xls = ('{}/{}_qscrl.xls'.format(genewiz_root, tracking_number))
@@ -174,15 +176,8 @@ def _process_qscrl_row(row, tracking_number, order_date, genewiz_root,
     """
     Process a row from a Genewiz QSCRL file.
 
-    sample_plate_name and sample_tube_number are needed because they
-    are how we label our samples and record what sample came from
-    which library stocks.
-
-    Note that tube_label can't be used for sample_tube_number
-    because it is often 1-2 instead of 95-96, if genewiz splits
-    the order into two plates.
-
-    Also, avoid Template_Name... sometimes e.g. 'GC1'
+    Avoid using the Genewiz `Template_Name` field, since it does not
+    always correspond to our sample plate name (e.g. 'GC1')
     """
     if tracking_number != row['trackingNumber']:
         raise CommandError('TrackingNumber mismatch between filename & '
@@ -231,7 +226,8 @@ def _process_qscrl_row(row, tracking_number, order_date, genewiz_root,
     except ObjectDoesNotExist:
         new_sequence = LibrarySequencing(
             pk=pk,
-            sample_plate_name=seq_plate,
+            sample_plate=seq_plate,
+            sample_well=seq_well,
             sample_tube_number=seq_tube_number,
             source_stock=library_stock,
             genewiz_order_date=order_date,

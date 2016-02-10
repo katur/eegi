@@ -23,7 +23,14 @@
 
 # Import sequencing data (dbmigration app)
 # NOTE: save stderr to manually resolve some legacy ambiguities
-./manage.py import_legacy_sequencing_data ../materials/sequencing/genewiz_dump/tracking_numbers_2012.csv ../materials/sequencing/genewiz_dump/genewiz_data 2> seq_stderr.out
+./manage.py import_legacy_sequencing_data \
+  ../materials/sequencing/tracking_numbers/tracking_numbers_2012.csv \
+  ../materials/sequencing/genewiz_dump/genewiz_data 2> seq_stderr.out
+
+./manage.py import_sequencing_data \
+  ../materials/sequencing/cherrypick_lists/cherrypick_list_2014.csv \
+  ../materials/sequencing/tracking_numbers/tracking_numbers_2014.csv \
+  ../materials/sequencing/genewiz_dump/genewiz_data
 
 # Import blat results (library app)
 ./manage.py import_blat_results ../materials/sequencing/blat_results_from_firoz/joined
