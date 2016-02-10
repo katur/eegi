@@ -343,14 +343,20 @@ form table th, form table td {
   #help-page #updating-methods li {
     margin-bottom: 10px; }
     #help-page #updating-methods li span {
+      display: block;
+      width: 100%;
+      padding-bottom: 4px;
       font-size: 18px;
       font-style: italic;
+      font-weight: bold;
       margin-right: 4px; }
 #help-page section {
   max-width: 800px;
   padding: 40px 0;
   margin-bottom: 0;
   border-bottom: 1px solid #ccc; }
+  #help-page section:last-child {
+    border-bottom: none; }
   #help-page section section {
     margin-bottom: 80px;
     padding: 0;

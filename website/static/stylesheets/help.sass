@@ -20,8 +20,12 @@
       margin-bottom: $whitespace / 4
 
       span
+        display: block
+        width: 100%
+        padding-bottom: 4px
         font-size: $base-font-size + 2
         font-style: italic
+        font-weight: bold
         margin-right: 4px
 
   section
@@ -29,6 +33,9 @@
     padding: $whitespace 0
     margin-bottom: 0
     border-bottom: 1px solid #ccc
+
+    &:last-child
+      border-bottom: none
 
     section
       margin-bottom: $whitespace * 2

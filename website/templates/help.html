@@ -3,7 +3,7 @@
 {% block body_id %}help-page{% endblock %}
 
 
-{% block page_title %}User Manual for eegi Website{% endblock %}
+{% block page_title %}Help me! What are you trying to do?{% endblock %}
 
 
 {% block content %}
@@ -101,25 +101,32 @@
   <ul id="updating-methods">
     <li>
     <span><a href="{% url 'admin:index' %}">
-        Django Admin Interface:</a></span>
-    This ships with Django, is used for some very simple updates.
+        Django Admin Interface</a></span>
+    This ships with Django, and is used for some very simple updates.
     </li>
 
     <li>
-    <span>Custom Interfaces:</span>
+    <span>Custom Interfaces</span>
 
     Some interfaces were built to update the database in more
     complex ways.
     </li>
 
     <li>
-    <span>Django Management Scripts:</span>
+    <span>Django Management Scripts</span>
 
     These Python scripts are run from the command line.
-    As written, they should be run from the project root,
-    and should only be run after activating the project's Python
-    virtualenv.
+    They should be run as the <code>eegi</code> user on pyxis.
+
     <br><br>
+    First, activate the project's Python virtual environment,
+    and go to the project root directory.
+    <code class="clear">
+      source /opt/local/eegi/eegivirtualenv/bin/activate
+      <br>
+      cd /opt/local/eegi/eegi
+    </code>
+
     To list all available scripts:
     <code class="clear">./manage.py help</code>
 
@@ -133,7 +140,7 @@
     </li>
 
     <li>
-    <span>Cron Jobs:</span>
+    <span>Cron Jobs</span>
 
     These jobs run automatically, in the crontab of the <code>eegi</code>
     user on pyxis.
