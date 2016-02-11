@@ -55,19 +55,18 @@ data:
   human and machine scores of results.
 
 
-There are two other, organizational Django apps:
+One one other Django app to hold more universal, front-end stuff:
 
 - [website](website) holds aspects of the website that are common to all apps
   (e.g., the templates and stylesheets for the home page, footer, etc)
-- [dbmigration](dbmigration) holds the functionality for syncing the database
-  from the legacy database
 
 
-Finally, an explanation of some other top-level directories, which
-are not Django apps:
+Finally, an explanation of some other top-level directories:
 
 - [utils](utils) holds some very general helper functions
 - [antiquated](antiquated) holds some old code that predates this Django project
+- [dbmigration](dbmigration) holds the functionality for syncing the database
+  from the legacy database. This was a Django app, but is now de-activated.
 
 
 ## Database
