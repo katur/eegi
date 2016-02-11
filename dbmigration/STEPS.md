@@ -27,13 +27,18 @@
 ./manage.py add_empty_library_wells
 ./manage.py import_legacy_database 2 2 2> stock2_stderr.out
 
+# Do it again just to check
+./manage.py import_legacy_database 2 2 2> stock3_stderr.out
+./manage.py import_legacy_database 2 2 2> stock4_stderr.out
 
-# Import sequencing data (dbmigration app)
+
+# Import LEGACY sequencing data
 # NOTE: save stderr to manually resolve some legacy ambiguities
 ./manage.py import_legacy_sequencing_data \
   ../materials/sequencing/tracking_numbers/tracking_numbers_2012.csv \
   ../materials/sequencing/genewiz_dump/genewiz_data 2> seq_stderr.out
 
+# Import more recent sequencing data
 ./manage.py import_sequencing_data \
   ../materials/sequencing/cherrypick_lists/cherrypick_list_2014.csv \
   ../materials/sequencing/tracking_numbers/tracking_numbers_2014.csv \
