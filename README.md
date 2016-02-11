@@ -58,7 +58,8 @@ data:
 One other Django app holds simple website functionality used across the
 other apps:
 
-- [website](website) holds aspects of the website that are common to all apps
+- [website](website) holds website functionality that does not fall into
+  one of the other apps
   (e.g., the templates and stylesheets for the home page, footer, etc)
 
 
