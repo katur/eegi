@@ -55,7 +55,8 @@ data:
   human and machine scores of results.
 
 
-One one other Django app to hold more universal, front-end stuff:
+One other Django app holds simple website functionality used across the
+other apps:
 
 - [website](website) holds aspects of the website that are common to all apps
   (e.g., the templates and stylesheets for the home page, footer, etc)
