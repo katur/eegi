@@ -154,19 +154,15 @@
   <section>
     <h5 id="add-single-experiment">Add a single Experiment Plate</h5>
 
-    Use the custom <a href="{% url 'add_experiment_plate_url' %}">
+    Use the <a href="{% url 'add_experiment_plate_url' %}">
       Add Experiment Plate page</a>.
   </section>
 
   <section>
     <h5 id="add-multiple-experiments">Add multiple Experiment Plates</h5>
 
-    <code class="clear">./manage.py import_google_doc_data</code>
-
-    This script works in concert with the
-    <a href="{{ batch_data_entry_gdoc_url }}">
-      {{ batch_data_entry_gdoc_name }}</a>
-    Google Doc, which should be filled in before running the command.
+    Use the <a href="{% url 'add_experiment_plates_gdoc_url' %}">
+      Add Experiment Plates from Google Doc page</a>.
   </section>
 
   <section>

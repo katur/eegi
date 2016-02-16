@@ -7,7 +7,7 @@
 
 {% block page_title %}
 <span class="warning-message">Add</span> new experiment plates from
-Google Doc
+the Google Doc
 {% endblock %}
 
 
@@ -21,6 +21,15 @@ First, populate the batch data entry Google Doc:
 <br>
 
 Then, click Submit below.
+
+<br>
+<br>
+
+After hitting Submit, the program will perform a "dry run" to ensure
+there are no errors in the document. If the dry run encounters an error,
+this error will be printed below so that you can correct the document.
+Once the dry run is able to run to completion, the program proceeds
+to the actual run.
 
 <br>
 <br>
