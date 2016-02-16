@@ -19,6 +19,8 @@ urlpatterns = [
 
     url(r'^add-experiment-plate/$', views.add_experiment_plate,
         name='add_experiment_plate_url'),
+    url(r'^add-experiment-plates-gdoc/$', views.add_experiment_plates_gdoc,
+        name='add_experiment_plates_gdoc_url'),
     url(r'^change-experiment-plates/([\d,]+)/$',
         views.change_experiment_plates,
         name='change_experiment_plates_url'),

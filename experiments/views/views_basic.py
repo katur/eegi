@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import redirect, render, get_object_or_404
 
+from experiments.helpers.data_entry import parse_batch_data_entry_gdoc
 from experiments.models import Experiment, ExperimentPlate
 from experiments.forms import (
     FilterExperimentWellsForm, FilterExperimentPlatesForm,
@@ -151,6 +152,42 @@ def add_experiment_plate(request):
     }
 
     return render(request, 'add_experiment_plate.html', context)
+
+
+@permission_required(['experiments.add_experiment',
+                      'experiments.add_experimentplate'])
+def add_experiment_plates_gdoc(request):
+    """
+    Render the page to import Google Doc experiment data.
+    """
+    dry_run_errors = []
+    actual_run_errors = []
+    success = False
+    count = 0
+
+    if request.POST:
+        try:
+            parse_batch_data_entry_gdoc(dry_run=True)
+
+            try:
+                count = parse_batch_data_entry_gdoc(dry_run=False)
+                success = True
+            except Exception as e:
+                actual_run_errors.append(e)
+
+        except Exception as e:
+            dry_run_errors.append(e)
+
+    context = {
+        'batch_data_entry_gdoc_url': settings.BATCH_DATA_ENTRY_GDOC_URL,
+        'batch_data_entry_gdoc_name': settings.BATCH_DATA_ENTRY_GDOC_NAME,
+        'dry_run_errors': dry_run_errors,
+        'actual_run_errors': actual_run_errors,
+        'success': success,
+        'count': count,
+    }
+
+    return render(request, 'add_experiment_plates_gdoc.html', context)
 
 
 @permission_required(['experiments.change_experiment',

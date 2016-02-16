@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load extra_tags %}
+
+
+{% block body_id %}add-experiment-plates-gdoc{% endblock %}
+
+
+{% block page_title %}
+<span class="warning-message">Add</span> new experiment plates from
+Google Doc
+{% endblock %}
+
+
+{% block content %}
+
+First, populate the batch data entry Google Doc:
+<a href="{{ batch_data_entry_gdoc_url }}">
+  {{ batch_data_entry_gdoc_name }}</a>
+
+<br>
+<br>
+
+Then, click Submit below.
+
+<br>
+<br>
+
+<form action="" method="post">
+  {% csrf_token %}
+
+  <input type="submit" value="Submit">
+</form>
+
+<br>
+<br>
+
+{% if success %}
+<span class="success-message">
+  {{ count }} experiments submitted.
+</span>
+
+{% elif dry_run_errors %}
+<span class="error-message">
+  Errors occurred during dry run: {{ dry_run_errors }}
+</span>
+
+{% elif actual_run_errors %}
+<span class="error-message">
+  Errors occurred during actual run: {{ actual_run_errors }}
+</span>
+
+{% endif %}
+
+{% endblock %}
