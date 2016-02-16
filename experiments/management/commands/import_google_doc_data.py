@@ -1,10 +1,10 @@
 import datetime
 import re
 
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 
-from eegi.settings import BATCH_DATA_ENTRY_GDOC_NAME
 from experiments.models import ExperimentPlate
 from library.helpers.naming import generate_library_plate_name
 from library.models import LibraryPlate
@@ -49,7 +49,7 @@ def _parse_batch_data_entry_gdoc(dry_run=False):
     Set dry_run=True to instead do a dry run.
     """
     gc = connect_to_google_spreadsheets()
-    sheet = gc.open(BATCH_DATA_ENTRY_GDOC_NAME).sheet1
+    sheet = gc.open(settings.BATCH_DATA_ENTRY_GDOC_NAME).sheet1
     values = sheet.get_all_values()
 
     date, screen_stage = _parse_gdoc_global_info(values)

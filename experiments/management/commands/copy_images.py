@@ -5,10 +5,10 @@ import re
 import requests
 import shutil
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from utils.well_tile_conversion import well_to_tile
-from eegi.settings import BASE_URL_IMG
 
 
 class Command(BaseCommand):
@@ -78,7 +78,7 @@ class Command(BaseCommand):
                     continue
 
             input_image_url = '{}/{}/{}.bmp'.format(
-                BASE_URL_IMG, experiment_id, tile)
+                settings.BASE_URL_IMG, experiment_id, tile)
             output_image_path = '{}/{}_{}.bmp'.format(
                 output_dir, experiment_id, tile)
             r = requests.get(input_image_url, stream=True)

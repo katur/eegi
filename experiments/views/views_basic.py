@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.shortcuts import redirect, render, get_object_or_404
 

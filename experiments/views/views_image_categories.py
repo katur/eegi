@@ -1,8 +1,8 @@
 import os
 
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 
-from eegi.settings import BASE_DIR_IMAGE_CATEGORIES
 from experiments.models import Experiment
 from utils.pagination import get_paginated
 from utils.well_tile_conversion import tile_to_well
@@ -11,7 +11,7 @@ IMAGES_PER_PAGE = 10
 
 
 def image_categories(request):
-    categories = os.listdir(BASE_DIR_IMAGE_CATEGORIES)
+    categories = os.listdir(settings.BASE_DIR_IMAGE_CATEGORIES)
 
     context = {
         'categories': categories,
@@ -23,7 +23,7 @@ def image_categories(request):
 def image_category(request, category):
     tuples = []
 
-    f = open(BASE_DIR_IMAGE_CATEGORIES + '/' + category, 'r')
+    f = open(settings.BASE_DIR_IMAGE_CATEGORIES + '/' + category, 'r')
 
     rows = f.readlines()
 

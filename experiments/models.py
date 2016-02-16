@@ -1,12 +1,10 @@
 from __future__ import division
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
 
-from eegi.settings import (
-    BASE_URL_IMG, BASE_URL_DEVSTAR, BASE_URL_THUMBNAIL,
-    BASE_DIR_DEVSTAR_OUTPUT)
 from experiments.helpers.naming import generate_experiment_id
 from experiments.helpers.scores import get_most_relevant_score_per_experiment
 from library.models import LibraryPlate, LibraryStock
@@ -249,19 +247,23 @@ class Experiment(models.Model):
         """
         tile = well_to_tile(self.well)
         if mode == 'thumbnail':
-            url = '/'.join((BASE_URL_THUMBNAIL, str(self.plate_id), tile))
+            url = '/'.join((settings.BASE_URL_THUMBNAIL,
+                            str(self.plate_id), tile))
             url += '.jpg'
         elif mode == 'devstar':
-            url = '/'.join((BASE_URL_DEVSTAR, str(self.plate_id), tile))
+            url = '/'.join((settings.BASE_URL_DEVSTAR,
+                            str(self.plate_id), tile))
             url += 'res.png'
         else:
-            url = '/'.join((BASE_URL_IMG, str(self.plate_id), tile))
+            url = '/'.join((settings.BASE_URL_IMG,
+                            str(self.plate_id), tile))
             url += '.bmp'
         return url
 
     def get_devstar_count_path(self):
         tile = well_to_tile(self.well)
-        f = '/'.join((BASE_DIR_DEVSTAR_OUTPUT, str(self.plate_id), tile))
+        f = '/'.join((settings.BASE_DIR_DEVSTAR_OUTPUT,
+                      str(self.plate_id), tile))
         f += 'cnt.txt'
         return f
 
@@ -343,8 +345,8 @@ class ManualScoreCode(models.Model):
         return self.id in ManualScoreCode.NEGATIVE_CODES
 
     def is_other(self):
-        return (not self.is_strong() and not self.is_medium()
-                and not self.is_weak() and not self.is_negative())
+        return (not self.is_strong() and not self.is_medium() and
+                not self.is_weak() and not self.is_negative())
 
 
 class ManualScore(models.Model):
