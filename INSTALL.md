@@ -54,14 +54,9 @@ To compile SASS to CSS:
 sass --compile --style compressed website/static/stylesheets/styles.sass
 ```
 
-To compile CoffeeScript to Javascript:
-```
-coffee --compile website/static/js/*.coffee
-```
-
-Instead of compiling SASS and CoffeeScript separately,
+Instead of compiling SASS directly,
 feel free to use the [Gulp.js build script](gulpfile.js), which watches
-for changes in SASS and CoffeeScript files and automatically compiles.
+for changes in SASS files and automatically compiles.
 
 To set up, assuming [Gulp.js](http://gulpjs.com/) is installed on the system,
 run the following in the project root (which will install dependencies

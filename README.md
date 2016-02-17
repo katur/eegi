@@ -23,13 +23,13 @@ are listed in [requirements.txt](requirements.txt).
 HTML is in the
 [Django template language](https://docs.djangoproject.com/en/dev/topics/templates/).
 
+Javascript uses [jQuery](http://jquery.com/).
+
 CSS is in [SASS](http://sass-lang.com/).
 
-Javascript is in [CoffeeScript](http://coffeescript.org/).
-
 [gulpfile.js](gulpfile.js) can be used to automate the compilation of
-SASS and CoffeeScript while in development. The package dependencies
-for using Gulp are listed in [package.json](package.json). Please see
+SASS while in development. The package dependencies for using Gulp are
+listed in [package.json](package.json). Please see
 [INSTALL.md](https://github.com/katur/eegi/blob/master/INSTALL.md#cssjavascript-dependencies)
 for more details on how to install these dependencies and use this script.
 

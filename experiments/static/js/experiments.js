@@ -1,58 +1,58 @@
-(function() {
-  var addImageElement, initializeCarousels, showSubsequentImage;
+$(document).ready(function() {
+  return initializeCarousels();
+});
 
-  $(document).ready(function() {
-    return initializeCarousels();
+
+function initializeCarousels() {
+  var carousels = $(".carousel");
+  if (!carousels.length) {
+    return;
+  }
+
+  carousels.each(function() {
+    var el = $(this);
+    var firstImage = el.find(".individual-image").first();
+    addImageElement(firstImage);
+    firstImage.addClass("show");
   });
 
-  initializeCarousels = function() {
-    var carousels;
-    carousels = $(".carousel");
-    if (!carousels.length) {
-      return;
-    }
-    carousels.each(function() {
-      var el, firstImage;
-      el = $(this);
-      firstImage = el.find(".individual-image").first();
-      addImageElement(firstImage);
-      return firstImage.addClass("show");
-    });
-    return carousels.find(".image-frame-navigation").click(function(e) {
-      var carousel, direction, navigator;
-      e.preventDefault();
-      navigator = $(this);
-      carousel = navigator.closest(".carousel");
-      if (navigator.hasClass("image-frame-previous")) {
-        direction = "previous";
-      } else {
-        direction = "next";
-      }
-      return showSubsequentImage(carousel, direction);
-    });
-  };
+  carousels.find(".image-frame-navigation").click(function(e) {
+    e.preventDefault();
+    var navigator = $(this);
+    var carousel = navigator.closest(".carousel");
 
-  showSubsequentImage = function(carousel, direction) {
-    var currentImage, i, images, subsequentImage;
-    images = carousel.find(".individual-image");
-    currentImage = carousel.find(".show");
-    i = images.index(currentImage);
-    images.eq(i).removeClass("show");
-    if (direction === "next") {
-      i = (++i) % images.length;
+    var direction;
+    if (navigator.hasClass("image-frame-previous")) {
+      direction = "previous";
     } else {
-      i = (--i) % images.length;
+      direction = "next";
     }
-    subsequentImage = images.eq(i);
-    subsequentImage.addClass("show");
-    return addImageElement(subsequentImage);
-  };
 
-  addImageElement = function(image) {
-    var imageFrame, imageSrc;
-    imageFrame = image.find(".image-frame");
-    imageSrc = imageFrame.attr("data-src");
-    return imageFrame.prepend("<img src='" + imageSrc + "' \>");
-  };
+    showSubsequentImage(carousel, direction);
+  });
+};
 
-}).call(this);
+
+function showSubsequentImage(carousel, direction) {
+  var images = carousel.find(".individual-image");
+  var currentImage = carousel.find(".show");
+  var i = images.index(currentImage);
+  images.eq(i).removeClass("show");
+
+  if (direction === "next") {
+    i = (++i) % images.length;
+  } else {
+    i = (--i) % images.length;
+  }
+
+  var subsequentImage = images.eq(i);
+  subsequentImage.addClass("show");
+  addImageElement(subsequentImage);
+};
+
+
+function addImageElement(image) {
+  var imageFrame = image.find(".image-frame");
+  var imageSrc = imageFrame.attr("data-src");
+  imageFrame.prepend("<img src='" + imageSrc + "' \>");
+};
