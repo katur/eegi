@@ -26,7 +26,6 @@ HTML is in the
 Javascript uses [jQuery](http://jquery.com/).
 
 CSS is in [SASS](http://sass-lang.com/).
-
 [gulpfile.js](gulpfile.js) can be used to automate the compilation of
 SASS while in development. The package dependencies for using Gulp are
 listed in [package.json](package.json). Please see
