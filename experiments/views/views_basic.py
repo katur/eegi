@@ -160,7 +160,7 @@ def add_experiment_plates_gdoc(request):
     """
     Render the page to import Google Doc experiment data.
     """
-    errors = []
+    error = None
     success = False
     count = 0
 
@@ -170,12 +170,12 @@ def add_experiment_plates_gdoc(request):
             success = True
 
         except Exception as e:
-            errors.append(e)
+            error = e
 
     context = {
         'batch_data_entry_gdoc_url': settings.BATCH_DATA_ENTRY_GDOC_URL,
         'batch_data_entry_gdoc_name': settings.BATCH_DATA_ENTRY_GDOC_NAME,
-        'errors': errors,
+        'error': error,
         'success': success,
         'count': count,
     }
