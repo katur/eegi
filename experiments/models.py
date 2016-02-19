@@ -61,10 +61,12 @@ class ExperimentPlate(models.Model):
             2) is derived from one library plate
             3) has the same is_junk value in all wells
 
-        By default, the plate and wells are saved to the database.
+        Returns a 2-tuple of the new plate and wells.
+
+        By default, saves the new plate and wells to the database.
         Set dry_run=True to instead do a dry run.
         """
-        if cls.objects.filter(id=experiment_plate_id).count():
+        if cls.objects.filter(id=experiment_plate_id).exists():
             raise ValueError('ExperimentPlate {} already exists'
                              .format(experiment_plate_id))
 
@@ -75,14 +77,16 @@ class ExperimentPlate(models.Model):
             temperature=temperature,
             comment=plate_comment)
 
+        experiment_wells = experiment_plate.get_new_wells(
+            worm_strain, library_plate, is_junk=is_junk)
+
         if not dry_run:
             experiment_plate.save()
+            Experiment.objects.bulk_create(experiment_wells)
 
-        experiment_plate.create_wells(worm_strain, library_plate,
-                                      is_junk=is_junk, dry_run=dry_run)
+        return (experiment_plate, experiment_wells)
 
-    def create_wells(self, worm_strain, library_plate,
-                     is_junk=False, dry_run=False):
+    def get_new_wells(self, worm_strain, library_plate, is_junk=False):
         """
         Create the experiment wells that go with this experiment plate.
 
@@ -94,23 +98,24 @@ class ExperimentPlate(models.Model):
 
         Set dry_run=True to not save these newly created wells.
         """
-        if Experiment.objects.filter(plate=self).count():
+        if Experiment.objects.filter(plate=self).exists():
             raise Exception('Experiments already exists for plate {}'
                             .format(self))
 
         stocks_by_well = library_plate.get_stocks_as_dictionary()
+        experiments = []
+
         for well in get_well_list():
             library_stock = stocks_by_well[well]
 
-            experiment_well = Experiment(
+            experiments.append(Experiment(
                 id=generate_experiment_id(self.id, well),
                 plate=self, well=well,
                 worm_strain=worm_strain,
                 library_stock=library_stock,
-                is_junk=is_junk)
+                is_junk=is_junk))
 
-            if not dry_run:
-                experiment_well.save()
+        return experiments
 
     def get_experiment_wells(self):
         """

@@ -5,7 +5,7 @@ from itertools import izip_longest
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-from experiments.models import ExperimentPlate
+from experiments.models import Experiment, ExperimentPlate
 from library.helpers.naming import generate_library_plate_name
 from library.models import LibraryPlate
 from utils.google import connect_to_google_spreadsheets
@@ -29,10 +29,9 @@ def parse_batch_data_entry_gdoc(dry_run=False):
 
     date, screen_stage = _parse_gdoc_global_info(values)
     worms, temperatures, screen_types = _parse_gdoc_column_headers(values)
-    count = _parse_gdoc_experiment_rows(values[FIRST_EXP_ROW:],
-                                        screen_stage, date,
-                                        worms, temperatures,
-                                        dry_run=dry_run)
+    count = _parse_gdoc_experiment_rows(
+        values[FIRST_EXP_ROW:], screen_stage, date, worms, temperatures,
+        dry_run=dry_run)
     return count
 
 
@@ -120,7 +119,8 @@ def _parse_gdoc_column_headers(values):
 def _parse_gdoc_experiment_rows(rows, screen_stage, date, worms,
                                 temperatures, dry_run=False):
     """Parse the rows with new experiments."""
-    plate_count = 0
+    all_new_plates = []
+    all_new_wells = []
 
     for i, row in enumerate(rows):
         current_row_number = FIRST_EXP_ROW + i + 1  # gdoc 1-indexed
@@ -140,11 +140,18 @@ def _parse_gdoc_experiment_rows(rows, screen_stage, date, worms,
             if not experiment_plate_id:
                 continue
 
-            ExperimentPlate.create_plate_and_wells(
+            # Set dry_run = True in order to do all inserts at end,
+            # in fewer queries.
+            plate, wells = ExperimentPlate.create_plate_and_wells(
                 experiment_plate_id, screen_stage, date,
                 temperatures[j], worms[j], library_plate,
-                dry_run=dry_run)
+                dry_run=True)
 
-            plate_count += 1
+            all_new_plates.append(plate)
+            all_new_wells.extend(wells)
 
-    return plate_count
+    if not dry_run:
+        ExperimentPlate.objects.bulk_create(all_new_plates)
+        Experiment.objects.bulk_create(all_new_wells)
+
+    return len(all_new_plates)
