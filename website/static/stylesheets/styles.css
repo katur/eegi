@@ -85,9 +85,13 @@ body {
 #footer #copyright {
   float: right;
   padding-top: 40px; }
-  #footer #copyright span {
+  #footer #copyright #data, #footer #copyright #code, #footer #copyright #login {
     float: left;
     clear: both; }
+  #footer #copyright #login a, #footer #copyright #login span {
+    padding-right: 10px; }
+    #footer #copyright #login a:last-child, #footer #copyright #login span:last-child {
+      padding-right: 0; }
 
 body {
   font-family: Helvetica, Arial, sans-serif;

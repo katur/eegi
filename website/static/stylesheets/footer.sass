@@ -13,6 +13,13 @@
     float: right
     padding-top: $whitespace
 
-    span
+    #data, #code, #login
       float: left
       clear: both
+
+    #login
+      a, span
+        padding-right: $whitespace / 4
+
+        &:last-child
+          padding-right: 0

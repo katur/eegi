@@ -19,7 +19,7 @@
 </div>
 
 <div id="copyright">
-  <span>
+  <span id="data">
     Data copyright
     <a href="http://cgsb.as.nyu.edu/">
       Center for Genomics and Systems Biology</a>,
@@ -31,7 +31,7 @@
     {% now 'Y' %}
   </span>
 
-  <span>
+  <span id="code">
     <!--
     Website by
     <a href="http://www.katherineerickson.com/">
@@ -46,8 +46,15 @@
 
   <span id="login">
     {% if user.is_authenticated %}
-    Hi {{ user.first_name }}.
-    <a href="{% url 'logout_url' %}?next={{ request.path }}">Logout</a>
+    <span>Hi {{ user.first_name }}.</span>
+
+    <a href="{% url 'help_url' %}">Help.</a>
+
+    {% if user.is_staff %}
+    <a href="{% url 'admin:index' %}">Admin.</a>
+    {% endif %}
+
+    <a href="{% url 'logout_url' %}?next={{ request.path }}">Logout.</a>
 
     {% else %}
 
