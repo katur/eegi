@@ -14,7 +14,7 @@ from worms.models import WormStrain
 FIRST_EXP_ROW = 7
 
 
-def parse_batch_data_entry_gdoc(dry_run=False):
+def parse_batch_data_entry_gdoc():
     """
     Parse the Google Doc for batch data entry.
 
@@ -30,8 +30,7 @@ def parse_batch_data_entry_gdoc(dry_run=False):
     date, screen_stage = _parse_gdoc_global_info(values)
     worms, temperatures, screen_types = _parse_gdoc_column_headers(values)
     count = _parse_gdoc_experiment_rows(
-        values[FIRST_EXP_ROW:], screen_stage, date, worms, temperatures,
-        dry_run=dry_run)
+        values[FIRST_EXP_ROW:], screen_stage, date, worms, temperatures)
     return count
 
 
@@ -117,7 +116,7 @@ def _parse_gdoc_column_headers(values):
 
 
 def _parse_gdoc_experiment_rows(rows, screen_stage, date, worms,
-                                temperatures, dry_run=False):
+                                temperatures):
     """Parse the rows with new experiments."""
     all_new_plates = []
     all_new_wells = []
@@ -140,18 +139,15 @@ def _parse_gdoc_experiment_rows(rows, screen_stage, date, worms,
             if not experiment_plate_id:
                 continue
 
-            # Set dry_run = True in order to do all inserts at end,
-            # in fewer queries.
+            # Do dry_run=True to save inserts for bulk queries at end
             plate, wells = ExperimentPlate.create_plate_and_wells(
                 experiment_plate_id, screen_stage, date,
-                temperatures[j], worms[j], library_plate,
-                dry_run=True)
+                temperatures[j], worms[j], library_plate, dry_run=True)
 
             all_new_plates.append(plate)
             all_new_wells.extend(wells)
 
-    if not dry_run:
-        ExperimentPlate.objects.bulk_create(all_new_plates)
-        Experiment.objects.bulk_create(all_new_wells)
+    ExperimentPlate.objects.bulk_create(all_new_plates)
+    Experiment.objects.bulk_create(all_new_wells)
 
     return len(all_new_plates)

@@ -25,11 +25,10 @@ Then, click Submit below.
 <br>
 <br>
 
-After hitting Submit, the program will perform a "dry run" to ensure
-there are no errors in the document. If the dry run encounters an error,
-this error will be printed below so that you can correct the document.
-Once the dry run is able to run to completion, the program proceeds
-to the actual run.
+After hitting Submit, the program will parse the Google Doc, reporting
+the first error it finds.
+<br>
+The database will only be updated if there were no errors found.
 
 <br>
 <br>
@@ -43,19 +42,14 @@ to the actual run.
 <br>
 <br>
 
-{% if success %}
+{% if errors %}
+<span class="error-message">
+  Errors found: {{ errors }}
+</span>
+
+{% elif success %}
 <span class="success-message">
-  {{ count }} experiments submitted.
-</span>
-
-{% elif dry_run_errors %}
-<span class="error-message">
-  Errors occurred during dry run: {{ dry_run_errors }}
-</span>
-
-{% elif actual_run_errors %}
-<span class="error-message">
-  Errors occurred during actual run: {{ actual_run_errors }}
+  {{ count }} experiment plates saved to database.
 </span>
 
 {% endif %}

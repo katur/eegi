@@ -50,9 +50,9 @@ class ExperimentPlate(models.Model):
 
     @classmethod
     def create_plate_and_wells(
-            cls, experiment_plate_id, screen_stage, date,
-            temperature, worm_strain, library_plate,
-            is_junk=False, plate_comment='', dry_run=False):
+            cls, experiment_plate_id, screen_stage, date, temperature,
+            worm_strain, library_plate, is_junk=False, plate_comment='',
+            dry_run=False):
         """
         Create a new experiment plate plus its 96 wells.
 
@@ -77,7 +77,7 @@ class ExperimentPlate(models.Model):
             temperature=temperature,
             comment=plate_comment)
 
-        experiment_wells = experiment_plate.get_new_wells(
+        experiment_wells = experiment_plate.create_wells(
             worm_strain, library_plate, is_junk=is_junk)
 
         if not dry_run:
@@ -86,36 +86,34 @@ class ExperimentPlate(models.Model):
 
         return (experiment_plate, experiment_wells)
 
-    def get_new_wells(self, worm_strain, library_plate, is_junk=False):
+    def create_wells(self, worm_strain, library_plate, is_junk=False):
         """
-        Create the experiment wells that go with this experiment plate.
+        Returns the experiment wells that go with this experiment plate.
 
         Raises an exception if there are already experiment wells
         for this experiment plate in the database.
 
         Initializes each new well's worm, library stock, and junk
         according to the parameters passed in.
-
-        Set dry_run=True to not save these newly created wells.
         """
         if Experiment.objects.filter(plate=self).exists():
             raise Exception('Experiments already exists for plate {}'
                             .format(self))
 
         stocks_by_well = library_plate.get_stocks_as_dictionary()
-        experiments = []
+        new_experiment_wells = []
 
         for well in get_well_list():
             library_stock = stocks_by_well[well]
 
-            experiments.append(Experiment(
+            new_experiment_wells.append(Experiment(
                 id=generate_experiment_id(self.id, well),
                 plate=self, well=well,
                 worm_strain=worm_strain,
                 library_stock=library_stock,
                 is_junk=is_junk))
 
-        return experiments
+        return new_experiment_wells
 
     def get_experiment_wells(self):
         """

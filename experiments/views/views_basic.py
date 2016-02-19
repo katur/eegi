@@ -160,29 +160,22 @@ def add_experiment_plates_gdoc(request):
     """
     Render the page to import Google Doc experiment data.
     """
-    dry_run_errors = []
-    actual_run_errors = []
+    errors = []
     success = False
     count = 0
 
     if request.POST:
         try:
-            parse_batch_data_entry_gdoc(dry_run=True)
-
-            try:
-                count = parse_batch_data_entry_gdoc(dry_run=False)
-                success = True
-            except Exception as e:
-                actual_run_errors.append(e)
+            count = parse_batch_data_entry_gdoc()
+            success = True
 
         except Exception as e:
-            dry_run_errors.append(e)
+            errors.append(e)
 
     context = {
         'batch_data_entry_gdoc_url': settings.BATCH_DATA_ENTRY_GDOC_URL,
         'batch_data_entry_gdoc_name': settings.BATCH_DATA_ENTRY_GDOC_NAME,
-        'dry_run_errors': dry_run_errors,
-        'actual_run_errors': actual_run_errors,
+        'errors': errors,
         'success': success,
         'count': count,
     }
