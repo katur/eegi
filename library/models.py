@@ -69,16 +69,22 @@ class LibraryStock(models.Model):
 
     May or may not be in a LibraryPlate.
 
+    TODO: Make sure code doesn't assume stocks are in plates; once confirmed,
+    add null=True, blank=True, and models.SET_NULL.
+
     Includes the clone intended on being in this position (according to
     whoever designed the library), separate from a sequence-verified clone.
     """
 
     id = models.CharField(max_length=24, primary_key=True)
-    plate = models.ForeignKey(LibraryPlate)
+    plate = models.ForeignKey(LibraryPlate, models.CASCADE)
     well = models.CharField(max_length=3)
-    parent_stock = models.ForeignKey('self', null=True, blank=True)
-    intended_clone = models.ForeignKey(Clone, null=True, blank=True)
-    sequence_verified_clone = models.ForeignKey(Clone, default=None,
+    parent_stock = models.ForeignKey('self', models.SET_NULL,
+                                     null=True, blank=True)
+    intended_clone = models.ForeignKey(Clone, models.SET_NULL,
+                                       null=True, blank=True)
+    sequence_verified_clone = models.ForeignKey(Clone, models.SET_NULL,
+                                                default=None,
                                                 null=True, blank=True,
                                                 related_name='seq_clone')
 
@@ -152,12 +158,15 @@ class LibrarySequencing(models.Model):
            controls, and with our using a different Genewiz form for
            submitting the order.
 
+    TODO: This ForeignKeys should SET NULL on delete.
+
     Overall, genewiz_tracking_number and genewiz_tube_label provide
     the only and best primary key for a sequencing result.
     """
 
     id = models.CharField(primary_key=True, max_length=40)
-    source_stock = models.ForeignKey(LibraryStock, null=True, blank=True)
+    source_stock = models.ForeignKey(LibraryStock, models.SET_NULL,
+                                     null=True, blank=True)
     sample_plate = models.CharField(max_length=10, blank=True)
     sample_well = models.CharField(max_length=3, blank=True)
     sample_tube_number = models.IntegerField(null=True, blank=True)
@@ -200,8 +209,8 @@ class LibrarySequencing(models.Model):
 class LibrarySequencingBlatResult(models.Model):
     """BLAT result from a particular LibrarySequencing result."""
 
-    sequencing = models.ForeignKey(LibrarySequencing)
-    clone_hit = models.ForeignKey(Clone)
+    sequencing = models.ForeignKey(LibrarySequencing, models.CASCADE)
+    clone_hit = models.ForeignKey(Clone, models.CASCADE)
     e_value = models.FloatField()
     bit_score = models.IntegerField()
     hit_rank = models.PositiveSmallIntegerField()

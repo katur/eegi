@@ -192,10 +192,10 @@ class ExperimentPlate(models.Model):
 class Experiment(models.Model):
     """A well-level experiment."""
     id = models.CharField(max_length=20, primary_key=True)
-    plate = models.ForeignKey(ExperimentPlate)
+    plate = models.ForeignKey(ExperimentPlate, models.CASCADE)
     well = models.CharField(max_length=3)
-    worm_strain = models.ForeignKey(WormStrain)
-    library_stock = models.ForeignKey(LibraryStock)
+    worm_strain = models.ForeignKey(WormStrain, models.CASCADE)
+    library_stock = models.ForeignKey(LibraryStock, models.CASCADE)
     is_junk = models.BooleanField(default=False, db_index=True)
     comment = models.TextField(blank=True)
 
@@ -355,9 +355,9 @@ class ManualScoreCode(models.Model):
 class ManualScore(models.Model):
     """A score that was assigned to a particular image by a human."""
 
-    experiment = models.ForeignKey(Experiment)
-    score_code = models.ForeignKey(ManualScoreCode)
-    scorer = models.ForeignKey(User)
+    experiment = models.ForeignKey(Experiment, models.CASCADE)
+    score_code = models.ForeignKey(ManualScoreCode, models.CASCADE)
+    scorer = models.ForeignKey(User, models.CASCADE)
     timestamp = models.DateTimeField()
 
     STRONG = 'Strong'
@@ -459,7 +459,7 @@ class ManualScore(models.Model):
 class DevstarScore(models.Model):
     """Information about an image determined by the DevStaR."""
 
-    experiment = models.ForeignKey(Experiment)
+    experiment = models.ForeignKey(Experiment, models.CASCADE)
 
     area_adult = models.IntegerField(null=True, blank=True,
                                      help_text='DevStaR program output')

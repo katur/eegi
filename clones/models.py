@@ -68,8 +68,8 @@ class CloneTarget(models.Model):
     given clone targets the given gene.
     """
 
-    clone = models.ForeignKey(Clone)
-    gene = models.ForeignKey(Gene)
+    clone = models.ForeignKey(Clone, models.CASCADE)
+    gene = models.ForeignKey(Gene, models.CASCADE)
     transcript_isoform = models.CharField(max_length=30, blank=True)
     clone_amplicon_id = models.IntegerField()
     amplicon_evidence = models.CharField(max_length=4)
