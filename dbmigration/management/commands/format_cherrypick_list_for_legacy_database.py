@@ -4,7 +4,7 @@ import MySQLdb
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand, CommandError
 
-from eegi.local_settings import LEGACY_DATABASE
+from eegi.localsettings import LEGACY_DATABASE
 from library.models import LibraryPlate, LibraryStock
 from utils.well_tile_conversion import well_to_tile
 from worms.models import WormStrain
@@ -16,8 +16,7 @@ class Command(BaseCommand):
 
     Import into GenomeWideGI.CherryPickRNAiPlate.
 
-    This script requires that LEGACY_DATABASE be defined in
-    local_settings.py.
+    This script requires that LEGACY_DATABASE be defined in localsettings.
 
     Output
         Prints to stdout

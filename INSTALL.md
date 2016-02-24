@@ -11,14 +11,14 @@
 
 ```
 git clone https://github.com/katur/eegi.git
-vi eegi/eegi/local_settings.py
-# add necessary local_settings; make sure to set DEBUG=True
+cd eegi/eegi
+# add localsettings.py; set DEBUG=True
 ```
 
 
 #### Database
 
-Add dev database connection info to `eegi/local_settings.py`.
+Add dev database connection info to `eegi/localsettings.py`.
 This might be a dev database that already exists on another machine,
 or a new database on your own machine.
 You might import an existing dump, or you might generate an empty database
@@ -151,7 +151,7 @@ cd /opt/local/eegi
 git clone https://github.com/katur/eegi.git
 
 cd /opt/local/eegi/eegi/eegi
-# add necessary local_settings; make sure to set DEBUG=False
+# add localsettings.py; make sure to set DEBUG=False
 ```
 
 

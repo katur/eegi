@@ -10,7 +10,7 @@ from dbmigration.helpers.sync_steps_experiments import (
     update_ManualScoreCode_table, update_ManualScore_table_primary,
     update_ManualScore_table_secondary)
 
-from eegi.local_settings import LEGACY_DATABASE, LEGACY_DATABASE_2
+from eegi.localsettings import LEGACY_DATABASE, LEGACY_DATABASE_2
 from utils.scripting import require_db_write_acknowledgement
 
 STEPS = (
@@ -71,10 +71,10 @@ class Command(BaseCommand):
         (this table is small enough that I populated it by hand,
         referencing the Google Doc about the worms used in the screen).
 
-        Steps 0-6 require that LEGACY_DATABASE be defined in local_settings.py,
+        Steps 0-6 require that LEGACY_DATABASE be defined in localsettings,
         to connect to the GenomeWideGI legacy database.
 
-        Step 7 requires that LEGACY_DATABASE_2 be defined in local_settings.py,
+        Step 7 requires that LEGACY_DATABASE_2 be defined in localsettings,
         to connect to the GWGI2 database.
 
     Output:

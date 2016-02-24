@@ -9,7 +9,7 @@ from django.core.management.base import BaseCommand, CommandError
 from dbmigration.helpers.object_getters import get_library_stock
 from library.management.commands.import_sequencing_data import (
     process_tracking_number)
-from eegi.local_settings import LEGACY_DATABASE
+from eegi.localsettings import LEGACY_DATABASE
 from utils.scripting import require_db_write_acknowledgement
 
 
@@ -18,9 +18,9 @@ class Command(BaseCommand):
     Command to import sequencing results that were partially
     represented in the legacy database.
 
-    This script requires that LEGACY_DATABASE be defined in
-    local_settings.py, since it uses the legacy database to determine
-    which library stocks correspond to which sequencing wells.
+    This script requires that LEGACY_DATABASE be defined in localsettings,
+    since it uses the legacy database to determine which library stocks
+    correspond to which sequencing wells for our old sequencing data.
 
     Arguments
 

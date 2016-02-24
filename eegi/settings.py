@@ -8,20 +8,20 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-
-import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
-
 # Local configuration
 
-from local_settings import (
-    DEBUG, SECRET_KEY, LOCKDOWN_PASSWORDS, DATABASES,
+from localsettings import (
+    DEBUG, SECRET_KEY, LOCKDOWN_PASSWORDS, DATABASES, STATIC_ROOT,
     BASE_DIR_DEVSTAR_OUTPUT, BASE_DIR_IMAGE_CATEGORIES,
     BASE_URL_IMG, BASE_URL_THUMBNAIL, BASE_URL_DEVSTAR,
     GOOGLE_ANALYTICS_ID, GOOGLE_API_KEY,
     BATCH_DATA_ENTRY_GDOC_NAME, BATCH_DATA_ENTRY_GDOC_URL)
+
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
 # Security
@@ -92,8 +92,6 @@ SHORT_DATE_FORMAT = 'Y-m-d'
 # https://docs.djangoproject.com/en/dev/howto/static-files/
 
 STATIC_URL = '/static/'
-
-STATIC_ROOT = 'staticfiles'
 
 
 # Templates
