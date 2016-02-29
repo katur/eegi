@@ -101,6 +101,10 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'APP_DIRS': True,
+
+        # Needed so overridden admin templates take precedence
+        'DIRS': [BASE_DIR + '/website/templates/'],
+
         'OPTIONS': {
             'context_processors': [
                 'django.contrib.auth.context_processors.auth',
