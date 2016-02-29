@@ -44,7 +44,7 @@ class Command(BaseCommand):
 
         stocks_to_resequence = []
         for category, values in categorized_seqs.items():
-            if is_bad_sequence(category):
+            if _should_be_redone(category):
                 stocks_to_resequence.extend(
                     [x.source_stock for x in values])
 
@@ -80,7 +80,7 @@ class Command(BaseCommand):
                 destination_plate, destination_well))
 
 
-def is_bad_sequence(category):
+def _should_be_redone(category):
     return ((isinstance(category, int) and category > 1) or
             category == NO_BLAT or category == NO_MATCH or
             category == NO_CLONE_BLAT)
