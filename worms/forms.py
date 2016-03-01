@@ -8,6 +8,7 @@ class WormChoiceField(forms.ModelChoiceField):
     """
     Field to choose a worm strain.
     """
+
     def __init__(self, **kwargs):
         if 'queryset' not in kwargs:
             kwargs['queryset'] = WormStrain.objects.all()
@@ -19,6 +20,7 @@ class WormMultipleChoiceField(forms.ModelMultipleChoiceField):
     """
     Field to choose multiple worm strains.
     """
+
     def __init__(self, **kwargs):
         if 'queryset' not in kwargs:
             kwargs['queryset'] = WormStrain.objects.all()

@@ -6,6 +6,7 @@ from library.models import LibraryPlate
 
 class LibraryPlateField(forms.CharField):
     """Field for entering a library plate and getting the object."""
+
     def to_python(self, value):
         if not value:
             return value

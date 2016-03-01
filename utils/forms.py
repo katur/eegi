@@ -8,6 +8,7 @@ EMPTY_CHOICE = ('', '---------')
 
 
 class BlankNullBooleanSelect(forms.NullBooleanSelect):
+
     def __init__(self, attrs=None):
         choices = ((u'1', u'---'),
                    (u'3', u'No'),
@@ -16,6 +17,7 @@ class BlankNullBooleanSelect(forms.NullBooleanSelect):
 
 
 class RangeWidget(forms.MultiWidget):
+
     def __init__(self, widget, *args, **kwargs):
         widgets = (widget, widget)
 
@@ -40,6 +42,7 @@ class RangeField(forms.MultiValueField):
     Optionally pass widget_class while initializing to define the
     type of the min and max widgets.
     """
+
     def __init__(self, field_class, field_kwargs={}, *args, **kwargs):
         # Initialize both min/max to blank
         if 'initial' not in kwargs:
