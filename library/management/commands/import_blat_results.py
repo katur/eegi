@@ -13,18 +13,10 @@ class Command(BaseCommand):
     """
     Command to import Firoz's BLAT hits of our sequencing results.
 
-    This script starts by clearing the LibrarySequencingBlatResult table.
-    It is okay to do this because no other tables depend on
-    LibrarySequencingBlatResult.
-
-    The input is the CSV file provided by Firoz, with a few simple UNIX
-    transformations. The transformed file currently lives at:
+    The input is the CSV file provided by Firoz.
+    One file, already inputed, lives at:
 
         materials/sequencing/blat_results_from_firoz/joined
-
-    The transformation script, which explains itself:
-
-        materials/sequencing/blat_results_from_firoz/transform
     """
 
     help = 'Import the BLAT hits of our sequencing results.'
@@ -36,11 +28,9 @@ class Command(BaseCommand):
                                  "for more details.")
 
     def handle(self, **options):
-        f = options['file']
-
         require_db_write_acknowledgement()
 
-        LibrarySequencingBlatResult.objects.all().delete()
+        f = options['file']
 
         reader = csv.DictReader(f, delimiter='\t')
 
