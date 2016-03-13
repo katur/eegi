@@ -13,8 +13,27 @@ class Command(BaseCommand):
     """
     Command to import Firoz's BLAT hits of our sequencing results.
 
-    The input is the CSV file provided by Firoz.
-    One file, already inputed, lives at:
+    The input is a CSV with column names:
+
+        sequencing_id
+        clone_hit
+        e_value
+        bit_score
+        hit_rank
+
+    This script expects tab-delimited, since that is what Firoz gave us
+    last time. Just change the delimiter in the code below if this changes.
+
+    Since we last imported BLAT results this way, the primary key of
+    LibrarySequencing has changed from INT to VARCHAR (now made up of
+    the genewiz tracking number and tube label). This should hardly
+    affect his script, except that he may need to change the type of
+    this variable from int to string, and he might need to update the
+    CSV column names of his output to match the spec above.
+
+    A previous input file (though with outdated column names including
+    sequencing_id split into two columns -- genewiz_tracking_number and
+    genewiz_tube_label) lives at:
 
         materials/sequencing/blat_results_from_firoz/joined
     """
@@ -35,22 +54,17 @@ class Command(BaseCommand):
         reader = csv.DictReader(f, delimiter='\t')
 
         for row in reader:
-            genewiz_tracking_number = row['genewiz_tracking_number']
-            genewiz_tube_label = row['genewiz_tube_label']
-            clone_hit = row['clone']
-            e_value = row['BLAT_e-value']
+            sequencing_id = row['sequencing_id']
+            clone_hit = row['clone_hit']
+            e_value = row['e_value']
             bit_score = row['bit_score']
             hit_rank = row['hit_rank']
 
             try:
-                sequencing = LibrarySequencing.objects.get(
-                    genewiz_tracking_number=genewiz_tracking_number,
-                    genewiz_tube_label=genewiz_tube_label)
+                sequencing = LibrarySequencing.objects.get(id=sequencing_id)
             except ObjectDoesNotExist:
-                raise CommandError('Genewiz tracking {}, tube {} not found in '
-                                   'LibrarySequencing'
-                                   .format(genewiz_tracking_number,
-                                           genewiz_tube_label))
+                raise CommandError('ID {} not found in LibrarySequencing'
+                                   .format(sequencing_id))
 
             try:
                 clone = Clone.objects.get(pk=clone_hit)
