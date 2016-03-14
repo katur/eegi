@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'jquery',
 
     'website',
-    'dbmigration',
     'worms',
     'clones',
     'library',
