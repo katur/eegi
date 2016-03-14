@@ -4,12 +4,10 @@ from experiments.models import (Experiment, ExperimentPlate,
                                 ManualScoreCode, ManualScore)
 
 
-class ExperimentAdmin(admin.ModelAdmin):
-    list_display = ('id',)
+class ExperimentInline(admin.TabularInline):
+    model = Experiment
 
-    search_fields = ('id',)
-
-    readonly_fields = ('id', 'plate', 'well',)
+    extra = 1
 
     # Don't load dropdown
     raw_id_fields = ('library_stock',)
@@ -26,6 +24,8 @@ class ExperimentPlateAdmin(admin.ModelAdmin):
     readonly_fields = ('id',)
 
     fields = ('id', 'temperature', 'date', 'comment',)
+
+    inlines = [ExperimentInline]
 
 
 class ManualScoreCodeAdmin(admin.ModelAdmin):
@@ -45,7 +45,6 @@ class ManualScoreAdmin(admin.ModelAdmin):
     raw_id_fields = ('experiment',)
 
 
-admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(ExperimentPlate, ExperimentPlateAdmin)
 admin.site.register(ManualScoreCode, ManualScoreCodeAdmin)
 admin.site.register(ManualScore, ManualScoreAdmin)
