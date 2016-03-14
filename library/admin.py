@@ -4,29 +4,58 @@ from django.contrib import admin
 from library.models import LibraryStock, LibraryPlate
 
 
-class LibraryStockAdmin(admin.ModelAdmin):
-    list_display = ('id', 'parent_stock', 'intended_clone',)
+class LibraryStockInline(admin.TabularInline):
+    model = LibraryStock
 
-    search_fields = ('id', 'plate', 'intended_clone',)
+    raw_id_fields = (
+        'parent_stock',
+        'intended_clone',
+        'sequence_verified_clone',
+    )
 
-    readonly_fields = ('id', 'plate', 'well',)
+    readonly_fields = (
+        'plate',
+        'well',
+    )
 
-    raw_id_fields = ('parent_stock', 'intended_clone',
-                     'sequence_verified_clone',)
+    fields = (
+        'plate',
+        'well',
+        'parent_stock',
+        'intended_clone',
+        'sequence_verified_clone',
+    )
 
-    fields = ('id', 'plate', 'well', 'parent_stock',
-              'intended_clone', 'sequence_verified_clone',)
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class LibraryPlateAdmin(admin.ModelAdmin):
-    list_display = ('id', 'number_of_wells', 'screen_stage',)
+    list_display = (
+        'id',
+        'number_of_wells',
+        'screen_stage',
+    )
 
-    search_fields = ('id',)
+    search_fields = (
+        'id',
+    )
 
-    readonly_fields = ('id',)
+    fields = (
+        'number_of_wells',
+        'screen_stage',
+    )
 
-    fields = ('id', 'number_of_wells', 'screen_stage',)
+    inlines = [LibraryStockInline]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
-admin.site.register(LibraryStock, LibraryStockAdmin)
 admin.site.register(LibraryPlate, LibraryPlateAdmin)
