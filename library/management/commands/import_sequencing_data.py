@@ -81,10 +81,9 @@ class Command(BaseCommand):
             raise CommandError('genewiz_root directory not found')
 
         ####################################################
-        # FIRST STAGE: Create a dictionary of which
-        #   sequences correspond to which library stocks
-        #
-        # This information is stored in the legacy database.
+        # FIRST STAGE: Create a mapping of sequencing result
+        #   to library stock, using the cherrypick_list
+        #   input file.
         ####################################################
 
         seq_to_source = {}
@@ -108,10 +107,13 @@ class Command(BaseCommand):
 
             seq_to_source[key] = library_stock
 
-        ####################################
-        # SECOND STAGE: Add raw genewiz data
-        #   (sequences and quality scores)
-        ####################################
+        #######################################################
+        # SECOND STAGE: Add sequencing results (sequences plus
+        #   quality scores) to the database, for all tracking
+        #   numbers listed in the tracking_numbers input file.
+        #   Use the mapping from FIRST STAGE to create the
+        #   pointers to LibraryStock.
+        #######################################################
 
         reader = csv.DictReader(tracking_numbers)
 
