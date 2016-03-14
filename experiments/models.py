@@ -494,6 +494,8 @@ class DevstarScore(models.Model):
 
     selected_for_scoring = models.NullBooleanField(default=None)
 
+    gi_score = models.FloatField(null=True, blank=True, default=None)
+
     class Meta:
         db_table = 'DevstarScore'
         ordering = ['experiment']
