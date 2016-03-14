@@ -21,11 +21,11 @@ class LibraryPlate(models.Model):
     number_of_wells = models.PositiveSmallIntegerField()
 
     # screen_stage:
+    #   0 means used prior to screen stages (e.g. Ahringer 384 plates)
     #   1 means Primary screen only
     #   2 means Secondary screen only
     #   None means no limitations (e.g. L4440 plate which is used in both
     #       Primary and Secondary screens)
-    #   0 means not used in screen stages (e.g. Ahringer 384 plates)
     screen_stage = models.PositiveSmallIntegerField(null=True, blank=True,
                                                     db_index=True)
 
