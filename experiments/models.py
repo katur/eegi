@@ -494,10 +494,6 @@ class DevstarScore(models.Model):
 
     selected_for_scoring = models.NullBooleanField(default=None)
 
-    gi_score_larva_per_adult = models.FloatField(null=True, blank=True,
-                                                 default=None)
-    gi_score_survival = models.FloatField(null=True, blank=True, default=None)
-
     class Meta:
         db_table = 'DevstarScore'
         ordering = ['experiment']
