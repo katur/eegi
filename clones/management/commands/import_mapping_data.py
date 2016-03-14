@@ -14,6 +14,7 @@ class Command(BaseCommand):
     Import clone-gene mapping data from Firoz's RNAiCloneMapper database.
 
     This script:
+
         - Does not add or delete rows in the Clone table, or touch the PK.
           However, it may update any of the other fields in this table.
 
@@ -21,11 +22,10 @@ class Command(BaseCommand):
           existing rows. However, it may add new rows, and may update
           any of the other fields in this table.
 
-        - Deletes all existing rows in the CloneTarget table, and
-          creates this table from scratch. This is because, in addition
+        - Deletes all rows in the CloneTarget table, and creates
+          this table from scratch. This is because, in addition
           to new or changed clone-gene mappings since the last time
-          this command was run, there may be deleted mappings
-
+          this command was run, there may be deleted mappings.
     """
 
     help = "Import RNAi clone mapping data from Firoz's database."
