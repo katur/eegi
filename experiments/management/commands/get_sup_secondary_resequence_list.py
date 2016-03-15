@@ -3,11 +3,9 @@ from django.core.management.base import BaseCommand
 from experiments.helpers.criteria import (
     shows_any_suppression as criteria)
 from experiments.helpers.scores import get_positives_any_worm
-from experiments.models import Experiment
 from library.helpers.sequencing import (
     categorize_sequences_by_blat_results, NO_BLAT, NO_MATCH, NO_CLONE_BLAT)
 from library.models import LibrarySequencing
-from utils.google import connect_to_google_spreadsheets
 from utils.plates import assign_to_plates, get_plate_assignment_rows
 
 
@@ -33,8 +31,6 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         positives = get_positives_any_worm('SUP', 2, criteria)
-        additional_positives = get_additional_positives_from_google_doc()
-        positives = positives | additional_positives
 
         seqs = (LibrarySequencing.objects
                 .filter(source_stock__in=positives)
@@ -101,31 +97,3 @@ def get_destination_plate(index, first_plate_number=None):
         return 'JL{}'.format(plate_number)
     else:
         return str(index)
-
-
-def get_additional_positives_from_google_doc():
-    """
-    One-off function to add positives from Noah's Google Doc,
-    since these scores have not yet been added to the database.
-    """
-    gc = connect_to_google_spreadsheets()
-    sheet = (gc.open('SUP_secondary_rescores_due_to_all_0_interface_bug')
-             .sheet1)
-    values = sheet.get_all_values()
-
-    positive_stocks = set()
-
-    for row in values[1:]:
-        experiment_id, score = row[0:2]
-
-        try:
-            experiment_id = experiment_id.strip()
-            experiment = Experiment.objects.get(id=experiment_id)
-            score = int(score.strip())
-            if score >= 1 and score <= 3:
-                positive_stocks.add(experiment.library_stock)
-
-        except Exception:
-            continue
-
-    return positive_stocks
