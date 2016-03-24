@@ -16,7 +16,7 @@ Well {{ experiment.well }}
 {% block content %}
 
 <div class="page-section gray-bubble columns cleared-spaced-spans">
-  {% include 'experiment_well_spans.html' %}
+  {% include 'experiment_well_spans.html' with show_junk_button=True %}
 </div>
 
 <div class="links">
@@ -41,14 +41,5 @@ Well {{ experiment.well }}
 <div class="page-section">
   {% include 'image.html' %}
 </div>
-
-{% if perms.experiments.change_experiment %}
-<div class="page-section">
-  <form action="" method="post">
-    {% csrf_token %}
-    <input type="submit" name="toggle-junk" value="Toggle junk">
-  </form>
-</div>
-{% endif %}
 
 {% endblock %}

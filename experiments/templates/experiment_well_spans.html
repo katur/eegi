@@ -39,8 +39,21 @@
   {% include 'clone_spans.html' with clone=intended_clone %}
 
   {% if experiment.is_junk %}
-  <span class="error-message">IS JUNK</span>
+  <span class="error-message">
+    IS JUNK
+
+  {% else %}
+  <span>
+    Not junk
   {% endif %}
+
+  {% if show_junk_button and perms.experiments.change_experiment %}
+    <form id="toggle-junk-button" action="" method="post">
+      {% csrf_token %}
+      <input type="submit" name="toggle-junk" value="Toggle junk">
+    </form>
+  {% endif %}
+  </span>
 
   {% if experiment_plate.comment %}
   <span>

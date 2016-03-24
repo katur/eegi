@@ -422,6 +422,8 @@ form table th, form table td {
   clear: both;
   width: 100%;
   max-width: 1300px; }
+#experiment #toggle-junk-button {
+  display: inline-block; }
 
 #experiment-plate .vertical-links {
   float: left; }
