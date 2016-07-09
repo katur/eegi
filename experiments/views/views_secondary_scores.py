@@ -29,8 +29,10 @@ def secondary_scores(request, worm, temperature):
     num_passes_count = 0
     num_experiment_columns = 0
 
+    NOAH_ID = 14
     data = worm.get_organized_scores(screen_type, screen_stage=2,
-                                     most_relevant_only=True)
+                                     most_relevant_only=True,
+                                     scorer_id=NOAH_ID)
 
     for stock, expts in data.iteritems():
         scores = expts.values()

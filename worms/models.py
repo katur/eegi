@@ -89,7 +89,7 @@ class WormStrain(models.Model):
             return None
 
     def get_organized_scores(self, screen_type, screen_stage,
-                             most_relevant_only=False):
+                             most_relevant_only=False, **filters):
         """
         Get all scores for this worm in a particular screen.
 
@@ -102,12 +102,13 @@ class WormStrain(models.Model):
         Or, if most_relevant_only is set to True:
             data[library_stock][experiment] = most_relevant_score
         """
-        # Keep this import here, to avoid creating a circular dependency
+        # Import here to avoid creating a circular dependency
         from experiments.models import ManualScore
         scores = ManualScore.objects.filter(
             experiment__worm_strain=self,
             experiment__is_junk=False,
-            experiment__plate__screen_stage=screen_stage)
+            experiment__plate__screen_stage=screen_stage,
+            **filters)
 
         if screen_type == 'ENH':
             scores = scores.filter(
