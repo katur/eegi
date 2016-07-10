@@ -322,6 +322,20 @@ class ManualScoreCode(models.Model):
     WEAK_CODES = (1, 12, 16)
     NEGATIVE_CODES = (0,)
 
+    SUP_CODES = (0, 1, 2, 3)
+    ENH_PRIMARY_CODES = (
+        0,  # WT
+        12, 13, 14, 15,  # emb enh/sup
+        16, 17, 18, 19,  # ste enh/sup
+        28, 29,  # PE enh/sup
+        20, 21, 22, 23, 24, 25, 26, 27,  # corresponding N2 scores
+    )
+
+    AUXILIARY_CODES = (
+        -7, -4, -3, -2,  # experimental problems
+        7, 8, 10, 11,  # other phenotypes noticed
+    )
+
     class Meta:
         db_table = 'ManualScoreCode'
         ordering = ['id']

@@ -25,6 +25,9 @@ urlpatterns = [
         views.change_experiment_plates,
         name='change_experiment_plates_url'),
 
+    url(r'^score-experiment-wells/$', views.score_experiment_wells,
+        name='score_experiment_wells_url'),
+
     url(r'^single-knockdown/$', views.find_single_knockdown,
         name='find_single_knockdown_url'),
     url(r'^rnai-knockdown/([^/]+)/$', views.rnai_knockdown,

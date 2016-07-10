@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import permission_required
 from django.shortcuts import redirect, render, get_object_or_404
 
 from experiments.helpers.data_entry import parse_batch_data_entry_gdoc
-from experiments.models import Experiment, ExperimentPlate
+from experiments.models import Experiment, ExperimentPlate, ManualScoreCode
 from experiments.forms import (
     FilterExperimentWellsForm, FilterExperimentPlatesForm,
     AddExperimentPlateForm, ChangeExperimentPlatesForm,
@@ -94,6 +94,38 @@ def find_experiment_wells(request):
     }
 
     return render(request, 'find_experiment_wells.html', context)
+
+
+@permission_required(['experiments.add_manualscore'])
+def score_experiment_wells(request):
+    """
+    TODO: create base class to capture commonality between this and
+    find_experiment_wells
+
+    TODO: better handle case of invalid filter_form
+    """
+    form = FilterExperimentWellsForm(request.GET)
+
+    if not request.GET or not form.is_valid() or not form.has_changed():
+        return render(request, 'score_experiment_wells_setup.html', {
+            'form': form
+        })
+
+    experiments = form.cleaned_data['experiments']
+
+    sup_scores = ManualScoreCode.objects.filter(
+        id__in=ManualScoreCode.SUP_CODES)
+
+    auxiliary_scores = ManualScoreCode.objects.filter(
+        id__in=ManualScoreCode.AUXILIARY_CODES)
+
+    context = {
+        'experiments': experiments,
+        'main_scores': sup_scores,
+        'auxiliary_scores': auxiliary_scores,
+    }
+
+    return render(request, 'score_experiment_wells.html', context)
 
 
 def find_experiment_plates(request, context=None):

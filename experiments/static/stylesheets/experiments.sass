@@ -102,6 +102,38 @@ $max-image-width: 1300px
     width: 100%
 
 
+//////////////////
+// Scoring page //
+//////////////////
+
+#score-experiment-wells
+  .experiment-header,
+  .experiment-content
+    float: left
+    width: 100%
+
+  .experiment-content
+    padding-bottom: $whitespace
+
+    &-image,
+    &-buttons
+      @include box-sizing(border-box)
+      float: left
+
+    &-image
+      width: 70%
+
+    &-buttons
+      padding-left: $whitespace
+      width: 30%
+
+      label
+        display: block
+
+      &-main
+        padding-bottom: $whitespace
+
+
 /////////////////////
 // Knockdown pages //
 /////////////////////

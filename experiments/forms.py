@@ -2,7 +2,7 @@ from django import forms
 from django.core.validators import MinLengthValidator
 
 from clones.forms import RNAiKnockdownField
-from experiments.models import Experiment, ExperimentPlate
+from experiments.models import Experiment, ExperimentPlate, ManualScoreCode
 from library.forms import LibraryPlateField
 from utils.forms import EMPTY_CHOICE, BlankNullBooleanSelect, RangeField
 from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
@@ -36,6 +36,19 @@ class TemperatureChoiceField(forms.ChoiceField):
             kwargs['choices'] = choices
 
         super(TemperatureChoiceField, self).__init__(**kwargs)
+
+
+class AuxiliaryManualScoresField(forms.ModelMultipleChoiceField):
+    """Field for selecting 0-to-many "other"scores."""
+
+    def __init__(self, **kwargs):
+
+        queryset = ManualScoreCode.objects.filter(
+            id__in=ManualScoreCode.AUXILIARY_CODES)
+        to_field_name = 'short_description'
+
+        super(AuxiliaryManualScoresField, self).__init__(
+            queryset, to_field_name, **kwargs)
 
 
 #####################
