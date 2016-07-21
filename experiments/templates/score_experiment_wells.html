@@ -10,62 +10,62 @@
 
 {% block content %}
 
-<div class="page-section">
-  {% ifnotequal experiments None %}
-  <div id="results-header">
-    <span id="total">
-      {{ experiments|length }}
-      experiment{{ experiments|pluralize }}
-      to score
-    </span>
-  </div>
-  {% endifnotequal %}
+{% ifnotequal experiments None %}
+<div id="results-header">
+  <span id="total">
+    {{ experiments|length }}
+    experiment{{ experiments|pluralize }} to score
+  </span>
 
-  <br>
-
-  <form action="" method="post">
-    {% csrf_token %}
-    {% for experiment in experiments %}
-    <div class="experiment-header">
-      <a href="{{ experiment.get_absolute_url }}">
-        {{ experiment.id }}</a>
-    </div>
-
-    <div class="experiment-content">
-      <div class="experiment-content-image">
-        {% include 'image.html' %}
-      </div>
-
-      <div class="experiment-content-buttons">
-        <div class="experiment-content-buttons-main">
-          {% for score in main_scores %}
-          <label>
-            <input type="radio" name="{{ experiment.id }}" value="{{ score.id }}">
-            {{ score.short_description }}
-          </label>
-          {% endfor %}
-
-          <label>
-            <input type="radio" name="{{ experiment.id }}" value="">
-            Not scorable
-          </label>
-        </div>
-
-
-        <div class="experiment-content-buttons-aux">
-          {% for score in auxiliary_scores %}
-          <label>
-            <input type="checkbox" name="{{ experiment.id }}" value="{{ score.id }}">
-            {{ score.short_description }}
-          </label>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-
-    <input type="submit" value="Submit">
-  </form>
+  {% if experiments and not unscored_by_user %}
+  {% include 'pagination_status.html' with paginated=display_experiments %}
+  {% endif %}
 </div>
+{% endifnotequal %}
+
+
+<form id="score-experiment-wells-form" action="" method="post">
+  {% csrf_token %}
+  {% for experiment in display_experiments %}
+  <div class="experiment-header">
+    <a href="{{ experiment.get_absolute_url }}">
+      {{ experiment.id }}</a>
+  </div>
+
+  <div class="experiment-content">
+    <div class="experiment-content-image">
+      {% include 'image.html' %}
+    </div>
+
+    <div class="experiment-content-buttons">
+      <div class="experiment-content-buttons-main">
+        {% for score in main_scores %}
+        <label>
+          <input type="radio" name="{{ experiment.id }}" value="{{ score.id }}">
+          {{ score.short_description }}
+        </label>
+        {% endfor %}
+
+        <label>
+          <input type="radio" name="{{ experiment.id }}" value="">
+          Not scorable
+        </label>
+      </div>
+
+
+      <div class="experiment-content-buttons-aux">
+        {% for score in auxiliary_scores %}
+        <label>
+          <input type="checkbox" name="{{ experiment.id }}" value="{{ score.id }}">
+          {{ score.short_description }}
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <input type="submit" value="Submit">
+</form>
 
 {% endblock %}

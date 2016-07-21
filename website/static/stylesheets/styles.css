@@ -477,6 +477,8 @@ form table th, form table td {
 #find-experiment-plates table#experiment-results, #change-experiment-plates table#experiment-results {
   width: 100%; }
 
+#score-experiment-wells-form {
+  padding-top: 40px; }
 #score-experiment-wells .experiment-header,
 #score-experiment-wells .experiment-content {
   float: left;

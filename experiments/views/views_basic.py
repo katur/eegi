@@ -6,6 +6,7 @@ from experiments.helpers.data_entry import parse_batch_data_entry_gdoc
 from experiments.models import Experiment, ExperimentPlate, ManualScoreCode
 from experiments.forms import (
     FilterExperimentWellsForm, FilterExperimentPlatesForm,
+    FilterExperimentsToScoreForm,
     AddExperimentPlateForm, ChangeExperimentPlatesForm,
     process_ChangeExperimentPlatesForm_data,
 )
@@ -15,6 +16,7 @@ from utils.pagination import get_paginated
 
 EXPERIMENT_PLATES_PER_PAGE = 30
 EXPERIMENT_WELLS_PER_PAGE = 10
+SCORE_EXPERIMENTS_PER_PAGE = 24
 
 
 def experiment_well(request, pk):
@@ -94,38 +96,6 @@ def find_experiment_wells(request):
     }
 
     return render(request, 'find_experiment_wells.html', context)
-
-
-@permission_required(['experiments.add_manualscore'])
-def score_experiment_wells(request):
-    """
-    TODO: create base class to capture commonality between this and
-    find_experiment_wells
-
-    TODO: better handle case of invalid filter_form
-    """
-    form = FilterExperimentWellsForm(request.GET)
-
-    if not request.GET or not form.is_valid() or not form.has_changed():
-        return render(request, 'score_experiment_wells_setup.html', {
-            'form': form
-        })
-
-    experiments = form.cleaned_data['experiments']
-
-    sup_scores = ManualScoreCode.objects.filter(
-        id__in=ManualScoreCode.SUP_CODES)
-
-    auxiliary_scores = ManualScoreCode.objects.filter(
-        id__in=ManualScoreCode.AUXILIARY_CODES)
-
-    context = {
-        'experiments': experiments,
-        'main_scores': sup_scores,
-        'auxiliary_scores': auxiliary_scores,
-    }
-
-    return render(request, 'score_experiment_wells.html', context)
 
 
 def find_experiment_plates(request, context=None):
@@ -249,3 +219,44 @@ def change_experiment_plates(request, pks):
     }
 
     return render(request, 'change_experiment_plates.html', context)
+
+
+@permission_required(['experiments.add_manualscore'])
+def score_experiment_wells(request):
+    """
+    TODO: create base class to capture commonality between this and
+    find_experiment_wells
+
+    TODO: better handle case of invalid filter_form
+    """
+    form = FilterExperimentsToScoreForm(request.GET, user=request.user)
+
+    if not request.GET or not form.is_valid() or not form.has_changed():
+        return render(request, 'score_experiment_wells_setup.html', {
+            'form': form
+        })
+
+    experiments = form.cleaned_data['experiments']
+    unscored_by_user = form.cleaned_data['unscored_by_user']
+
+    if unscored_by_user:
+        display_experiments = experiments[:10]
+    else:
+        display_experiments = get_paginated(request, experiments,
+                                            SCORE_EXPERIMENTS_PER_PAGE)
+
+    main_scores = ManualScoreCode.objects.filter(
+        id__in=ManualScoreCode.SUP_CODES)
+
+    auxiliary_scores = ManualScoreCode.objects.filter(
+        id__in=ManualScoreCode.AUXILIARY_CODES)
+
+    context = {
+        'experiments': experiments,
+        'display_experiments': display_experiments,
+        'main_scores': main_scores,
+        'auxiliary_scores': auxiliary_scores,
+        'unscored_by_user': unscored_by_user,
+    }
+
+    return render(request, 'score_experiment_wells.html', context)

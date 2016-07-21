@@ -2,7 +2,8 @@ from django import forms
 from django.core.validators import MinLengthValidator
 
 from clones.forms import RNAiKnockdownField
-from experiments.models import Experiment, ExperimentPlate, ManualScoreCode
+from experiments.models import (Experiment, ExperimentPlate, ManualScore,
+                                ManualScoreCode)
 from library.forms import LibraryPlateField
 from utils.forms import EMPTY_CHOICE, BlankNullBooleanSelect, RangeField
 from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
@@ -39,7 +40,7 @@ class TemperatureChoiceField(forms.ChoiceField):
 
 
 class AuxiliaryManualScoresField(forms.ModelMultipleChoiceField):
-    """Field for selecting 0-to-many "other"scores."""
+    """Field for selecting 0-to-many "other" scores."""
 
     def __init__(self, **kwargs):
 
@@ -141,12 +142,7 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
 
     def clean(self):
         cleaned_data = super(FilterExperimentWellsForm, self).clean()
-
-        if 'exclude_l4440' in cleaned_data:
-            exclude_l4440 = cleaned_data['exclude_l4440']
-            del cleaned_data['exclude_l4440']
-        else:
-            exclude_l4440 = None
+        exclude_l4440 = cleaned_data.pop('exclude_l4440')
 
         for k, v in cleaned_data.items():
             # Retain 'False' as a legitimate filter
@@ -167,6 +163,55 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
         return cleaned_data
 
 
+class FilterExperimentsToScoreForm(_FilterExperimentsBaseForm):
+    id = forms.CharField(required=False, help_text='e.g. 32412_A01')
+    exclude_l4440 = forms.BooleanField(required=False, label='Exclude L4440')
+    unscored_by_user = forms.BooleanField(
+        required=False, label='Unscored by logged in user?')
+
+    field_order = [
+        'id', 'plate__id', 'well',
+        'plate__date', 'plate__temperature',
+        'worm_strain', 'plate__screen_stage',
+        'exclude_l4440', 'unscored_by_user',
+    ]
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(FilterExperimentsToScoreForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super(FilterExperimentsToScoreForm, self).clean()
+        exclude_l4440 = cleaned_data.pop('exclude_l4440')
+        unscored_by_user = cleaned_data.pop('unscored_by_user')
+
+        for k, v in cleaned_data.items():
+            # Retain 'False' as a legitimate filter
+            if v is False:
+                continue
+
+            # Ditch empty strings and None as filters
+            if not v:
+                del cleaned_data[k]
+
+        experiments = Experiment.objects.filter(**cleaned_data)
+
+        if exclude_l4440:
+            experiments = experiments.exclude(
+                library_stock__intended_clone='L4440')
+
+        if unscored_by_user:
+            score_ids = (
+                ManualScore.objects
+                .filter(experiment__in=experiments, scorer=self.user)
+                .values_list('experiment_id', flat=True))
+            experiments = experiments.exclude(id__in=score_ids)
+
+        cleaned_data['experiments'] = experiments
+        cleaned_data['unscored_by_user'] = unscored_by_user
+        return cleaned_data
+
+
 class FilterExperimentPlatesForm(_FilterExperimentsBaseForm):
     """Form for filtering ExperimentPlate instances."""
 
@@ -183,7 +228,7 @@ class FilterExperimentPlatesForm(_FilterExperimentsBaseForm):
         required=False, label='Library plate', help_text='e.g. II-3-B2')
 
     is_junk = forms.NullBooleanField(
-        required=False, initial=None, label="Has junk",
+        required=False, initial=None, label='Has junk',
         widget=BlankNullBooleanSelect)
 
     field_order = [
