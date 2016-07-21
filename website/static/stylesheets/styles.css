@@ -479,10 +479,13 @@ form table th, form table td {
 
 #score-experiment-wells-form {
   padding-top: 40px; }
+#score-experiment-wells .experiment,
 #score-experiment-wells .experiment-header,
 #score-experiment-wells .experiment-content {
   float: left;
   width: 100%; }
+#score-experiment-wells .experiment.active {
+  background: brown; }
 #score-experiment-wells .experiment-content {
   padding-bottom: 40px; }
   #score-experiment-wells .experiment-content-image, #score-experiment-wells .experiment-content-buttons {
