@@ -2,8 +2,7 @@ from django import forms
 from django.core.validators import MinLengthValidator
 
 from clones.forms import RNAiKnockdownField
-from experiments.models import (Experiment, ExperimentPlate, ManualScore,
-                                ManualScoreCode)
+from experiments.models import Experiment, ExperimentPlate, ManualScore
 from library.forms import LibraryPlateField
 from utils.forms import EMPTY_CHOICE, BlankNullBooleanSelect, RangeField
 from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
@@ -37,19 +36,6 @@ class TemperatureChoiceField(forms.ChoiceField):
             kwargs['choices'] = choices
 
         super(TemperatureChoiceField, self).__init__(**kwargs)
-
-
-class AuxiliaryManualScoresField(forms.ModelMultipleChoiceField):
-    """Field for selecting 0-to-many "other" scores."""
-
-    def __init__(self, **kwargs):
-
-        queryset = ManualScoreCode.objects.filter(
-            id__in=ManualScoreCode.AUXILIARY_CODES)
-        to_field_name = 'short_description'
-
-        super(AuxiliaryManualScoresField, self).__init__(
-            queryset, to_field_name, **kwargs)
 
 
 #####################
@@ -163,27 +149,57 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
         return cleaned_data
 
 
-class FilterExperimentsToScoreForm(_FilterExperimentsBaseForm):
+class ScoringButtonsChoiceField(forms.ChoiceField):
+    """
+    Field defining a screen as SUP or ENH.
+
+    This field is in the worms app because whether an experiment
+    is SUP/ENH has entirely to do with the worm strain's
+    restrictive/permissive temperature.
+    """
+
+    def __init__(self, **kwargs):
+        if 'widget' not in kwargs:
+            kwargs['widget'] = forms.RadioSelect
+
+        if 'choices' not in kwargs:
+            kwargs['choices'] = [
+                ('SUP', 'Suppressor w/m/s'),
+                ('ENH', 'Enhancer w/m/s'),
+                ('ENH-new', 'Enhancer 1-10'),
+            ]
+
+        super(ScoringButtonsChoiceField, self).__init__(**kwargs)
+
+
+class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     id = forms.CharField(required=False, help_text='e.g. 32412_A01')
-    exclude_l4440 = forms.BooleanField(required=False, label='Exclude L4440')
+    buttons = ScoringButtonsChoiceField(label='Which buttons?')
+    exclude_l4440 = forms.BooleanField(required=False, label='Exclude L4440',
+                                       initial=True)
     unscored_by_user = forms.BooleanField(
-        required=False, label='Unscored by logged in user?')
+        required=False, initial=True,
+        label='Limit to never scored by currently logged in user?')
 
     field_order = [
+        'buttons',
+        'unscored_by_user',
+        'exclude_l4440',
         'id', 'plate__id', 'well',
         'plate__date', 'plate__temperature',
         'worm_strain', 'plate__screen_stage',
-        'exclude_l4440', 'unscored_by_user',
     ]
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
-        super(FilterExperimentsToScoreForm, self).__init__(*args, **kwargs)
+        super(FilterExperimentWellsToScoreForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        cleaned_data = super(FilterExperimentsToScoreForm, self).clean()
-        exclude_l4440 = cleaned_data.pop('exclude_l4440')
+        cleaned_data = super(FilterExperimentWellsToScoreForm, self).clean()
+        print cleaned_data
+        buttons = cleaned_data.pop('buttons')
         unscored_by_user = cleaned_data.pop('unscored_by_user')
+        exclude_l4440 = cleaned_data.pop('exclude_l4440')
 
         for k, v in cleaned_data.items():
             # Retain 'False' as a legitimate filter
@@ -207,8 +223,10 @@ class FilterExperimentsToScoreForm(_FilterExperimentsBaseForm):
                 .values_list('experiment_id', flat=True))
             experiments = experiments.exclude(id__in=score_ids)
 
-        cleaned_data['experiments'] = experiments
+        cleaned_data['buttons'] = buttons
         cleaned_data['unscored_by_user'] = unscored_by_user
+        cleaned_data['experiments'] = experiments
+        print buttons
         return cleaned_data
 
 
