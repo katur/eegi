@@ -68,6 +68,7 @@ class ScoringButtonsChoiceField(forms.ChoiceField):
 
 
 class SuppressorScoreField(forms.ModelChoiceField):
+    """Field for choosing a level of suppression."""
 
     def __init__(self, **kwargs):
         if 'queryset' not in kwargs:
@@ -80,6 +81,7 @@ class SuppressorScoreField(forms.ModelChoiceField):
 
 
 class AuxiliaryScoreField(forms.ModelMultipleChoiceField):
+    """Field for selecting auxiliary scores."""
 
     def __init__(self, **kwargs):
         if 'queryset' not in kwargs:
@@ -91,19 +93,12 @@ class AuxiliaryScoreField(forms.ModelMultipleChoiceField):
         super(AuxiliaryScoreField, self).__init__(**kwargs)
 
 
-class SuppressorScoreForm(forms.Form):
-    sup_score = SuppressorScoreField()
-    aux_score = AuxiliaryScoreField(required=False)
-
-
 #####################
 # Custom validators #
 #####################
 
 def validate_new_experiment_plate_id(x):
-    """
-    Validate that x is a valid ID for a new experiment plate.
-    """
+    """Validate that x is a valid ID for a new experiment plate."""
     if x <= 0:
         raise forms.ValidationError('ExperimentPlate ID must be positive')
 
@@ -117,11 +112,9 @@ def validate_new_experiment_plate_id(x):
 ###################################
 
 class _FilterExperimentsBaseForm(forms.Form):
-    """
-    Base for FilterExperimentWellsForm and FilterExperimentPlatesForm.
-    """
+    """Base for FilterExperimentWellsForm, FilterExperimentPlatesForm, etc."""
 
-    plate__id = forms.IntegerField(
+    plate__pk = forms.IntegerField(
         required=False, label='Plate ID', help_text='e.g. 32412')
 
     plate__date = forms.DateField(
@@ -158,7 +151,7 @@ class _FilterExperimentsBaseForm(forms.Form):
 class FilterExperimentPlatesForm(_FilterExperimentsBaseForm):
     """Form for filtering ExperimentPlate instances."""
 
-    plate__id__range = RangeField(
+    plate__pk__range = RangeField(
         forms.IntegerField, required=False, label='Plate ID range')
 
     plate__date__range = RangeField(
@@ -175,7 +168,7 @@ class FilterExperimentPlatesForm(_FilterExperimentsBaseForm):
         widget=BlankNullBooleanSelect)
 
     field_order = [
-        'plate__id', 'plate__id__range',
+        'plate__pk', 'plate__pk__range',
         'plate__date',  'plate__date__range',
         'plate__temperature', 'plate__temperature__range',
         'worm_strain', 'plate__screen_stage',
@@ -197,7 +190,8 @@ class FilterExperimentPlatesForm(_FilterExperimentsBaseForm):
 class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
     """Form for filtering Experiment instances."""
 
-    id = forms.CharField(required=False, help_text='e.g. 32412_A01')
+    pk = forms.CharField(required=False, help_text='e.g. 32412_A01',
+                         label='ID')
 
     well = forms.CharField(required=False, help_text='e.g. A01')
 
@@ -216,7 +210,7 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
         required=False, initial=None, widget=BlankNullBooleanSelect)
 
     field_order = [
-        'id', 'plate__id', 'well',
+        'pk', 'plate__pk', 'well',
         'plate__date', 'plate__temperature',
         'worm_strain', 'plate__screen_stage',
         'library_stock', 'library_stock__intended_clone',
@@ -239,7 +233,13 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
         return cleaned_data
 
 
+#################################
+# Forms for scoring experiments #
+#################################
+
 class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
+    """Form for filtering experiment wells to score."""
+
     buttons = ScoringButtonsChoiceField(label='Which buttons?')
     unscored_by_user = forms.BooleanField(
         required=False, initial=True,
@@ -247,13 +247,14 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     exclude_l4440 = forms.BooleanField(
         required=False, initial=True, label='Exclude L4440')
 
-    id = forms.CharField(required=False, help_text='e.g. 32412_A01')
+    pk = forms.CharField(required=False, help_text='e.g. 32412_A01',
+                         label='ID')
     is_junk = forms.NullBooleanField(
         required=False, initial=False, widget=BlankNullBooleanSelect)
 
     field_order = [
         'buttons', 'unscored_by_user', 'exclude_l4440',
-        'id', 'plate__id', 'well',
+        'pk', 'plate__pk', 'well',
         'plate__date', 'plate__temperature',
         'worm_strain', 'plate__screen_stage', 'is_junk'
     ]
@@ -288,6 +289,11 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         cleaned_data['experiments'] = experiments
 
         return cleaned_data
+
+
+class SuppressorScoreForm(forms.Form):
+    sup_score = SuppressorScoreField()
+    aux_score = AuxiliaryScoreField(required=False)
 
 
 #################################
