@@ -16,7 +16,7 @@ from utils.pagination import get_paginated
 
 EXPERIMENT_PLATES_PER_PAGE = 30
 EXPERIMENT_WELLS_PER_PAGE = 10
-SCORE_EXPERIMENT_WELLS_PER_PAGE = 24
+SCORE_PER_PAGE = 20
 
 
 def experiment_well(request, pk):
@@ -243,10 +243,10 @@ def score_experiment_wells(request):
     experiments = form.cleaned_data['experiments']
 
     if unscored_by_user:
-        display_experiments = experiments[:10]
+        display_experiments = experiments[:SCORE_PER_PAGE]
     else:
         display_experiments = get_paginated(request, experiments,
-                                            SCORE_EXPERIMENT_WELLS_PER_PAGE)
+                                            SCORE_PER_PAGE)
 
     main_scores = ManualScoreCode.objects.filter(
         id__in=ManualScoreCode.SETS[form.cleaned_data['buttons']])

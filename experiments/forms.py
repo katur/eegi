@@ -9,6 +9,22 @@ from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
                          WormChoiceField, clean_mutant_query_and_screen_type)
 
 
+###########
+# Helpers #
+###########
+
+def remove_empties_and_none(d):
+    """Remove key-value pairs from dictionary if the value is '' or None."""
+    for k, v in d.items():
+        # Retain 'False' as a legitimate filter
+        if v is False:
+            continue
+
+        # Ditch empty strings and None as filters
+        if not v:
+            del d[k]
+
+
 ######################
 # Custom Form Fields #
 ######################
@@ -38,6 +54,18 @@ class TemperatureChoiceField(forms.ChoiceField):
         super(TemperatureChoiceField, self).__init__(**kwargs)
 
 
+class ScoringButtonsChoiceField(forms.ChoiceField):
+    """Field for selecting which scoring buttons should display."""
+
+    def __init__(self, **kwargs):
+        if 'choices' not in kwargs:
+            kwargs['choices'] = [
+                ('SUP', 'Suppressor w/m/s'),
+            ]
+
+        super(ScoringButtonsChoiceField, self).__init__(**kwargs)
+
+
 #####################
 # Custom validators #
 #####################
@@ -54,9 +82,9 @@ def validate_new_experiment_plate_id(x):
                                     .format(x))
 
 
-####################################
-# Forms for Basic experiment pages #
-####################################
+###################################
+# Forms for filtering experiments #
+###################################
 
 class _FilterExperimentsBaseForm(forms.Form):
     """
@@ -97,6 +125,45 @@ class _FilterExperimentsBaseForm(forms.Form):
     worm_strain = WormChoiceField(required=False)
 
 
+class FilterExperimentPlatesForm(_FilterExperimentsBaseForm):
+    """Form for filtering ExperimentPlate instances."""
+
+    plate__id__range = RangeField(
+        forms.IntegerField, required=False, label='Plate ID range')
+
+    plate__date__range = RangeField(
+        forms.DateField, required=False, label='Date range')
+
+    plate__temperature__range = RangeField(
+        forms.DecimalField, required=False, label='Temperature range')
+
+    library_stock__plate = LibraryPlateField(
+        required=False, label='Library plate', help_text='e.g. II-3-B2')
+
+    is_junk = forms.NullBooleanField(
+        required=False, initial=None, label='Has junk',
+        widget=BlankNullBooleanSelect)
+
+    field_order = [
+        'plate__id', 'plate__id__range',
+        'plate__date',  'plate__date__range',
+        'plate__temperature', 'plate__temperature__range',
+        'worm_strain', 'plate__screen_stage',
+        'library_stock__plate', 'is_junk',
+    ]
+
+    def clean(self):
+        cleaned_data = super(FilterExperimentPlatesForm, self).clean()
+
+        remove_empties_and_none(cleaned_data)
+        plate_pks = (Experiment.objects.filter(**cleaned_data)
+                     .order_by('plate').values_list('plate', flat=True))
+        cleaned_data['experiment_plates'] = (ExperimentPlate.objects
+                                             .filter(pk__in=plate_pks))
+
+        return cleaned_data
+
+
 class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
     """Form for filtering Experiment instances."""
 
@@ -128,17 +195,10 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
 
     def clean(self):
         cleaned_data = super(FilterExperimentWellsForm, self).clean()
+
         exclude_l4440 = cleaned_data.pop('exclude_l4440')
 
-        for k, v in cleaned_data.items():
-            # Retain 'False' as a legitimate filter
-            if v is False:
-                continue
-
-            # Ditch empty strings and None as filters
-            if not v:
-                del cleaned_data[k]
-
+        remove_empties_and_none(cleaned_data)
         experiments = Experiment.objects.filter(**cleaned_data)
 
         if exclude_l4440:
@@ -149,42 +209,17 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
         return cleaned_data
 
 
-class ScoringButtonsChoiceField(forms.ChoiceField):
-    """
-    Field defining a screen as SUP or ENH.
-
-    This field is in the worms app because whether an experiment
-    is SUP/ENH has entirely to do with the worm strain's
-    restrictive/permissive temperature.
-    """
-
-    def __init__(self, **kwargs):
-        if 'widget' not in kwargs:
-            kwargs['widget'] = forms.RadioSelect
-
-        if 'choices' not in kwargs:
-            kwargs['choices'] = [
-                ('SUP', 'Suppressor w/m/s'),
-                ('ENH', 'Enhancer w/m/s'),
-                ('ENH-new', 'Enhancer 1-10'),
-            ]
-
-        super(ScoringButtonsChoiceField, self).__init__(**kwargs)
-
-
 class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     id = forms.CharField(required=False, help_text='e.g. 32412_A01')
     buttons = ScoringButtonsChoiceField(label='Which buttons?')
-    exclude_l4440 = forms.BooleanField(required=False, label='Exclude L4440',
-                                       initial=True)
     unscored_by_user = forms.BooleanField(
         required=False, initial=True,
         label='Limit to never scored by currently logged in user?')
+    exclude_l4440 = forms.BooleanField(
+        required=False, initial=True, label='Exclude L4440')
 
     field_order = [
-        'buttons',
-        'unscored_by_user',
-        'exclude_l4440',
+        'buttons', 'unscored_by_user', 'exclude_l4440',
         'id', 'plate__id', 'well',
         'plate__date', 'plate__temperature',
         'worm_strain', 'plate__screen_stage',
@@ -196,20 +231,12 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
 
     def clean(self):
         cleaned_data = super(FilterExperimentWellsToScoreForm, self).clean()
-        print cleaned_data
+
         buttons = cleaned_data.pop('buttons')
         unscored_by_user = cleaned_data.pop('unscored_by_user')
         exclude_l4440 = cleaned_data.pop('exclude_l4440')
 
-        for k, v in cleaned_data.items():
-            # Retain 'False' as a legitimate filter
-            if v is False:
-                continue
-
-            # Ditch empty strings and None as filters
-            if not v:
-                del cleaned_data[k]
-
+        remove_empties_and_none(cleaned_data)
         experiments = Experiment.objects.filter(**cleaned_data)
 
         if exclude_l4440:
@@ -226,57 +253,13 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         cleaned_data['buttons'] = buttons
         cleaned_data['unscored_by_user'] = unscored_by_user
         cleaned_data['experiments'] = experiments
-        print buttons
-        return cleaned_data
-
-
-class FilterExperimentPlatesForm(_FilterExperimentsBaseForm):
-    """Form for filtering ExperimentPlate instances."""
-
-    plate__id__range = RangeField(
-        forms.IntegerField, required=False, label='Plate ID range')
-
-    plate__date__range = RangeField(
-        forms.DateField, required=False, label='Date range')
-
-    plate__temperature__range = RangeField(
-        forms.DecimalField, required=False, label='Temperature range')
-
-    library_stock__plate = LibraryPlateField(
-        required=False, label='Library plate', help_text='e.g. II-3-B2')
-
-    is_junk = forms.NullBooleanField(
-        required=False, initial=None, label='Has junk',
-        widget=BlankNullBooleanSelect)
-
-    field_order = [
-        'plate__id', 'plate__id__range',
-        'plate__date',  'plate__date__range',
-        'plate__temperature', 'plate__temperature__range',
-        'worm_strain', 'plate__screen_stage',
-        'library_stock__plate', 'is_junk',
-    ]
-
-    def clean(self):
-        cleaned_data = super(FilterExperimentPlatesForm, self).clean()
-
-        for k, v in cleaned_data.items():
-            # Retain 'False' as a legitimate filter
-            if v is False:
-                continue
-
-            # Ditch empty strings and None as filters
-            if not v:
-                del cleaned_data[k]
-
-        plate_pks = (Experiment.objects.filter(**cleaned_data)
-                     .order_by('plate').values_list('plate', flat=True))
-
-        cleaned_data['experiment_plates'] = (ExperimentPlate.objects
-                                             .filter(pk__in=plate_pks))
 
         return cleaned_data
 
+
+#################################
+# Forms for editing experiments #
+#################################
 
 class AddExperimentPlateForm(forms.Form):
     """
