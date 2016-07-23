@@ -214,7 +214,7 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     buttons = ScoringButtonsChoiceField(label='Which buttons?')
     unscored_by_user = forms.BooleanField(
         required=False, initial=True,
-        label='Limit to never scored by currently logged in user?')
+        label='Limit to unscored by currently logged in user?')
     exclude_l4440 = forms.BooleanField(
         required=False, initial=True, label='Exclude L4440')
 
