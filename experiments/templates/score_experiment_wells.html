@@ -35,7 +35,7 @@
 
       {% if experiment.is_junk %}
       <span class="error-message">
-        JUNK
+        Warning: JUNK
       </span>
       {% endif %}
     </div>
@@ -47,26 +47,14 @@
 
       <div class="experiment-content-buttons">
         <div class="experiment-content-buttons-main">
-          {% for score in main_scores %}
-          <label>
-            <input type="radio" name="{{ experiment.id }}" value="{{ score.id }}">
-            {{ score.short_description }}
-          </label>
+          {% for code in main_codes %}
+          {% include 'score_code_label.html' with input_type='radio' %}
           {% endfor %}
-
-          <label>
-            <input type="radio" name="{{ experiment.id }}" value="">
-            Not scorable
-          </label>
         </div>
 
-
         <div class="experiment-content-buttons-aux">
-          {% for score in auxiliary_scores %}
-          <label>
-            <input type="checkbox" name="{{ experiment.id }}" value="{{ score.id }}">
-            {{ score.short_description }}
-          </label>
+          {% for code in auxiliary_codes %}
+          {% include 'score_code_label.html' with input_type='checkbox' %}
           {% endfor %}
         </div>
       </div>

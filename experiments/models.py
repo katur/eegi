@@ -322,23 +322,30 @@ class ManualScoreCode(models.Model):
     WEAK_CODES = (1, 12, 16)
     NEGATIVE_CODES = (0,)
 
-    SETS = {
-        'SUP': (0, 1, 2, 3),
-        'ENH': (
+    '''
+    Various sets of scores for scoring interfaces.
+    Each set is a list of buttons, and tuples of radio buttons.
+    '''
+    _SCORING_PKS = {
+        'SUP': [0, 1, 2, 3],
+
+        'ENH': [
             0,  # WT
             12, 13, 14, 15,  # emb enh/sup
             16, 17, 18, 19,  # ste enh/sup
             28, 29,  # PE enh/sup
-            20, 21, 22, 23, 24, 25, 26, 27,  # corresponding N2 scores
-        ),
-        'ENH-new': (
-            0,
-        ),
-        'AUXILIARY': (
+            20, 21, 22, 23, 24, 25, 26, 27,  # N2 scores
+        ],
+
+        'AUXILIARY': [
             -7, -4, -3, -2,  # experimental problems
-            7, 8, 10, 11,  # other phenotypes noticed
-        ),
+            7, 8, 10, 11,  # other phenotypes
+        ]
     }
+
+    @classmethod
+    def get_codes(cls, key):
+        return cls.objects.filter(pk__in=cls._SCORING_PKS[key])
 
     class Meta:
         db_table = 'ManualScoreCode'

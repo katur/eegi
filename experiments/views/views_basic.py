@@ -248,18 +248,15 @@ def score_experiment_wells(request):
         display_experiments = get_paginated(request, experiments,
                                             SCORE_PER_PAGE)
 
-    main_scores = ManualScoreCode.objects.filter(
-        id__in=ManualScoreCode.SETS[form.cleaned_data['buttons']])
-
-    auxiliary_scores = ManualScoreCode.objects.filter(
-        id__in=ManualScoreCode.SETS['AUXILIARY'])
+    main_codes = ManualScoreCode.get_codes(form.cleaned_data['buttons'])
+    auxiliary_codes = ManualScoreCode.get_codes('AUXILIARY')
 
     context = {
         'unscored_by_user': unscored_by_user,
         'experiments': experiments,
         'display_experiments': display_experiments,
-        'main_scores': main_scores,
-        'auxiliary_scores': auxiliary_scores,
+        'main_codes': main_codes,
+        'auxiliary_codes': auxiliary_codes,
     }
 
     return render(request, 'score_experiment_wells.html', context)
