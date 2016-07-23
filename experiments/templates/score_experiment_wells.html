@@ -32,6 +32,12 @@
     <div class="experiment-header">
       <a href="{{ experiment.get_absolute_url }}">
         {{ experiment.id }}</a>
+
+      {% if experiment.is_junk %}
+      <span class="error-message">
+        JUNK
+      </span>
+      {% endif %}
     </div>
 
     <div class="experiment-content">

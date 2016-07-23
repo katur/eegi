@@ -210,7 +210,6 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
 
 
 class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
-    id = forms.CharField(required=False, help_text='e.g. 32412_A01')
     buttons = ScoringButtonsChoiceField(label='Which buttons?')
     unscored_by_user = forms.BooleanField(
         required=False, initial=True,
@@ -218,11 +217,15 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     exclude_l4440 = forms.BooleanField(
         required=False, initial=True, label='Exclude L4440')
 
+    id = forms.CharField(required=False, help_text='e.g. 32412_A01')
+    is_junk = forms.NullBooleanField(
+        required=False, initial=False, widget=BlankNullBooleanSelect)
+
     field_order = [
         'buttons', 'unscored_by_user', 'exclude_l4440',
         'id', 'plate__id', 'well',
         'plate__date', 'plate__temperature',
-        'worm_strain', 'plate__screen_stage',
+        'worm_strain', 'plate__screen_stage', 'is_junk'
     ]
 
     def __init__(self, *args, **kwargs):
