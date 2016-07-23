@@ -2,7 +2,8 @@ from django import forms
 from django.core.validators import MinLengthValidator
 
 from clones.forms import RNAiKnockdownField
-from experiments.models import Experiment, ExperimentPlate, ManualScore
+from experiments.models import (Experiment, ExperimentPlate, ManualScore,
+                                ManualScoreCode)
 from library.forms import LibraryPlateField
 from utils.forms import EMPTY_CHOICE, BlankNullBooleanSelect, RangeField
 from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
@@ -64,6 +65,35 @@ class ScoringButtonsChoiceField(forms.ChoiceField):
             ]
 
         super(ScoringButtonsChoiceField, self).__init__(**kwargs)
+
+
+class SuppressorScoreField(forms.ModelChoiceField):
+
+    def __init__(self, **kwargs):
+        if 'queryset' not in kwargs:
+            kwargs['queryset'] = ManualScoreCode.get_codes('SUP')
+
+        if 'widget' not in kwargs:
+            kwargs['widget'] = forms.RadioSelect
+
+        super(SuppressorScoreField, self).__init__(**kwargs)
+
+
+class AuxiliaryScoreField(forms.ModelMultipleChoiceField):
+
+    def __init__(self, **kwargs):
+        if 'queryset' not in kwargs:
+            kwargs['queryset'] = ManualScoreCode.get_codes('AUXILIARY')
+
+        if 'widget' not in kwargs:
+            kwargs['widget'] = forms.CheckboxSelectMultiple
+
+        super(AuxiliaryScoreField, self).__init__(**kwargs)
+
+
+class SuppressorScoreForm(forms.Form):
+    sup_score = SuppressorScoreField()
+    aux_score = AuxiliaryScoreField(required=False)
 
 
 #####################
