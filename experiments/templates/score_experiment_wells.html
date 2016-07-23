@@ -46,17 +46,7 @@
       </div>
 
       <div class="experiment-content-buttons">
-        <div class="experiment-content-buttons-main">
-          {% for code in main_codes %}
-          {% include 'score_code_label.html' with input_type='radio' %}
-          {% endfor %}
-        </div>
-
-        <div class="experiment-content-buttons-aux">
-          {% for code in auxiliary_codes %}
-          {% include 'score_code_label.html' with input_type='checkbox' %}
-          {% endfor %}
-        </div>
+        {{ experiment.score_form.as_p }}
       </div>
     </div>
   </div>

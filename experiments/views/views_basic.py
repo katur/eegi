@@ -3,10 +3,10 @@ from django.contrib.auth.decorators import permission_required
 from django.shortcuts import redirect, render, get_object_or_404
 
 from experiments.helpers.data_entry import parse_batch_data_entry_gdoc
-from experiments.models import Experiment, ExperimentPlate, ManualScoreCode
+from experiments.models import Experiment, ExperimentPlate
 from experiments.forms import (
     FilterExperimentWellsForm, FilterExperimentPlatesForm,
-    FilterExperimentWellsToScoreForm,
+    FilterExperimentWellsToScoreForm, get_score_form,
     AddExperimentPlateForm, ChangeExperimentPlatesForm,
     process_ChangeExperimentPlatesForm_data,
 )
@@ -248,15 +248,14 @@ def score_experiment_wells(request):
         display_experiments = get_paginated(request, experiments,
                                             SCORE_PER_PAGE)
 
-    main_codes = ManualScoreCode.get_codes(form.cleaned_data['buttons'])
-    auxiliary_codes = ManualScoreCode.get_codes('AUXILIARY')
+    for experiment in display_experiments:
+        key = form.cleaned_data['form']
+        experiment.score_form = get_score_form(key)(prefix=experiment.pk)
 
     context = {
         'unscored_by_user': unscored_by_user,
         'experiments': experiments,
         'display_experiments': display_experiments,
-        'main_codes': main_codes,
-        'auxiliary_codes': auxiliary_codes,
     }
 
     return render(request, 'score_experiment_wells.html', context)

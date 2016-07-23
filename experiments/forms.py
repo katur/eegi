@@ -55,8 +55,8 @@ class TemperatureChoiceField(forms.ChoiceField):
         super(TemperatureChoiceField, self).__init__(**kwargs)
 
 
-class ScoringButtonsChoiceField(forms.ChoiceField):
-    """Field for selecting which scoring buttons should display."""
+class ScoringFormChoiceField(forms.ChoiceField):
+    """Field for selecting which scoring form (buttons) should display."""
 
     def __init__(self, **kwargs):
         if 'choices' not in kwargs:
@@ -64,7 +64,7 @@ class ScoringButtonsChoiceField(forms.ChoiceField):
                 ('SUP', 'Suppressor w/m/s'),
             ]
 
-        super(ScoringButtonsChoiceField, self).__init__(**kwargs)
+        super(ScoringFormChoiceField, self).__init__(**kwargs)
 
 
 class SuppressorScoreField(forms.ModelChoiceField):
@@ -240,7 +240,7 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
 class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     """Form for filtering experiment wells to score."""
 
-    buttons = ScoringButtonsChoiceField(label='Which buttons?')
+    form = ScoringFormChoiceField(label='Which buttons?')
     unscored_by_user = forms.BooleanField(
         required=False, initial=True,
         label='Limit to unscored by currently logged in user?')
@@ -253,7 +253,7 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         required=False, initial=False, widget=BlankNullBooleanSelect)
 
     field_order = [
-        'buttons', 'unscored_by_user', 'exclude_l4440',
+        'form', 'unscored_by_user', 'exclude_l4440',
         'pk', 'plate__pk', 'well',
         'plate__date', 'plate__temperature',
         'worm_strain', 'plate__screen_stage', 'is_junk'
@@ -266,7 +266,7 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     def clean(self):
         cleaned_data = super(FilterExperimentWellsToScoreForm, self).clean()
 
-        buttons = cleaned_data.pop('buttons')
+        form = cleaned_data.pop('form')
         unscored_by_user = cleaned_data.pop('unscored_by_user')
         exclude_l4440 = cleaned_data.pop('exclude_l4440')
 
@@ -284,7 +284,7 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
                 .values_list('experiment_id', flat=True))
             experiments = experiments.exclude(id__in=score_ids)
 
-        cleaned_data['buttons'] = buttons
+        cleaned_data['form'] = form
         cleaned_data['unscored_by_user'] = unscored_by_user
         cleaned_data['experiments'] = experiments
 
@@ -293,7 +293,14 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
 
 class SuppressorScoreForm(forms.Form):
     sup_score = SuppressorScoreField()
-    aux_score = AuxiliaryScoreField(required=False)
+    auxiliary_scores = AuxiliaryScoreField(required=False)
+
+
+def get_score_form(key):
+    d = {
+        'SUP': SuppressorScoreForm,
+    }
+    return d[key]
 
 
 #################################
