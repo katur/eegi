@@ -269,7 +269,7 @@ class AddExperimentPlateForm(forms.Form):
     Form for adding a new experiment plate.
 
     Adding a new experiment plate also adds the corresponding
-    expeirment wells.
+    experiment wells.
 
     This form makes certain assumptions about the experiment plate:
         - it comes from one library plate
