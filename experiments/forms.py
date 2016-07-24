@@ -67,23 +67,50 @@ class ScoringFormChoiceField(forms.ChoiceField):
         super(ScoringFormChoiceField, self).__init__(**kwargs)
 
 
-class SuppressorScoreField(forms.ModelChoiceField):
-    """Field for choosing a level of suppression."""
+class SuppressorScoreField(forms.ChoiceField):
+    """Field for choosing a level of suppression.
+
+    NOTE: avoid ModelChoiceField because there is no *clean* way to
+    include an empty value (for the "unscorable" case) while still
+    making the field required and while not setting an initial value.
+    """
+
+    def __init__(self, **kwargs):
+        if 'choices' not in kwargs:
+            choices = []
+            for code in ManualScoreCode.get_codes('SUP'):
+                choices.append((code.pk, code))
+
+            choices.append((None, 'Unable to score'))
+
+            kwargs['choices'] = choices
+
+        if 'widget' not in kwargs:
+            kwargs['widget'] = forms.RadioSelect
+
+        if 'required' not in kwargs:
+            kwargs['required'] = True
+
+        super(SuppressorScoreField, self).__init__(**kwargs)
+
+
+class FakeScoreField(forms.ModelChoiceField):
 
     def __init__(self, **kwargs):
         if 'queryset' not in kwargs:
-            kwargs['queryset'] = ManualScoreCode.get_codes('SUP')
+            kwargs['queryset'] = ManualScoreCode.get_codes('FAKE')
 
         if 'widget' not in kwargs:
             kwargs['widget'] = forms.RadioSelect
 
         if 'initial' not in kwargs:
-            kwargs['initial'] = 0
+            kwargs['initial'] = 'skip'
+            # kwargs['initial'] = ManualScoreCode.get_codes('FAKE')[0].pk
 
         if 'required' not in kwargs:
             kwargs['required'] = False
 
-        super(SuppressorScoreField, self).__init__(**kwargs)
+        super(FakeScoreField, self).__init__(**kwargs)
 
 
 class AuxiliaryScoreField(forms.ModelMultipleChoiceField):
@@ -299,6 +326,7 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
 
 class SuppressorScoreForm(forms.Form):
     sup_score = SuppressorScoreField()
+    # fake_score = FakeScoreField()
     auxiliary_scores = AuxiliaryScoreField(required=False)
 
 
