@@ -77,6 +77,12 @@ class SuppressorScoreField(forms.ModelChoiceField):
         if 'widget' not in kwargs:
             kwargs['widget'] = forms.RadioSelect
 
+        if 'initial' not in kwargs:
+            kwargs['initial'] = 0
+
+        if 'required' not in kwargs:
+            kwargs['required'] = False
+
         super(SuppressorScoreField, self).__init__(**kwargs)
 
 

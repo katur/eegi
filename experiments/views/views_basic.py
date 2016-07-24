@@ -229,18 +229,30 @@ def score_experiment_wells(request):
 
     TODO: better handle case of invalid filter_form
     """
-    if request.GET:
-        form = FilterExperimentWellsToScoreForm(request.GET, user=request.user)
-    else:
-        form = FilterExperimentWellsToScoreForm()
 
-    if not request.GET or not form.is_valid() or not form.has_changed():
+    # If there was a previous submit, process it
+    if request.POST:
+        # forms_to_process = []
+        # Extract prefixes
+        # for prefix in prefixes:
+        #    forms_to_process.append(get_score_form(key)(prefix=prefix))
+        pass
+
+    if request.GET:
+        filter_form = FilterExperimentWellsToScoreForm(
+            request.GET, user=request.user)
+    else:
+        filter_form = FilterExperimentWellsToScoreForm()
+
+    if (not request.GET or not filter_form.is_valid() or
+            not filter_form.has_changed()):
         return render(request, 'score_experiment_wells_setup.html', {
-            'form': form
+            'form': filter_form
         })
 
-    unscored_by_user = form.cleaned_data['unscored_by_user']
-    experiments = form.cleaned_data['experiments']
+    unscored_by_user = filter_form.cleaned_data['unscored_by_user']
+    experiments = filter_form.cleaned_data['experiments']
+    score_form_key = filter_form.cleaned_data['form']
 
     if unscored_by_user:
         display_experiments = experiments[:SCORE_PER_PAGE]
@@ -249,8 +261,8 @@ def score_experiment_wells(request):
                                             SCORE_PER_PAGE)
 
     for experiment in display_experiments:
-        key = form.cleaned_data['form']
-        experiment.score_form = get_score_form(key)(prefix=experiment.pk)
+        experiment.score_form = get_score_form(
+            score_form_key)(prefix=experiment.pk)
 
     context = {
         'unscored_by_user': unscored_by_user,

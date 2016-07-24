@@ -503,7 +503,10 @@ form table th, form table td {
     width: 30%; }
     #score-experiment-wells .experiment-content-buttons label {
       display: block; }
-    #score-experiment-wells .experiment-content-buttons-main {
+    #score-experiment-wells .experiment-content-buttons p, #score-experiment-wells .experiment-content-buttons ul {
+      width: 100%;
+      float: left; }
+    #score-experiment-wells .experiment-content-buttons ul {
       padding-bottom: 40px; }
 
 .knockdown-clone-section h4 {
