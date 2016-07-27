@@ -11,6 +11,10 @@ from library.models import LibraryPlate
 from utils.google import connect_to_google_spreadsheets
 from worms.models import WormStrain
 
+GENE_ROW = 3
+ALLELE_ROW = 4
+TEMPERATURE_ROW = 5
+SCREEN_TYPE_ROW = 6
 FIRST_EXP_ROW = 7
 
 
@@ -60,11 +64,12 @@ def _parse_gdoc_global_info(values):
 def _parse_gdoc_column_headers(values):
     worms = []
     try:
-        genes = values[3][1:]
-        alleles = values[4][1:]
+        genes = values[GENE_ROW][1:]
+        alleles = values[ALLELE_ROW][1:]
     except IndexError:
-        raise IndexError('Genes should be listed in 4th row, '
-                         'and alleles in 5th row.')
+        raise IndexError('Genes should be listed in {}th row, '
+                         'and alleles in {}th row.'
+                         .format(GENE_ROW + 1, ALLELE_ROW + 1))
 
     # Use izip_longest in case genes is longer than alleles, in N2 case
     for gene, allele in izip_longest(genes, alleles):
@@ -78,11 +83,12 @@ def _parse_gdoc_column_headers(values):
                              'and allele "{}"'.format(gene, allele))
 
     try:
-        temperatures = values[5][1:]
-        screen_types = values[6][1:]
+        temperatures = values[TEMPERATURE_ROW][1:]
+        screen_types = values[SCREEN_TYPE_ROW][1:]
     except IndexError:
-        raise IndexError('Temperatures should be in 6th row, '
-                         'and screen types in 7th row.')
+        raise IndexError('Temperatures should be in {}th row, '
+                         'and screen types in {}th row.'
+                         .format(TEMPERATURE_ROW + 1, SCREEN_TYPE_ROW + 1))
 
     if len(temperatures) != len(worms):
         raise ValueError('The temperatures row should be the same '
