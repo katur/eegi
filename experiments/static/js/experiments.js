@@ -4,19 +4,25 @@ $(document).ready(function() {
 });
 
 
-const DIRECTIONS = {
-  UP: "UP",
-  DOWN: "DOWN",
-}
-
-
-const KEYS = {
-  UP: 38,
-  DOWN: 40,
-}
-
-
 var ScoringKeyboardShortcuts = {
+  DIRECTIONS: {
+    UP: "UP",
+    DOWN: "DOWN",
+  },
+
+  KEYS: {
+    UP: 38,
+    DOWN: 40,
+  },
+
+  isDigitKey: function(key) {
+    return key >= 48 && key <= 57;
+  },
+
+  getDigitKey: function(key) {
+    return key - 48;
+  },
+
   init: function() {
     if (!$("#score-experiment-wells").length) {
       return;
@@ -27,8 +33,8 @@ var ScoringKeyboardShortcuts = {
       return;
     }
 
-    this.currentIndex = 0;
-    this.styleActiveExperiment($(this.experiments[this.currentIndex]));
+    this.currentExperimentIndex = 0;
+    this.activateExperiment($(this.experiments[this.currentExperimentIndex]));
     this.listen();
   },
 
@@ -40,56 +46,84 @@ var ScoringKeyboardShortcuts = {
 
   handleKeyboardShortcut: function(e) {
     switch(e.which) {
-      case KEYS.UP:
+      case this.KEYS.UP:
         e.preventDefault();
-        this.navigate(DIRECTIONS.UP);
+        this.navigate(this.DIRECTIONS.UP);
         break;
-      case KEYS.DOWN:
+
+      case this.KEYS.DOWN:
         e.preventDefault();
-        this.navigate(DIRECTIONS.DOWN);
+        this.navigate(this.DIRECTIONS.DOWN);
         break;
+
       default:
-        if (!this.isDigit(e.which)) {
+        if (!this.isDigitKey(e.which)) {
           return;
         }
-        console.log("Digit " + this.getDigit(e.which));
+
+        this.score(this.getDigitKey(e.which));
     }
   },
 
   navigate: function(direction) {
-    var nextIndex;
-    if (direction === DIRECTIONS.UP) {
-      nextIndex = this.currentIndex - 1;
-    } else if (direction === DIRECTIONS.DOWN) {
-      nextIndex = this.currentIndex + 1;
+    var nextExperimentIndex;
+    if (direction === this.DIRECTIONS.UP) {
+      nextExperimentIndex = this.currentExperimentIndex - 1;
+    } else if (direction === this.DIRECTIONS.DOWN) {
+      nextExperimentIndex = this.currentExperimentIndex + 1;
     }
 
-    if (nextIndex < 0 || nextIndex >= this.experiments.length) {
+    if (nextExperimentIndex < 0 ||
+        nextExperimentIndex >= this.experiments.length) {
       return;
     }
 
-    var nextExperiment = $(this.experiments[nextIndex]);
+    var nextExperiment = $(this.experiments[nextExperimentIndex]);
     this.scrollToExperiment(nextExperiment);
-    this.currentIndex = nextIndex;
+    this.currentExperimentIndex = nextExperimentIndex;
+  },
+
+  setKeyableGroups: function(experiment) {
+    var buttons = experiment.find(".keyable");
+    var groups = [];
+
+    buttons.each(function() {
+      var id = $(this).closest("ul").attr("id");
+
+      if (id != groups[groups.length - 1]) {
+        groups.push(id);
+      }
+    });
+
+    this.keyableGroups = groups;
+    this.keyableGroupIndex = 0;
+  },
+
+  getKeyableGroup: function() {
+    return $("#" + this.keyableGroups[this.keyableGroupIndex]);
+  },
+
+  activateKeyableGroup: function() {
+    $(".active-keyable-group").removeClass("active-keyable-group");
+    var group = this.getKeyableGroup();
+    group.addClass("active-keyable-group");
   },
 
   scrollToExperiment: function(experiment) {
-    this.styleActiveExperiment(experiment);
+    this.activateExperiment(experiment);
     $("html, body").scrollTop(experiment.position().top);
   },
 
-  styleActiveExperiment: function(experiment) {
+  activateExperiment: function(experiment) {
     $(this.experiments).removeClass("active");
     experiment.addClass("active");
+    this.setKeyableGroups(experiment);
   },
 
-  isDigit: function(key) {
-    return key >= 48 && key <= 57;
-  },
-
-  // Digit keys are 48 + digit
-  getDigit: function(key) {
-    return key - 48;
+  score: function(key) {
+    var group = this.getKeyableGroup();
+    var input = group.find(".keyable")[key];
+    $(input).trigger("click");
   },
 
 };

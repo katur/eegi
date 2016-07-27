@@ -81,12 +81,12 @@ class SuppressorScoreField(forms.ChoiceField):
             for code in ManualScoreCode.get_codes('SUP'):
                 choices.append((code.pk, code))
 
-            choices.append((None, 'Unable to score'))
+            choices.append((None, 'Unable to judge'))
 
             kwargs['choices'] = choices
 
         if 'widget' not in kwargs:
-            kwargs['widget'] = forms.RadioSelect
+            kwargs['widget'] = forms.RadioSelect(attrs={'class': 'keyable'})
 
         if 'required' not in kwargs:
             kwargs['required'] = True
@@ -94,21 +94,23 @@ class SuppressorScoreField(forms.ChoiceField):
         super(SuppressorScoreField, self).__init__(**kwargs)
 
 
-class FakeScoreField(forms.ModelChoiceField):
+class FakeScoreField(forms.ChoiceField):
 
     def __init__(self, **kwargs):
-        if 'queryset' not in kwargs:
-            kwargs['queryset'] = ManualScoreCode.get_codes('FAKE')
+        if 'choices' not in kwargs:
+            choices = []
+            for code in ManualScoreCode.get_codes('FAKE'):
+                choices.append((code.pk, code))
+
+            choices.append((None, 'Unable to judge'))
+
+            kwargs['choices'] = choices
 
         if 'widget' not in kwargs:
-            kwargs['widget'] = forms.RadioSelect
-
-        if 'initial' not in kwargs:
-            kwargs['initial'] = 'skip'
-            # kwargs['initial'] = ManualScoreCode.get_codes('FAKE')[0].pk
+            kwargs['widget'] = forms.RadioSelect(attrs={'class': 'keyable'})
 
         if 'required' not in kwargs:
-            kwargs['required'] = False
+            kwargs['required'] = True
 
         super(FakeScoreField, self).__init__(**kwargs)
 
@@ -325,8 +327,9 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
 
 
 class SuppressorScoreForm(forms.Form):
+
     sup_score = SuppressorScoreField()
-    # fake_score = FakeScoreField()
+    fake_score = FakeScoreField()
     auxiliary_scores = AuxiliaryScoreField(required=False)
 
 
