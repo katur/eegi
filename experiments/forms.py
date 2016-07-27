@@ -81,7 +81,7 @@ class SuppressorScoreField(forms.ChoiceField):
             for code in ManualScoreCode.get_codes('SUP'):
                 choices.append((code.pk, code))
 
-            choices.append((None, 'Unable to judge'))
+            choices.append((None, 'Impossible to judge'))
 
             kwargs['choices'] = choices
 
@@ -102,7 +102,7 @@ class FakeScoreField(forms.ChoiceField):
             for code in ManualScoreCode.get_codes('FAKE'):
                 choices.append((code.pk, code))
 
-            choices.append((None, 'Unable to judge'))
+            choices.append((None, 'Impossible to judge'))
 
             kwargs['choices'] = choices
 
@@ -123,7 +123,8 @@ class AuxiliaryScoreField(forms.ModelMultipleChoiceField):
             kwargs['queryset'] = ManualScoreCode.get_codes('AUXILIARY')
 
         if 'widget' not in kwargs:
-            kwargs['widget'] = forms.CheckboxSelectMultiple
+            kwargs['widget'] = forms.CheckboxSelectMultiple(
+                attrs={'class': 'keyable'})
 
         super(AuxiliaryScoreField, self).__init__(**kwargs)
 
