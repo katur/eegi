@@ -87,8 +87,12 @@ var ScoringKeyboardShortcuts = {
     var group = this.getKeyableGroup();
     var input = group.find(".keyable")[key];
     $(input).trigger("click");
-    this.keyableGroupIndex += 1;
-    this.activateKeyableGroup();
+
+    // Move on to next keyableGroup, if there is one
+    if (this.keyableGroupIndex < (this.keyableGroups.length - 1)) {
+      this.keyableGroupIndex += 1;
+      this.activateKeyableGroup();
+    }
   },
 
   setKeyableGroups: function(experiment) {
