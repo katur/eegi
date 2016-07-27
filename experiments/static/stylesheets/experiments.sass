@@ -117,14 +117,20 @@ $max-image-width: 1300px
     width: 100%
 
   .experiment
-    padding: 10px
-    border-radius: 3px
+    @include box-sizing(border-box)
+    background: $lightest-gray
+    border-radius: 4px
+    padding: 3%
+    margin-bottom: $whitespace * 2
 
     &.active
-      background: $lightest-gray
+
+  .active-keyable-group
+    box-shadow: 0 0 4px $purple
+    border-radius: 4px
 
   .experiment-content
-    padding-bottom: $whitespace
+    margin-top: $whitespace / 4
 
     &-image,
     &-buttons
@@ -132,21 +138,26 @@ $max-image-width: 1300px
       float: left
 
     &-image
-      width: 70%
+      width: 75%
 
     &-buttons
       padding-left: $whitespace
-      width: 30%
+      width: 25%
 
       label
         display: block
 
       p, ul
+        @include box-sizing(border-box)
         width: 100%
         float: left
 
+      p
+        margin-bottom: $whitespace / 8
+
       ul
-        padding-bottom: $whitespace
+        padding: 10px
+        margin-bottom: $whitespace
 
 /////////////////////
 // Knockdown pages //

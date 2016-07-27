@@ -83,6 +83,12 @@ var ScoringKeyboardShortcuts = {
     this.currentExperimentIndex = nextExperimentIndex;
   },
 
+  score: function(key) {
+    var group = this.getKeyableGroup();
+    var input = group.find(".keyable")[key];
+    $(input).trigger("click");
+  },
+
   setKeyableGroups: function(experiment) {
     var buttons = experiment.find(".keyable");
     var groups = [];
@@ -99,16 +105,6 @@ var ScoringKeyboardShortcuts = {
     this.keyableGroupIndex = 0;
   },
 
-  getKeyableGroup: function() {
-    return $("#" + this.keyableGroups[this.keyableGroupIndex]);
-  },
-
-  activateKeyableGroup: function() {
-    $(".active-keyable-group").removeClass("active-keyable-group");
-    var group = this.getKeyableGroup();
-    group.addClass("active-keyable-group");
-  },
-
   scrollToExperiment: function(experiment) {
     this.activateExperiment(experiment);
     $("html, body").scrollTop(experiment.position().top);
@@ -118,12 +114,17 @@ var ScoringKeyboardShortcuts = {
     $(this.experiments).removeClass("active");
     experiment.addClass("active");
     this.setKeyableGroups(experiment);
+    this.activateKeyableGroup();
   },
 
-  score: function(key) {
+  activateKeyableGroup: function() {
+    $(".active-keyable-group").removeClass("active-keyable-group");
     var group = this.getKeyableGroup();
-    var input = group.find(".keyable")[key];
-    $(input).trigger("click");
+    group.addClass("active-keyable-group");
+  },
+
+  getKeyableGroup: function() {
+    return $("#" + this.keyableGroups[this.keyableGroupIndex]);
   },
 
 };
