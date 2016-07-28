@@ -61,7 +61,7 @@ class ScoringFormChoiceField(forms.ChoiceField):
     def __init__(self, **kwargs):
         if 'choices' not in kwargs:
             kwargs['choices'] = [
-                ('SUP', 'Suppressor w/m/s'),
+                ('SUP', 'Suppressor scoring'),
             ]
 
         super(ScoringFormChoiceField, self).__init__(**kwargs)
@@ -227,7 +227,7 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
     """Form for filtering Experiment instances."""
 
     pk = forms.CharField(required=False, help_text='e.g. 32412_A01',
-                         label='ID')
+                         label='Experiment ID')
 
     well = forms.CharField(required=False, help_text='e.g. A01')
 
@@ -279,20 +279,20 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     form = ScoringFormChoiceField(label='Which buttons?')
     unscored_by_user = forms.BooleanField(
         required=False, initial=True,
-        label='Limit to unscored by currently logged in user?')
+        label='Exclude if already scored by you')
     exclude_l4440 = forms.BooleanField(
         required=False, initial=True, label='Exclude L4440')
 
     pk = forms.CharField(required=False, help_text='e.g. 32412_A01',
-                         label='ID')
+                         label='Experiment ID')
     is_junk = forms.NullBooleanField(
         required=False, initial=False, widget=BlankNullBooleanSelect)
 
     field_order = [
-        'form', 'unscored_by_user', 'exclude_l4440',
-        'pk', 'plate__pk', 'well',
-        'plate__date', 'plate__temperature',
-        'worm_strain', 'plate__screen_stage', 'is_junk'
+        'form', 'unscored_by_user', 'exclude_l4440', 'is_junk',
+        'plate__screen_stage', 'worm_strain', 'plate__temperature',
+        'plate__date',
+        'pk', 'plate__pk',
     ]
 
     def __init__(self, *args, **kwargs):

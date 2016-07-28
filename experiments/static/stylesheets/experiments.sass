@@ -63,7 +63,7 @@ $max-image-width: 1300px
         float: left
 
 
-#find-experiment-wells, #find-experiment-plates
+#find-experiment-wells, #find-experiment-plates, #score-experiment-wells
   #form-section
     #form-errors, #clear-form
       float: left
@@ -74,8 +74,13 @@ $max-image-width: 1300px
 
     .field
       float: left
-      width: 45%
       padding-bottom: 12px
+
+
+#find-experiment-wells, #find-experiment-plates
+  #form-section
+    .field
+      width: 45%
 
       &:nth-child(odd)
         clear: left
@@ -86,11 +91,14 @@ $max-image-width: 1300px
       &.submit
         clear: both
 
-      #id_plate__temperature__in
-        width: 50px
 
-      #id_worm_strain
-        width: 150px
+#score-experiment-wells
+  #form-section
+    .field
+      width: 100%
+
+      #id_plate__screen_stage, #id_pk
+        margin-top: $whitespace
 
 
 #find-experiment-plates, #change-experiment-plates
