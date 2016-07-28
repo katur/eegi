@@ -452,12 +452,12 @@ form table th, form table td {
     width: 100%;
     float: left; }
 
-#find-experiment-wells #form-section #form-errors, #find-experiment-wells #form-section #clear-form, #find-experiment-plates #form-section #form-errors, #find-experiment-plates #form-section #clear-form, #score-experiment-wells #form-section #form-errors, #score-experiment-wells #form-section #clear-form {
+#find-experiment-wells #form-section #form-errors, #find-experiment-wells #form-section #clear-form, #find-experiment-plates #form-section #form-errors, #find-experiment-plates #form-section #clear-form, #score-experiment-wells-setup #form-section #form-errors, #score-experiment-wells-setup #form-section #clear-form {
   float: left;
   clear: both; }
-#find-experiment-wells #form-section #form-errors, #find-experiment-plates #form-section #form-errors, #score-experiment-wells #form-section #form-errors {
+#find-experiment-wells #form-section #form-errors, #find-experiment-plates #form-section #form-errors, #score-experiment-wells-setup #form-section #form-errors {
   margin-bottom: 40px; }
-#find-experiment-wells #form-section .field, #find-experiment-plates #form-section .field, #score-experiment-wells #form-section .field {
+#find-experiment-wells #form-section .field, #find-experiment-plates #form-section .field, #score-experiment-wells-setup #form-section .field {
   float: left; }
 
 #find-experiment-wells #form-section .field, #find-experiment-plates #form-section .field {
@@ -470,10 +470,10 @@ form table th, form table td {
   #find-experiment-wells #form-section .field.submit, #find-experiment-plates #form-section .field.submit {
     clear: both; }
 
-#score-experiment-wells #form-section .field {
+#score-experiment-wells-setup #form-section .field {
   width: 100%;
   padding-bottom: 10px; }
-  #score-experiment-wells #form-section .field #id_plate__screen_stage, #score-experiment-wells #form-section .field #id_pk {
+  #score-experiment-wells-setup #form-section .field #id_plate__screen_stage, #score-experiment-wells-setup #form-section .field #id_pk {
     margin-top: 40px; }
 
 #find-experiment-plates .vertical-links a, #change-experiment-plates .vertical-links a {
@@ -496,34 +496,38 @@ form table th, form table td {
   border-radius: 4px;
   padding: 3%;
   margin-bottom: 80px; }
-#score-experiment-wells .active-keyable-group {
-  box-shadow: 0 0 4px #8d54c6;
-  border-radius: 4px; }
-#score-experiment-wells .experiment-content {
-  margin-top: 10px; }
-  #score-experiment-wells .experiment-content-image, #score-experiment-wells .experiment-content-buttons {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    float: left; }
-  #score-experiment-wells .experiment-content-image {
-    width: 75%; }
-  #score-experiment-wells .experiment-content-buttons {
-    padding-left: 40px;
-    width: 25%; }
-    #score-experiment-wells .experiment-content-buttons label {
-      display: block; }
-    #score-experiment-wells .experiment-content-buttons p, #score-experiment-wells .experiment-content-buttons ul {
+  #score-experiment-wells .experiment-header a {
+    display: block;
+    float: left;
+    margin-right: 40px; }
+  #score-experiment-wells .experiment-content {
+    margin-top: 10px; }
+    #score-experiment-wells .experiment-content-image, #score-experiment-wells .experiment-content-buttons {
       -webkit-box-sizing: border-box;
       -moz-box-sizing: border-box;
       box-sizing: border-box;
-      width: 100%;
       float: left; }
-    #score-experiment-wells .experiment-content-buttons p {
-      margin-bottom: 5px; }
-    #score-experiment-wells .experiment-content-buttons ul {
-      padding: 10px;
-      margin-bottom: 40px; }
+    #score-experiment-wells .experiment-content-image {
+      width: 75%; }
+    #score-experiment-wells .experiment-content-buttons {
+      padding-left: 40px;
+      width: 25%; }
+      #score-experiment-wells .experiment-content-buttons label {
+        display: block; }
+      #score-experiment-wells .experiment-content-buttons p, #score-experiment-wells .experiment-content-buttons ul {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        width: 100%;
+        float: left; }
+      #score-experiment-wells .experiment-content-buttons p {
+        margin-bottom: 5px; }
+      #score-experiment-wells .experiment-content-buttons ul {
+        padding: 10px;
+        margin-bottom: 40px; }
+#score-experiment-wells .active-keyable-group {
+  box-shadow: 0 0 4px #8d54c6;
+  border-radius: 4px; }
 
 .knockdown-clone-section h4 {
   width: 100%;

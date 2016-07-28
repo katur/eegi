@@ -47,9 +47,9 @@ $max-image-width: 1300px
         @include link-color-light()
 
 
-///////////////////////////////////
-// Basic experiment search pages //
-///////////////////////////////////
+/////////////////////////////
+// Experiment search pages //
+/////////////////////////////
 
 #find-experiment-wells
   table
@@ -63,7 +63,7 @@ $max-image-width: 1300px
         float: left
 
 
-#find-experiment-wells, #find-experiment-plates, #score-experiment-wells
+#find-experiment-wells, #find-experiment-plates, #score-experiment-wells-setup
   #form-section
     #form-errors, #clear-form
       float: left
@@ -92,7 +92,7 @@ $max-image-width: 1300px
         clear: both
 
 
-#score-experiment-wells
+#score-experiment-wells-setup
   #form-section
     .field
       width: 100%
@@ -133,40 +133,48 @@ $max-image-width: 1300px
     margin-bottom: $whitespace * 2
 
     &.active
+      // currently the active experiment as a whole has no styling
+
+    &-header
+      a
+        display: block
+        float: left
+        margin-right: $whitespace
+
+    &-content
+      margin-top: $whitespace / 4
+
+      &-image,
+      &-buttons
+        @include box-sizing(border-box)
+        float: left
+
+      &-image
+        width: 75%
+
+      &-buttons
+        padding-left: $whitespace
+        width: 25%
+
+        label
+          display: block
+
+        p, ul
+          @include box-sizing(border-box)
+          width: 100%
+          float: left
+
+        p
+          margin-bottom: $whitespace / 8
+
+        ul
+          padding: 10px
+          margin-bottom: $whitespace
 
   .active-keyable-group
     box-shadow: 0 0 4px $purple
     border-radius: 4px
 
-  .experiment-content
-    margin-top: $whitespace / 4
-
-    &-image,
-    &-buttons
-      @include box-sizing(border-box)
-      float: left
-
-    &-image
-      width: 75%
-
-    &-buttons
-      padding-left: $whitespace
-      width: 25%
-
-      label
-        display: block
-
-      p, ul
-        @include box-sizing(border-box)
-        width: 100%
-        float: left
-
-      p
-        margin-bottom: $whitespace / 8
-
-      ul
-        padding: 10px
-        margin-bottom: $whitespace
 
 /////////////////////
 // Knockdown pages //
