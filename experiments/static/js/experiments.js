@@ -34,7 +34,8 @@ var ScoringKeyboardShortcuts = {
     }
 
     this.currentExperimentIndex = 0;
-    this.activateExperiment($(this.experiments[this.currentExperimentIndex]));
+    var currentExperiment = $(this.experiments[this.currentExperimentIndex]);
+    this.scrollToExperiment(currentExperiment);
     this.listen();
   },
 
@@ -48,12 +49,12 @@ var ScoringKeyboardShortcuts = {
     switch(e.which) {
       case this.KEYS.UP:
         e.preventDefault();
-        this.navigate(this.DIRECTIONS.UP);
+        this.navigateExperiments(this.DIRECTIONS.UP);
         break;
 
       case this.KEYS.DOWN:
         e.preventDefault();
-        this.navigate(this.DIRECTIONS.DOWN);
+        this.navigateExperiments(this.DIRECTIONS.DOWN);
         break;
 
       default:
@@ -65,7 +66,7 @@ var ScoringKeyboardShortcuts = {
     }
   },
 
-  navigate: function(direction) {
+  navigateExperiments: function(direction) {
     var nextExperimentIndex;
     if (direction === this.DIRECTIONS.UP) {
       nextExperimentIndex = this.currentExperimentIndex - 1;
