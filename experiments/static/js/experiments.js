@@ -5,22 +5,42 @@ $(document).ready(function() {
 
 
 var ScoringKeyboardShortcuts = {
-  DIRECTIONS: {
-    UP: "UP",
-    DOWN: "DOWN",
-  },
+  KEY_ORDER: "0123456789-QWERTY",
 
-  KEYS: {
+  DIRECTIONS: {
     UP: 38,
     DOWN: 40,
   },
 
-  isDigitKey: function(key) {
-    return key >= 48 && key <= 57;
+  CODE_TO_SYMBOL: {
+    189: "-",
   },
 
-  getDigitKey: function(key) {
-    return key - 48;
+  getKeyFromCode: function(code) {
+    if (this.isDigitKey(code)) {
+      return this.getDigitKey(code);
+    } else if (this.isAlphaKey(code)) {
+      return this.getAlphaKey(code);
+    } else {
+      // Will return undefined if code is absent from dictionary
+      return this.CODE_TO_SYMBOL[code];
+    }
+  },
+
+  isDigitKey: function(code) {
+    return code >= 48 && code <= 57;
+  },
+
+  getDigitKey: function(code) {
+    return code - 48;
+  },
+
+  isAlphaKey: function(code) {
+    return code >= 65 && code <= 90;
+  },
+
+  getAlphaKey: function(code) {
+    return String.fromCharCode(code);
   },
 
   init: function() {
@@ -46,7 +66,7 @@ var ScoringKeyboardShortcuts = {
 
   handleKeyboardShortcut: function(e) {
     switch(e.which) {
-      case this.KEYS.UP:
+      case this.DIRECTIONS.UP:
         e.preventDefault();
 
         if (e.shiftKey) {
@@ -57,7 +77,7 @@ var ScoringKeyboardShortcuts = {
 
         break;
 
-      case this.KEYS.DOWN:
+      case this.DIRECTIONS.DOWN:
         e.preventDefault();
 
         if (e.shiftKey) {
@@ -69,18 +89,23 @@ var ScoringKeyboardShortcuts = {
         break;
 
       default:
-        if (!this.isDigitKey(e.which)) {
-          return;
+        var key = this.getKeyFromCode(e.which);
+        var keyIndex = this.KEY_ORDER.indexOf(key);
+        if (keyIndex >= 0) {
+          this.score(keyIndex);
         }
-
-        this.score(this.getDigitKey(e.which));
     }
   },
 
-  score: function(key) {
+  score: function(keyIndex) {
     var group = this.getKeyableGroup();
-    var input = group.find(".keyable")[key];
-    $(input).trigger("click");
+    var input = $(group.find(".keyable")[keyIndex]);
+
+    // Do not proceed if keyIndex greater than number of keys
+    if (!input.length) {
+      return;
+    }
+    input.trigger("click");
     this.navigateKeyableGroups(this.DIRECTIONS.DOWN);
   },
 

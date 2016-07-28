@@ -350,7 +350,7 @@ class ManualScoreCode(models.Model):
     _SCORING_PKS = {
         'SUP': [0, 1, 2, 3],
 
-        'FAKE': [12, 13, 14, 15],
+        'FAKE': [12, 13, 14],
 
         'ENH': [
             0,  # WT
