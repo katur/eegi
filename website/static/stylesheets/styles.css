@@ -469,6 +469,10 @@ form table th, form table td {
     clear: right; }
   #find-experiment-wells #form-section .field.submit, #find-experiment-plates #form-section .field.submit {
     clear: both; }
+  #find-experiment-wells #form-section .field ul, #find-experiment-plates #form-section .field ul {
+    display: inline-block; }
+  #find-experiment-wells #form-section .field li, #find-experiment-plates #form-section .field li {
+    display: inline; }
 
 #score-experiment-wells-setup #form-section .field {
   width: 100%;

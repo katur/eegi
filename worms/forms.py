@@ -43,6 +43,10 @@ class ScreenTypeChoiceField(forms.ChoiceField):
 
         if 'choices' not in kwargs:
             kwargs['choices'] = [('SUP', 'suppressor'), ('ENH', 'enhancer')]
+
+        if 'required' in kwargs and not kwargs['required']:
+            kwargs['choices'] = [('', '')] + kwargs['choices']
+
         super(ScreenTypeChoiceField, self).__init__(**kwargs)
 
 

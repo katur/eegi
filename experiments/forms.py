@@ -8,6 +8,7 @@ from library.forms import LibraryPlateField
 from utils.forms import EMPTY_CHOICE, BlankNullBooleanSelect, RangeField
 from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
                          WormChoiceField, clean_mutant_query_and_screen_type)
+from worms.models import WormStrain
 
 
 ###########
@@ -245,9 +246,13 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
     is_junk = forms.NullBooleanField(
         required=False, initial=None, widget=BlankNullBooleanSelect)
 
+    screen_type = ScreenTypeChoiceField(required=False,
+                                        widget=forms.Select)
+
     field_order = [
         'pk', 'plate__pk', 'well',
         'plate__date', 'plate__temperature',
+        'screen_type',
         'worm_strain', 'plate__screen_stage',
         'library_stock', 'library_stock__intended_clone',
         'exclude_l4440', 'is_junk',
@@ -257,6 +262,7 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
         cleaned_data = super(FilterExperimentWellsForm, self).clean()
 
         exclude_l4440 = cleaned_data.pop('exclude_l4440')
+        screen_type = cleaned_data.pop('screen_type')
 
         remove_empties_and_none(cleaned_data)
         experiments = Experiment.objects.filter(**cleaned_data)
@@ -264,6 +270,36 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
         if exclude_l4440:
             experiments = experiments.exclude(
                 library_stock__intended_clone='L4440')
+
+        if screen_type:
+            # Since query results can be across multiple strains (with
+            # different SUP/ENH temperatures), and since joining by non-PK
+            # fields (i.e. to join Experiment.temperature with
+            # WormStrain.permissive_temp) is unwieldy and would force
+            # using raw SQL (which is less maintainable and less safe), simply
+            # iterate over the results, tossing anything that is not at the
+            # screen_type temperature for that experiment's strain.
+
+            worms = WormStrain.objects.all()
+            to_temperature = {}
+
+            for worm in worms:
+                if screen_type == 'ENH':
+                    to_temperature[worm] = worm.permissive_temperature
+
+                elif screen_type == 'SUP':
+                    to_temperature[worm] = worm.restrictive_temperature
+
+            filtered = []
+
+            for experiment in experiments.prefetch_related('worm_strain',
+                                                           'plate'):
+                temperature = experiment.plate.temperature
+
+                if temperature == to_temperature[experiment.worm_strain]:
+                    filtered.append(experiment)
+
+            experiments = filtered
 
         cleaned_data['experiments'] = experiments
         return cleaned_data
