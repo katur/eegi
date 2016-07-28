@@ -34,8 +34,7 @@ var ScoringKeyboardShortcuts = {
     }
 
     this.currentExperimentIndex = 0;
-    var currentExperiment = $(this.experiments[this.currentExperimentIndex]);
-    this.scrollToExperiment(currentExperiment);
+    this.activateExperiment();
     this.listen();
   },
 
@@ -49,12 +48,24 @@ var ScoringKeyboardShortcuts = {
     switch(e.which) {
       case this.KEYS.UP:
         e.preventDefault();
-        this.navigateExperiments(this.DIRECTIONS.UP);
+
+        if (e.shiftKey) {
+          this.navigateKeyableGroups(this.DIRECTIONS.UP);
+        } else {
+          this.navigateExperiments(this.DIRECTIONS.UP);
+        }
+
         break;
 
       case this.KEYS.DOWN:
         e.preventDefault();
-        this.navigateExperiments(this.DIRECTIONS.DOWN);
+
+        if (e.shiftKey) {
+          this.navigateKeyableGroups(this.DIRECTIONS.DOWN);
+        } else {
+          this.navigateExperiments(this.DIRECTIONS.DOWN);
+        }
+
         break;
 
       default:
@@ -66,37 +77,61 @@ var ScoringKeyboardShortcuts = {
     }
   },
 
-  navigateExperiments: function(direction) {
-    var nextExperimentIndex;
-    if (direction === this.DIRECTIONS.UP) {
-      nextExperimentIndex = this.currentExperimentIndex - 1;
-    } else if (direction === this.DIRECTIONS.DOWN) {
-      nextExperimentIndex = this.currentExperimentIndex + 1;
-    }
-
-    if (nextExperimentIndex < 0 ||
-        nextExperimentIndex >= this.experiments.length) {
-      return;
-    }
-
-    var nextExperiment = $(this.experiments[nextExperimentIndex]);
-    this.scrollToExperiment(nextExperiment);
-    this.currentExperimentIndex = nextExperimentIndex;
-  },
-
   score: function(key) {
     var group = this.getKeyableGroup();
     var input = group.find(".keyable")[key];
     $(input).trigger("click");
-
-    // Move on to next keyableGroup, if there is one
-    if (this.keyableGroupIndex < (this.keyableGroups.length - 1)) {
-      this.keyableGroupIndex += 1;
-      this.activateKeyableGroup();
-    }
+    this.navigateKeyableGroups(this.DIRECTIONS.DOWN);
   },
 
-  setKeyableGroups: function(experiment) {
+  navigateExperiments: function(direction) {
+    var nextIndex;
+    if (direction === this.DIRECTIONS.UP) {
+      nextIndex = this.currentExperimentIndex - 1;
+    } else if (direction === this.DIRECTIONS.DOWN) {
+      nextIndex = this.currentExperimentIndex + 1;
+    }
+
+    if (nextIndex < 0 || nextIndex >= this.experiments.length) {
+      return;
+    }
+
+    this.currentExperimentIndex = nextIndex;
+    this.activateExperiment();
+  },
+
+  navigateKeyableGroups: function(direction) {
+    var nextIndex;
+    if (direction === this.DIRECTIONS.UP) {
+      nextIndex = this.keyableGroupIndex - 1;
+    } else if (direction === this.DIRECTIONS.DOWN) {
+      nextIndex = this.keyableGroupIndex + 1;
+    }
+
+    if (nextIndex < 0 || nextIndex >= this.keyableGroups.length) {
+      return;
+    }
+
+    this.keyableGroupIndex = nextIndex;
+    this.activateKeyableGroup();
+  },
+
+  activateExperiment: function() {
+    $(this.experiments).removeClass("active");
+    var experiment = $(this.experiments[this.currentExperimentIndex]);
+    experiment.addClass("active");
+    this.initializeKeyableGroups(experiment);
+    this.activateKeyableGroup();
+    $("html, body").scrollTop(experiment.position().top);
+  },
+
+  activateKeyableGroup: function() {
+    $(".active-keyable-group").removeClass("active-keyable-group");
+    var group = this.getKeyableGroup();
+    group.addClass("active-keyable-group");
+  },
+
+  initializeKeyableGroups: function(experiment) {
     var buttons = experiment.find(".keyable");
     var groups = [];
 
@@ -110,24 +145,6 @@ var ScoringKeyboardShortcuts = {
 
     this.keyableGroups = groups;
     this.keyableGroupIndex = 0;
-  },
-
-  scrollToExperiment: function(experiment) {
-    this.activateExperiment(experiment);
-    $("html, body").scrollTop(experiment.position().top);
-  },
-
-  activateExperiment: function(experiment) {
-    $(this.experiments).removeClass("active");
-    experiment.addClass("active");
-    this.setKeyableGroups(experiment);
-    this.activateKeyableGroup();
-  },
-
-  activateKeyableGroup: function() {
-    $(".active-keyable-group").removeClass("active-keyable-group");
-    var group = this.getKeyableGroup();
-    group.addClass("active-keyable-group");
   },
 
   getKeyableGroup: function() {
