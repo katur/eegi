@@ -282,6 +282,8 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         label='Exclude if already scored by you')
     exclude_l4440 = forms.BooleanField(
         required=False, initial=True, label='Exclude L4440')
+    exclude_no_clone = forms.BooleanField(
+        required=False, initial=True, label='Exclude (supposedly) empty wells')
 
     pk = forms.CharField(required=False, help_text='e.g. 32412_A01',
                          label='Experiment ID')
@@ -289,7 +291,8 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         required=False, initial=False, widget=BlankNullBooleanSelect)
 
     field_order = [
-        'form', 'unscored_by_user', 'exclude_l4440', 'is_junk',
+        'form', 'unscored_by_user',
+        'exclude_no_clone', 'exclude_l4440', 'is_junk',
         'plate__screen_stage', 'worm_strain', 'plate__temperature',
         'plate__date',
         'pk', 'plate__pk',
@@ -305,6 +308,7 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         form = cleaned_data.pop('form')
         unscored_by_user = cleaned_data.pop('unscored_by_user')
         exclude_l4440 = cleaned_data.pop('exclude_l4440')
+        exclude_no_clone = cleaned_data.pop('exclude_no_clone')
 
         remove_empties_and_none(cleaned_data)
         experiments = Experiment.objects.filter(**cleaned_data)
@@ -312,6 +316,10 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         if exclude_l4440:
             experiments = experiments.exclude(
                 library_stock__intended_clone='L4440')
+
+        if exclude_no_clone:
+            experiments = experiments.exclude(
+                library_stock__intended_clone__isnull=True)
 
         if unscored_by_user:
             score_ids = (
