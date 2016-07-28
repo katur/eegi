@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
 
+from clones.helpers.queries import get_l4440
 from experiments.helpers.naming import generate_experiment_id
 from experiments.helpers.scores import get_most_relevant_score_per_experiment
 from library.models import LibraryPlate, LibraryStock
@@ -307,6 +308,26 @@ class Experiment(models.Model):
         """
         self.is_junk = not self.is_junk
         self.save()
+
+    def get_l4440_controls(self):
+        """
+        Get the L4440 controls for this experiment.
+
+        L4440 controls for this experiment are restricted to those from
+        the same date, with the same worm and same temperature.
+
+        If this experiment is itself an L4440 clone, the function works
+        the same way, returning all L4440 experiments from the same
+        date, same worm, same temperature.
+        """
+        filters = {
+            'is_junk': False,
+            'plate__date': self.date(),
+            'worm_strain': self.worm_strain,
+            'plate__temperature': self.temperature(),
+            'library_stock__intended_clone': get_l4440(),
+        }
+        return Experiment.objects.filter(**filters)
 
 
 class ManualScoreCode(models.Model):
