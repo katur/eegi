@@ -41,6 +41,108 @@ class ExperimentPlate(models.Model):
     def get_absolute_url(self):
         return reverse('experiment_plate_url', args=[self.id])
 
+    def get_wells(self):
+        """
+        Get the experiment wells for this plate, ordered by well.
+
+        Selects the related library stocks and intended clones.
+        """
+        experiments = (self.experiment_set
+                       .select_related('library_stock',
+                                       'library_stock__intended_clone')
+                       .order_by('well'))
+
+        return experiments
+
+    def create_wells(self, worm_strain, library_plate, is_junk=False):
+        """
+        Returns the experiment wells that go with this experiment plate.
+
+        Raises an exception if there are already experiment wells
+        for this experiment plate in the database.
+
+        Initializes each new well's worm, library stock, and junk
+        according to the parameters passed in.
+        """
+        if Experiment.objects.filter(plate=self).exists():
+            raise Exception('Experiments already exists for plate {}'
+                            .format(self))
+
+        stocks_by_well = library_plate.get_stocks_as_dictionary()
+        new_experiment_wells = []
+
+        for well in get_well_list():
+            library_stock = stocks_by_well[well]
+
+            new_experiment_wells.append(Experiment(
+                id=generate_experiment_id(self.id, well),
+                plate=self, well=well,
+                worm_strain=worm_strain,
+                library_stock=library_stock,
+                is_junk=is_junk))
+
+        return new_experiment_wells
+
+    def get_worm_strains(self):
+        """
+        Get all worm strains present in this plate.
+
+        While we typically only put one worm strain in each plate,
+        the database accommodates different worm strains
+        in different wells.
+        """
+        worm_pks = (self.experiment_set.order_by('worm_strain')
+                    .values('worm_strain').distinct())
+
+        return WormStrain.objects.filter(pk__in=worm_pks)
+
+    def set_worm_strain(self, worm_strain):
+        """Set the worm strain for all wells in this plate."""
+        for experiment in self.experiment_set.all():
+            experiment.worm_strain = worm_strain
+            experiment.save()
+
+    def get_library_plates(self):
+        """
+        Get all library plates present in this experiment plate.
+
+        While we typically only put one library plate into each
+        experiment plate, the database accommodates different
+        assortments of library stocks.
+        """
+        library_plate_pks = (self.experiment_set
+                             .order_by('library_stock__plate')
+                             .values('library_stock__plate')
+                             .distinct())
+
+        return LibraryPlate.objects.filter(pk__in=library_plate_pks)
+
+    def set_library_stocks(self, library_plate):
+        """
+        Set the library stock for all wells in this plate.
+
+        Assumes the standard mapping from library_plate positions
+        to experiment_plate positions.
+        """
+        stocks_by_well = library_plate.get_stocks_as_dictionary()
+        for experiment in self.experiment_set.all():
+            well = experiment.well
+            experiment.library_stock = stocks_by_well[well]
+            experiment.save()
+
+    def has_junk(self):
+        """
+        Determine if any of the wells in this experiment plate are junk.
+        """
+        junk = self.experiment_set.values_list('is_junk', flat=True)
+        return True in junk
+
+    def set_junk(self, is_junk):
+        """Set the junk field for all wells in this plate."""
+        for experiment in self.experiment_set.all():
+            experiment.is_junk = is_junk
+            experiment.save()
+
     @classmethod
     def get_tested_temperatures(cls):
         """
@@ -89,108 +191,6 @@ class ExperimentPlate(models.Model):
 
         return (experiment_plate, experiment_wells)
 
-    def create_wells(self, worm_strain, library_plate, is_junk=False):
-        """
-        Returns the experiment wells that go with this experiment plate.
-
-        Raises an exception if there are already experiment wells
-        for this experiment plate in the database.
-
-        Initializes each new well's worm, library stock, and junk
-        according to the parameters passed in.
-        """
-        if Experiment.objects.filter(plate=self).exists():
-            raise Exception('Experiments already exists for plate {}'
-                            .format(self))
-
-        stocks_by_well = library_plate.get_stocks_as_dictionary()
-        new_experiment_wells = []
-
-        for well in get_well_list():
-            library_stock = stocks_by_well[well]
-
-            new_experiment_wells.append(Experiment(
-                id=generate_experiment_id(self.id, well),
-                plate=self, well=well,
-                worm_strain=worm_strain,
-                library_stock=library_stock,
-                is_junk=is_junk))
-
-        return new_experiment_wells
-
-    def get_experiment_wells(self):
-        """
-        Get the experiment wells for this plate, ordered by well.
-
-        Selects the related library stocks and intended clones.
-        """
-        experiments = (self.experiment_set
-                       .select_related('library_stock',
-                                       'library_stock__intended_clone')
-                       .order_by('well'))
-
-        return experiments
-
-    def get_worm_strains(self):
-        """
-        Get all worm strains present in this plate.
-
-        While we typically only put one worm strain in each plate,
-        the database accommodates different worm strains
-        in different wells.
-        """
-        worm_pks = (self.experiment_set.order_by('worm_strain')
-                    .values('worm_strain').distinct())
-
-        return WormStrain.objects.filter(pk__in=worm_pks)
-
-    def get_library_plates(self):
-        """
-        Get all library plates present in this experiment plate.
-
-        While we typically only put one library plate into each
-        experiment plate, the database accommodates different
-        assortments of library stocks.
-        """
-        library_plate_pks = (self.experiment_set
-                             .order_by('library_stock__plate')
-                             .values('library_stock__plate')
-                             .distinct())
-
-        return LibraryPlate.objects.filter(pk__in=library_plate_pks)
-
-    def has_junk(self):
-        """
-        Determine if any of the wells in this experiment plate are junk.
-        """
-        junk = self.experiment_set.values_list('is_junk', flat=True)
-        return True in junk
-
-    def set_worm_strain(self, worm_strain):
-        """Set the worm strain for all wells in this plate."""
-        for experiment in self.experiment_set.all():
-            experiment.worm_strain = worm_strain
-            experiment.save()
-
-    def set_library_plate(self, library_plate):
-        """
-        Set the library stock for all wells in this plate.
-
-        Assumes the standard mapping from library_plate positions
-        to experiment_plate positions.
-        """
-        stocks_by_well = library_plate.get_stocks_as_dictionary()
-        for experiment in self.experiment_set.all():
-            well = experiment.well
-            experiment.library_stock = stocks_by_well[well]
-            experiment.save()
-
-    def set_junk(self, is_junk):
-        """Set the junk field for all wells in this plate."""
-        for experiment in self.experiment_set.all():
-            experiment.is_junk = is_junk
-            experiment.save()
-
 
 class Experiment(models.Model):
     """A well-level experiment."""
@@ -214,39 +214,6 @@ class Experiment(models.Model):
     def get_absolute_url(self):
         return reverse('experiment_well_url', args=[self.id])
 
-    @classmethod
-    def get_distinct_dates(cls, filters):
-        """Get list of dates of the Experiments that match filters."""
-        return (cls.objects.filter(**filters)
-                .order_by('-plate__date')
-                .values_list('plate__date', flat=True)
-                .distinct())
-
-    @classmethod
-    def get_distinct_temperatures(cls, filters):
-        """Get list of temperatures of the Experiments that match filters."""
-        return (cls.objects.filter(**filters)
-                .order_by('plate__temperature')
-                .values_list('plate__temperature', flat=True)
-                .distinct())
-
-    @classmethod
-    def get_closest_temperature(cls, goal, filters):
-        """
-        Get temperature closest to goal among Experiments that match filters.
-        """
-        options = cls.get_distinct_temperatures(filters)
-        return get_closest_candidate(goal, options)
-
-    def is_control(self):
-        return self.has_control_worm() or self.has_control_clone()
-
-    def has_control_worm(self):
-        return self.worm_strain.is_control()
-
-    def has_control_clone(self):
-        return self.library_stock.intended_clone.is_control()
-
     def date(self):
         return self.plate.date
 
@@ -258,6 +225,15 @@ class Experiment(models.Model):
 
     def intended_clone(self):
         return self.library_stock.intended_clone
+
+    def is_control(self):
+        return self.has_control_worm() or self.has_control_clone()
+
+    def has_control_worm(self):
+        return self.worm_strain.is_control()
+
+    def has_control_clone(self):
+        return self.library_stock.intended_clone.is_control()
 
     # TODO: These three are repeated in Experiment and LibraryStock;
     # consider making a superclass or mixin
@@ -291,27 +267,21 @@ class Experiment(models.Model):
             url += '.bmp'
         return url
 
-    def get_devstar_count_path(self):
-        tile = well_to_tile(self.well)
-        f = '/'.join((settings.BASE_DIR_DEVSTAR_OUTPUT,
-                      str(self.plate_id), tile))
-        f += 'cnt.txt'
-        return f
-
-    def get_manual_scores(self):
-        """Get all manual scores for this experiment well."""
-        return self.manualscore_set.all()
-
-    def get_devstar_scores(self):
-        """Get all DevStaR scores for this experiment."""
-        return self.devstarscore_set.all()
-
     def is_manually_scored(self):
         """Check if an experiment was manually scored."""
         if self.get_manual_scores():
             return True
         else:
             return False
+
+    def get_manual_scores(self):
+        """Get all manual scores for this experiment well."""
+        return self.manualscore_set.all()
+
+    def get_most_relevant_manual_score(self):
+        """Get the most relevant manual score for this experiment."""
+        scores = self.get_manual_scores()
+        return get_most_relevant_score_per_experiment(scores)
 
     def is_devstar_scored(self):
         """Check if an experiment was scored by DevStaR."""
@@ -320,22 +290,18 @@ class Experiment(models.Model):
         else:
             return False
 
-    def get_most_relevant_manual_score(self):
-        """Get the most relevant manual score for this experiment."""
-        scores = self.get_manual_scores()
-        return get_most_relevant_score_per_experiment(scores)
+    def get_devstar_scores(self):
+        """Get all DevStaR scores for this experiment."""
+        return self.devstarscore_set.all()
 
-    def toggle_junk(self):
-        """
-        Toggle the junk state of this experiment.
+    def get_devstar_count_path(self):
+        tile = well_to_tile(self.well)
+        f = '/'.join((settings.BASE_DIR_DEVSTAR_OUTPUT,
+                      str(self.plate_id), tile))
+        f += 'cnt.txt'
+        return f
 
-        I.e., if this experiment is not junk, change it to junk;
-        if this experiment is junk, change it to not junk.
-        """
-        self.is_junk = not self.is_junk
-        self.save()
-
-    def get_l4440_controls(self):
+    def get_l4440_control_filters(self):
         """
         Get the filters for the L4440 controls for this experiment.
 
@@ -361,7 +327,7 @@ class Experiment(models.Model):
 
         return filters
 
-    def get_n2_controls(self):
+    def get_n2_control_filters(self):
         """
         Get the N2 + RNAi controls for this experiment.
 
@@ -386,6 +352,40 @@ class Experiment(models.Model):
 
         return filters
 
+    def toggle_junk(self):
+        """
+        Toggle the junk state of this experiment.
+
+        I.e., if this experiment is not junk, change it to junk;
+        if this experiment is junk, change it to not junk.
+        """
+        self.is_junk = not self.is_junk
+        self.save()
+
+    @classmethod
+    def get_distinct_dates(cls, filters):
+        """Get list of dates of the Experiments that match filters."""
+        return (cls.objects.filter(**filters)
+                .order_by('-plate__date')
+                .values_list('plate__date', flat=True)
+                .distinct())
+
+    @classmethod
+    def get_distinct_temperatures(cls, filters):
+        """Get list of temperatures of the Experiments that match filters."""
+        return (cls.objects.filter(**filters)
+                .order_by('plate__temperature')
+                .values_list('plate__temperature', flat=True)
+                .distinct())
+
+    @classmethod
+    def get_closest_temperature(cls, goal, filters):
+        """
+        Get temperature closest to goal among Experiments that match filters.
+        """
+        options = cls.get_distinct_temperatures(filters)
+        return get_closest_candidate(goal, options)
+
 
 class ManualScoreCode(models.Model):
     """A class of score that could be assigned to an image by a human."""
@@ -395,10 +395,10 @@ class ManualScoreCode(models.Model):
     short_description = models.CharField(max_length=50, blank=True)
     legacy_description = models.CharField(max_length=100, blank=True)
 
-    STRONG_CODES = (3, 14, 18)
-    MEDIUM_CODES = (2, 13, 17)
-    WEAK_CODES = (1, 12, 16)
-    NEGATIVE_CODES = (0,)
+    STRONG_CODES = {3, 14, 18}
+    MEDIUM_CODES = {2, 13, 17}
+    WEAK_CODES = {1, 12, 16}
+    NEGATIVE_CODES = {0}
 
     '''
     Various sets of scores for scoring interfaces.
@@ -437,10 +437,6 @@ class ManualScoreCode(models.Model):
         else:
             return str(self.id)
 
-    @classmethod
-    def get_codes(cls, key):
-        return cls.objects.filter(pk__in=cls._SCORING_PKS[key])
-
     def is_strong(self):
         return self.id in ManualScoreCode.STRONG_CODES
 
@@ -456,6 +452,10 @@ class ManualScoreCode(models.Model):
     def is_other(self):
         return (not self.is_strong() and not self.is_medium() and
                 not self.is_weak() and not self.is_negative())
+
+    @classmethod
+    def get_codes(cls, key):
+        return cls.objects.filter(pk__in=cls._SCORING_PKS[key])
 
 
 class ManualScore(models.Model):

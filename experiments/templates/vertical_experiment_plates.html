@@ -35,7 +35,7 @@ Vertical Tile View of Experiments:
   </thead>
 
   <tbody>
-    {% for well in experiment_plate.get_experiment_wells %}
+    {% for well in experiment_plate.get_wells %}
     <tr>
       {% include 'well.html' with is_experiment=True %}
     </tr>

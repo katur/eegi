@@ -491,7 +491,7 @@ def process_ChangeExperimentPlatesForm_data(experiment_plate, data):
         experiment_plate.set_worm_strain(data.get('worm_strain'))
 
     if data.get('library_plate'):
-        experiment_plate.set_library_plate(data.get('library_plate'))
+        experiment_plate.set_library_stocks(data.get('library_plate'))
 
     if data.get('is_junk') is not None:
         experiment_plate.set_junk(data.get('is_junk'))

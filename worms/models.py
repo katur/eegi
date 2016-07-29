@@ -32,14 +32,14 @@ class WormStrain(models.Model):
         db_table = 'WormStrain'
         ordering = ['genotype']
 
+    def __unicode__(self):
+        return self.get_display_string()
+
     def __cmp__(self, other):
         if hasattr(other, 'genotype'):
             return cmp(self.genotype, other.genotype)
         else:
             return cmp(self.genotype, str(other))
-
-    def __unicode__(self):
-        return self.get_display_string()
 
     def get_display_string(self):
         if self.genotype:
