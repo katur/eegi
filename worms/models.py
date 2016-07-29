@@ -1,7 +1,6 @@
 from decimal import Decimal
 
 from django.db import models
-from django.db.models import Count
 
 from library.models import LibraryStock
 
@@ -187,7 +186,8 @@ class WormStrain(models.Model):
         annotated = (
             self.get_experiments_by_screen(screen_type, screen_stage)
             .order_by('library_stock')
-            .values('library_stock').annotate(Count('id')))
+            .values('library_stock')
+            .annotate(models.Count('id')))
 
         singles_pks = [x['library_stock'] for x in annotated
                        if x['id__count'] == number_of_replicates]
@@ -195,3 +195,72 @@ class WormStrain(models.Model):
         singles = LibraryStock.objects.filter(pk__in=singles_pks)
 
         return set(singles)
+
+    @classmethod
+    def get_n2(cls):
+        """Get the N2 control worm strain."""
+        return cls.objects.get(pk='N2')
+
+    @classmethod
+    def get_worms_for_screen_type(cls, screen_type):
+        """
+        Get the worm strains involved in a particular screen.
+
+        screen_type must be 'ENH' or 'SUP'.
+        """
+        if screen_type not in {'ENH', 'SUP'}:
+            raise Exception('screen_type must be ENH or SUP')
+
+        worms = cls.objects
+
+        if screen_type == 'ENH':
+            return worms.exclude(permissive_temperature__isnull=True)
+        else:
+            return worms.exclude(restrictive_temperature__isnull=True)
+
+    @classmethod
+    def get_worm_and_temperature_from_search_term(cls, search_term,
+                                                  screen_type):
+        """
+        Get tuple (worm, temperature) matching search_term and screen_type.
+
+        screen_type must be 'ENH' or 'SUP'; otherwise an exception is thrown.
+
+        search_term can be the allele, gene, or name of a worm strain.
+
+        The combination of search_term + screen_type must uniquely identify a
+        worm strain. Otherwise an exception is thrown.
+        """
+        worms = cls.get_worms_for_screen_type(screen_type)
+
+        worms = worms.filter(models.Q(gene=search_term) |
+                             models.Q(allele=search_term) |
+                             models.Q(id=search_term))
+
+        if not worms:
+            return None
+        elif len(worms) > 1:
+            raise Exception('Multiple worm strains match search_term.')
+        else:
+            worm = worms.first()
+
+        if screen_type == 'ENH':
+            temperature = worm.permissive_temperature
+        else:
+            temperature = worm.restrictive_temperature
+
+        return (worm, temperature)
+
+    @classmethod
+    def get_worm_to_temperature_dictionary(cls, screen_type):
+        worms = cls.objects.all()
+        to_temperature = {}
+
+        for worm in worms:
+            if screen_type == 'ENH':
+                to_temperature[worm] = worm.permissive_temperature
+
+            elif screen_type == 'SUP':
+                to_temperature[worm] = worm.restrictive_temperature
+
+        return to_temperature

@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from experiments.helpers.criteria import passes_enh_primary
 from utils.plates import (assign_to_plates, get_plate_assignment_rows,
                           is_symmetric)
-from worms.helpers.queries import get_worms_for_screen_type
+from worms.models import WormStrain
 
 UNIVERSAL_THRESHOLD = 4
 
@@ -32,7 +32,7 @@ class Command(BaseCommand):
 
         candidates_by_worm = {}
         candidates_by_clone = {}
-        worms = get_worms_for_screen_type('ENH')
+        worms = WormStrain.get_worms_for_screen_type('ENH')
 
         for worm in worms:
             candidates_by_worm[worm] = []

@@ -8,7 +8,7 @@ from library.forms import LibraryPlateField
 from utils.forms import EMPTY_CHOICE, BlankNullBooleanSelect, RangeField
 from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
                          WormChoiceField, clean_mutant_query_and_screen_type)
-from worms.helpers.queries import get_worm_to_temperature_dictionary
+from worms.models import WormStrain
 
 
 #################
@@ -375,7 +375,7 @@ def _limit_to_screen_type(experiments, screen_type):
     against SQL injection attacks that Django QuerySets provide.
     '''
     # Create a dictionary
-    to_temperature = get_worm_to_temperature_dictionary(screen_type)
+    to_temperature = WormStrain.get_worm_to_temperature_dictionary(screen_type)
     filtered = []
 
     for experiment in experiments.prefetch_related('worm_strain', 'plate'):

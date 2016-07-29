@@ -1,7 +1,6 @@
 from django import forms
 
 from utils.forms import EMPTY_CHOICE
-from worms.helpers.queries import get_worm_and_temperature_from_search_term
 from worms.models import WormStrain
 
 
@@ -43,7 +42,7 @@ class ScreenTypeChoiceField(forms.ChoiceField):
             kwargs['widget'] = forms.RadioSelect
 
         if 'choices' not in kwargs:
-            kwargs['choices'] = [('SUP', 'Suppressor'), ('ENH', 'Enhancer')]
+            kwargs['choices'] = [('SUP', 'suppressor'), ('ENH', 'enhancer')]
 
         if 'required' in kwargs and not kwargs['required']:
             kwargs['choices'] = [EMPTY_CHOICE] + kwargs['choices']
@@ -100,7 +99,7 @@ def clean_mutant_query_and_screen_type(form, cleaned_data):
     screen_type = cleaned_data.get('screen_type')
 
     if mutant_query and screen_type:
-        worm_and_temp = get_worm_and_temperature_from_search_term(
+        worm_and_temp = WormStrain.get_worm_and_temperature_from_search_term(
             mutant_query, screen_type)
         if worm_and_temp:
             cleaned_data['worm'] = worm_and_temp[0]

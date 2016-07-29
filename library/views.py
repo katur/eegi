@@ -1,7 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 
 from library.models import LibraryPlate
-from library.helpers.queries import get_screening_plates
 from utils.pagination import get_paginated
 
 
@@ -11,7 +10,8 @@ PLATES_PER_PAGE = 100
 def library_plates(request):
     """Render the page listing all library plates."""
     screen_stage = request.GET.get('screen_stage')
-    library_plates = get_screening_plates(screen_stage=screen_stage)
+    library_plates = LibraryPlate.get_screening_plates(
+        screen_stage=screen_stage)
     display_plates = get_paginated(request, library_plates,
                                    PLATES_PER_PAGE)
     context = {

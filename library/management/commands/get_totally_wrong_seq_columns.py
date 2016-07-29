@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from clones.helpers.queries import get_l4440
+from clone.models import Clone
 from library.models import LibraryStock
 
 
@@ -10,7 +10,7 @@ class Command(BaseCommand):
             'cases where the intended clones matches a BLAT hit.')
 
     def handle(self, **options):
-        l4440 = get_l4440()
+        l4440 = Clone.get_l4440()
 
         # Get all non-L4440, non-null, SUP secondary LibraryStocks
         stocks = (LibraryStock.objects

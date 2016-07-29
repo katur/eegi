@@ -1,7 +1,7 @@
 from __future__ import division
 from collections import OrderedDict
 
-from worms.helpers.queries import get_worms_for_screen_type
+from worms.models import WormStrain
 
 
 def get_most_relevant_score_per_experiment(scores):
@@ -75,7 +75,7 @@ def get_positives_any_worm(screen_type, screen_stage, criteria, **kwargs):
     A screen is defined by both screen_type ('ENH' or 'SUP')
     and screen_stage (1 for primary, 2 for secondary).
     """
-    worms = get_worms_for_screen_type(screen_type)
+    worms = WormStrain.get_worms_for_screen_type(screen_type)
 
     all_positives = set()
     for worm in worms:

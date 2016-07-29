@@ -1,6 +1,5 @@
 from django import forms
 
-from clones.helpers.queries import get_clones_from_search_term
 from clones.models import Clone
 
 
@@ -30,7 +29,7 @@ class CloneSearchField(forms.CharField):
         if not value:
             return Clone.objects.all()
         else:
-            return get_clones_from_search_term(value)
+            return Clone.get_clones_from_search_term(value)
 
 
 class RNAiKnockdownField(CloneSearchField):
@@ -52,7 +51,7 @@ class RNAiKnockdownField(CloneSearchField):
         elif not value:
             return None
         else:
-            return get_clones_from_search_term(value)
+            return Clone.get_clones_from_search_term(value)
 
 
 class CloneSearchForm(forms.Form):

@@ -3,13 +3,11 @@ from copy import copy
 
 from django.shortcuts import redirect, render, get_object_or_404
 
-from clones.helpers.queries import get_l4440
 from clones.models import Clone
 from experiments.forms import (
     DoubleKnockdownForm, MutantKnockdownForm, RNAiKnockdownForm)
 from experiments.models import Experiment
 from library.models import LibraryStock
-from worms.helpers.queries import get_n2
 from worms.models import WormStrain
 from utils.http import build_url
 
@@ -26,7 +24,7 @@ def rnai_knockdown(request, clones, temperature=None):
     """
     data = OrderedDict()
 
-    n2 = get_n2()
+    n2 = WormStrain.get_n2()
     clones = Clone.objects.filter(pk__in=clones.split(','))
 
     for clone in clones:
@@ -79,7 +77,7 @@ def mutant_knockdown(request, mutant, temperature):
     """
     data = OrderedDict()
 
-    l4440 = get_l4440()
+    l4440 = Clone.get_l4440()
     mutant = get_object_or_404(WormStrain, pk=mutant)
 
     filters = {
@@ -146,8 +144,8 @@ def double_knockdown(request, mutant, clones, temperature):
 
     data = OrderedDict()
 
-    n2 = get_n2()
-    l4440 = get_l4440()
+    n2 = WormStrain.get_n2()
+    l4440 = Clone.get_l4440()
     mutant = get_object_or_404(WormStrain, pk=mutant)
     clones = Clone.objects.filter(pk__in=clones.split(','))
 

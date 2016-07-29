@@ -55,12 +55,32 @@ class LibraryPlate(models.Model):
         return s
 
     def get_l4440_stocks(self):
-        return self.librarystock_set.filter(intended_clone='L4440')
+        return self.librarystock_set.filter(intended_clone=Clone.get_l4440())
 
     def is_ahringer_96_plate(self):
         """Determine if this plate is an Ahringer 96-format plate."""
         return re.match('(I|II|III|IV|V|X)-[1-9][0-3]?-[AB][12]',
                         self.id)
+
+    @classmethod
+    def get_screening_plates(cls, screen_stage=None):
+        """
+        Get library plates intended for screening.
+
+        This excludes the plates with screen_stage=0 (which means not
+        used for screening). This includes our Ahringer 384-format plates,
+        and the Vidal plates from which our rearrays were derived.
+
+        Optionally supply an integer screen_stage. What is returned in
+        this case is both the plates specifically for that screen_stage,
+        and also the plates with screen_stage=None (which is meant to
+        signify that the plate is meant for use across screen stages).
+        """
+        if screen_stage:
+            return cls.objects.filter(models.Q(screen_stage=screen_stage) |
+                                      models.Q(screen_stage=None))
+        else:
+            return cls.objects.exclude(screen_stage=0)
 
 
 class LibraryStock(models.Model):

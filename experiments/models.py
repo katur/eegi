@@ -5,14 +5,13 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
 
-from clones.helpers.queries import get_l4440
+from clones.models import Clone
 from experiments.helpers.naming import generate_experiment_id
 from experiments.helpers.scores import get_most_relevant_score_per_experiment
 from library.models import LibraryPlate, LibraryStock
 from utils.comparison import get_closest_candidate
 from utils.plates import get_well_list
 from utils.well_tile_conversion import well_to_tile
-from worms.helpers.queries import get_n2
 from worms.models import WormStrain
 
 
@@ -20,8 +19,8 @@ class ExperimentPlate(models.Model):
     """A plate-level experiment."""
 
     SCREEN_STAGE_CHOICES = (
-        (1, 'Primary'),
-        (2, 'Secondary'),
+        (1, 'primary'),
+        (2, 'secondary'),
     )
 
     id = models.PositiveIntegerField(primary_key=True)
@@ -322,7 +321,7 @@ class Experiment(models.Model):
             'plate__date': self.date(),
             'plate__temperature': self.temperature(),
             'worm_strain': self.worm_strain,
-            'library_stock__intended_clone': get_l4440(),
+            'library_stock__intended_clone': Clone.get_l4440(),
         }
 
         return filters
@@ -344,7 +343,7 @@ class Experiment(models.Model):
             'plate__date': self.date(),
             'plate__temperature': self.temperature(),
             'library_stock': self.library_stock,
-            'worm_strain': get_n2(),
+            'worm_strain': WormStrain.get_n2(),
         }
 
         filters['plate__temperature'] = Experiment.get_closest_temperature(
