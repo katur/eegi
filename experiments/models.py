@@ -18,11 +18,6 @@ from worms.models import WormStrain
 class ExperimentPlate(models.Model):
     """A plate-level experiment."""
 
-    SCREEN_STAGE_CHOICES = (
-        (1, 'primary'),
-        (2, 'secondary'),
-    )
-
     id = models.PositiveIntegerField(primary_key=True)
     screen_stage = models.PositiveSmallIntegerField(db_index=True)
     temperature = models.DecimalField(max_digits=3, decimal_places=1,

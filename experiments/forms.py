@@ -11,6 +11,12 @@ from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
 from worms.models import WormStrain
 
 
+SCREEN_STAGE_CHOICES = [
+    (1, 'primary'),
+    (2, 'secondary'),
+]
+
+
 #################
 # Custom Fields #
 #################
@@ -20,10 +26,7 @@ class ScreenStageChoiceField(forms.ChoiceField):
 
     def __init__(self, **kwargs):
         if 'choices' not in kwargs:
-            choices = ([EMPTY_CHOICE] +
-                       list(ExperimentPlate.SCREEN_STAGE_CHOICES))
-
-            kwargs['choices'] = choices
+            kwargs['choices'] = [EMPTY_CHOICE] + SCREEN_STAGE_CHOICES
 
         super(ScreenStageChoiceField, self).__init__(**kwargs)
 

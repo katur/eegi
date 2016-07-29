@@ -4,6 +4,12 @@ from utils.forms import EMPTY_CHOICE
 from worms.models import WormStrain
 
 
+SCREEN_TYPE_CHOICES = [
+    ('SUP', 'suppressor'),
+    ('ENH', 'enhancer'),
+]
+
+
 class WormChoiceField(forms.ModelChoiceField):
     """
     Field to choose a worm strain.
@@ -42,8 +48,9 @@ class ScreenTypeChoiceField(forms.ChoiceField):
             kwargs['widget'] = forms.RadioSelect
 
         if 'choices' not in kwargs:
-            kwargs['choices'] = [('SUP', 'suppressor'), ('ENH', 'enhancer')]
+            kwargs['choices'] = SCREEN_TYPE_CHOICES
 
+        # Field is required unless specified
         if 'required' in kwargs and not kwargs['required']:
             kwargs['choices'] = [EMPTY_CHOICE] + kwargs['choices']
 
