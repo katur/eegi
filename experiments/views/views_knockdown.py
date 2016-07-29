@@ -5,13 +5,9 @@ from django.shortcuts import redirect, render, get_object_or_404
 
 from clones.helpers.queries import get_l4440
 from clones.models import Clone
-
 from experiments.forms import (
     DoubleKnockdownForm, MutantKnockdownForm, RNAiKnockdownForm)
-from experiments.helpers.queries import (
-    get_closest_temperature, get_distinct_dates)
 from experiments.models import Experiment
-
 from library.models import LibraryStock
 from worms.helpers.queries import get_n2
 from worms.models import WormStrain
@@ -164,7 +160,7 @@ def double_knockdown(request, mutant, clones, temperature):
         for library_stock in library_stocks:
             data_per_well = OrderedDict()
 
-            dates = get_distinct_dates({
+            dates = Experiment.get_distinct_dates({
                 'is_junk': False,
                 'worm_strain': mutant,
                 'library_stock': library_stock,
@@ -201,8 +197,8 @@ def double_knockdown(request, mutant, clones, temperature):
                     'library_stock': library_stock,
                 }
 
-                filters['plate__temperature'] = get_closest_temperature(
-                    temperature, filters)
+                t = Experiment.get_closest_temperature(temperature, filters)
+                filters['plate__temperature'] = t
 
                 n2_rnai = _create_inner_dictionary(filters)
 
@@ -214,8 +210,8 @@ def double_knockdown(request, mutant, clones, temperature):
                     'library_stock__intended_clone': l4440,
                 }
 
-                filters['plate__temperature'] = get_closest_temperature(
-                    temperature, filters)
+                t = Experiment.get_closest_temperature(temperature, filters)
+                filters['plate__temperature'] = t
 
                 n2_l4440 = _create_inner_dictionary(filters)
 

@@ -9,8 +9,10 @@ from clones.helpers.queries import get_l4440
 from experiments.helpers.naming import generate_experiment_id
 from experiments.helpers.scores import get_most_relevant_score_per_experiment
 from library.models import LibraryPlate, LibraryStock
+from utils.comparison import get_closest_candidate
 from utils.plates import get_well_list
 from utils.well_tile_conversion import well_to_tile
+from worms.helpers.queries import get_n2
 from worms.models import WormStrain
 
 
@@ -212,6 +214,30 @@ class Experiment(models.Model):
     def get_absolute_url(self):
         return reverse('experiment_well_url', args=[self.id])
 
+    @classmethod
+    def get_distinct_dates(cls, filters):
+        """Get list of dates of the Experiments that match filters."""
+        return (cls.objects.filter(**filters)
+                .order_by('-plate__date')
+                .values_list('plate__date', flat=True)
+                .distinct())
+
+    @classmethod
+    def get_distinct_temperatures(cls, filters):
+        """Get list of temperatures of the Experiments that match filters."""
+        return (cls.objects.filter(**filters)
+                .order_by('plate__temperature')
+                .values_list('plate__temperature', flat=True)
+                .distinct())
+
+    @classmethod
+    def get_closest_temperature(cls, goal, filters):
+        """
+        Get temperature closest to goal among Experiments that match filters.
+        """
+        options = cls.get_distinct_temperatures(filters)
+        return get_closest_candidate(goal, options)
+
     def is_control(self):
         return self.has_control_worm() or self.has_control_clone()
 
@@ -311,10 +337,15 @@ class Experiment(models.Model):
 
     def get_l4440_controls(self):
         """
-        Get the L4440 controls for this experiment.
+        Get the filters for the L4440 controls for this experiment.
+
+        To get the actual control experiments from the returned filters,
+        simply do Experiment.objects.filter(**filters). Returning
+        the filters is more flexible for customization, or for inserting
+        into a URL without performing the query.
 
         L4440 controls for this experiment are restricted to those from
-        the same date, with the same worm and same temperature.
+        the same date, same temperature, same worm.
 
         If this experiment is itself an L4440 clone, the function works
         the same way, returning all L4440 experiments from the same
@@ -323,11 +354,37 @@ class Experiment(models.Model):
         filters = {
             'is_junk': False,
             'plate__date': self.date(),
-            'worm_strain': self.worm_strain,
             'plate__temperature': self.temperature(),
+            'worm_strain': self.worm_strain,
             'library_stock__intended_clone': get_l4440(),
         }
-        return Experiment.objects.filter(**filters)
+
+        return filters
+
+    def get_n2_controls(self):
+        """
+        Get the N2 + RNAi controls for this experiment.
+
+        To get the actual control experiments from the returned filters,
+        simply do Experiment.objects.filter(**filters). Returning
+        the filters is more flexible for customization, or for inserting
+        into a URL without performing the query.
+
+        N2 controls for this experiment are restricted to those from
+        the same date, *closest* temperature, same RNAi clone.
+        """
+        filters = {
+            'is_junk': False,
+            'plate__date': self.date(),
+            'plate__temperature': self.temperature(),
+            'library_stock': self.library_stock,
+            'worm_strain': get_n2(),
+        }
+
+        filters['plate__temperature'] = Experiment.get_closest_temperature(
+            self.temperature(), filters)
+
+        return filters
 
 
 class ManualScoreCode(models.Model):
@@ -366,10 +423,6 @@ class ManualScoreCode(models.Model):
         ]
     }
 
-    @classmethod
-    def get_codes(cls, key):
-        return cls.objects.filter(pk__in=cls._SCORING_PKS[key])
-
     class Meta:
         db_table = 'ManualScoreCode'
         ordering = ['id']
@@ -383,6 +436,10 @@ class ManualScoreCode(models.Model):
             return self.legacy_description
         else:
             return str(self.id)
+
+    @classmethod
+    def get_codes(cls, key):
+        return cls.objects.filter(pk__in=cls._SCORING_PKS[key])
 
     def is_strong(self):
         return self.id in ManualScoreCode.STRONG_CODES
