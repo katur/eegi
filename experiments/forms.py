@@ -2,18 +2,22 @@ from django import forms
 from django.core.validators import MinLengthValidator
 
 from clones.forms import RNAiKnockdownField
-from experiments.models import (Experiment, ExperimentPlate, ManualScore,
-                                ManualScoreCode)
+from experiments.models import (Experiment, ExperimentPlate,
+                                ManualScore, ManualScoreCode)
 from library.forms import LibraryPlateField
 from utils.forms import EMPTY_CHOICE, BlankNullBooleanSelect, RangeField
-from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
-                         WormChoiceField, clean_mutant_query_and_screen_type)
+from worms.forms import (MutantKnockdownField, WormChoiceField,
+                         clean_mutant_query_and_screen_type)
 from worms.models import WormStrain
 
-
 SCREEN_STAGE_CHOICES = [
-    (1, 'primary'),
-    (2, 'secondary'),
+    (1, 'Primary'),
+    (2, 'Secondary'),
+]
+
+SCREEN_TYPE_CHOICES = [
+    ('SUP', 'Suppressor'),
+    ('ENH', 'Enhancer'),
 ]
 
 
@@ -29,6 +33,40 @@ class ScreenStageChoiceField(forms.ChoiceField):
             kwargs['choices'] = [EMPTY_CHOICE] + SCREEN_STAGE_CHOICES
 
         super(ScreenStageChoiceField, self).__init__(**kwargs)
+
+
+class ScreenTypeChoiceField(forms.ChoiceField):
+    """
+    Field defining a screen as SUP or ENH.
+
+    Whether an experiment is SUP/ENH is based on its worm strain's
+    restrictive/permissive temperature.
+    """
+
+    def __init__(self, **kwargs):
+        if 'widget' not in kwargs:
+            kwargs['widget'] = forms.RadioSelect
+
+        if 'choices' not in kwargs:
+            kwargs['choices'] = [(x, y.lower()) for x, y
+                                 in SCREEN_TYPE_CHOICES]
+
+        super(ScreenTypeChoiceField, self).__init__(**kwargs)
+
+
+class ScreenTypeChoiceFieldWithEmpty(forms.ChoiceField):
+    """
+    Field defining a screen as SUP or ENH.
+
+    Whether an experiment is SUP/ENH is based on its
+    worm strain's restrictive/permissive temperature.
+    """
+
+    def __init__(self, **kwargs):
+        if 'choices' not in kwargs:
+            kwargs['choices'] = [EMPTY_CHOICE] + SCREEN_TYPE_CHOICES
+
+        super(ScreenTypeChoiceFieldWithEmpty, self).__init__(**kwargs)
 
 
 class TemperatureChoiceField(forms.ChoiceField):
@@ -218,8 +256,7 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
     pk = forms.CharField(required=False, help_text='e.g. 32412_A01',
                          label='Experiment ID')
 
-    screen_type = ScreenTypeChoiceField(required=False,
-                                        widget=forms.Select)
+    screen_type = ScreenTypeChoiceFieldWithEmpty(required=False)
 
     library_stock = forms.CharField(
         required=False, help_text='e.g. I-3-B2_A01',
@@ -281,8 +318,7 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     pk = forms.CharField(required=False, help_text='e.g. 32412_A01',
                          label='Experiment ID')
 
-    screen_type = ScreenTypeChoiceField(required=False,
-                                        widget=forms.Select)
+    screen_type = ScreenTypeChoiceFieldWithEmpty()
 
     is_junk = forms.NullBooleanField(
         required=False, initial=False, widget=BlankNullBooleanSelect)

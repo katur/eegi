@@ -1,13 +1,6 @@
 from django import forms
 
-from utils.forms import EMPTY_CHOICE
 from worms.models import WormStrain
-
-
-SCREEN_TYPE_CHOICES = [
-    ('SUP', 'suppressor'),
-    ('ENH', 'enhancer'),
-]
 
 
 class WormChoiceField(forms.ModelChoiceField):
@@ -32,29 +25,6 @@ class WormMultipleChoiceField(forms.ModelMultipleChoiceField):
             kwargs['queryset'] = WormStrain.objects.all()
 
         super(WormMultipleChoiceField, self).__init__(**kwargs)
-
-
-class ScreenTypeChoiceField(forms.ChoiceField):
-    """
-    Field defining a screen as SUP or ENH.
-
-    This field is in the worms app because whether an experiment
-    is SUP/ENH has entirely to do with the worm strain's
-    restrictive/permissive temperature.
-    """
-
-    def __init__(self, **kwargs):
-        if 'widget' not in kwargs:
-            kwargs['widget'] = forms.RadioSelect
-
-        if 'choices' not in kwargs:
-            kwargs['choices'] = SCREEN_TYPE_CHOICES
-
-        # Field is required unless specified
-        if 'required' in kwargs and not kwargs['required']:
-            kwargs['choices'] = [EMPTY_CHOICE] + kwargs['choices']
-
-        super(ScreenTypeChoiceField, self).__init__(**kwargs)
 
 
 class MutantKnockdownField(forms.CharField):

@@ -33,10 +33,10 @@
       <a href="{{ experiment.get_absolute_url }}">
         {{ experiment.id }}</a>
 
-      <a href="">
+      <a href="{{ experiment.get_link_to_l4440_controls }}">
         L4440 controls</a>
 
-      <a href="">
+      <a href="{{ experiment.get_link_to_n2_controls }}">
         RNAi controls</a>
 
       {% if experiment.is_junk %}

@@ -10,6 +10,7 @@ from experiments.helpers.naming import generate_experiment_id
 from experiments.helpers.scores import get_most_relevant_score_per_experiment
 from library.models import LibraryPlate, LibraryStock
 from utils.comparison import get_closest_candidate
+from utils.http import build_url
 from utils.plates import get_well_list
 from utils.well_tile_conversion import well_to_tile
 from worms.models import WormStrain
@@ -321,6 +322,10 @@ class Experiment(models.Model):
 
         return filters
 
+    def get_link_to_l4440_controls(self):
+        filters = self.get_l4440_control_filters()
+        build_url('find_experiment_wells_url', get=filters)
+
     def get_n2_control_filters(self):
         """
         Get the N2 + RNAi controls for this experiment.
@@ -345,6 +350,10 @@ class Experiment(models.Model):
             self.temperature(), filters)
 
         return filters
+
+    def get_link_to_n2_controls(self):
+        filters = self.get_n2_control_filters()
+        build_url('find_experiment_wells_url', get=filters)
 
     def toggle_junk(self):
         """
