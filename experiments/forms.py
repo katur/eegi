@@ -318,7 +318,7 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     pk = forms.CharField(required=False, help_text='e.g. 32412_A01',
                          label='Experiment ID')
 
-    screen_type = ScreenTypeChoiceFieldWithEmpty()
+    screen_type = ScreenTypeChoiceFieldWithEmpty(required=False)
 
     is_junk = forms.NullBooleanField(
         required=False, initial=False, widget=BlankNullBooleanSelect)
