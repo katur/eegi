@@ -8,28 +8,12 @@ from library.forms import LibraryPlateField
 from utils.forms import EMPTY_CHOICE, BlankNullBooleanSelect, RangeField
 from worms.forms import (MutantKnockdownField, ScreenTypeChoiceField,
                          WormChoiceField, clean_mutant_query_and_screen_type)
-from worms.models import WormStrain
+from worms.helpers.queries import get_worm_to_temperature_dictionary
 
 
-###########
-# Helpers #
-###########
-
-def remove_empties_and_none(d):
-    """Remove key-value pairs from dictionary if the value is '' or None."""
-    for k, v in d.items():
-        # Retain 'False' as a legitimate filter
-        if v is False:
-            continue
-
-        # Ditch empty strings and None as filters
-        if not v:
-            del d[k]
-
-
-######################
-# Custom Form Fields #
-######################
+#################
+# Custom Fields #
+#################
 
 class ScreenStageChoiceField(forms.ChoiceField):
     """Field for choosing Primary, Secondary, etc."""
@@ -63,6 +47,7 @@ class ScoringFormChoiceField(forms.ChoiceField):
         if 'choices' not in kwargs:
             kwargs['choices'] = [
                 ('SUP', 'Suppressor scoring'),
+                ('FAKE', 'Test 2-radio scoring'),
             ]
 
         super(ScoringFormChoiceField, self).__init__(**kwargs)
@@ -230,7 +215,8 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
     pk = forms.CharField(required=False, help_text='e.g. 32412_A01',
                          label='Experiment ID')
 
-    well = forms.CharField(required=False, help_text='e.g. A01')
+    screen_type = ScreenTypeChoiceField(required=False,
+                                        widget=forms.Select)
 
     library_stock = forms.CharField(
         required=False, help_text='e.g. I-3-B2_A01',
@@ -240,66 +226,43 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
         required=False, label='Intended clone', help_text='e.g. sjj_AH10.4',
         widget=forms.TextInput(attrs={'size': '15'}))
 
-    exclude_l4440 = forms.BooleanField(
-        required=False, label='Exclude L4440')
-
     is_junk = forms.NullBooleanField(
         required=False, initial=None, widget=BlankNullBooleanSelect)
 
-    screen_type = ScreenTypeChoiceField(required=False,
-                                        widget=forms.Select)
+    exclude_no_clone = forms.BooleanField(
+        required=False, label='Exclude (supposedly) empty wells')
+
+    exclude_l4440 = forms.BooleanField(
+        required=False, label='Exclude L4440')
 
     field_order = [
-        'pk', 'plate__pk', 'well',
-        'plate__date', 'plate__temperature',
-        'screen_type',
-        'worm_strain', 'plate__screen_stage',
-        'library_stock', 'library_stock__intended_clone',
-        'exclude_l4440', 'is_junk',
+        'pk', 'plate__pk', 'well', 'plate__date', 'plate__screen_stage',
+        'plate__temperature', 'screen_type',
+        'worm_strain', 'library_stock', 'library_stock__intended_clone',
+        'exclude_no_clone', 'exclude_l4440', 'is_junk',
     ]
 
     def clean(self):
         cleaned_data = super(FilterExperimentWellsForm, self).clean()
 
+        exclude_no_clone = cleaned_data.pop('exclude_no_clone')
         exclude_l4440 = cleaned_data.pop('exclude_l4440')
         screen_type = cleaned_data.pop('screen_type')
 
         remove_empties_and_none(cleaned_data)
         experiments = Experiment.objects.filter(**cleaned_data)
 
+        if exclude_no_clone:
+            experiments = experiments.exclude(
+                library_stock__intended_clone__isnull=True)
+
         if exclude_l4440:
             experiments = experiments.exclude(
                 library_stock__intended_clone='L4440')
 
+        # Must be done last, since it post-processes the query
         if screen_type:
-            # Since query results can be across multiple strains (with
-            # different SUP/ENH temperatures), and since joining by non-PK
-            # fields (i.e. to join Experiment.temperature with
-            # WormStrain.permissive_temp) is unwieldy and would force
-            # using raw SQL (which is less maintainable and less safe), simply
-            # iterate over the results, tossing anything that is not at the
-            # screen_type temperature for that experiment's strain.
-
-            worms = WormStrain.objects.all()
-            to_temperature = {}
-
-            for worm in worms:
-                if screen_type == 'ENH':
-                    to_temperature[worm] = worm.permissive_temperature
-
-                elif screen_type == 'SUP':
-                    to_temperature[worm] = worm.restrictive_temperature
-
-            filtered = []
-
-            for experiment in experiments.prefetch_related('worm_strain',
-                                                           'plate'):
-                temperature = experiment.plate.temperature
-
-                if temperature == to_temperature[experiment.worm_strain]:
-                    filtered.append(experiment)
-
-            experiments = filtered
+            experiments = _limit_to_screen_type(experiments, screen_type)
 
         cleaned_data['experiments'] = experiments
         return cleaned_data
@@ -312,25 +275,32 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
 class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     """Form for filtering experiment wells to score."""
 
-    form = ScoringFormChoiceField(label='Which buttons?')
-    unscored_by_user = forms.BooleanField(
-        required=False, initial=True,
-        label='Exclude if already scored by you')
-    exclude_l4440 = forms.BooleanField(
-        required=False, initial=True, label='Exclude L4440')
-    exclude_no_clone = forms.BooleanField(
-        required=False, initial=True, label='Exclude (supposedly) empty wells')
-
     pk = forms.CharField(required=False, help_text='e.g. 32412_A01',
                          label='Experiment ID')
+
+    screen_type = ScreenTypeChoiceField(required=False,
+                                        widget=forms.Select)
+
     is_junk = forms.NullBooleanField(
         required=False, initial=False, widget=BlankNullBooleanSelect)
 
+    exclude_no_clone = forms.BooleanField(
+        required=False, initial=True, label='Exclude (supposedly) empty wells')
+
+    exclude_l4440 = forms.BooleanField(
+        required=False, initial=True, label='Exclude L4440')
+
+    form = ScoringFormChoiceField(label='Which buttons?')
+
+    unscored_by_user = forms.BooleanField(
+        required=False, initial=True,
+        label='Exclude if already scored by you')
+
     field_order = [
-        'form', 'unscored_by_user',
-        'exclude_no_clone', 'exclude_l4440', 'is_junk',
+        'form', 'unscored_by_user', 'exclude_no_clone', 'exclude_l4440',
+        'is_junk',
         'plate__screen_stage', 'worm_strain', 'plate__temperature',
-        'plate__date',
+        'screen_type', 'plate__date',
         'pk', 'plate__pk',
     ]
 
@@ -341,21 +311,22 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     def clean(self):
         cleaned_data = super(FilterExperimentWellsToScoreForm, self).clean()
 
-        form = cleaned_data.pop('form')
-        unscored_by_user = cleaned_data.pop('unscored_by_user')
-        exclude_l4440 = cleaned_data.pop('exclude_l4440')
         exclude_no_clone = cleaned_data.pop('exclude_no_clone')
+        exclude_l4440 = cleaned_data.pop('exclude_l4440')
+        unscored_by_user = cleaned_data.pop('unscored_by_user')
+        screen_type = cleaned_data.pop('screen_type')
+        form = cleaned_data.pop('form')
 
         remove_empties_and_none(cleaned_data)
         experiments = Experiment.objects.filter(**cleaned_data)
 
-        if exclude_l4440:
-            experiments = experiments.exclude(
-                library_stock__intended_clone='L4440')
-
         if exclude_no_clone:
             experiments = experiments.exclude(
                 library_stock__intended_clone__isnull=True)
+
+        if exclude_l4440:
+            experiments = experiments.exclude(
+                library_stock__intended_clone='L4440')
 
         if unscored_by_user:
             score_ids = (
@@ -364,6 +335,10 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
                 .values_list('experiment_id', flat=True))
             experiments = experiments.exclude(id__in=score_ids)
 
+        # Must be done last, since it post-processes the query
+        if screen_type:
+            experiments = _limit_to_screen_type(experiments, screen_type)
+
         cleaned_data['form'] = form
         cleaned_data['unscored_by_user'] = unscored_by_user
         cleaned_data['experiments'] = experiments
@@ -371,16 +346,64 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         return cleaned_data
 
 
+def _limit_to_screen_type(experiments, screen_type):
+    '''
+    Post-process experiments QuerySet such that each experiment was done at its
+    worm's SUP or ENH temperature. Since N2 does not have a SUP or ENH
+    temperature, N2 will not be in this result.
+
+    Question: Why not just get the SUP/ENH temperature for these experiments'
+    worm, and then using `.filter()` with that temperature?
+
+    Answer: That is what I do on queries limited to a single worm strain, e.g.
+    for most of the public-facing pages. But these experiment filtering forms
+    are meant to be flexible (basically a gateway into the database for GI
+    team use only), flexible enough to potentially include multiple strains
+    with different SUP/ENH temperatures (e.g. maybe Noah wants to see all
+    experiments from one date).
+
+    Question: Why not just join between ExperimentPlate.temperature and
+    WormStrain.permissive_temperature / .restrictive_temperature?
+
+    This would involve joining WormStrain on a second field. While easy with
+    raw SQL, this is not easy with Django, requiring either 1) soon-to-
+    be-deprecated `empty()`, 2) overriding low level query processing in ways
+    that are subject to syntax changes, or 3) using `raw()` to write raw SQL.
+    While I was tempted to do 3), since these filtering forms are meant to be
+    generic and applicable (able to take dozens of possible keys to filter on),
+    this one case doesn't warrant losing the readability and protections
+    against SQL injection attacks that Django QuerySets provide.
+    '''
+    # Create a dictionary
+    to_temperature = get_worm_to_temperature_dictionary(screen_type)
+    filtered = []
+
+    for experiment in experiments.prefetch_related('worm_strain', 'plate'):
+        temperature = experiment.plate.temperature
+
+        if temperature == to_temperature[experiment.worm_strain]:
+            filtered.append(experiment)
+
+    return filtered
+
+
 class SuppressorScoreForm(forms.Form):
 
     sup_score = SuppressorScoreField()
+    auxiliary_scores = AuxiliaryScoreField(required=False)
+
+
+class FakeScoreForm(forms.Form):
+
     fake_score = FakeScoreField()
+    sup_score = SuppressorScoreField()
     auxiliary_scores = AuxiliaryScoreField(required=False)
 
 
 def get_score_form(key):
     d = {
         'SUP': SuppressorScoreForm,
+        'FAKE': FakeScoreForm,
     }
     return d[key]
 
@@ -533,3 +556,19 @@ class SecondaryScoresForm(forms.Form):
         cleaned_data = super(SecondaryScoresForm, self).clean()
         cleaned_data = clean_mutant_query_and_screen_type(self, cleaned_data)
         return cleaned_data
+
+
+###########
+# Helpers #
+###########
+
+def remove_empties_and_none(d):
+    """Remove key-value pairs from dictionary if the value is '' or None."""
+    for k, v in d.items():
+        # Retain 'False' as a legitimate filter
+        if v is False:
+            continue
+
+        # Ditch empty strings and None as filters
+        if not v:
+            del d[k]

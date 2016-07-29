@@ -54,3 +54,17 @@ def get_worm_and_temperature_from_search_term(search_term, screen_type):
         temperature = worm.restrictive_temperature
 
     return (worm, temperature)
+
+
+def get_worm_to_temperature_dictionary(screen_type):
+    worms = WormStrain.objects.all()
+    to_temperature = {}
+
+    for worm in worms:
+        if screen_type == 'ENH':
+            to_temperature[worm] = worm.permissive_temperature
+
+        elif screen_type == 'SUP':
+            to_temperature[worm] = worm.restrictive_temperature
+
+    return to_temperature

@@ -1,5 +1,6 @@
 from django import forms
 
+from utils.forms import EMPTY_CHOICE
 from worms.helpers.queries import get_worm_and_temperature_from_search_term
 from worms.models import WormStrain
 
@@ -42,10 +43,10 @@ class ScreenTypeChoiceField(forms.ChoiceField):
             kwargs['widget'] = forms.RadioSelect
 
         if 'choices' not in kwargs:
-            kwargs['choices'] = [('SUP', 'suppressor'), ('ENH', 'enhancer')]
+            kwargs['choices'] = [('SUP', 'Suppressor'), ('ENH', 'Enhancer')]
 
         if 'required' in kwargs and not kwargs['required']:
-            kwargs['choices'] = [('', '')] + kwargs['choices']
+            kwargs['choices'] = [EMPTY_CHOICE] + kwargs['choices']
 
         super(ScreenTypeChoiceField, self).__init__(**kwargs)
 
