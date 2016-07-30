@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.utils import timezone
 
 from clones.models import Clone
 from experiments.helpers.naming import generate_experiment_id
@@ -471,7 +472,7 @@ class ManualScore(models.Model):
     experiment = models.ForeignKey(Experiment, models.CASCADE)
     score_code = models.ForeignKey(ManualScoreCode, models.CASCADE)
     scorer = models.ForeignKey(User, models.CASCADE)
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(default=timezone.now)
 
     STRONG = 'Strong'
     MEDIUM = 'Medium'
