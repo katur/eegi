@@ -2,6 +2,7 @@
   {% if form.errors %}
   <div id="form-errors" class="error-message">
     Please correct the error{{ form.errors|pluralize }} below.
+    {{ form.non_field_errors }}
   </div>
   {% endif %}
 

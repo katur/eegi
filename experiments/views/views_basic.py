@@ -206,8 +206,8 @@ def change_experiment_plates(request, pks):
 
         if form.is_valid():
             for plate in experiment_plates:
-                process_ChangeExperimentPlatesForm_data(
-                    plate, form.cleaned_data)
+                process_ChangeExperimentPlatesForm_data(plate,
+                                                        form.cleaned_data)
 
             return redirect('change_experiment_plates_url', pks)
 

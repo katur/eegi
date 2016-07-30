@@ -20,7 +20,7 @@ SCREEN_TYPE_CHOICES = [
     ('ENH', 'Enhancer'),
 ]
 
-SCORE_PER_PAGE = 20
+SCORE_DEFAULT_PER_PAGE = 20
 
 
 ##########
@@ -331,7 +331,7 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     form = ScoringFormChoiceField(label='Which buttons?')
 
     images_per_page = forms.IntegerField(
-        required=True, initial=SCORE_PER_PAGE,
+        required=True, initial=SCORE_DEFAULT_PER_PAGE,
         widget=forms.TextInput(attrs={'size': '3'}))
 
     unscored_by_user = forms.BooleanField(
@@ -382,6 +382,11 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
             experiments = experiments.exclude(id__in=score_ids)
 
         if randomize_order:
+            if not unscored_by_user:
+                raise forms.ValidationError(
+                    'Randomizing order not currently supported when '
+                    'scoring images you have already scored.')
+
             # Warning: Django documentation mentions that `order_by(?)` may
             # be expensive and slow. If performance becomes an issue, switch
             # to another way
@@ -461,10 +466,9 @@ class RNAiKnockdownForm(forms.Form):
 
     rnai_query = RNAiKnockdownField(
         label='RNAi query',
-        validators=[MinLengthValidator(1, message='No clone matches')])
+        validators=[MinLengthValidator(1, message='No clone match')])
 
-    temperature = forms.DecimalField(required=False,
-                                     label='Temperature',
+    temperature = forms.DecimalField(required=False, label='Temperature',
                                      help_text='optional')
 
 
