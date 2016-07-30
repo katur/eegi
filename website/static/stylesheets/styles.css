@@ -131,14 +131,14 @@ a {
   color: #8d54c6;
   text-decoration: none; }
   a:hover, a.active {
-    color: #777; }
+    color: #b38dd9; }
   a.active {
     cursor: default; }
 
 .inactive-link {
   pointer-events: none;
   cursor: default;
-  color: #777;
+  color: #b38dd9;
   text-decoration: line-through; }
 
 .helptext {
@@ -249,6 +249,25 @@ form table th {
 form table th, form table td {
   padding-bottom: 5px; }
 
+button {
+  cursor: pointer; }
+  button.submit, button.reset {
+    font-size: 14px;
+    border: none;
+    border-radius: 3px;
+    padding: 8px 10px; }
+  button.submit {
+    background-color: #8d54c6;
+    -webkit-transition: background-color 75ms linear;
+    -moz-transition: background-color 75ms linear;
+    transition: background-color 75ms linear;
+    color: white; }
+    button.submit:hover {
+      background-color: #b38dd9; }
+  button.reset {
+    background: none;
+    color: #ed865a; }
+
 .hover_tag {
   position: absolute;
   display: none;
@@ -321,6 +340,9 @@ form table th, form table td {
     color: #ed865a; }
   .plate-96 .junk-well .well-title, .plate-96 .junk-well .well-caption {
     background: #BB1133; }
+
+#login-page .submit {
+  margin-top: 20px; }
 
 #help-page h4 {
   padding-bottom: 20px; }
@@ -422,8 +444,9 @@ form table th, form table td {
   clear: both;
   width: 100%;
   max-width: 1300px; }
-#experiment #toggle-junk-button {
-  display: inline-block; }
+#experiment #toggle-junk-form {
+  display: inline-block;
+  margin-left: 13.33333px; }
 
 #experiment-plate .vertical-links {
   float: left; }
@@ -442,7 +465,39 @@ form table th, form table td {
 #experiment-plate .plate-96 .well-caption a, #vertical-experiment-plates .plate-96 .well-caption a {
   color: #bb99dd; }
   #experiment-plate .plate-96 .well-caption a:hover, #experiment-plate .plate-96 .well-caption a.active, #vertical-experiment-plates .plate-96 .well-caption a:hover, #vertical-experiment-plates .plate-96 .well-caption a.active {
-    color: #a5a5a5; }
+    color: #e1d2f0; }
+
+#add-experiment-plate .submit, #add-experiment-plates-gdoc .submit, #change-experiment-plates .submit {
+  margin-top: 20px; }
+
+#find-experiment-plates #form-section, #find-experiment-wells #form-section, #score-experiment-wells-setup #form-section {
+  position: relative;
+  padding-bottom: 60px; }
+  #find-experiment-plates #form-section #form-buttons, #find-experiment-wells #form-section #form-buttons, #score-experiment-wells-setup #form-section #form-buttons {
+    position: absolute;
+    bottom: 20px;
+    left: 20px; }
+    #find-experiment-plates #form-section #form-buttons .reset, #find-experiment-wells #form-section #form-buttons .reset, #score-experiment-wells-setup #form-section #form-buttons .reset {
+      margin-left: 20px; }
+  #find-experiment-plates #form-section #form-errors, #find-experiment-wells #form-section #form-errors, #score-experiment-wells-setup #form-section #form-errors {
+    float: left;
+    clear: both;
+    margin-bottom: 40px; }
+  #find-experiment-plates #form-section form, #find-experiment-wells #form-section form, #score-experiment-wells-setup #form-section form {
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2; }
+    @media (max-width: 750px) {
+      #find-experiment-plates #form-section form, #find-experiment-wells #form-section form, #score-experiment-wells-setup #form-section form {
+        -webkit-column-count: 1;
+        -moz-column-count: 1;
+        column-count: 1; } }
+  #find-experiment-plates #form-section .field, #find-experiment-wells #form-section .field, #score-experiment-wells-setup #form-section .field {
+    float: left;
+    width: 100%;
+    padding-bottom: 12px; }
+    #find-experiment-plates #form-section .field ul, #find-experiment-wells #form-section .field ul, #score-experiment-wells-setup #form-section .field ul {
+      display: inline-block; }
 
 #find-experiment-wells table {
   width: 100%;
@@ -452,42 +507,8 @@ form table th, form table td {
     width: 100%;
     float: left; }
 
-#find-experiment-wells #form-section #form-errors, #find-experiment-wells #form-section #clear-form, #find-experiment-plates #form-section #form-errors, #find-experiment-plates #form-section #clear-form, #score-experiment-wells-setup #form-section #form-errors, #score-experiment-wells-setup #form-section #clear-form {
-  float: left;
-  clear: both; }
-#find-experiment-wells #form-section #form-errors, #find-experiment-plates #form-section #form-errors, #score-experiment-wells-setup #form-section #form-errors {
+#score-experiment-wells-setup #id_randomize_order, #score-experiment-wells-setup #id_worm_strain {
   margin-bottom: 40px; }
-#find-experiment-wells #form-section .field, #find-experiment-plates #form-section .field, #score-experiment-wells-setup #form-section .field {
-  float: left; }
-
-#find-experiment-wells #form-section .field, #find-experiment-plates #form-section .field {
-  width: 45%;
-  padding-bottom: 12px; }
-  #find-experiment-wells #form-section .field:nth-child(odd), #find-experiment-plates #form-section .field:nth-child(odd) {
-    clear: left; }
-  #find-experiment-wells #form-section .field:nth-child(even), #find-experiment-plates #form-section .field:nth-child(even) {
-    clear: right; }
-  #find-experiment-wells #form-section .field.submit, #find-experiment-plates #form-section .field.submit {
-    clear: both; }
-  #find-experiment-wells #form-section .field ul, #find-experiment-plates #form-section .field ul {
-    display: inline-block; }
-  #find-experiment-wells #form-section .field li, #find-experiment-plates #form-section .field li {
-    display: inline; }
-
-#score-experiment-wells-setup form {
-  -webkit-column-count: 2;
-  -moz-column-count: 2;
-  column-count: 2; }
-  @media (max-width: 600px) {
-    #score-experiment-wells-setup form {
-      -webkit-column-count: 1;
-      -moz-column-count: 1;
-      column-count: 1; } }
-#score-experiment-wells-setup #form-section .field {
-  width: 100%;
-  padding-bottom: 10px; }
-  #score-experiment-wells-setup #form-section .field #id_randomize_order, #score-experiment-wells-setup #form-section .field #id_is_junk, #score-experiment-wells-setup #form-section .field #id_plate__date {
-    margin-bottom: 40px; }
 
 #find-experiment-plates .vertical-links a, #change-experiment-plates .vertical-links a {
   margin-left: 40px; }
@@ -662,7 +683,7 @@ table#image-category .image-frame {
       .carousel .individual-image .image-topbar a {
         color: #bb99dd; }
         .carousel .individual-image .image-topbar a:hover, .carousel .individual-image .image-topbar a.active {
-          color: #a5a5a5; }
+          color: #e1d2f0; }
     .carousel .individual-image .image-caption {
       float: left;
       width: 100%;
@@ -697,7 +718,7 @@ table#image-category .image-frame {
         font-size: 50px;
         font-size: 4vw; }
         .carousel .individual-image .image-frame .image-frame-previous:hover, .carousel .individual-image .image-frame .image-frame-next:hover {
-          color: #c4c4c4; }
+          color: white; }
         .carousel .individual-image .image-frame .image-frame-previous span, .carousel .individual-image .image-frame .image-frame-next span {
           position: absolute;
           top: 50%;

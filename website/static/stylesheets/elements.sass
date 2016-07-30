@@ -36,7 +36,7 @@ hr
   @include box-sizing(border-box)
   @include clearfix
   background: $lightest-gray
-  padding: 20px
+  padding: $gray-bubble-padding
   border-radius: 3px
 
 
@@ -156,6 +156,25 @@ form table
 
   th, td
     padding-bottom: 5px
+
+
+button
+  cursor: pointer
+
+  &.submit, &.reset
+    font-size: $base-font-size - 2
+    border: none
+    border-radius: 3px
+    padding: 8px 10px
+
+  &.submit
+    @include link-color-background
+    @include transition(background-color 75ms linear)
+    color: $site-background-color
+
+  &.reset
+    background: none
+    color: $warning-color
 
 
 ////////////////

@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 
 
+{% block body_id %}login-page{% endblock %}
+
+
 {% block content %}
 
 {% if form.errors %}
@@ -21,8 +24,8 @@
     </tr>
   </table>
 
-  <input type="submit" value="Log In" />
-  <input type="hidden" name="next" value="{{ next }}" />
+  <button type="submit" class="submit">Log In</button>
+  <input type="hidden" name="next" value="{{ next }}">
 </form>
 
 {% endblock content %}

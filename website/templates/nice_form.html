@@ -24,13 +24,16 @@
     </div>
     {% endfor %}
 
-    <div class="field submit">
-      <input type="submit" value="Submit">
-    </div>
+    <div id="form-buttons">
+      <button type="submit" class="submit">Submit</button>
 
-    <div id="clear-form">
-      <a href="{{ request.path }}">
-        Reset</a>
+      <!--
+        Avoid type="reset" because this only works on unsubmitted form
+      -->
+      <button type="button" class="reset"
+              onclick="location.href = '{{ request.path }}'">
+        Reset
+      </button>
     </div>
   </form>
 

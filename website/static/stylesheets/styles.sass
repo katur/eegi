@@ -24,7 +24,7 @@ $warning-color: #ed865a
 
 $purple: #8d54c6
 $link-color: $purple
-$link-hover-color: #777
+$link-hover-color: lighten($link-color, 15%)
 
 
 @mixin link-color()
@@ -32,6 +32,13 @@ $link-hover-color: #777
 
   &:hover, &.active
     color: $link-hover-color
+
+
+@mixin link-color-background()
+  background-color: $link-color
+
+  &:hover
+    background-color: $link-hover-color
 
 
 @mixin link-color-light()
@@ -46,6 +53,7 @@ $link-hover-color: #777
 /////////////////////////////////////////////
 
 $whitespace: 40px
+$gray-bubble-padding: $whitespace / 2
 $base-font-size: 16px
 $base-line-height: 130%
 
@@ -61,6 +69,7 @@ $base-line-height: 130%
 @import footer
 @import font
 @import elements
+@import login
 @import help
 @import ../../../clones/static/stylesheets/clones.sass
 @import ../../../library/static/stylesheets/library.sass

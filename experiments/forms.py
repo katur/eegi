@@ -235,8 +235,9 @@ class FilterExperimentPlatesForm(_FilterExperimentsBaseForm):
     field_order = [
         'plate__pk', 'plate__pk__range',
         'plate__date',  'plate__date__range',
+        'plate__screen_stage',
         'plate__temperature', 'plate__temperature__range',
-        'worm_strain', 'plate__screen_stage',
+        'worm_strain',
         'library_stock__plate', 'is_junk',
     ]
 
@@ -279,7 +280,7 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
 
     field_order = [
         'pk', 'plate__pk', 'well', 'plate__date', 'plate__screen_stage',
-        'plate__temperature', 'screen_type',
+        'screen_type', 'plate__temperature',
         'worm_strain', 'library_stock', 'library_stock__intended_clone',
         'exclude_no_clone', 'exclude_l4440', 'is_junk',
     ]
@@ -340,10 +341,10 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     randomize_order = forms.BooleanField(required=False, initial=False)
 
     field_order = [
-        'form', 'images_per_page', 'randomize_order', 'unscored_by_user',
+        'form', 'images_per_page', 'unscored_by_user', 'randomize_order',
         'exclude_no_clone', 'exclude_l4440', 'is_junk',
-        'plate__screen_stage', 'worm_strain', 'screen_type',
-        'plate__temperature', 'plate__date',
+        'plate__screen_stage', 'plate__date', 'screen_type',
+        'plate__temperature', 'worm_strain',
         'pk', 'plate__pk',
     ]
 

@@ -21,12 +21,13 @@ def experiment_well(request, pk):
     """Render the page to see a particular experiment well."""
     experiment = get_object_or_404(Experiment, pk=pk)
 
-    devstar_url = experiment.get_image_url(mode='devstar')
-    devstar_available = http_response_ok(devstar_url)
-
     if (request.POST.get('toggle-junk') and
             request.user.has_perm('experiments.change_experiment')):
         experiment.toggle_junk()
+        return redirect('experiment_well_url', experiment.pk)
+
+    devstar_url = experiment.get_image_url(mode='devstar')
+    devstar_available = http_response_ok(devstar_url)
 
     context = {
         'experiment': experiment,
