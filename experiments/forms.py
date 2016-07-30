@@ -340,7 +340,7 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     randomize_order = forms.BooleanField(required=False, initial=False)
 
     field_order = [
-        'form', 'images_per_page', 'unscored_by_user', 'randomize_order',
+        'form', 'images_per_page', 'randomize_order', 'unscored_by_user',
         'exclude_no_clone', 'exclude_l4440', 'is_junk',
         'plate__screen_stage', 'worm_strain', 'screen_type',
         'plate__temperature', 'plate__date',
