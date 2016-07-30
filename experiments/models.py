@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Case, When
 from django.utils import timezone
 
 from clones.models import Clone
@@ -459,11 +460,11 @@ class ManualScoreCode(models.Model):
 
     @classmethod
     def get_codes(cls, key):
-        preserved = models.Case(*[models.When(pk=pk, then=i) for i, pk
-                                  in enumerate(cls._SCORING_PKS[key])])
-        return (cls.objects
-                .filter(pk__in=cls._SCORING_PKS[key])
-                .order_by(preserved))
+        pks = cls._SCORING_PKS[key]
+
+        # This preserves the order of the pks
+        preserved = Case(*[When(pk=pk, then=i) for i, pk in enumerate(pks)])
+        return (cls.objects.filter(pk__in=pks).order_by(preserved))
 
 
 class ManualScore(models.Model):

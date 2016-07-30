@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
+from django.db.models import Case, When
 from django.shortcuts import redirect, render, get_object_or_404
 
 from experiments.helpers.data_entry import parse_batch_data_entry_gdoc
@@ -59,8 +60,10 @@ def vertical_experiment_plates(request, pks):
     """Render the page to view experiment plate images vertically."""
     pks = pks.split(',')
 
-    # NOTE: To preserve order, do not do .filter(pk__in=pks)
-    plates = [get_object_or_404(ExperimentPlate, pk=pk) for pk in pks]
+    # This preserves the order of the pks
+    preserved = Case(*[When(pk=pk, then=i) for i, pk in enumerate(pks)])
+
+    plates = ExperimentPlate.objects.filter(pk__in=pks).order_by(preserved)
 
     context = {
         'experiment_plates': plates,
