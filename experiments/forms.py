@@ -20,6 +20,8 @@ SCREEN_TYPE_CHOICES = [
     ('ENH', 'Enhancer'),
 ]
 
+SCORE_PER_PAGE = 20
+
 
 ##########
 # Fields #
@@ -327,13 +329,19 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
 
     form = ScoringFormChoiceField(label='Which buttons?')
 
+    images_per_page = forms.IntegerField(
+        required=True, initial=SCORE_PER_PAGE,
+        widget=forms.TextInput(attrs={'size': '3'}))
+
     unscored_by_user = forms.BooleanField(
         required=False, initial=True,
         label='Exclude if already scored by you')
 
+    randomize_order = forms.BooleanField(required=False, initial=False)
+
     field_order = [
-        'form', 'unscored_by_user', 'exclude_no_clone', 'exclude_l4440',
-        'is_junk',
+        'form', 'images_per_page', 'unscored_by_user', 'randomize_order',
+        'exclude_no_clone', 'exclude_l4440', 'is_junk',
         'plate__screen_stage', 'worm_strain', 'screen_type',
         'plate__temperature', 'plate__date',
         'pk', 'plate__pk',
@@ -346,11 +354,13 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     def clean(self):
         cleaned_data = super(FilterExperimentWellsToScoreForm, self).clean()
 
+        form = cleaned_data.pop('form')
+        images_per_page = cleaned_data.pop('images_per_page')
         exclude_no_clone = cleaned_data.pop('exclude_no_clone')
         exclude_l4440 = cleaned_data.pop('exclude_l4440')
         unscored_by_user = cleaned_data.pop('unscored_by_user')
         screen_type = cleaned_data.pop('screen_type')
-        form = cleaned_data.pop('form')
+        randomize_order = cleaned_data.pop('randomize_order')
 
         _remove_empties_and_none(cleaned_data)
         experiments = Experiment.objects.filter(**cleaned_data)
@@ -370,11 +380,18 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
                 .values_list('experiment_id', flat=True))
             experiments = experiments.exclude(id__in=score_ids)
 
+        if randomize_order:
+            # Warning: Django documentation mentions that `order_by(?)` may
+            # be expensive and slow. If performance becomes an issue, switch
+            # to another way
+            experiments = experiments.order_by('?')
+
         # Must be done last, since it post-processes the query
         if screen_type:
             experiments = _limit_to_screen_type(experiments, screen_type)
 
         cleaned_data['form'] = form
+        cleaned_data['images_per_page'] = images_per_page
         cleaned_data['unscored_by_user'] = unscored_by_user
         cleaned_data['experiments'] = experiments
 

@@ -13,10 +13,8 @@ from experiments.forms import (
 from utils.http import http_response_ok
 from utils.pagination import get_paginated
 
-
 EXPERIMENT_PLATES_PER_PAGE = 30
 EXPERIMENT_WELLS_PER_PAGE = 10
-SCORE_PER_PAGE = 20
 
 
 def experiment_well(request, pk):
@@ -253,12 +251,13 @@ def score_experiment_wells(request):
     unscored_by_user = filter_form.cleaned_data['unscored_by_user']
     experiments = filter_form.cleaned_data['experiments']
     score_form_key = filter_form.cleaned_data['form']
+    images_per_page = filter_form.cleaned_data['images_per_page']
 
     if unscored_by_user:
-        display_experiments = experiments[:SCORE_PER_PAGE]
+        display_experiments = experiments[:images_per_page]
     else:
         display_experiments = get_paginated(request, experiments,
-                                            SCORE_PER_PAGE)
+                                            images_per_page)
 
     for experiment in display_experiments:
         experiment.score_form = get_score_form(
