@@ -338,8 +338,8 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     field_order = [
         'form', 'unscored_by_user', 'exclude_no_clone', 'exclude_l4440',
         'is_junk',
-        'plate__screen_stage', 'worm_strain', 'plate__temperature',
-        'screen_type', 'plate__date',
+        'plate__screen_stage', 'worm_strain', 'screen_type',
+        'plate__temperature', 'plate__date',
         'pk', 'plate__pk',
     ]
 

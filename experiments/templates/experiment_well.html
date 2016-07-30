@@ -21,8 +21,16 @@ Well {{ experiment.well }}
 
 <div class="links">
   {% if not experiment.is_control %}
+
+  <a href="{{ experiment.get_link_to_l4440_controls }}">
+    L4440 controls</a>
+
+  <a href="{{ experiment.get_link_to_n2_controls }}">
+    N2 controls</a>
+
   {% url 'double_knockdown_url' experiment.worm_strain.id experiment.library_stock.intended_clone.id experiment.plate.temperature as double_url %}
-  <a href="{{ double_url }}">View controls + replicates</a>
+  <a href="{{ double_url }}">View all replicates (with controls)</a>
+
   {% endif %}
 
   {% if devstar_available %}
