@@ -11,11 +11,10 @@ from library.models import LibraryPlate
 from utils.google import connect_to_google_spreadsheets
 from worms.models import WormStrain
 
-GENE_ROW = 3
-ALLELE_ROW = 4
-TEMPERATURE_ROW = 5
-SCREEN_TYPE_ROW = 6
-FIRST_EXP_ROW = 7
+WORM_ROW = 3
+TEMPERATURE_ROW = 4
+SCREEN_TYPE_ROW = 5
+FIRST_EXP_ROW = 6
 
 
 def parse_batch_data_entry_gdoc():
@@ -64,23 +63,17 @@ def _parse_gdoc_global_info(values):
 def _parse_gdoc_column_headers(values):
     worms = []
     try:
-        genes = values[GENE_ROW][1:]
-        alleles = values[ALLELE_ROW][1:]
+        strain_names = values[WORM_ROW][1:]
     except IndexError:
-        raise IndexError('Genes should be listed in {}th row, '
-                         'and alleles in {}th row.'
-                         .format(GENE_ROW + 1, ALLELE_ROW + 1))
+        raise IndexError('Worms should be listed in {}th row.'
+                         .format(WORM_ROW + 1))
 
-    # Use izip_longest in case genes is longer than alleles, in N2 case
-    for gene, allele in izip_longest(genes, alleles):
-        if allele == 'zc310':
-            allele = 'zu310'
-
+    for strain_name in strain_names:
         try:
-            worms.append(WormStrain.objects.get(gene=gene, allele=allele))
+            worms.append(WormStrain.objects.get(pk=strain_name))
         except WormStrain.DoesNotExist:
-            raise ValueError('Worm strain does not exist with gene "{}" '
-                             'and allele "{}"'.format(gene, allele))
+            raise ValueError('Worm strain does not exist with strain name "{}"'
+                             .format(strain_name))
 
     try:
         temperatures = values[TEMPERATURE_ROW][1:]
