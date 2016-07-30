@@ -19,7 +19,7 @@ class WormStrain(models.Model):
     # Gene and allele causing temperature-sensitivity in this strain
     gene = models.CharField(max_length=10, blank=True)
     allele = models.CharField(max_length=10, blank=True)
-    genotype = models.CharField(max_length=20, blank=True)
+    genotype = models.CharField(max_length=50, blank=True)
 
     # Temperatures, in Celsius, used for screening
     permissive_temperature = models.DecimalField(
@@ -47,7 +47,12 @@ class WormStrain(models.Model):
             return self.id
 
     def get_short_genotype(self):
-        return self.genotype.split()[0]
+        # Split out individual mutations
+        parts = self.genotype.split(';')
+
+        # Remove roman numeral if it exists
+        parts = [part.split()[0] for part in parts]
+        return '; '.join(parts)
 
     def get_url(self):
         return self.get_wormbase_url()
@@ -233,9 +238,13 @@ class WormStrain(models.Model):
         """
         worms = cls.get_worms_for_screen_type(screen_type)
 
+        # TODO: fix this one-off workaround for the new emb-8 strains!!!
+        if search_term == 'emb-8' or search_term == 'hc69':
+            search_term = 'MJ69'
+
         worms = worms.filter(models.Q(gene=search_term) |
                              models.Q(allele=search_term) |
-                             models.Q(id=search_term))
+                             models.Q(pk=search_term))
 
         if not worms:
             return None

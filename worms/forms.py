@@ -52,7 +52,11 @@ class MutantKnockdownField(forms.CharField):
 
     def __init__(self, **kwargs):
         if 'help_text' not in kwargs:
-            kwargs['help_text'] = 'gene, allele, or worm strain name'
+            kwargs['help_text'] = (
+                'gene, allele, or worm strain name. '
+                'NOTE: "emb-8" and "hc69" resolve to MJ69; '
+                'use strain name for new emb-8 crosses.'
+            )
 
         super(MutantKnockdownField, self).__init__(**kwargs)
 
