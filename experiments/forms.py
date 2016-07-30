@@ -21,9 +21,9 @@ SCREEN_TYPE_CHOICES = [
 ]
 
 
-#################
-# Custom Fields #
-#################
+##########
+# Fields #
+##########
 
 class ScreenStageChoiceField(forms.ChoiceField):
     """Field for choosing Primary, Secondary, etc."""
@@ -156,9 +156,9 @@ class AuxiliaryScoreField(forms.ModelMultipleChoiceField):
         super(AuxiliaryScoreField, self).__init__(**kwargs)
 
 
-#####################
-# Custom validators #
-#####################
+##############
+# Validators #
+##############
 
 def validate_new_experiment_plate_id(x):
     """Validate that x is a valid ID for a new experiment plate."""
@@ -170,9 +170,9 @@ def validate_new_experiment_plate_id(x):
                                     .format(x))
 
 
-###################################
-# Forms for filtering experiments #
-###################################
+###################
+# Filtering Forms #
+###################
 
 class _FilterExperimentsBaseForm(forms.Form):
     """Base for FilterExperimentWellsForm, FilterExperimentPlatesForm, etc."""
@@ -241,7 +241,7 @@ class FilterExperimentPlatesForm(_FilterExperimentsBaseForm):
     def clean(self):
         cleaned_data = super(FilterExperimentPlatesForm, self).clean()
 
-        remove_empties_and_none(cleaned_data)
+        _remove_empties_and_none(cleaned_data)
         plate_pks = (Experiment.objects.filter(**cleaned_data)
                      .order_by('plate').values_list('plate', flat=True))
         cleaned_data['experiment_plates'] = (ExperimentPlate.objects
@@ -289,7 +289,7 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
         exclude_l4440 = cleaned_data.pop('exclude_l4440')
         screen_type = cleaned_data.pop('screen_type')
 
-        remove_empties_and_none(cleaned_data)
+        _remove_empties_and_none(cleaned_data)
         experiments = Experiment.objects.filter(**cleaned_data)
 
         if exclude_no_clone:
@@ -307,10 +307,6 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
         cleaned_data['experiments'] = experiments
         return cleaned_data
 
-
-#################################
-# Forms for scoring experiments #
-#################################
 
 class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     """Form for filtering experiment wells to score."""
@@ -356,7 +352,7 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         screen_type = cleaned_data.pop('screen_type')
         form = cleaned_data.pop('form')
 
-        remove_empties_and_none(cleaned_data)
+        _remove_empties_and_none(cleaned_data)
         experiments = Experiment.objects.filter(**cleaned_data)
 
         if exclude_no_clone:
@@ -383,6 +379,18 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         cleaned_data['experiments'] = experiments
 
         return cleaned_data
+
+
+def _remove_empties_and_none(d):
+    """Remove key-value pairs from dictionary if the value is '' or None."""
+    for k, v in d.items():
+        # Retain 'False' as a legitimate filter
+        if v is False:
+            continue
+
+        # Ditch empty strings and None as filters
+        if not v:
+            del d[k]
 
 
 def _limit_to_screen_type(experiments, screen_type):
@@ -426,6 +434,77 @@ def _limit_to_screen_type(experiments, screen_type):
     return filtered
 
 
+###################
+# Knockdown forms #
+###################
+
+class RNAiKnockdownForm(forms.Form):
+    """Form for finding wildtype worms tested with a single RNAi clone."""
+
+    rnai_query = RNAiKnockdownField(
+        label='RNAi query',
+        validators=[MinLengthValidator(1, message='No clone matches')])
+
+    temperature = forms.DecimalField(required=False,
+                                     label='Temperature',
+                                     help_text='optional')
+
+
+class MutantKnockdownForm(forms.Form):
+    """Form for finding a mutant worm with the control bacteria."""
+
+    mutant_query = MutantKnockdownField()
+    screen_type = ScreenTypeChoiceField()
+
+    def clean(self):
+        cleaned_data = super(MutantKnockdownForm, self).clean()
+        cleaned_data = clean_mutant_query_and_screen_type(self, cleaned_data)
+        return cleaned_data
+
+
+class DoubleKnockdownForm(forms.Form):
+    """Form for finding a double knockdown."""
+
+    mutant_query = MutantKnockdownField()
+    rnai_query = RNAiKnockdownField(
+        label='RNAi query',
+        validators=[MinLengthValidator(1, message='No clone matches')])
+    screen_type = ScreenTypeChoiceField()
+
+    def clean(self):
+        cleaned_data = super(DoubleKnockdownForm, self).clean()
+        cleaned_data = clean_mutant_query_and_screen_type(self, cleaned_data)
+        return cleaned_data
+
+
+##########################
+# Secondary Scores forms #
+##########################
+
+class SecondaryScoresForm(forms.Form):
+    """Form for getting all secondary scores for a worm/screen combo."""
+
+    mutant_query = MutantKnockdownField()
+    screen_type = ScreenTypeChoiceField()
+
+    def clean(self):
+        cleaned_data = super(SecondaryScoresForm, self).clean()
+        cleaned_data = clean_mutant_query_and_screen_type(self, cleaned_data)
+        return cleaned_data
+
+
+#################
+# Scoring Forms #
+#################
+
+def get_score_form(key):
+    d = {
+        'SUP': SuppressorScoreForm,
+        'FAKE': FakeScoreForm,
+    }
+    return d[key]
+
+
 class SuppressorScoreForm(forms.Form):
 
     sup_score = SuppressorScoreField()
@@ -439,17 +518,9 @@ class FakeScoreForm(forms.Form):
     auxiliary_scores = AuxiliaryScoreField(required=False)
 
 
-def get_score_form(key):
-    d = {
-        'SUP': SuppressorScoreForm,
-        'FAKE': FakeScoreForm,
-    }
-    return d[key]
-
-
-#################################
-# Forms for editing experiments #
-#################################
+##################################
+# Other database-modifying forms #
+##################################
 
 class AddExperimentPlateForm(forms.Form):
     """
@@ -536,78 +607,3 @@ def process_ChangeExperimentPlatesForm_data(experiment_plate, data):
         experiment_plate.set_junk(data.get('is_junk'))
 
     return
-
-
-#############################
-# Forms for Knockdown pages #
-#############################
-
-class RNAiKnockdownForm(forms.Form):
-    """Form for finding wildtype worms tested with a single RNAi clone."""
-
-    rnai_query = RNAiKnockdownField(
-        label='RNAi query',
-        validators=[MinLengthValidator(1, message='No clone matches')])
-
-    temperature = forms.DecimalField(required=False,
-                                     label='Temperature',
-                                     help_text='optional')
-
-
-class MutantKnockdownForm(forms.Form):
-    """Form for finding a mutant worm with the control bacteria."""
-
-    mutant_query = MutantKnockdownField()
-    screen_type = ScreenTypeChoiceField()
-
-    def clean(self):
-        cleaned_data = super(MutantKnockdownForm, self).clean()
-        cleaned_data = clean_mutant_query_and_screen_type(self, cleaned_data)
-        return cleaned_data
-
-
-class DoubleKnockdownForm(forms.Form):
-    """Form for finding a double knockdown."""
-
-    mutant_query = MutantKnockdownField()
-    rnai_query = RNAiKnockdownField(
-        label='RNAi query',
-        validators=[MinLengthValidator(1, message='No clone matches')])
-    screen_type = ScreenTypeChoiceField()
-
-    def clean(self):
-        cleaned_data = super(DoubleKnockdownForm, self).clean()
-        cleaned_data = clean_mutant_query_and_screen_type(self, cleaned_data)
-        return cleaned_data
-
-
-####################################
-# Forms for Secondary Scores pages #
-####################################
-
-class SecondaryScoresForm(forms.Form):
-    """Form for getting all secondary scores for a worm/screen combo."""
-
-    mutant_query = MutantKnockdownField()
-    screen_type = ScreenTypeChoiceField()
-
-    def clean(self):
-        cleaned_data = super(SecondaryScoresForm, self).clean()
-        cleaned_data = clean_mutant_query_and_screen_type(self, cleaned_data)
-        return cleaned_data
-
-
-###########
-# Helpers #
-###########
-
-def remove_empties_and_none(d):
-    """Remove key-value pairs from dictionary if the value is '' or None."""
-    for k, v in d.items():
-        # Retain 'False' as a legitimate filter
-        if v is False:
-            continue
-
-        # Ditch empty strings and None as filters
-        if not v:
-            del d[k]
