@@ -8,7 +8,15 @@
   <form action="" method="get">
     {% for field in form %}
     <div class="field">
+
+      {{ field.label_tag }} {{ field }}
+
+      {% if field.help_text %}
+      <span class="helptext">{{ field.help_text|safe }}</span>
+      {% endif %}
+
       {% if field.errors %}
+        <br>
         <ul class="errorlist">
         {% for error in field.errors %}
           <li>{{ error }}</li>
@@ -16,11 +24,6 @@
         </ul>
       {% endif %}
 
-      {{ field.label_tag }} {{ field }}
-
-      {% if field.help_text %}
-      <span class="helptext">{{ field.help_text|safe }}</span>
-      {% endif %}
     </div>
     {% endfor %}
 

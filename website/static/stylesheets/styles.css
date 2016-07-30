@@ -268,6 +268,9 @@ button {
     background: none;
     color: #ed865a; }
 
+.errorlist {
+  font-size: 14px; }
+
 .hover_tag {
   position: absolute;
   display: none;
@@ -473,16 +476,15 @@ button {
 #find-experiment-plates #form-section, #find-experiment-wells #form-section, #score-experiment-wells-setup #form-section {
   position: relative;
   padding-bottom: 60px; }
+  #find-experiment-plates #form-section #form-errors, #find-experiment-wells #form-section #form-errors, #score-experiment-wells-setup #form-section #form-errors {
+    width: 100%;
+    margin-bottom: 20px; }
   #find-experiment-plates #form-section #form-buttons, #find-experiment-wells #form-section #form-buttons, #score-experiment-wells-setup #form-section #form-buttons {
     position: absolute;
     bottom: 20px;
     left: 20px; }
     #find-experiment-plates #form-section #form-buttons .reset, #find-experiment-wells #form-section #form-buttons .reset, #score-experiment-wells-setup #form-section #form-buttons .reset {
       margin-left: 20px; }
-  #find-experiment-plates #form-section #form-errors, #find-experiment-wells #form-section #form-errors, #score-experiment-wells-setup #form-section #form-errors {
-    float: left;
-    clear: both;
-    margin-bottom: 40px; }
   #find-experiment-plates #form-section form, #find-experiment-wells #form-section form, #score-experiment-wells-setup #form-section form {
     -webkit-column-count: 2;
     -moz-column-count: 2;
@@ -496,8 +498,6 @@ button {
     float: left;
     width: 100%;
     padding-bottom: 12px; }
-    #find-experiment-plates #form-section .field ul, #find-experiment-wells #form-section .field ul, #score-experiment-wells-setup #form-section .field ul {
-      display: inline-block; }
 
 #find-experiment-wells table {
   width: 100%;
