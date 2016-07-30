@@ -316,7 +316,7 @@ class Experiment(models.Model):
             'is_junk': False,
             'plate__date': self.date(),
             'plate__temperature': self.temperature(),
-            'worm_strain': self.worm_strain,
+            'worm_strain': self.worm_strain.pk,
             'library_stock__intended_clone': Clone.get_l4440(),
         }
 
@@ -324,7 +324,7 @@ class Experiment(models.Model):
 
     def get_link_to_l4440_controls(self):
         filters = self.get_l4440_control_filters()
-        build_url('find_experiment_wells_url', get=filters)
+        return build_url('find_experiment_wells_url', get=filters)
 
     def get_n2_control_filters(self):
         """
@@ -343,7 +343,7 @@ class Experiment(models.Model):
             'plate__date': self.date(),
             'plate__temperature': self.temperature(),
             'library_stock': self.library_stock,
-            'worm_strain': WormStrain.get_n2(),
+            'worm_strain': WormStrain.get_n2().pk,
         }
 
         filters['plate__temperature'] = Experiment.get_closest_temperature(
@@ -353,7 +353,7 @@ class Experiment(models.Model):
 
     def get_link_to_n2_controls(self):
         filters = self.get_n2_control_filters()
-        build_url('find_experiment_wells_url', get=filters)
+        return build_url('find_experiment_wells_url', get=filters)
 
     def toggle_junk(self):
         """
