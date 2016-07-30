@@ -422,7 +422,7 @@ class ManualScoreCode(models.Model):
 
         'AUXILIARY': [
             -7, -4, -3, -2,  # experimental problems
-            7, 8, 10, 11,  # other phenotypes
+            7, 10, 8, 11,  # other phenotypes
         ]
     }
 
@@ -458,7 +458,11 @@ class ManualScoreCode(models.Model):
 
     @classmethod
     def get_codes(cls, key):
-        return cls.objects.filter(pk__in=cls._SCORING_PKS[key])
+        preserved = models.Case(*[models.When(pk=pk, then=i) for i, pk
+                                  in enumerate(cls._SCORING_PKS[key])])
+        return (cls.objects
+                .filter(pk__in=cls._SCORING_PKS[key])
+                .order_by(preserved))
 
 
 class ManualScore(models.Model):
