@@ -10,7 +10,6 @@
   {% url 'library_plates_url' as library_plates_url %}
   {% url 'find_experiment_plates_url' as find_experiment_plates_url %}
   {% url 'find_experiment_wells_url' as find_experiment_wells_url %}
-  {% url 'score_experiment_wells_url' as score_experiment_wells_url %}
   {% url 'find_single_knockdown_url' as find_single_knockdown_url %}
   {% url 'find_double_knockdown_url' as find_double_knockdown_url %}
   {% url 'find_secondary_scores_url' as find_secondary_scores_url %}
@@ -50,15 +49,6 @@
       {% endifequal %}>
     Find Experiment Wells
   </a>
-
-  {% if perms.experiments.add_manualscore %}
-  <a href="{{ score_experiment_wells_url }}"
-      {% ifequal request.path score_experiment_wells_url %}
-      class="active"
-      {% endifequal %}>
-    Score Experiment Wells
-  </a>
-  {% endif %}
 
   <a href="{{ find_single_knockdown_url }}"
       {% ifequal request.path find_single_knockdown_url %}

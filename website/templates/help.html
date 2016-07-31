@@ -164,6 +164,15 @@ to view that page.
 
     Use the <a href="{% url 'add_experiment_plate_url' %}">
       Add Experiment Plate page</a>.
+
+    {% comment %}
+    {% if not perms.experiments.add_experimentplate or not perms.experiments.add_experimentwell %}
+    <br>
+    <span class="warning-message">
+      {{ request.user }}: you will need to get permission to access this page.
+    </span>
+    {% endif %}
+    {% endcomment %}
   </section>
 
   <section>
@@ -232,10 +241,17 @@ to view that page.
   <section>
     <h5 id="add-scores">Add Manual Scores</h5>
 
-    <span class="error-message">
-      TODO: build a general scoring interface for any primary and
-      SUP secondary rescoring needs.
+    Use the <a href="{% url 'score_experiment_wells_url' %}">
+      Score Experiment Wells page</a>.
+
+    {% comment %}
+    {% if not perms.experiments.add_manualscore %}
+    <br>
+    <span class="warning-message">
+      {{ request.user }}: you will need to get permission to access this page.
     </span>
+    {% endif %}
+    {% endcomment %}
   </section>
 
   <section>
