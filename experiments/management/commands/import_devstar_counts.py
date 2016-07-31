@@ -5,14 +5,16 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.management.base import BaseCommand, CommandError
 
 from experiments.models import Experiment, DevstarScore
-# from utils.scripting import require_db_write_acknowledgement
+from utils.scripting import require_db_write_acknowledgement
 
 
 PATTERNS = ('bacteria', 'W', 'LC', 'EC', 'NewcntW', 'NewcntL')
 
 
 class Command(BaseCommand):
-    help = 'Parse DevStaR txt output, to add to this database'
+    help = ('WORK IN PROGRESS -- does not yet save anything to database. '
+            'Waiting on Lior to normalize cnt.txt output. '
+            'Parse DevStaR txt output, to add to this database.')
 
     def add_arguments(self, parser):
         parser.add_argument('--all', action='store_true', dest='all',
@@ -22,6 +24,8 @@ class Command(BaseCommand):
                                   'database'))
 
     def handle(self, **options):
+        require_db_write_acknowledgement()
+
         if options['all']:
             experiments = Experiment.objects.all()
         else:
@@ -43,7 +47,7 @@ class Command(BaseCommand):
                 pk__in=all_devstar_experiment_pks)
 
             experiments = sorted(
-                chain(null_devstar_experiments,no_devstar_experiments),
+                chain(null_devstar_experiments, no_devstar_experiments),
                 key=lambda instance: instance.id)
 
         for experiment in experiments:
@@ -63,7 +67,7 @@ class Command(BaseCommand):
                         if line.startswith(pattern):
                             try:
                                 counts[i] = int(line.split()[1])
-                            except Exception as e:
+                            except Exception:
                                 raise CommandError('Error parsing line {} '
                                                    'in experiment {}'
                                                    .format(i, experiment))
