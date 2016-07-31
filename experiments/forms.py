@@ -127,7 +127,7 @@ class SuppressorScoreField(forms.TypedChoiceField):
 
 def _coerce_to_manualscorecode(value):
     if value == IMPOSSIBLE:
-        return None
+        return IMPOSSIBLE
     return ManualScoreCode.objects.get(pk=value)
 
 
@@ -531,8 +531,18 @@ def get_score_form(key):
 
 class SuppressorScoreForm(forms.Form):
 
-    sup_score = SuppressorScoreField()
+    sup_score = SuppressorScoreField(required=True)
     auxiliary_scores = AuxiliaryScoreField(required=False)
+
+    def clean(self):
+        cleaned_data = super(SuppressorScoreForm, self).clean()
+
+        if ('sup_score' in cleaned_data and
+                cleaned_data['sup_score'] == IMPOSSIBLE and
+                not cleaned_data['auxiliary_scores']):
+            raise forms.ValidationError('Impossible to judge requires '
+                                        'SOME other score')
+        return cleaned_data
 
     def process(self):
         cleaned_data = self.cleaned_data
