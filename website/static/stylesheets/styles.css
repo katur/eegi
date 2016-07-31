@@ -374,6 +374,8 @@ button {
 #login-page .submit {
   margin-top: 20px; }
 
+#help-page h3 {
+  padding-bottom: 40px; }
 #help-page h4 {
   padding-bottom: 20px; }
 #help-page h5 {
@@ -383,6 +385,8 @@ button {
   display: block;
   width: 100%;
   margin: 20px 0; }
+#help-page #disclaimer {
+  margin-bottom: 40px; }
 #help-page #updating-methods {
   list-style-position: inside;
   list-style: disc inside;
