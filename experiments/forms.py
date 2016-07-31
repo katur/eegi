@@ -1,4 +1,7 @@
+import os
+
 from django import forms
+from django.conf import settings
 from django.core.validators import MinLengthValidator
 
 from clones.forms import RNAiKnockdownField
@@ -89,6 +92,16 @@ class ScoringFormChoiceField(forms.ChoiceField):
         ]
 
         super(ScoringFormChoiceField, self).__init__(**kwargs)
+
+
+class ScoringListChoiceField(forms.ChoiceField):
+
+    def __init__(self, **kwargs):
+        kwargs['choices'] = (
+            [EMPTY_CHOICE] +
+            [(x, x) for x in os.listdir(settings.BASE_DIR_SCORING_LISTS)]
+        )
+        super(ScoringListChoiceField, self).__init__(**kwargs)
 
 
 class SuppressorScoreField(forms.TypedChoiceField):
@@ -309,6 +322,9 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
 
     score_form_key = ScoringFormChoiceField(label='Which buttons?')
 
+    scoring_list = ScoringListChoiceField(required=False,
+                                          label='Limit to file?')
+
     pk = forms.CharField(required=False, help_text='e.g. 32412_A01',
                          label='Experiment ID')
 
@@ -334,7 +350,8 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     randomize_order = forms.BooleanField(required=False, initial=False)
 
     field_order = [
-        'score_form_key', 'images_per_page', 'unscored_by_user',
+        'score_form_key', 'scoring_list', 'images_per_page',
+        'unscored_by_user',
         'randomize_order', 'exclude_no_clone', 'exclude_l4440', 'is_junk',
         'plate__screen_stage', 'plate__date', 'screen_type',
         'plate__temperature', 'worm_strain',
@@ -358,6 +375,7 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         cleaned_data = self.cleaned_data
 
         score_form_key = cleaned_data.pop('score_form_key')
+        filename = cleaned_data.pop('scoring_list')
         images_per_page = cleaned_data.pop('images_per_page')
         exclude_no_clone = cleaned_data.pop('exclude_no_clone')
         exclude_l4440 = cleaned_data.pop('exclude_l4440')
@@ -382,6 +400,18 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
                 .filter(experiment__in=experiments, scorer=self.user)
                 .values_list('experiment_id', flat=True))
             experiments = experiments.exclude(id__in=score_ids)
+
+        # Special case for Malcolm to score subset defined in a file
+        if filename:
+            path = os.path.join(settings.BASE_DIR_SCORING_LISTS, filename)
+
+            with open(path, 'r') as f:
+                key = f.readline().strip()
+                scoring_list = [line.strip() for line in f]
+
+                if key == 'library_stock':
+                    experiments = experiments.filter(
+                        library_stock__in=scoring_list)
 
         if randomize_order:
             # Warning: Django docs mentions that `order_by(?)` may be
