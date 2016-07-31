@@ -220,6 +220,35 @@ button
     @include triangle($big-pointer-size, black, down)
 
 
+$spin-duration: 1s
+
+@keyframes spin
+  0%
+    transform: rotate(0deg)
+  100%
+    transform: rotate(360deg)
+
+.loading
+  $spinner-size: 40px
+  background: $lighter-gray
+
+  &:before
+    @include box-sizing(border-box)
+    content: ''
+    display: block
+    position: absolute
+    top: 50%
+    left: 50%
+    width: $spinner-size
+    height: $spinner-size
+    margin-top: -$spinner-size / 2
+    margin-left: -$spinner-size / 2
+    border: 6px solid darken($light-gray, 5%)
+    border-radius: 50%
+    border-top-color: $purple
+    animation: spin $spin-duration infinite linear
+
+
 /////////////////////////////////////////////////////
 // 96-well plates                                  //
 // (relevant to both library and experiments apps) //

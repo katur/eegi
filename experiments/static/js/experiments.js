@@ -1,7 +1,31 @@
-$(document).ready(function() {
+$(window).load(function() {
   initializeCarousels();
   ScoringKeyboardShortcuts.init();
+  ScoringImages.init();
 });
+
+
+var ScoringImages = {
+  init: function() {
+    this.imageFrames = $(".image-frame");
+    this.imageFrameIndex = 0;
+    this.loadImages();
+  },
+
+  loadImages: function() {
+    var imageFrames = $(this.imageFrames);
+    imageFrames.each(function() {
+      var imageFrame = $(this);
+      var imageSrc = imageFrame.attr("data-src");
+      var image = $("<img>");
+
+      image.attr("src", imageSrc).load(function() {
+        imageFrame.removeClass("loading");
+        imageFrame.prepend(image);
+      });
+    });
+  },
+};
 
 
 var ScoringKeyboardShortcuts = {

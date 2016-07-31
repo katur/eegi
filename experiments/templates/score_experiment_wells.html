@@ -48,7 +48,9 @@
 
     <div class="experiment-content">
       <div class="experiment-content-image">
-        {% include 'image.html' %}
+        <div class="image-frame loading"
+            data-src="{% get_image_url experiment mode %}">
+        </div>
       </div>
 
       <div class="experiment-content-buttons">

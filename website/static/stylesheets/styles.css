@@ -306,6 +306,31 @@ button {
     border-right: 7px solid transparent;
     border-top: 7px solid black; }
 
+@keyframes spin {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(360deg); } }
+.loading {
+  background: #eee; }
+  .loading:before {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    content: "";
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin-top: -20px;
+    margin-left: -20px;
+    border: 6px solid lightgray;
+    border-radius: 50%;
+    border-top-color: #8d54c6;
+    animation: spin 1s infinite linear; }
+
 .plate-96 {
   width: 100%;
   font-size: 12px; }
