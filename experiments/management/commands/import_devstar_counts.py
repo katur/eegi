@@ -25,6 +25,7 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         require_db_write_acknowledgement()
+        return
 
         if options['all']:
             experiments = Experiment.objects.all()
