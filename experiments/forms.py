@@ -88,7 +88,6 @@ class ScoringFormChoiceField(forms.ChoiceField):
     def __init__(self, **kwargs):
         kwargs['choices'] = [
             ('SUP', 'Suppressor scoring'),
-            ('FAKE', 'Test 2-radio scoring'),
         ]
 
         super(ScoringFormChoiceField, self).__init__(**kwargs)
@@ -136,26 +135,6 @@ def _coerce_to_manualscorecode(value):
         return IMPOSSIBLE
 
     return ManualScoreCode.objects.get(pk=value)
-
-
-class FakeScoreField(forms.ChoiceField):
-
-    def __init__(self, **kwargs):
-        choices = []
-        for code in ManualScoreCode.get_codes('FAKE'):
-            choices.append((code.pk, code))
-
-        choices.append((None, 'Impossible to judge'))
-
-        kwargs['choices'] = choices
-
-        if 'widget' not in kwargs:
-            kwargs['widget'] = forms.RadioSelect(attrs={'class': 'keyable'})
-
-        if 'required' not in kwargs:
-            kwargs['required'] = True
-
-        super(FakeScoreField, self).__init__(**kwargs)
 
 
 class AuxiliaryScoreField(forms.ModelMultipleChoiceField):
@@ -549,7 +528,6 @@ class SecondaryScoresForm(forms.Form):
 def get_score_form(key):
     d = {
         'SUP': SuppressorScoreForm,
-        'FAKE': FakeScoreForm,
     }
     return d[key]
 
@@ -590,13 +568,6 @@ class SuppressorScoreForm(forms.Form):
 
         for auxiliary_code in auxiliary_codes:
             add_new_score(auxiliary_code)
-
-
-class FakeScoreForm(forms.Form):
-
-    fake_score = FakeScoreField()
-    sup_score = SuppressorScoreField()
-    auxiliary_scores = AuxiliaryScoreField(required=False)
 
 
 ##################################
