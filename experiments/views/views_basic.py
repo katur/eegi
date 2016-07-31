@@ -245,7 +245,8 @@ def score_experiment_wells(request):
 
         for experiment in Experiment.objects.filter(pk__in=pks):
             f = get_score_form(request.GET.get('score_form_key'))
-            experiment.score_form = f(request.POST, prefix=experiment.pk)
+            experiment.score_form = f(request.POST, user=request.user,
+                                      prefix=experiment.pk)
 
             if not experiment.score_form.is_valid():
                 redo_experiments.append(experiment)

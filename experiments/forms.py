@@ -10,6 +10,8 @@ from worms.forms import (MutantKnockdownField, WormChoiceField,
                          clean_mutant_query_and_screen_type)
 from worms.models import WormStrain
 
+SCORE_DEFAULT_PER_PAGE = 20
+
 SCREEN_STAGE_CHOICES = [
     (1, 'Primary'),
     (2, 'Secondary'),
@@ -19,8 +21,6 @@ SCREEN_TYPE_CHOICES = [
     ('SUP', 'Suppressor'),
     ('ENH', 'Enhancer'),
 ]
-
-SCORE_DEFAULT_PER_PAGE = 4
 
 IMPOSSIBLE = 'impossible'
 
@@ -33,8 +33,7 @@ class ScreenStageChoiceField(forms.ChoiceField):
     """Field for choosing Primary, Secondary, etc."""
 
     def __init__(self, **kwargs):
-        if 'choices' not in kwargs:
-            kwargs['choices'] = [EMPTY_CHOICE] + SCREEN_STAGE_CHOICES
+        kwargs['choices'] = [EMPTY_CHOICE] + SCREEN_STAGE_CHOICES
 
         super(ScreenStageChoiceField, self).__init__(**kwargs)
 
@@ -48,12 +47,10 @@ class ScreenTypeChoiceField(forms.ChoiceField):
     """
 
     def __init__(self, **kwargs):
+        kwargs['choices'] = [(x, y.lower()) for x, y in SCREEN_TYPE_CHOICES]
+
         if 'widget' not in kwargs:
             kwargs['widget'] = forms.RadioSelect
-
-        if 'choices' not in kwargs:
-            kwargs['choices'] = [(x, y.lower()) for x, y
-                                 in SCREEN_TYPE_CHOICES]
 
         super(ScreenTypeChoiceField, self).__init__(**kwargs)
 
@@ -67,8 +64,7 @@ class ScreenTypeChoiceFieldWithEmpty(forms.ChoiceField):
     """
 
     def __init__(self, **kwargs):
-        if 'choices' not in kwargs:
-            kwargs['choices'] = [EMPTY_CHOICE] + SCREEN_TYPE_CHOICES
+        kwargs['choices'] = [EMPTY_CHOICE] + SCREEN_TYPE_CHOICES
 
         super(ScreenTypeChoiceFieldWithEmpty, self).__init__(**kwargs)
 
@@ -77,10 +73,8 @@ class TemperatureChoiceField(forms.ChoiceField):
     """Field for selecting a tested temperature."""
 
     def __init__(self, **kwargs):
-        if 'choices' not in kwargs:
-            temperatures = ExperimentPlate.get_tested_temperatures()
-            choices = [EMPTY_CHOICE] + [(x, x) for x in temperatures]
-            kwargs['choices'] = choices
+        temperatures = ExperimentPlate.get_tested_temperatures()
+        kwargs['choices'] = [EMPTY_CHOICE] + [(x, x) for x in temperatures]
 
         super(TemperatureChoiceField, self).__init__(**kwargs)
 
@@ -89,11 +83,10 @@ class ScoringFormChoiceField(forms.ChoiceField):
     """Field for selecting which scoring form (buttons) should display."""
 
     def __init__(self, **kwargs):
-        if 'choices' not in kwargs:
-            kwargs['choices'] = [
-                ('SUP', 'Suppressor scoring'),
-                ('FAKE', 'Test 2-radio scoring'),
-            ]
+        kwargs['choices'] = [
+            ('SUP', 'Suppressor scoring'),
+            ('FAKE', 'Test 2-radio scoring'),
+        ]
 
         super(ScoringFormChoiceField, self).__init__(**kwargs)
 
@@ -116,11 +109,11 @@ class SuppressorScoreField(forms.TypedChoiceField):
 
         kwargs['coerce'] = _coerce_to_manualscorecode
 
-        if 'widget' not in kwargs:
-            kwargs['widget'] = forms.RadioSelect(attrs={'class': 'keyable'})
-
         if 'required' not in kwargs:
             kwargs['required'] = True
+
+        if 'widget' not in kwargs:
+            kwargs['widget'] = forms.RadioSelect(attrs={'class': 'keyable'})
 
         super(SuppressorScoreField, self).__init__(**kwargs)
 
@@ -128,20 +121,20 @@ class SuppressorScoreField(forms.TypedChoiceField):
 def _coerce_to_manualscorecode(value):
     if value == IMPOSSIBLE:
         return IMPOSSIBLE
+
     return ManualScoreCode.objects.get(pk=value)
 
 
 class FakeScoreField(forms.ChoiceField):
 
     def __init__(self, **kwargs):
-        if 'choices' not in kwargs:
-            choices = []
-            for code in ManualScoreCode.get_codes('FAKE'):
-                choices.append((code.pk, code))
+        choices = []
+        for code in ManualScoreCode.get_codes('FAKE'):
+            choices.append((code.pk, code))
 
-            choices.append((None, 'Impossible to judge'))
+        choices.append((None, 'Impossible to judge'))
 
-            kwargs['choices'] = choices
+        kwargs['choices'] = choices
 
         if 'widget' not in kwargs:
             kwargs['widget'] = forms.RadioSelect(attrs={'class': 'keyable'})
@@ -193,7 +186,7 @@ class _FilterExperimentsBaseForm(forms.Form):
         required=False, label='Date', help_text='YYYY-MM-DD')
 
     '''
-    TODO: When the below field was a TemperatureChoiceField, it caused
+    NOTE: When the below field was a TemperatureChoiceField, it caused
     issues when calling ./manage.py subcommands on an empty database.
 
     (In case you're wonding, why was I calling ./manage.py on an empty
@@ -207,9 +200,7 @@ class _FilterExperimentsBaseForm(forms.Form):
             'eegi.experimentplate' doesn't exist")
 
     This only causes an issue with Django >=1.9.0. Django 1.8.9 was
-    fine.
-
-    Will need to look into this. For now just use a DecimalField instead.
+    fine. For now, just use a DecimalField instead.
     '''
     plate__temperature = forms.DecimalField(
         required=False, label='Temperature')
@@ -354,6 +345,15 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         self.user = kwargs.pop('user', None)
         super(FilterExperimentWellsToScoreForm, self).__init__(*args, **kwargs)
 
+    def clean(self):
+        cleaned_data = super(FilterExperimentWellsToScoreForm, self).clean()
+        if (cleaned_data.get('randomize_order') and
+                not cleaned_data.get('unscored_by_user')):
+            raise forms.ValidationError(
+                'Randomizing order not currently supported when '
+                'scoring images you have already scored.')
+        return cleaned_data
+
     def process(self):
         cleaned_data = self.cleaned_data
 
@@ -384,11 +384,6 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
             experiments = experiments.exclude(id__in=score_ids)
 
         if randomize_order:
-            if not unscored_by_user:
-                raise forms.ValidationError(
-                    'Randomizing order not currently supported when '
-                    'scoring images you have already scored.')
-
             # Warning: Django docs mentions that `order_by(?)` may be
             # expensive and slow. If performance becomes an issue, switch
             # to another way
@@ -534,19 +529,37 @@ class SuppressorScoreForm(forms.Form):
     sup_score = SuppressorScoreField(required=True)
     auxiliary_scores = AuxiliaryScoreField(required=False)
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(SuppressorScoreForm, self).__init__(*args, **kwargs)
+
     def clean(self):
         cleaned_data = super(SuppressorScoreForm, self).clean()
 
         if ('sup_score' in cleaned_data and
                 cleaned_data['sup_score'] == IMPOSSIBLE and
                 not cleaned_data['auxiliary_scores']):
-            raise forms.ValidationError('Impossible to judge requires '
-                                        'SOME other score')
+            raise forms.ValidationError('"Impossible to judge" requires '
+                                        'some other score')
         return cleaned_data
 
     def process(self):
         cleaned_data = self.cleaned_data
-        print 'About to process {}'.format(cleaned_data)
+        experiment = Experiment.objects.get(pk=self.prefix)
+
+        def add_new_score(score_code):
+            score = ManualScore(
+                experiment=experiment, score_code=score_code, scorer=self.user)
+            score.save()
+
+        sup_code = cleaned_data.get('sup_score')
+        auxiliary_codes = cleaned_data.get('auxiliary_scores')
+
+        if sup_code != IMPOSSIBLE:
+            add_new_score(sup_code)
+
+        for auxiliary_code in auxiliary_codes:
+            add_new_score(auxiliary_code)
 
 
 class FakeScoreForm(forms.Form):
