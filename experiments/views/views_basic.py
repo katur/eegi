@@ -251,7 +251,8 @@ def score_experiment_wells(request):
                 redo_experiments.append(experiment)
 
             else:
-                print experiment.score_form.cleaned_data
+                # This actually submits the scores to the database
+                experiment.score_form.process()
 
     # Bind filter form with GET params
     if request.GET:

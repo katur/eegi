@@ -534,6 +534,10 @@ class SuppressorScoreForm(forms.Form):
     sup_score = SuppressorScoreField()
     auxiliary_scores = AuxiliaryScoreField(required=False)
 
+    def process(self):
+        cleaned_data = self.cleaned_data
+        print 'About to process {}'.format(cleaned_data)
+
 
 class FakeScoreForm(forms.Form):
 
