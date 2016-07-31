@@ -3,6 +3,7 @@ import os
 from django import forms
 from django.conf import settings
 from django.core.validators import MinLengthValidator
+from django.utils import timezone
 
 from clones.forms import RNAiKnockdownField
 from experiments.models import (Experiment, ExperimentPlate,
@@ -555,9 +556,13 @@ class SuppressorScoreForm(forms.Form):
         cleaned_data = self.cleaned_data
         experiment = Experiment.objects.get(pk=self.prefix)
 
+        # Each new score for this image should have the same timestamp
+        time = timezone.now()
+
         def add_new_score(score_code):
             score = ManualScore(
-                experiment=experiment, score_code=score_code, scorer=self.user)
+                experiment=experiment, score_code=score_code,
+                scorer=self.user, timestamp=time)
             score.save()
 
         sup_code = cleaned_data.get('sup_score')
