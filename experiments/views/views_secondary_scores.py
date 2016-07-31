@@ -14,6 +14,14 @@ from experiments.helpers.scores import get_average_score_weight
 
 from worms.models import WormStrain
 
+NOAH_ID = 14
+MALCOLM_ID = 22
+KATHERINE_ID = 1
+SHERLY_ID = 4
+GISELLE_ID = 3
+
+IDS = [NOAH_ID, MALCOLM_ID, SHERLY_ID]
+
 
 def secondary_scores(request, worm, temperature):
     """
@@ -24,16 +32,14 @@ def secondary_scores(request, worm, temperature):
     worm = get_object_or_404(WormStrain, pk=worm)
     screen_type = worm.get_screen_type(temperature)
 
+    data = worm.get_organized_scores(screen_type, screen_stage=2,
+                                     most_relevant_only=True,
+                                     scorer_id__in=IDS)
+
     num_passes_stringent = 0
     num_passes_percent = 0
     num_passes_count = 0
     num_experiment_columns = 0
-
-    MALCOLM_ID = 22
-    NOAH_ID = 14
-    data = worm.get_organized_scores(screen_type, screen_stage=2,
-                                     most_relevant_only=True,
-                                     scorer_id__in=[NOAH_ID, MALCOLM_ID])
 
     for stock, expts in data.iteritems():
         scores = expts.values()
