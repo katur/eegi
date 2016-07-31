@@ -238,7 +238,7 @@ def score_experiment_wells(request):
 
     # If there was a previous submit, process it
     if request.POST:
-        exp = '^[0-9]+_[A-H](0[0-9])|(11)|(12)-.*_scores?$'
+        exp = '^[0-9]+_[A-H][0-1][0-9]-.*_scores?$'
         pattern = re.compile(exp)
 
         pks = [k.split('-')[0] for k in request.POST if pattern.match(k)]
