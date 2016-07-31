@@ -160,14 +160,20 @@ $max-image-width: 1300px
         p, ul
           @include box-sizing(border-box)
           width: 100%
-          float: left
 
         p
           margin-bottom: $whitespace / 8
 
         ul
           padding: 10px
-          margin-bottom: $whitespace
+          margin-bottom: $whitespace / 2
+
+          &:last-child
+            margin-bottom: 0
+
+          &.errorlist
+            padding: 0
+            margin-bottom: 5px
 
   .active-keyable-group
     box-shadow: 0 0 4px $purple

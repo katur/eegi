@@ -20,7 +20,9 @@ SCREEN_TYPE_CHOICES = [
     ('ENH', 'Enhancer'),
 ]
 
-SCORE_DEFAULT_PER_PAGE = 20
+SCORE_DEFAULT_PER_PAGE = 4
+
+IMPOSSIBLE = 'impossible'
 
 
 ##########
@@ -96,23 +98,23 @@ class ScoringFormChoiceField(forms.ChoiceField):
         super(ScoringFormChoiceField, self).__init__(**kwargs)
 
 
-class SuppressorScoreField(forms.ChoiceField):
+class SuppressorScoreField(forms.TypedChoiceField):
     """Field for choosing a level of suppression.
 
-    NOTE: avoid ModelChoiceField because there is no *clean* way to
+    NOTE: avoid ModelChoiceField because there is no clean way to
     include an empty value (for the "unscorable" case) while still
     making the field required and while not setting an initial value.
     """
 
     def __init__(self, **kwargs):
-        if 'choices' not in kwargs:
-            choices = []
-            for code in ManualScoreCode.get_codes('SUP'):
-                choices.append((code.pk, code))
+        choices = []
+        for code in ManualScoreCode.get_codes('SUP'):
+            choices.append((code.pk, str(code)))
 
-            choices.append((None, 'Impossible to judge'))
+        choices.append((IMPOSSIBLE, 'Impossible to judge'))
+        kwargs['choices'] = choices
 
-            kwargs['choices'] = choices
+        kwargs['coerce'] = _coerce_to_manualscorecode
 
         if 'widget' not in kwargs:
             kwargs['widget'] = forms.RadioSelect(attrs={'class': 'keyable'})
@@ -121,6 +123,12 @@ class SuppressorScoreField(forms.ChoiceField):
             kwargs['required'] = True
 
         super(SuppressorScoreField, self).__init__(**kwargs)
+
+
+def _coerce_to_manualscorecode(value):
+    if value == IMPOSSIBLE:
+        return None
+    return ManualScoreCode.objects.get(pk=value)
 
 
 class FakeScoreField(forms.ChoiceField):
@@ -148,8 +156,7 @@ class AuxiliaryScoreField(forms.ModelMultipleChoiceField):
     """Field for selecting auxiliary scores."""
 
     def __init__(self, **kwargs):
-        if 'queryset' not in kwargs:
-            kwargs['queryset'] = ManualScoreCode.get_codes('AUXILIARY')
+        kwargs['queryset'] = ManualScoreCode.get_codes('AUXILIARY')
 
         if 'widget' not in kwargs:
             kwargs['widget'] = forms.CheckboxSelectMultiple(
@@ -241,16 +248,12 @@ class FilterExperimentPlatesForm(_FilterExperimentsBaseForm):
         'library_stock__plate', 'is_junk',
     ]
 
-    def clean(self):
-        cleaned_data = super(FilterExperimentPlatesForm, self).clean()
-
+    def process(self):
+        cleaned_data = self.cleaned_data
         _remove_empties_and_none(cleaned_data)
         plate_pks = (Experiment.objects.filter(**cleaned_data)
                      .order_by('plate').values_list('plate', flat=True))
-        cleaned_data['experiment_plates'] = (ExperimentPlate.objects
-                                             .filter(pk__in=plate_pks))
-
-        return cleaned_data
+        return ExperimentPlate.objects.filter(pk__in=plate_pks)
 
 
 class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
@@ -285,8 +288,8 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
         'exclude_no_clone', 'exclude_l4440', 'is_junk',
     ]
 
-    def clean(self):
-        cleaned_data = super(FilterExperimentWellsForm, self).clean()
+    def process(self):
+        cleaned_data = self.cleaned_data
 
         exclude_no_clone = cleaned_data.pop('exclude_no_clone')
         exclude_l4440 = cleaned_data.pop('exclude_l4440')
@@ -307,12 +310,13 @@ class FilterExperimentWellsForm(_FilterExperimentsBaseForm):
         if screen_type:
             experiments = _limit_to_screen_type(experiments, screen_type)
 
-        cleaned_data['experiments'] = experiments
-        return cleaned_data
+        return experiments
 
 
 class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     """Form for filtering experiment wells to score."""
+
+    score_form_key = ScoringFormChoiceField(label='Which buttons?')
 
     pk = forms.CharField(required=False, help_text='e.g. 32412_A01',
                          label='Experiment ID')
@@ -328,8 +332,6 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     exclude_l4440 = forms.BooleanField(
         required=False, initial=True, label='Exclude L4440')
 
-    form = ScoringFormChoiceField(label='Which buttons?')
-
     images_per_page = forms.IntegerField(
         required=True, initial=SCORE_DEFAULT_PER_PAGE,
         widget=forms.TextInput(attrs={'size': '3'}))
@@ -341,8 +343,8 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
     randomize_order = forms.BooleanField(required=False, initial=False)
 
     field_order = [
-        'form', 'images_per_page', 'unscored_by_user', 'randomize_order',
-        'exclude_no_clone', 'exclude_l4440', 'is_junk',
+        'score_form_key', 'images_per_page', 'unscored_by_user',
+        'randomize_order', 'exclude_no_clone', 'exclude_l4440', 'is_junk',
         'plate__screen_stage', 'plate__date', 'screen_type',
         'plate__temperature', 'worm_strain',
         'pk', 'plate__pk',
@@ -352,10 +354,10 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         self.user = kwargs.pop('user', None)
         super(FilterExperimentWellsToScoreForm, self).__init__(*args, **kwargs)
 
-    def clean(self):
-        cleaned_data = super(FilterExperimentWellsToScoreForm, self).clean()
+    def process(self):
+        cleaned_data = self.cleaned_data
 
-        form = cleaned_data.pop('form')
+        score_form_key = cleaned_data.pop('score_form_key')
         images_per_page = cleaned_data.pop('images_per_page')
         exclude_no_clone = cleaned_data.pop('exclude_no_clone')
         exclude_l4440 = cleaned_data.pop('exclude_l4440')
@@ -387,8 +389,8 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
                     'Randomizing order not currently supported when '
                     'scoring images you have already scored.')
 
-            # Warning: Django documentation mentions that `order_by(?)` may
-            # be expensive and slow. If performance becomes an issue, switch
+            # Warning: Django docs mentions that `order_by(?)` may be
+            # expensive and slow. If performance becomes an issue, switch
             # to another way
             experiments = experiments.order_by('?')
 
@@ -396,12 +398,12 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         if screen_type:
             experiments = _limit_to_screen_type(experiments, screen_type)
 
-        cleaned_data['form'] = form
-        cleaned_data['images_per_page'] = images_per_page
-        cleaned_data['unscored_by_user'] = unscored_by_user
-        cleaned_data['experiments'] = experiments
-
-        return cleaned_data
+        return {
+            'experiments': experiments,
+            'score_form': get_score_form(score_form_key),
+            'images_per_page': images_per_page,
+            'unscored_by_user': unscored_by_user,
+        }
 
 
 def _remove_empties_and_none(d):

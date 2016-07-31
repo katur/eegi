@@ -1,3 +1,5 @@
+import re
+
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Case, When
@@ -75,31 +77,6 @@ def vertical_experiment_plates(request, pks):
     return render(request, 'vertical_experiment_plates.html', context)
 
 
-def find_experiment_wells(request):
-    """Render the page to find experiment wells based on filters."""
-    experiments = None
-    display_experiments = None
-
-    if request.GET:
-        form = FilterExperimentWellsForm(request.GET)
-
-        if form.is_valid():
-            experiments = form.cleaned_data['experiments']
-            display_experiments = get_paginated(request, experiments,
-                                                EXPERIMENT_WELLS_PER_PAGE)
-
-    else:
-        form = FilterExperimentWellsForm()
-
-    context = {
-        'form': form,
-        'experiments': experiments,
-        'display_experiments': display_experiments,
-    }
-
-    return render(request, 'find_experiment_wells.html', context)
-
-
 def find_experiment_plates(request, context=None):
     """Render the page to find experiment plates based on filters."""
     experiment_plates = None
@@ -109,7 +86,7 @@ def find_experiment_plates(request, context=None):
         form = FilterExperimentPlatesForm(request.GET)
 
         if form.is_valid():
-            experiment_plates = form.cleaned_data['experiment_plates']
+            experiment_plates = form.process()
             display_plates = get_paginated(request, experiment_plates,
                                            EXPERIMENT_PLATES_PER_PAGE)
 
@@ -123,6 +100,30 @@ def find_experiment_plates(request, context=None):
     }
 
     return render(request, 'find_experiment_plates.html', context)
+
+
+def find_experiment_wells(request):
+    """Render the page to find experiment wells based on filters."""
+    experiments = None
+    display_experiments = None
+
+    if request.GET:
+        form = FilterExperimentWellsForm(request.GET)
+
+        if form.is_valid():
+            experiments = form.process()
+            display_experiments = get_paginated(request, experiments,
+                                                EXPERIMENT_WELLS_PER_PAGE)
+    else:
+        form = FilterExperimentWellsForm()
+
+    context = {
+        'form': form,
+        'experiments': experiments,
+        'display_experiments': display_experiments,
+    }
+
+    return render(request, 'find_experiment_wells.html', context)
 
 
 @permission_required(['experiments.add_experiment',
@@ -226,51 +227,70 @@ def change_experiment_plates(request, pks):
 @permission_required(['experiments.add_manualscore'])
 def score_experiment_wells(request):
     """
+    Render the page to score experiment wells.
+
     TODO: create base class to capture commonality between this and
     find_experiment_wells
 
     TODO: better handle case of invalid filter_form
     """
+    redo_experiments = []
 
     # If there was a previous submit, process it
     if request.POST:
-        # forms_to_process = []
-        # Extract prefixes
-        # for prefix in prefixes:
-        #    forms_to_process.append(get_score_form(key)(prefix=prefix))
-        pass
+        exp = '^[0-9]+_[A-H](0[0-9])|(11)|(12)-.*_scores?$'
+        pattern = re.compile(exp)
 
+        pks = [k.split('-')[0] for k in request.POST if pattern.match(k)]
+
+        for experiment in Experiment.objects.filter(pk__in=pks):
+            f = get_score_form(request.GET.get('score_form_key'))
+            experiment.score_form = f(request.POST, prefix=experiment.pk)
+
+            if not experiment.score_form.is_valid():
+                redo_experiments.append(experiment)
+
+            else:
+                print experiment.score_form.cleaned_data
+
+    # Bind filter form with GET params
     if request.GET:
         filter_form = FilterExperimentWellsToScoreForm(
             request.GET, user=request.user)
     else:
         filter_form = FilterExperimentWellsToScoreForm()
 
-    if (not request.GET or not filter_form.is_valid() or
-            not filter_form.has_changed()):
+    if (not request.GET or not filter_form.is_valid()):
         return render(request, 'score_experiment_wells_setup.html', {
-            'form': filter_form
+            'filter_form': filter_form
         })
 
-    unscored_by_user = filter_form.cleaned_data['unscored_by_user']
-    experiments = filter_form.cleaned_data['experiments']
-    score_form_key = filter_form.cleaned_data['form']
-    images_per_page = filter_form.cleaned_data['images_per_page']
+    # At this point, filter form is valid and cleaned
+    filter_data = filter_form.process()
+    experiments = filter_data['experiments']
+    unscored_by_user = filter_data['unscored_by_user']
 
-    if unscored_by_user:
-        display_experiments = experiments[:images_per_page]
+    if redo_experiments:
+        # These already have attached and bound score forms
+        display_experiments = redo_experiments
+
     else:
-        display_experiments = get_paginated(request, experiments,
-                                            images_per_page)
+        per_page = filter_data['images_per_page']
 
-    for experiment in display_experiments:
-        experiment.score_form = get_score_form(
-            score_form_key)(prefix=experiment.pk)
+        if unscored_by_user:
+            display_experiments = experiments[:per_page]
+        else:
+            display_experiments = get_paginated(request, experiments, per_page)
+
+        # Attach a score form to each experiment
+        score_form = filter_data['score_form']
+        for experiment in display_experiments:
+            experiment.score_form = score_form(prefix=experiment.pk)
 
     context = {
-        'unscored_by_user': unscored_by_user,
         'experiments': experiments,
         'display_experiments': display_experiments,
+        'unscored_by_user': filter_data['unscored_by_user'],
     }
 
     return render(request, 'score_experiment_wells.html', context)

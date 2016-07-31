@@ -552,13 +552,17 @@ button {
         -webkit-box-sizing: border-box;
         -moz-box-sizing: border-box;
         box-sizing: border-box;
-        width: 100%;
-        float: left; }
+        width: 100%; }
       #score-experiment-wells .experiment-content-buttons p {
         margin-bottom: 5px; }
       #score-experiment-wells .experiment-content-buttons ul {
         padding: 10px;
-        margin-bottom: 40px; }
+        margin-bottom: 20px; }
+        #score-experiment-wells .experiment-content-buttons ul:last-child {
+          margin-bottom: 0; }
+        #score-experiment-wells .experiment-content-buttons ul.errorlist {
+          padding: 0;
+          margin-bottom: 5px; }
 #score-experiment-wells .active-keyable-group {
   box-shadow: 0 0 4px #8d54c6;
   border-radius: 4px; }
