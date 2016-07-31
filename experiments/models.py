@@ -471,6 +471,8 @@ class ManualScore(models.Model):
     experiment = models.ForeignKey(Experiment, models.CASCADE)
     score_code = models.ForeignKey(ManualScoreCode, models.CASCADE)
     scorer = models.ForeignKey(User, models.CASCADE)
+
+    # Stored in UTC, converted to local time in template
     timestamp = models.DateTimeField(default=timezone.now)
 
     STRONG = 'Strong'

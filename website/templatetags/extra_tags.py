@@ -1,4 +1,5 @@
 from django import template
+from django.utils.timezone import localtime
 
 from utils.well_tile_conversion import well_to_tile
 
@@ -155,7 +156,7 @@ def get_manual_score_summary(experiment):
     d = {}
     for score in scores:
         scorer = score.scorer
-        timestamp = score.timestamp
+        timestamp = localtime(score.timestamp)
         if scorer not in d:
             d[scorer] = {}
         if timestamp not in d[scorer]:
