@@ -117,7 +117,15 @@ var ScoringKeyboardShortcuts = {
       nextIndex = this.currentExperimentIndex + 1;
     }
 
-    if (nextIndex < 0 || nextIndex >= this.experiments.length) {
+    var submitButton = ${".submit"};
+    submitButton.blur();
+
+    // If past the last experiment, move down to show and focus Submit button
+    if (nextIndex === this.experiments.length) {
+      $("html, body").scrollTop($("body").height());
+      submitButton.focus();
+
+    } else if (nextIndex < 0 || nextIndex >= this.experiments.length) {
       return;
     }
 
