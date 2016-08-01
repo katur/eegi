@@ -3,6 +3,7 @@ import re
 from django.conf import settings
 from django.contrib.auth.decorators import permission_required
 from django.db.models import Case, When
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render, get_object_or_404
 
 from experiments.helpers.data_entry import parse_batch_data_entry_gdoc
@@ -13,7 +14,7 @@ from experiments.forms import (
     AddExperimentPlateForm, ChangeExperimentPlatesForm,
     process_ChangeExperimentPlatesForm_data,
 )
-from utils.http import http_response_ok
+from utils.http import http_response_ok, build_url
 from utils.pagination import get_paginated
 
 EXPERIMENT_PLATES_PER_PAGE = 30
@@ -234,26 +235,35 @@ def score_experiment_wells(request):
 
     TODO: better handle case of invalid filter_form
     """
-    redo_experiments = []
+    post_experiments = []
+    redo_post = False
 
-    # If there was a previous submit, process it
+    # If there was a previous submit
     if request.POST:
         exp = '^[0-9]+_[A-H][0-1][0-9]-.*_scores?$'
         pattern = re.compile(exp)
 
         pks = [k.split('-')[0] for k in request.POST if pattern.match(k)]
 
+        # Check if all POSTs are valid
         for experiment in Experiment.objects.filter(pk__in=pks):
             f = get_score_form(request.GET.get('score_form_key'))
             experiment.score_form = f(request.POST, user=request.user,
                                       prefix=experiment.pk)
 
-            if not experiment.score_form.is_valid():
-                redo_experiments.append(experiment)
+            post_experiments.append(experiment)
 
-            else:
+            if not experiment.score_form.is_valid():
+                redo_post = True
+
+        # If all POSTs valid, process and redirect
+        if not redo_post:
+            for experiment in post_experiments:
                 # This actually submits the scores to the database
                 experiment.score_form.process()
+
+            url = build_url('score_experiment_wells_url', get=request.GET)
+            return HttpResponseRedirect(url)
 
     # Bind filter form with GET params
     if request.GET:
@@ -272,9 +282,9 @@ def score_experiment_wells(request):
     experiments = filter_data['experiments']
     unscored_by_user = filter_data['unscored_by_user']
 
-    if redo_experiments:
+    if redo_post:
         # These already have attached and bound score forms
-        display_experiments = redo_experiments
+        display_experiments = post_experiments
 
     else:
         per_page = filter_data['images_per_page']
@@ -293,6 +303,7 @@ def score_experiment_wells(request):
         'experiments': experiments,
         'display_experiments': display_experiments,
         'unscored_by_user': filter_data['unscored_by_user'],
+        'do_not_display': ['images_per_page', 'score_form_key', 'is_junk']
     }
 
     return render(request, 'score_experiment_wells.html', context)

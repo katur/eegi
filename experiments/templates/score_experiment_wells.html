@@ -11,6 +11,15 @@
 {% block content %}
 
 {% ifnotequal experiments None %}
+
+<ul id="filters">
+{% for k, v in request.GET.items %}
+  {% if v and k not in do_not_display %}
+  <li>{{ k }}: {{ v }}</li>
+  {% endif %}
+{% endfor %}
+</ul>
+
 <div id="results-header">
   <span id="total">
     {{ experiments|length }}
@@ -21,6 +30,7 @@
   {% include 'pagination_status.html' with paginated=display_experiments %}
   {% endif %}
 </div>
+
 {% endifnotequal %}
 
 
