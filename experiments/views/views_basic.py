@@ -18,7 +18,7 @@ from utils.http import http_response_ok, build_url
 from utils.pagination import get_paginated
 
 EXPERIMENT_PLATES_PER_PAGE = 30
-EXPERIMENT_WELLS_PER_PAGE = 10
+EXPERIMENT_WELLS_PER_PAGE = 30
 
 
 def experiment_well(request, pk):
