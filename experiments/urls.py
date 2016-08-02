@@ -46,6 +46,8 @@ urlpatterns = [
         name='find_secondary_scores_url'),
     url(r'^secondary-scores/([^/]+)/([^/]+)/$', views.secondary_scores,
         name='secondary_scores_url'),
+    url(r'^secondary-scores/([^/]+)/([^/]+)/([^/]+)$',
+        views.secondary_scores, name='secondary_scores_url'),
 
     url(r'^image-categories/$', views.image_categories,
         name='image_categories_url'),

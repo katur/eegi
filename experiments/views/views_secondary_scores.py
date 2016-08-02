@@ -1,6 +1,7 @@
 from __future__ import division
 from collections import OrderedDict
 
+from django.contrib.auth import get_user_model
 from django.shortcuts import render, redirect, get_object_or_404
 
 from experiments.forms import SecondaryScoresForm
@@ -23,7 +24,7 @@ GISELLE_ID = 3
 IDS = [NOAH_ID, MALCOLM_ID, SHERLY_ID]
 
 
-def secondary_scores(request, worm, temperature):
+def secondary_scores(request, worm, temperature, username=None):
     """
     Render the page to display secondary scores for a mutant/screen.
 
@@ -32,9 +33,15 @@ def secondary_scores(request, worm, temperature):
     worm = get_object_or_404(WormStrain, pk=worm)
     screen_type = worm.get_screen_type(temperature)
 
-    data = worm.get_organized_scores(screen_type, screen_stage=2,
-                                     most_relevant_only=True,
-                                     scorer_id__in=IDS)
+    if username:
+        user = get_object_or_404(get_user_model(), username=username)
+        data = worm.get_organized_scores(screen_type, screen_stage=2,
+                                         most_relevant_only=True,
+                                         scorer=user)
+    else:
+        data = worm.get_organized_scores(screen_type, screen_stage=2,
+                                         most_relevant_only=True,
+                                         scorer_id__in=IDS)
 
     num_passes_stringent = 0
     num_passes_percent = 0
