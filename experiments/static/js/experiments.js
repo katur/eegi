@@ -52,11 +52,16 @@ var ScoringKeyboardShortcuts = {
   },
 
   isDigitKey: function(code) {
-    return code >= 48 && code <= 57;
+    // Two cases: lower range covers numbers above QWERTY; other is numpad
+    return (code >= 48 && code <= 57) || (code >= 96 && code <= 105);
   },
 
   getDigitKey: function(code) {
-    return code - 48;
+    if (code >= 48 && code <= 57) {
+      return code - 48;
+    } else if (code >= 96 && code <= 105) {
+      return code - 96;
+    }
   },
 
   isAlphaKey: function(code) {
