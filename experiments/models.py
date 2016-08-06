@@ -266,10 +266,7 @@ class Experiment(models.Model):
 
     def is_manually_scored(self):
         """Check if an experiment was manually scored."""
-        if self.get_manual_scores():
-            return True
-        else:
-            return False
+        return not not self.get_manual_scores()
 
     def get_manual_scores(self):
         """Get all manual scores for this experiment well."""
@@ -282,10 +279,7 @@ class Experiment(models.Model):
 
     def is_devstar_scored(self):
         """Check if an experiment was scored by DevStaR."""
-        if self.get_devstar_scores():
-            return True
-        else:
-            return False
+        return not not self.get_devstar_scores()
 
     def get_devstar_scores(self):
         """Get all DevStaR scores for this experiment."""
