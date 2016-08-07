@@ -1,220 +1,21 @@
 $(window).load(function() {
   initializeCarousels();
-  ScoringKeyboardShortcuts.init();
   ScoringImages.init();
+  ScoringKeyboardShortcuts.init();
+  addScoringKeyboardShortcutsModalListener();
 });
 
-
-var ScoringImages = {
-  init: function() {
-    this.imageFrames = $(".image-frame");
-    this.imageFrameIndex = 0;
-    this.loadImages();
-  },
-
-  loadImages: function() {
-    var imageFrames = $(this.imageFrames);
-    imageFrames.each(function() {
-      var imageFrame = $(this);
-      var imageSrc = imageFrame.attr("data-src");
-      var image = $("<img>");
-
-      image.attr("src", imageSrc).load(function() {
-        imageFrame.removeClass("loading");
-        imageFrame.prepend(image);
-      });
-    });
-  },
-};
-
-
-var ScoringKeyboardShortcuts = {
-  KEY_ORDER: "0123456789-QWERTY",
-
-  DIRECTIONS: {
-    UP: 38,
-    DOWN: 40,
-  },
-
-  CODE_TO_SYMBOL: {
-    189: "-",
-  },
-
-  getKeyFromCode: function(code) {
-    if (this.isDigitKey(code)) {
-      return this.getDigitKey(code);
-    } else if (this.isAlphaKey(code)) {
-      return this.getAlphaKey(code);
-    } else {
-      // Will return undefined if code is absent from dictionary
-      return this.CODE_TO_SYMBOL[code];
-    }
-  },
-
-  isDigitKey: function(code) {
-    // Two cases: lower range covers numbers above QWERTY; other is numpad
-    return (code >= 48 && code <= 57) || (code >= 96 && code <= 105);
-  },
-
-  getDigitKey: function(code) {
-    if (code >= 48 && code <= 57) {
-      return code - 48;
-    } else if (code >= 96 && code <= 105) {
-      return code - 96;
-    }
-  },
-
-  isAlphaKey: function(code) {
-    return code >= 65 && code <= 90;
-  },
-
-  getAlphaKey: function(code) {
-    return String.fromCharCode(code);
-  },
-
-  init: function() {
-    if (!$("#score-experiment-wells").length) {
-      return;
-    }
-
-    this.experiments = $(".experiment");
-    if (!this.experiments.length) {
-      return;
-    }
-
-    this.currentExperimentIndex = 0;
-    this.activateExperiment();
-    this.listen();
-  },
-
-  listen: function() {
-    $("body").on("keydown", function(e) {
-      ScoringKeyboardShortcuts.handleKeyboardShortcut(e);
-    });
-  },
-
-  handleKeyboardShortcut: function(e) {
-    switch(e.which) {
-      case this.DIRECTIONS.UP:
-        e.preventDefault();
-
-        if (e.shiftKey) {
-          this.navigateKeyableGroups(this.DIRECTIONS.UP);
-        } else {
-          this.navigateExperiments(this.DIRECTIONS.UP);
-        }
-
-        break;
-
-      case this.DIRECTIONS.DOWN:
-        e.preventDefault();
-
-        if (e.shiftKey) {
-          this.navigateKeyableGroups(this.DIRECTIONS.DOWN);
-        } else {
-          this.navigateExperiments(this.DIRECTIONS.DOWN);
-        }
-
-        break;
-
-      default:
-        var key = this.getKeyFromCode(e.which);
-        var keyIndex = this.KEY_ORDER.indexOf(key);
-        if (keyIndex >= 0) {
-          this.score(keyIndex);
-        }
-    }
-  },
-
-  score: function(keyIndex) {
-    var group = this.getKeyableGroup();
-    var input = $(group.find(".keyable")[keyIndex]);
-
-    // Do not proceed if keyIndex greater than number of keys
-    if (!input.length) {
-      return;
-    }
-    input.trigger("click");
-    this.navigateKeyableGroups(this.DIRECTIONS.DOWN);
-  },
-
-  navigateExperiments: function(direction) {
-    var nextIndex;
-    if (direction === this.DIRECTIONS.UP) {
-      nextIndex = this.currentExperimentIndex - 1;
-    } else if (direction === this.DIRECTIONS.DOWN) {
-      nextIndex = this.currentExperimentIndex + 1;
-    }
-
-    var submitButton = $(".submit");
-    submitButton.blur();
-
-    // If past the last experiment, move down to show and focus Submit button
-    if (nextIndex < 0 || nextIndex > this.experiments.length) {
-      return;
-    }
-
-    this.currentExperimentIndex = nextIndex;
-
-    if (nextIndex === this.experiments.length) {
-      $("html, body").scrollTop($("body").height());
-      submitButton.focus();
-    } else {
-      this.activateExperiment();
-    }
-  },
-
-  navigateKeyableGroups: function(direction) {
-    var nextIndex;
-    if (direction === this.DIRECTIONS.UP) {
-      nextIndex = this.keyableGroupIndex - 1;
-    } else if (direction === this.DIRECTIONS.DOWN) {
-      nextIndex = this.keyableGroupIndex + 1;
-    }
-
-    if (nextIndex < 0 || nextIndex >= this.keyableGroups.length) {
-      return;
-    }
-
-    this.keyableGroupIndex = nextIndex;
-    this.activateKeyableGroup();
-  },
-
-  activateExperiment: function() {
-    $(this.experiments).removeClass("active");
-    var experiment = $(this.experiments[this.currentExperimentIndex]);
-    experiment.addClass("active");
-    this.initializeKeyableGroups(experiment);
-    this.activateKeyableGroup();
-    $("html, body").scrollTop(experiment.position().top);
-  },
-
-  activateKeyableGroup: function() {
-    $(".active-keyable-group").removeClass("active-keyable-group");
-    var group = this.getKeyableGroup();
-    group.addClass("active-keyable-group");
-  },
-
-  initializeKeyableGroups: function(experiment) {
-    var buttons = experiment.find(".keyable");
-    var groups = [];
-
-    buttons.each(function() {
-      var id = $(this).closest("ul").attr("id");
-
-      if (id != groups[groups.length - 1]) {
-        groups.push(id);
-      }
-    });
-
-    this.keyableGroups = groups;
-    this.keyableGroupIndex = 0;
-  },
-
-  getKeyableGroup: function() {
-    return $("#" + this.keyableGroups[this.keyableGroupIndex]);
-  },
-
+const KEYS = {
+  QUESTION_MARK: 191,
+  DASH: 189,
+  UP: 38,
+  DOWN: 40,
+  ZERO: 48,
+  NINE: 57,
+  ZERO_NUMPAD: 96,
+  NINE_NUMPAD: 105,
+  A: 65,
+  Z: 90,
 };
 
 
@@ -271,3 +72,222 @@ function addImageElement(image) {
   var imageSrc = imageFrame.attr("data-src");
   imageFrame.prepend("<img src='" + imageSrc + "' \>");
 };
+
+
+var ScoringImages = {
+  init: function() {
+    this.imageFrames = $(".image-frame");
+    this.imageFrameIndex = 0;
+    this.loadImages();
+  },
+
+  loadImages: function() {
+    var imageFrames = $(this.imageFrames);
+    imageFrames.each(function() {
+      var imageFrame = $(this);
+      var imageSrc = imageFrame.attr("data-src");
+      var image = $("<img>");
+
+      image.attr("src", imageSrc).load(function() {
+        imageFrame.removeClass("loading");
+        imageFrame.prepend(image);
+      });
+    });
+  },
+};
+
+
+var ScoringKeyboardShortcuts = {
+  KEY_ORDER: "0123456789-QWERTY",
+
+  CODE_TO_SYMBOL: {},
+
+  getKeyFromCode: function(code) {
+    if (this.isDigitKey(code)) {
+      return this.getDigitKey(code);
+    } else if (this.isAlphaKey(code)) {
+      return this.getAlphaKey(code);
+    } else {
+      // Will return undefined if code is absent from dictionary
+      return this.CODE_TO_SYMBOL[code];
+    }
+  },
+
+  isDigitKey: function(code) {
+    // Two cases: lower range covers numbers above QWERTY; other is numpad
+    return (code >= KEYS.ZERO && code <= KEYS.NINE) ||
+           (code >= KEYS.ZERO_NUMPAD && code <= KEYS.NINE_NUMPAD);
+  },
+
+  getDigitKey: function(code) {
+    if (code >= KEYS.ZERO && code <= KEYS.NINE) {
+      return code - KEYS.ZERO;
+    } else if (code >= KEYS.ZERO_NUMPAD && code <= KEYS.NINE_NUMPAD) {
+      return code - KEYS.ZERO_NUMPAD;
+    }
+  },
+
+  isAlphaKey: function(code) {
+    return code >= KEYS.A && code <= KEYS.Z;
+  },
+
+  getAlphaKey: function(code) {
+    return String.fromCharCode(code);
+  },
+
+  init: function() {
+    if (!$("#score-experiment-wells").length) {
+      return;
+    }
+
+    this.experiments = $(".experiment");
+    if (!this.experiments.length) {
+      return;
+    }
+
+    // Add the symbols that cannot be derived programmatically
+    this.CODE_TO_SYMBOL[KEYS.DASH] = "-";
+
+    this.currentExperimentIndex = 0;
+    this.activateExperiment();
+    this.listen();
+  },
+
+  listen: function() {
+    $("body").on("keydown", function(e) {
+      ScoringKeyboardShortcuts.handleKeyboardShortcut(e);
+    });
+  },
+
+  handleKeyboardShortcut: function(e) {
+    switch(e.which) {
+      case KEYS.UP:
+        e.preventDefault();
+
+        if (e.shiftKey) {
+          this.navigateKeyableGroups(KEYS.UP);
+        } else {
+          this.navigateExperiments(KEYS.UP);
+        }
+
+        break;
+
+      case KEYS.DOWN:
+        e.preventDefault();
+
+        if (e.shiftKey) {
+          this.navigateKeyableGroups(KEYS.DOWN);
+        } else {
+          this.navigateExperiments(KEYS.DOWN);
+        }
+
+        break;
+
+      default:
+        var key = this.getKeyFromCode(e.which);
+        var keyIndex = this.KEY_ORDER.indexOf(key);
+        if (keyIndex >= 0) {
+          this.score(keyIndex);
+        }
+    }
+  },
+
+  score: function(keyIndex) {
+    var group = this.getKeyableGroup();
+    var input = $(group.find(".keyable")[keyIndex]);
+
+    // Do not proceed if keyIndex greater than number of keys
+    if (!input.length) {
+      return;
+    }
+    input.trigger("click");
+    this.navigateKeyableGroups(KEYS.DOWN);
+  },
+
+  navigateExperiments: function(direction) {
+    var nextIndex;
+    if (direction === KEYS.UP) {
+      nextIndex = this.currentExperimentIndex - 1;
+    } else if (direction === KEYS.DOWN) {
+      nextIndex = this.currentExperimentIndex + 1;
+    }
+
+    var submitButton = $(".submit");
+    submitButton.blur();
+
+    // If past the last experiment, move down to show and focus Submit button
+    if (nextIndex < 0 || nextIndex > this.experiments.length) {
+      return;
+    }
+
+    this.currentExperimentIndex = nextIndex;
+
+    if (nextIndex === this.experiments.length) {
+      $("html, body").scrollTop($("body").height());
+      submitButton.focus();
+    } else {
+      this.activateExperiment();
+    }
+  },
+
+  navigateKeyableGroups: function(direction) {
+    var nextIndex;
+    if (direction === KEYS.UP) {
+      nextIndex = this.keyableGroupIndex - 1;
+    } else if (direction === KEYS.DOWN) {
+      nextIndex = this.keyableGroupIndex + 1;
+    }
+
+    if (nextIndex < 0 || nextIndex >= this.keyableGroups.length) {
+      return;
+    }
+
+    this.keyableGroupIndex = nextIndex;
+    this.activateKeyableGroup();
+  },
+
+  activateExperiment: function() {
+    $(this.experiments).removeClass("active");
+    var experiment = $(this.experiments[this.currentExperimentIndex]);
+    experiment.addClass("active");
+    this.initializeKeyableGroups(experiment);
+    this.activateKeyableGroup();
+    $("html, body").scrollTop(experiment.position().top);
+  },
+
+  activateKeyableGroup: function() {
+    $(".active-keyable-group").removeClass("active-keyable-group");
+    var group = this.getKeyableGroup();
+    group.addClass("active-keyable-group");
+  },
+
+  initializeKeyableGroups: function(experiment) {
+    var buttons = experiment.find(".keyable");
+    var groups = [];
+
+    buttons.each(function() {
+      var id = $(this).closest("ul").attr("id");
+
+      if (id != groups[groups.length - 1]) {
+        groups.push(id);
+      }
+    });
+
+    this.keyableGroups = groups;
+    this.keyableGroupIndex = 0;
+  },
+
+  getKeyableGroup: function() {
+    return $("#" + this.keyableGroups[this.keyableGroupIndex]);
+  },
+
+};
+
+
+function addScoringKeyboardShortcutsModalListener() {
+  $("body").on("keyup", function(e) {
+    if (e.which == KEYS.QUESTION_MARK && e.shiftKey) {
+      $("#keyboard-shortcuts-modal").toggleClass("visible");
+    }
+  });
+}

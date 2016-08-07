@@ -40,11 +40,58 @@ hr
   border-radius: 3px
 
 
+///////////
+// Modal //
+///////////
+
+.modal-wrapper
+  visibility: hidden
+  position: fixed
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  background: rgba(#000, 0.7)
+
+  &.visible
+    visibility: visible
+
+.modal
+  @include box-sizing(border-box)
+  position: relative
+  float: left
+  top: 50%
+  left: 50%
+  @include transform(translate(-50%, -50%))
+  padding: $whitespace
+  padding-top: $whitespace / 1.5
+  background: $lightest-gray
+  border-radius: 5px
+
+  &-title
+    width: 100%
+    padding-bottom: $whitespace / 2
+    border-bottom: 1px solid $light-gray
+    margin-bottom: $whitespace
+
+  &-close
+    position: absolute
+    top: $whitespace - 10
+    right: $whitespace
+    font-size: $base-font-size - 3
+
+  &-content
+
+
+
 ////////////////
 // Pagination //
 ////////////////
 
 #results-header
+  @include clearfix
+  margin-bottom: $whitespace / 2
+
   #total
     float: left
 

@@ -60,7 +60,7 @@ $max-image-width: 1300px
 #find-experiment-plates, #find-experiment-wells, #score-experiment-wells-setup
   #form-section
     position: relative
-    padding-bottom: $gray-bubble-padding * 3
+    padding-bottom: $gray-bubble-padding * 4
 
     #form-errors
       width: 100%
@@ -116,7 +116,6 @@ $max-image-width: 1300px
 #score-experiment-wells
   #filters
     margin-bottom: $whitespace / 2
-    float: left
     width: 100%
     font-size: $base-font-size - 3
     font-style: italic
@@ -125,8 +124,19 @@ $max-image-width: 1300px
       margin-right: 20px
       display: inline
 
-  &-form
-    padding-top: $whitespace
+      &:last-child
+        margin-right: 0
+
+  #keyboard-shortcuts-modal
+    td
+      padding: 3px 5px
+
+      &:first-child
+        text-align: right
+        color: $github-medium-green
+
+      &:last-child
+        text-align: left
 
   .experiment,
   .experiment-header,

@@ -52,15 +52,15 @@ body {
     width: 100%;
     float: left;
     margin-bottom: 40px; }
-    body #header h1 {
+    body #header #site-title {
       margin-bottom: 13.33333px; }
   body #content {
     width: 100%;
     float: left; }
-    body #content h2 {
+    body #content #page-title {
       clear: both;
       margin-bottom: 40px; }
-    body #content h4 {
+    body #content .page-subtitle {
       clear: both;
       margin-bottom: 20px; }
   body #footer {
@@ -180,14 +180,59 @@ hr {
     display: table;
     clear: both; }
 
-#results-header #total {
-  float: left; }
-#results-header .pagination-status {
-  float: right; }
-  #results-header .pagination-status span, #results-header .pagination-status a {
-    margin-left: 10px; }
-    #results-header .pagination-status span:first-child, #results-header .pagination-status a:first-child {
-      margin-left: 0; }
+.modal-wrapper {
+  visibility: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); }
+  .modal-wrapper.visible {
+    visibility: visible; }
+
+.modal {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  position: relative;
+  float: left;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  padding: 40px;
+  padding-top: 26.66667px;
+  background: #f8f8f8;
+  border-radius: 5px; }
+  .modal-title {
+    width: 100%;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 40px; }
+  .modal-close {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    font-size: 13px; }
+
+#results-header {
+  margin-bottom: 20px; }
+  #results-header:after {
+    content: "";
+    display: table;
+    clear: both; }
+  #results-header #total {
+    float: left; }
+  #results-header .pagination-status {
+    float: right; }
+    #results-header .pagination-status span, #results-header .pagination-status a {
+      margin-left: 10px; }
+      #results-header .pagination-status span:first-child, #results-header .pagination-status a:first-child {
+        margin-left: 0; }
 
 .page-section {
   margin-bottom: 40px; }
@@ -374,10 +419,8 @@ button {
 #login-page .submit {
   margin-top: 20px; }
 
-#help-page h3 {
+#help-page h3, #help-page h4 {
   padding-bottom: 40px; }
-#help-page h4 {
-  padding-bottom: 20px; }
 #help-page h5 {
   margin-bottom: 20px;
   font-weight: bold; }
@@ -506,7 +549,7 @@ button {
 
 #find-experiment-plates #form-section, #find-experiment-wells #form-section, #score-experiment-wells-setup #form-section {
   position: relative;
-  padding-bottom: 60px; }
+  padding-bottom: 80px; }
   #find-experiment-plates #form-section #form-errors, #find-experiment-wells #form-section #form-errors, #score-experiment-wells-setup #form-section #form-errors {
     width: 100%;
     margin-bottom: 20px; }
@@ -546,15 +589,21 @@ button {
 
 #score-experiment-wells #filters {
   margin-bottom: 20px;
-  float: left;
   width: 100%;
   font-size: 13px;
   font-style: italic; }
   #score-experiment-wells #filters li {
     margin-right: 20px;
     display: inline; }
-#score-experiment-wells-form {
-  padding-top: 40px; }
+    #score-experiment-wells #filters li:last-child {
+      margin-right: 0; }
+#score-experiment-wells #keyboard-shortcuts-modal td {
+  padding: 3px 5px; }
+  #score-experiment-wells #keyboard-shortcuts-modal td:first-child {
+    text-align: right;
+    color: #44a340; }
+  #score-experiment-wells #keyboard-shortcuts-modal td:last-child {
+    text-align: left; }
 #score-experiment-wells .experiment,
 #score-experiment-wells .experiment-header,
 #score-experiment-wells .experiment-content {

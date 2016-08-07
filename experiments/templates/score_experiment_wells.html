@@ -13,11 +13,14 @@
 {% ifnotequal experiments None %}
 
 <ul id="filters">
-{% for k, v in request.GET.items %}
-  {% if v and k not in do_not_display %}
-  <li>{{ k }}: {{ v }}</li>
-  {% endif %}
-{% endfor %}
+  {% for k, v in request.GET.items %}
+    {% if v and k not in do_not_display %}
+    <li>{{ k }}: {{ v }}</li>
+    {% endif %}
+  {% endfor %}
+
+  <li><a href="#" data-modal-id="keyboard-shortcuts-modal">
+      Keyboard shortcuts</a></li>
 </ul>
 
 <div id="results-header">
@@ -74,5 +77,7 @@
   <button type="submit" class="submit">Submit</button>
   {% endif %}
 </form>
+
+{% include 'keyboard_shortcuts_modal.html' %}
 
 {% endblock %}

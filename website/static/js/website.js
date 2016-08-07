@@ -3,7 +3,41 @@ $(document).ready(function() {
   setResizeHandler();
   positionFooter();
   hover_tags();
+  initializeModals();
 });
+
+
+ESCAPE_KEY = 27;
+
+
+function initializeModals() {
+  $("body").on("click", "[data-modal-id]", function(e) {
+    e.preventDefault();
+    var modalId = $(e.currentTarget).attr("data-modal-id");
+    $("#" + modalId).addClass("visible");
+  });
+
+  $("body").on("click", ".modal-close", function(e) {
+    e.preventDefault();
+    $(".modal-wrapper").removeClass("visible");
+  });
+
+  $("body").on("click", ".modal-wrapper", function(e) {
+    e.preventDefault();
+
+    if ($(e.target).closest(".modal").length) {
+      return;
+    };
+
+    $(".modal-wrapper").removeClass("visible");
+  });
+
+  $("body").on("keyup", function(e) {
+    if (e.which == ESCAPE_KEY) {
+      $(".modal-wrapper").removeClass("visible");
+    }
+  });
+};
 
 
 function removePageTitleStyleIfEmpty() {
