@@ -8,6 +8,7 @@ $(window).load(function() {
 const KEYS = {
   QUESTION_MARK: 191,
   DASH: 189,
+  SLASH: 191,
   UP: 38,
   DOWN: 40,
   ZERO: 48,
@@ -98,7 +99,7 @@ var ScoringImages = {
 
 
 var ScoringKeyboardShortcuts = {
-  KEY_ORDER: "0123456789-QWERTY",
+  KEY_ORDER: "0123456789/-QWERTY",
 
   CODE_TO_SYMBOL: {},
 
@@ -147,6 +148,7 @@ var ScoringKeyboardShortcuts = {
 
     // Add the symbols that cannot be derived programmatically
     this.CODE_TO_SYMBOL[KEYS.DASH] = "-";
+    this.CODE_TO_SYMBOL[KEYS.SLASH] = "/";
 
     this.currentExperimentIndex = 0;
     this.activateExperiment();
