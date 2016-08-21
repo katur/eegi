@@ -406,7 +406,10 @@ class ManualScoreCode(models.Model):
     _SCORING_PKS = {
         'SUP': [0, 1, 2, 3],
 
-        'ENH': [
+        'EMB_LEVEL': list(range(30, 41)),   # 30-40, 11 levels total
+        'STE_LEVEL': list(range(41, 47)),   # 41-46, 6 levels total
+
+        'ENH_LEGACY': [
             0,  # WT
             12, 13, 14, 15,  # emb enh/sup
             16, 17, 18, 19,  # ste enh/sup

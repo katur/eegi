@@ -89,6 +89,7 @@ class ScoringFormChoiceField(forms.ChoiceField):
     def __init__(self, **kwargs):
         kwargs['choices'] = [
             ('SUP', 'Suppressor scoring'),
+            ('LEVELS', 'Enhancer secondary (levels)'),
         ]
 
         super(ScoringFormChoiceField, self).__init__(**kwargs)
@@ -104,7 +105,7 @@ class ScoringListChoiceField(forms.ChoiceField):
         super(ScoringListChoiceField, self).__init__(**kwargs)
 
 
-class SuppressorScoreField(forms.TypedChoiceField):
+class SingleScoreField(forms.TypedChoiceField):
     """Field for choosing a level of suppression.
 
     NOTE: avoid ModelChoiceField because there is no clean way to
@@ -112,9 +113,9 @@ class SuppressorScoreField(forms.TypedChoiceField):
     making the field required and while not setting an initial value.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, key, **kwargs):
         choices = []
-        for code in ManualScoreCode.get_codes('SUP'):
+        for code in ManualScoreCode.get_codes(key):
             choices.append((code.pk, str(code)))
 
         choices.append((IMPOSSIBLE, 'Impossible to judge'))
@@ -128,7 +129,20 @@ class SuppressorScoreField(forms.TypedChoiceField):
         if 'widget' not in kwargs:
             kwargs['widget'] = forms.RadioSelect(attrs={'class': 'keyable'})
 
-        super(SuppressorScoreField, self).__init__(**kwargs)
+        super(SingleScoreField, self).__init__(**kwargs)
+
+
+class MultiScoreField(forms.ModelMultipleChoiceField):
+    """Field for selecting auxiliary scores."""
+
+    def __init__(self, key, **kwargs):
+        kwargs['queryset'] = ManualScoreCode.get_codes(key)
+
+        if 'widget' not in kwargs:
+            kwargs['widget'] = forms.CheckboxSelectMultiple(
+                attrs={'class': 'keyable'})
+
+        super(MultiScoreField, self).__init__(**kwargs)
 
 
 def _coerce_to_manualscorecode(value):
@@ -136,19 +150,6 @@ def _coerce_to_manualscorecode(value):
         return IMPOSSIBLE
 
     return ManualScoreCode.objects.get(pk=value)
-
-
-class AuxiliaryScoreField(forms.ModelMultipleChoiceField):
-    """Field for selecting auxiliary scores."""
-
-    def __init__(self, **kwargs):
-        kwargs['queryset'] = ManualScoreCode.get_codes('AUXILIARY')
-
-        if 'widget' not in kwargs:
-            kwargs['widget'] = forms.CheckboxSelectMultiple(
-                attrs={'class': 'keyable'})
-
-        super(AuxiliaryScoreField, self).__init__(**kwargs)
 
 
 ##############
@@ -529,18 +530,29 @@ class SecondaryScoresForm(forms.Form):
 def get_score_form(key):
     d = {
         'SUP': SuppressorScoreForm,
+        'LEVELS': LevelsScoreForm,
     }
     return d[key]
 
 
-class SuppressorScoreForm(forms.Form):
-
-    sup_score = SuppressorScoreField(required=True)
-    auxiliary_scores = AuxiliaryScoreField(required=False)
+class ScoreForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
-        super(SuppressorScoreForm, self).__init__(*args, **kwargs)
+        super(ScoreForm, self).__init__(*args, **kwargs)
+
+
+class LevelsScoreForm(ScoreForm):
+
+    enh_emb_score = SingleScoreField(key='EMB_LEVEL', required=True)
+    enh_ste_score = SingleScoreField(key='STE_LEVEL', required=True)
+    auxiliary_scores = MultiScoreField(key='AUXILIARY', required=False)
+
+
+class SuppressorScoreForm(ScoreForm):
+
+    sup_score = SingleScoreField(key='SUP', required=True)
+    auxiliary_scores = MultiScoreField(key='AUXILIARY', required=False)
 
     def clean(self):
         cleaned_data = super(SuppressorScoreForm, self).clean()
