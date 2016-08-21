@@ -14,7 +14,7 @@ from worms.forms import (MutantKnockdownField, WormChoiceField,
                          clean_mutant_query_and_screen_type)
 from worms.models import WormStrain
 
-SCORE_DEFAULT_PER_PAGE = 20
+SCORE_DEFAULT_PER_PAGE = 50
 
 SCREEN_STAGE_CHOICES = [
     (1, 'Primary'),
@@ -24,6 +24,11 @@ SCREEN_STAGE_CHOICES = [
 SCREEN_TYPE_CHOICES = [
     ('SUP', 'Suppressor'),
     ('ENH', 'Enhancer'),
+]
+
+SCORING_FORM_CHOICES = [
+    ('SUP', 'Suppressor scoring (w/m/s)'),
+    ('LEVELS', 'Enhancer secondary (levels)'),
 ]
 
 IMPOSSIBLE = 'impossible'
@@ -38,7 +43,6 @@ class ScreenStageChoiceField(forms.ChoiceField):
 
     def __init__(self, **kwargs):
         kwargs['choices'] = [EMPTY_CHOICE] + SCREEN_STAGE_CHOICES
-
         super(ScreenStageChoiceField, self).__init__(**kwargs)
 
 
@@ -69,7 +73,6 @@ class ScreenTypeChoiceFieldWithEmpty(forms.ChoiceField):
 
     def __init__(self, **kwargs):
         kwargs['choices'] = [EMPTY_CHOICE] + SCREEN_TYPE_CHOICES
-
         super(ScreenTypeChoiceFieldWithEmpty, self).__init__(**kwargs)
 
 
@@ -79,7 +82,6 @@ class TemperatureChoiceField(forms.ChoiceField):
     def __init__(self, **kwargs):
         temperatures = ExperimentPlate.get_tested_temperatures()
         kwargs['choices'] = [EMPTY_CHOICE] + [(x, x) for x in temperatures]
-
         super(TemperatureChoiceField, self).__init__(**kwargs)
 
 
@@ -87,11 +89,7 @@ class ScoringFormChoiceField(forms.ChoiceField):
     """Field for selecting which scoring form (buttons) should display."""
 
     def __init__(self, **kwargs):
-        kwargs['choices'] = [
-            ('SUP', 'Suppressor scoring'),
-            ('LEVELS', 'Enhancer secondary (levels)'),
-        ]
-
+        kwargs['choices'] = [EMPTY_CHOICE] + SCORING_FORM_CHOICES
         super(ScoringFormChoiceField, self).__init__(**kwargs)
 
 
@@ -328,12 +326,12 @@ class FilterExperimentWellsToScoreForm(_FilterExperimentsBaseForm):
         required=False, initial=True,
         label='Exclude if already scored by you')
 
-    randomize_order = forms.BooleanField(required=False, initial=False)
+    randomize_order = forms.BooleanField(required=False, initial=True)
 
     field_order = [
         'score_form_key', 'scoring_list', 'images_per_page',
         'unscored_by_user',
-        'randomize_order', 'exclude_no_clone', 'exclude_l4440', 'is_junk',
+        'randomize_order', 'exclude_l4440', 'exclude_no_clone', 'is_junk',
         'plate__screen_stage', 'plate__date', 'screen_type',
         'plate__temperature', 'worm_strain',
         'pk', 'plate__pk',
