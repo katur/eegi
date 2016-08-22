@@ -540,13 +540,6 @@ class ScoreForm(forms.Form):
         super(ScoreForm, self).__init__(*args, **kwargs)
 
 
-class LevelsScoreForm(ScoreForm):
-
-    enh_emb_score = SingleScoreField(key='EMB_LEVEL', required=True)
-    enh_ste_score = SingleScoreField(key='STE_LEVEL', required=True)
-    auxiliary_scores = MultiScoreField(key='AUXILIARY', required=False)
-
-
 class SuppressorScoreForm(ScoreForm):
 
     sup_score = SingleScoreField(key='SUP', required=True)
@@ -559,30 +552,64 @@ class SuppressorScoreForm(ScoreForm):
                 cleaned_data['sup_score'] == IMPOSSIBLE and
                 not cleaned_data['auxiliary_scores']):
             raise forms.ValidationError('"Impossible to judge" requires '
-                                        'some other score')
+                                        'some auxiliary score')
         return cleaned_data
 
     def process(self):
         cleaned_data = self.cleaned_data
-        experiment = Experiment.objects.get(pk=self.prefix)
+        save_score = _get_save_score(self)
 
-        # Each new score for this image should have the same timestamp
-        time = timezone.now()
+        save_score(cleaned_data.get('sup_score'))
 
-        def add_new_score(score_code):
-            score = ManualScore(
-                experiment=experiment, score_code=score_code,
-                scorer=self.user, timestamp=time)
-            score.save()
+        for code in cleaned_data.get('auxiliary_scores'):
+            save_score(code)
 
-        sup_code = cleaned_data.get('sup_score')
-        auxiliary_codes = cleaned_data.get('auxiliary_scores')
 
-        if sup_code != IMPOSSIBLE:
-            add_new_score(sup_code)
+class LevelsScoreForm(ScoreForm):
 
-        for auxiliary_code in auxiliary_codes:
-            add_new_score(auxiliary_code)
+    emb_score = SingleScoreField(key='EMB_LEVEL', required=True)
+    ste_score = SingleScoreField(key='STE_LEVEL', required=True)
+    auxiliary_scores = MultiScoreField(key='AUXILIARY', required=False)
+
+    def clean(self):
+        cleaned_data = super(LevelsScoreForm, self).clean()
+
+        if ('emb_score' in cleaned_data and 'ste_score' in cleaned_data and
+                cleaned_data['emb_score'] == IMPOSSIBLE and
+                cleaned_data['ste_score'] == IMPOSSIBLE and
+                not cleaned_data['auxiliary_scores']):
+            raise forms.ValidationError('"Impossible to judge" requires '
+                                        'some auxiliary score')
+        return cleaned_data
+
+    def process(self):
+        cleaned_data = self.cleaned_data
+        save_score = _get_save_score(self)
+
+        save_score(cleaned_data.get('emb_score'))
+        save_score(cleaned_data.get('ste_score'))
+
+        for code in cleaned_data.get('auxiliary_scores'):
+            save_score(code)
+
+
+def _get_save_score(form):
+    experiment = Experiment.objects.get(pk=form.prefix)
+
+    # Each simultaneously-scored score for this image should get the same
+    # timestamp
+    time = timezone.now()
+
+    def save_score(score_code):
+        if score_code == IMPOSSIBLE:
+            return
+
+        score = ManualScore(
+            experiment=experiment, score_code=score_code,
+            scorer=form.user, timestamp=time)
+        score.save()
+
+    return save_score
 
 
 ##################################
