@@ -2,6 +2,7 @@ from __future__ import division
 from collections import OrderedDict
 
 from django.contrib.auth import get_user_model
+from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 
 from experiments.forms import SecondaryScoresForm
@@ -31,7 +32,10 @@ def secondary_scores(request, worm, temperature, username=None):
     Results show strongest positives on top.
     """
     worm = get_object_or_404(WormStrain, pk=worm)
-    screen_type = worm.get_screen_type(temperature)
+    try:
+        screen_type = worm.get_screen_type(temperature)
+    except Exception:
+        raise Http404
 
     if username:
         user = get_object_or_404(get_user_model(), username=username)
