@@ -6,11 +6,11 @@ $(window).load(function() {
 });
 
 const KEYS = {
-  QUESTION_MARK: 191,
-  DASH: 189,
-  SLASH: 191,
   UP: 38,
   DOWN: 40,
+  QUESTION_MARK: 191,
+  DASH: 189,
+  DASH_NUMPAD: 109,
   ZERO: 48,
   NINE: 57,
   ZERO_NUMPAD: 96,
@@ -18,6 +18,8 @@ const KEYS = {
   A: 65,
   Z: 90,
 };
+
+const KEY_ORDER = "0123456789-QWERTY";
 
 
 function initializeCarousels() {
@@ -99,8 +101,6 @@ var ScoringImages = {
 
 
 var ScoringKeyboardShortcuts = {
-  KEY_ORDER: "0123456789/-QWERTY",
-
   CODE_TO_SYMBOL: {},
 
   getKeyFromCode: function(code) {
@@ -148,7 +148,7 @@ var ScoringKeyboardShortcuts = {
 
     // Add the symbols that cannot be derived programmatically
     this.CODE_TO_SYMBOL[KEYS.DASH] = "-";
-    this.CODE_TO_SYMBOL[KEYS.SLASH] = "/";
+    this.CODE_TO_SYMBOL[KEYS.DASH_NUMPAD] = "-";
 
     this.currentExperimentIndex = 0;
     this.activateExperiment();
@@ -187,7 +187,7 @@ var ScoringKeyboardShortcuts = {
 
       default:
         var key = this.getKeyFromCode(e.which);
-        var keyIndex = this.KEY_ORDER.indexOf(key);
+        var keyIndex = KEY_ORDER.indexOf(key);
         if (keyIndex >= 0) {
           this.score(keyIndex);
         }
