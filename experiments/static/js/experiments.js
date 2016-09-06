@@ -189,6 +189,7 @@ var ScoringKeyboardShortcuts = {
         var key = this.getKeyFromCode(e.which);
         var keyIndex = KEY_ORDER.indexOf(key);
         if (keyIndex >= 0) {
+          e.preventDefault();
           this.score(keyIndex);
         }
     }
