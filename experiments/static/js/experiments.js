@@ -5,21 +5,16 @@ $(window).load(function() {
   addScoringKeyboardShortcutsModalListener();
 });
 
+
 const KEYS = {
   UP: 38,
   DOWN: 40,
-  QUESTION_MARK: 191,
-  DASH: 189,
-  DASH_NUMPAD: 109,
+  SLASH: 191,
   ZERO: 48,
   NINE: 57,
   ZERO_NUMPAD: 96,
   NINE_NUMPAD: 105,
-  A: 65,
-  Z: 90,
 };
-
-const KEY_ORDER = "0123456789-QWERTY";
 
 
 function initializeCarousels() {
@@ -101,41 +96,6 @@ var ScoringImages = {
 
 
 var ScoringKeyboardShortcuts = {
-  CODE_TO_SYMBOL: {},
-
-  getKeyFromCode: function(code) {
-    if (this.isDigitKey(code)) {
-      return this.getDigitKey(code);
-    } else if (this.isAlphaKey(code)) {
-      return this.getAlphaKey(code);
-    } else {
-      // Will return undefined if code is absent from dictionary
-      return this.CODE_TO_SYMBOL[code];
-    }
-  },
-
-  isDigitKey: function(code) {
-    // Two cases: lower range covers numbers above QWERTY; other is numpad
-    return (code >= KEYS.ZERO && code <= KEYS.NINE) ||
-           (code >= KEYS.ZERO_NUMPAD && code <= KEYS.NINE_NUMPAD);
-  },
-
-  getDigitKey: function(code) {
-    if (code >= KEYS.ZERO && code <= KEYS.NINE) {
-      return code - KEYS.ZERO;
-    } else if (code >= KEYS.ZERO_NUMPAD && code <= KEYS.NINE_NUMPAD) {
-      return code - KEYS.ZERO_NUMPAD;
-    }
-  },
-
-  isAlphaKey: function(code) {
-    return code >= KEYS.A && code <= KEYS.Z;
-  },
-
-  getAlphaKey: function(code) {
-    return String.fromCharCode(code);
-  },
-
   init: function() {
     if (!$("#score-experiment-wells").length) {
       return;
@@ -145,10 +105,6 @@ var ScoringKeyboardShortcuts = {
     if (!this.experiments.length) {
       return;
     }
-
-    // Add the symbols that cannot be derived programmatically
-    this.CODE_TO_SYMBOL[KEYS.DASH] = "-";
-    this.CODE_TO_SYMBOL[KEYS.DASH_NUMPAD] = "-";
 
     this.currentExperimentIndex = 0;
     this.activateExperiment();
@@ -186,11 +142,16 @@ var ScoringKeyboardShortcuts = {
         break;
 
       default:
-        var key = this.getKeyFromCode(e.which);
-        var keyIndex = KEY_ORDER.indexOf(key);
-        if (keyIndex >= 0) {
+        if (this.isDigitKey(e.which)) {
           e.preventDefault();
-          this.score(keyIndex);
+
+          var key = this.getDigitKey(e.which);
+
+          if (!e.shiftKey) {
+            this.score(key);
+          } else {
+            this.score(key + 10);
+          }
         }
     }
   },
@@ -203,6 +164,7 @@ var ScoringKeyboardShortcuts = {
     if (!input.length) {
       return;
     }
+
     input.trigger("click");
     this.navigateKeyableGroups(KEYS.DOWN);
   },
@@ -284,12 +246,25 @@ var ScoringKeyboardShortcuts = {
     return $("#" + this.keyableGroups[this.keyableGroupIndex]);
   },
 
+  isDigitKey: function(code) {
+    // Two cases: lower range covers numbers above QWERTY; other is numpad
+    return (code >= KEYS.ZERO && code <= KEYS.NINE) ||
+           (code >= KEYS.ZERO_NUMPAD && code <= KEYS.NINE_NUMPAD);
+  },
+
+  getDigitKey: function(code) {
+    if (code >= KEYS.ZERO && code <= KEYS.NINE) {
+      return code - KEYS.ZERO;
+    } else if (code >= KEYS.ZERO_NUMPAD && code <= KEYS.NINE_NUMPAD) {
+      return code - KEYS.ZERO_NUMPAD;
+    }
+  },
 };
 
 
 function addScoringKeyboardShortcutsModalListener() {
   $("body").on("keyup", function(e) {
-    if (e.which == KEYS.QUESTION_MARK && e.shiftKey) {
+    if (e.which == KEYS.SLASH && e.shiftKey) {
       $("#keyboard-shortcuts-modal").toggleClass("visible");
     }
   });
