@@ -46,4 +46,4 @@ class Command(BaseCommand):
                     dest, source, source.intended_clone)
                 dest.parent_stock = source
                 dest.intended_clone = source.intended_clone
-                dest.save()
+                # dest.save()

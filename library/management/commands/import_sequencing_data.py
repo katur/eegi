@@ -25,16 +25,12 @@ class Command(BaseCommand):
       and "destination" is the sequencing plate. E.g., if
       universal-F1_A12 was picked into sequencing plate JL42, well B09,
       the row would look like `universal-F1,A12,JL42,B09`.
-      These files currently live in the directory:
-
-          materials/sequencing/cherrypick_lists
 
     - tracking_numbers is a csv, including header row, containing the genewiz
-      orders to be added. Three columns are needed, in any order:
-      `order_date`, `tracking_number`, and `seq_plate`.
-      These files currently live in the directory:
-
-          materials/sequencing/tracking_numbers
+      orders to be added. Two columns are needed, in any order:
+      `order_date` and `tracking_number`. Tracking numbers are typically
+      stored in the `Genetic Interactions/Sequencing` Google Drive share (and
+      can be exported from there).
 
     - genewiz_output_root is the root directory where Genewiz dumps our
       sequencing data. Inside this directory are several Perl
@@ -44,10 +40,14 @@ class Command(BaseCommand):
       rmDateFromSeqAB1.pl, which removes the date from certain
       filenames. Otherwise, this script is flexible about dealing with
       Genewiz's Excel format, or Huey-Ling's text file format.
-      This directory currently lives at:
 
-          materials/sequencing/genewiz_dump/genewiz_data
-
+    *** NOTE TO ALAN ***:
+    Genewiz is currently dumping our data to pleaides, but this code is now
+    deployed on pyxis. When Katherine ran this script, the project was not
+    yet live, so she ran it in development, and simply rsynced the sequencing
+    data from pleiades to her own devbox. Going forward, you'll want to
+    import new sequencing data to the production database, so should modify
+    this script to connect to the Genewiz dump directly.
     """
 
     help = 'Import sequencing data (from 2014-on)'

@@ -17,9 +17,7 @@ class Command(BaseCommand):
         http://www.lifesciences.sourcebioscience.com/clone-products/non-mammalian/
             c-elegans/c-elegans-rnai-library/celegans-database/
 
-    The input file (copied/pasted from the above link) is currently at:
-
-        materials/ahringer_database/sbs_ahringer_orig.csv
+    The input file can be copied/pasted from the above link.
     """
 
     help = "Compare this database's Ahringer library to another version"

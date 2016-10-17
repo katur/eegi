@@ -30,12 +30,6 @@ class Command(BaseCommand):
     affect his script, except that he may need to change the type of
     this variable from int to string, and he might need to update the
     CSV column names of his output to match the spec above.
-
-    A previous input file (though with outdated column names including
-    sequencing_id split into two columns -- genewiz_tracking_number and
-    genewiz_tube_label) lives at:
-
-        materials/sequencing/blat_results_from_firoz/joined
     """
 
     help = 'Import the BLAT hits of our sequencing results.'
