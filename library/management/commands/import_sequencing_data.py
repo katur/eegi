@@ -42,12 +42,12 @@ class Command(BaseCommand):
       Genewiz's Excel format, or Huey-Ling's text file format.
 
     *** NOTE TO ALAN ***:
-    Genewiz is currently dumping our data to pleaides, but this code is now
-    deployed on pyxis. When Katherine ran this script, the project was not
-    yet live, so she ran it in development, and simply rsynced the sequencing
-    data from pleiades to her own devbox. Going forward, you'll want to
-    import new sequencing data to the production database, so should modify
-    this script to connect to the Genewiz dump directly.
+    Genewiz is currently dumping our data to pleaides, but the project is now
+    deployed on pyxis. When Katherine ran this script (which she only had to do
+    once), the project was not yet deployed, so she simply rsynced the
+    sequencing data from pleiades to her own devbox. Going forward, you'll want
+    to import new sequencing data to the production database, so should modify
+    this script to read from the live Genewiz dump.
     """
 
     help = 'Import sequencing data (from 2014-on)'
