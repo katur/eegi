@@ -6,7 +6,7 @@ from library.models import LibraryStock
 
 
 class Command(BaseCommand):
-    help = 'Parse ambiguities from output of LibrarStock legacy sync'
+    help = 'Fix ambiguous ENH secondary origins from LibraryStock legacy sync'
 
     def add_arguments(self, parser):
 
